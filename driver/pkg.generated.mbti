@@ -32,7 +32,7 @@ pub fn leave(alt? : Bool, mouse? : Bool, paste? : Bool, focus? : Bool, resize? :
 pub let leave_alt : String
 
 // Errors
-pub suberror TtyError {
+pub(all) suberror TtyError {
   Io(String)
 } derive(@debug.Debug)
 
@@ -58,7 +58,7 @@ pub impl Driver for Headless
 // Type aliases
 
 // Traits
-pub trait Driver {
+pub(open) trait Driver {
   fn start(Self) -> Unit raise TtyError
   fn stop(Self) -> Unit raise TtyError
   fn write(Self, String) -> Unit raise TtyError

@@ -3,7 +3,7 @@
 
 ///|
 /// Something went wrong talking to the terminal.
-pub suberror TtyError {
+pub(all) suberror TtyError {
   Io(String)
 } derive(Debug)
 
@@ -15,7 +15,7 @@ pub suberror TtyError {
 /// a browser or Node cannot block at all and returns immediately from a queue
 /// its callbacks filled. Everything above this trait is written to tolerate
 /// both, which is what lets one main loop serve every platform.
-pub trait Driver {
+pub(open) trait Driver {
   /// Switch the terminal into raw mode and whatever else the application needs.
   fn start(Self) -> Unit raise TtyError
   /// Put the terminal back the way it was found.

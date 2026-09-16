@@ -69,7 +69,7 @@ pub fn Ctx::asked(self : Ctx) -> Array[Out] {
 /// placed at, and returns that row. Drawing one line at a time is what lets the
 /// compositor ask only for the rows it needs, and what keeps a widget that is
 /// mostly off-screen cheap.
-pub trait Widget {
+pub(open) trait Widget {
   fn render_line(Self, Int, @geom.Size) -> @strip.Strip
   /// What the widget would like to be, given the space on offer. A layout uses
   /// it for automatic sizes.

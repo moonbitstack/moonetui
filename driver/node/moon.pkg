@@ -1,0 +1,12 @@
+// Node's terminal, over the standard streams.
+//
+// Node delivers input through callbacks and cannot be blocked, so the driver
+// keeps a queue its `data` handler fills and `poll` drains. That is why the
+// driver contract says "at most this long, and maybe nothing": this is the
+// platform that cannot do better.
+import {
+  "moonbitstack/moonetui/driver",
+  "moonbitstack/moonetui/geom",
+}
+
+supported_targets = "js"

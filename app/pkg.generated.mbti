@@ -45,6 +45,7 @@ pub fn[D] App::focused(Self[D]) -> Int
 pub fn[D] App::new(D, Node, base? : @style.Style, fps? : Int) -> Self[D]
 pub fn[D] App::quit(Self[D]) -> Unit
 pub fn[D] App::rect_of(Self[D], Int) -> @geom.Region
+pub fn[D] App::refresh(Self[D]) -> Unit
 pub fn[D : @driver.Driver] App::run(Self[D]) -> Unit raise
 pub fn[D] App::screen(Self[D]) -> Array[String]
 pub fn[D : @driver.Driver] App::start(Self[D]) -> Unit raise

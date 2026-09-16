@@ -53,7 +53,7 @@ pub fn[D] App::new(
     prev: [],
     dirty: true,
     running: false,
-    last_frame: -100000,
+    last_frame: 0,
     pending_resize: None,
     resize_at: 0,
   }
@@ -73,6 +73,7 @@ pub fn[D : @driver.Driver] App::start(self : App[D]) -> Unit raise {
     self.give_focus(ring[0])
   }
   self.render()
+  self.last_frame = self.driver.now()
 }
 
 ///|
@@ -114,7 +115,10 @@ pub fn[D : @driver.Driver] App::step(self : App[D]) -> Bool raise {
       }
     None => ()
   }
-  if self.dirty && now - self.last_frame >= self.frame_ms {
+  // A clock that went backwards — a driver whose milliseconds wrap, a test that
+  // rewinds one — means the frame is due rather than infinitely far away.
+  let since = now - self.last_frame
+  if self.dirty && (since < 0 || since >= self.frame_ms) {
     self.render()
     self.last_frame = now
   }
@@ -148,6 +152,16 @@ pub fn[D] App::drain(self : App[D]) -> Array[@widget.Out] {
   }
   self.inbox.clear()
   out
+}
+
+///|
+/// Mark the screen as out of date.
+///
+/// A widget that the host changed directly — a list whose rows were replaced
+/// between frames — has no way to say so, since the request to repaint travels
+/// with a message and there was none.
+pub fn[D] App::refresh(self : App[D]) -> Unit {
+  self.dirty = true
 }
 
 ///|

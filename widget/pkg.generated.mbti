@@ -167,7 +167,7 @@ pub impl Widget for Static
 // Type aliases
 
 // Traits
-pub trait Widget {
+pub(open) trait Widget {
   fn render_line(Self, Int, @geom.Size) -> @strip.Strip
   fn hint(Self, @geom.Size) -> @geom.Size
   fn handle(Self, Ctx, Msg) -> Bool
