@@ -19,8 +19,9 @@ Cell buffer, differential ANSI renderer, incremental key parser, layout, widgets
 |:--|:--|:--:|
 | `@geom` | Integer rectangle algebra: `Offset`, `Size`, `Region`, `Spacing`, with intersection, union, splitting and clamping | done |
 | `@style` | Colours (named, indexed, true colour), text attributes, palette quantisation, and differential SGR rendering | done |
+| `@strip` | One rendered line: styled segments measured in terminal columns, with cropping, division, padding and merging, over a generated Unicode width table | done |
 
-Everything else on the way to 0.1.0 — the cell buffer, the key parser, layout, widgets, the compositor and the three drivers — is not in the repository yet.
+Everything else on the way to 0.1.0 — the key parser, layout, widgets, the compositor and the three drivers — is not in the repository yet.
 
 ## Design
 
@@ -47,7 +48,7 @@ moon check --target all --deny-warn
 moon test --target all
 ```
 
-25 tests, all four backends.
+38 tests, all four backends.
 
 ## License
 

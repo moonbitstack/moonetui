@@ -1,0 +1,7 @@
+// One rendered line: a run of styled text segments, measured in terminal
+// columns rather than characters. Everything above this package thinks in
+// columns, so the width table lives here and the conversion happens once, when a
+// segment is built, not on every crop.
+import {
+  "moonbitstack/moonetui/style",
+}

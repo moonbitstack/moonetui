@@ -1,0 +1,50 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "moonbitstack/moonetui/strip"
+
+import {
+  "moonbitlang/core/debug",
+  "moonbitstack/moonetui/style",
+}
+
+// Values
+pub fn cell_width(Int) -> Int
+
+pub fn cells_before(String, Int) -> Int
+
+pub fn code_at(String, Int) -> (Int, Int)
+
+pub fn cut_at(String, Int) -> Int
+
+pub fn str_cells(String) -> Int
+
+// Errors
+
+// Types and methods
+pub(all) struct Seg {
+  text : String
+  style : @style.Style
+  cells : Int
+} derive(Eq, @debug.Debug)
+pub fn Seg::new(String, @style.Style) -> Self
+
+pub(all) struct Strip {
+  segs : Array[Seg]
+  cells : Int
+} derive(Eq, @debug.Debug)
+pub fn Strip::apply(Self, @style.Style) -> Self
+pub fn Strip::blank(Int, @style.Style) -> Self
+pub fn Strip::cell_length(Self) -> Int
+pub fn Strip::crop(Self, Int, Int) -> Self
+pub fn Strip::divide(Self, Array[Int]) -> Array[Self]
+pub fn Strip::empty() -> Self
+pub fn Strip::from_segs(Array[Seg]) -> Self
+pub fn Strip::is_empty(Self) -> Bool
+pub fn Strip::join(Array[Self]) -> Self
+pub fn Strip::of(String, @style.Style) -> Self
+pub fn Strip::pad_to(Self, Int, @style.Style) -> Self
+pub fn Strip::simplify(Self) -> Self
+pub fn Strip::text(Self) -> String
+
+// Type aliases
+
+// Traits
