@@ -1,0 +1,4 @@
+// Colours, text attributes, and the SGR escape sequences they render to.
+// Rendering is differential: a cell only emits the parameters that differ from
+// the style already in effect, which is where most of the bytes a full repaint
+// would cost are saved.
