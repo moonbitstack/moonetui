@@ -1,0 +1,69 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "moonbitstack/moonetui/driver"
+
+import {
+  "moonbitlang/core/debug",
+  "moonbitstack/moonetui/geom",
+}
+
+// Values
+pub let disable_focus : String
+
+pub let disable_mouse : String
+
+pub let disable_paste : String
+
+pub let disable_resize : String
+
+pub let enable_focus : String
+
+pub let enable_mouse : String
+
+pub let enable_paste : String
+
+pub let enable_resize : String
+
+pub fn enter(alt? : Bool, mouse? : Bool, paste? : Bool, focus? : Bool, resize? : Bool) -> String
+
+pub let enter_alt : String
+
+pub fn leave(alt? : Bool, mouse? : Bool, paste? : Bool, focus? : Bool, resize? : Bool) -> String
+
+pub let leave_alt : String
+
+// Errors
+pub suberror TtyError {
+  Io(String)
+} derive(@debug.Debug)
+
+// Types and methods
+pub struct Headless {
+  mut size : @geom.Size
+  script : Array[Bytes]
+  mut next : Int
+  out : StringBuilder
+  mut clock : Int
+  tick : Int
+  mut started : Bool
+  mut stopped : Bool
+}
+pub fn Headless::clear_output(Self) -> Unit
+pub fn Headless::is_running(Self) -> Bool
+pub fn Headless::new(@geom.Size, script? : Array[Bytes], tick? : Int) -> Self
+pub fn Headless::output(Self) -> String
+pub fn Headless::push(Self, Bytes) -> Unit
+pub fn Headless::set_size(Self, @geom.Size) -> Unit
+pub impl Driver for Headless
+
+// Type aliases
+
+// Traits
+pub trait Driver {
+  fn start(Self) -> Unit raise TtyError
+  fn stop(Self) -> Unit raise TtyError
+  fn write(Self, String) -> Unit raise TtyError
+  fn flush(Self) -> Unit raise TtyError
+  fn size(Self) -> @geom.Size raise TtyError
+  fn poll(Self, Int) -> Bytes raise TtyError
+  fn now(Self) -> Int
+}

@@ -23,6 +23,7 @@ Cell buffer, differential ANSI renderer, incremental key parser, layout, widgets
 | `@event` | Keys, mouse reports, paste, resize and focus as plain values | done |
 | `@input` | The terminal byte stream turned into events: CSI and SS3 sequences, modifiers, SGR mouse, bracketed paste, in-band resize, UTF-8 split across reads | done |
 | `@comp` | The compositor: placements to composed rows, consecutive screens to the spans that changed, spans to escape sequences | done |
+| `@driver` | The seam to a terminal — write, poll, size, raw mode, clock — plus the capability sequences and a headless terminal for tests | done |
 
 Everything else on the way to 0.1.0 — layout, widgets and the drivers — is not in the repository yet.
 
@@ -51,7 +52,7 @@ moon check --target all --deny-warn
 moon test --target all
 ```
 
-70 tests, all four backends.
+77 tests, all four backends.
 
 ## License
 

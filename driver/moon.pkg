@@ -1,0 +1,9 @@
+// The seam between the library and a terminal.
+//
+// Four operations reach a platform — write, read what has arrived, switch raw
+// mode, ask for the size — and a clock, because throttling frames and debouncing
+// resizes both need one and neither can invent it. Everything else in the
+// library is pure, so a headless driver is enough to test all of it.
+import {
+  "moonbitstack/moonetui/geom",
+}
