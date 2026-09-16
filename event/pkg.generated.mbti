@@ -1,0 +1,79 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "moonbitstack/moonetui/event"
+
+import {
+  "moonbitlang/core/debug",
+}
+
+// Values
+pub let none : Mods
+
+// Errors
+
+// Types and methods
+pub(all) enum Event {
+  Key(Key)
+  Mouse(Mouse)
+  Paste(String)
+  Resize(Int, Int)
+  FocusIn
+  FocusOut
+} derive(Eq, @debug.Debug)
+
+pub(all) struct Key {
+  code : KeyCode
+  mods : Mods
+} derive(Eq, @debug.Debug)
+pub fn Key::char(Int) -> Self
+pub fn Key::of(KeyCode) -> Self
+pub fn Key::with_mods(KeyCode, Mods) -> Self
+
+pub(all) enum KeyCode {
+  Char(Int)
+  Enter
+  Tab
+  BackTab
+  Backspace
+  Delete
+  Escape
+  Insert
+  Up
+  Down
+  Left
+  Right
+  Home
+  End
+  PageUp
+  PageDown
+  F(Int)
+} derive(Eq, @debug.Debug)
+
+pub(all) struct Mods {
+  ctrl : Bool
+  alt : Bool
+  shift : Bool
+} derive(Eq, @debug.Debug)
+pub fn Mods::is_none(Self) -> Bool
+pub fn Mods::of_param(Int) -> Self
+
+pub(all) struct Mouse {
+  kind : MouseKind
+  button : Int
+  x : Int
+  y : Int
+  mods : Mods
+} derive(Eq, @debug.Debug)
+
+pub(all) enum MouseKind {
+  Down
+  Up
+  Move
+  ScrollUp
+  ScrollDown
+  ScrollLeft
+  ScrollRight
+} derive(Eq, @debug.Debug)
+
+// Type aliases
+
+// Traits

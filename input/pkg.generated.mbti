@@ -1,0 +1,27 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "moonbitstack/moonetui/input"
+
+import {
+  "moonbitstack/moonetui/event",
+}
+
+// Values
+
+// Errors
+
+// Types and methods
+pub struct Parser {
+  mut buf : Array[Int]
+  mut head : Int
+  mut pasting : Bool
+  pasted : StringBuilder
+}
+pub fn Parser::feed(Self, Bytes, Array[@event.Event]) -> Unit
+pub fn Parser::idle(Self, Array[@event.Event]) -> Unit
+pub fn Parser::new() -> Self
+pub fn Parser::pending(Self) -> Int
+pub fn Parser::reset(Self) -> Unit
+
+// Type aliases
+
+// Traits

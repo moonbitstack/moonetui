@@ -20,8 +20,10 @@ Cell buffer, differential ANSI renderer, incremental key parser, layout, widgets
 | `@geom` | Integer rectangle algebra: `Offset`, `Size`, `Region`, `Spacing`, with intersection, union, splitting and clamping | done |
 | `@style` | Colours (named, indexed, true colour), text attributes, palette quantisation, and differential SGR rendering | done |
 | `@strip` | One rendered line: styled segments measured in terminal columns, with cropping, division, padding and merging, over a generated Unicode width table | done |
+| `@event` | Keys, mouse reports, paste, resize and focus as plain values | done |
+| `@input` | The terminal byte stream turned into events: CSI and SS3 sequences, modifiers, SGR mouse, bracketed paste, in-band resize, UTF-8 split across reads | done |
 
-Everything else on the way to 0.1.0 — the key parser, layout, widgets, the compositor and the three drivers — is not in the repository yet.
+Everything else on the way to 0.1.0 — layout, widgets, the compositor and the three drivers — is not in the repository yet.
 
 ## Design
 
@@ -48,7 +50,7 @@ moon check --target all --deny-warn
 moon test --target all
 ```
 
-38 tests, all four backends.
+54 tests, all four backends.
 
 ## License
 
