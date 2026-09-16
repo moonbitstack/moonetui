@@ -1,0 +1,67 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "moonbitstack/moonetui/app"
+
+import {
+  "moonbitstack/moonetui/comp",
+  "moonbitstack/moonetui/driver",
+  "moonbitstack/moonetui/geom",
+  "moonbitstack/moonetui/input",
+  "moonbitstack/moonetui/layout",
+  "moonbitstack/moonetui/strip",
+  "moonbitstack/moonetui/style",
+  "moonbitstack/moonetui/widget",
+}
+
+// Values
+pub fn column(Int, Array[Node], box? : @layout.Box, gap? : Int) -> Node
+
+pub fn leaf(Int, &@widget.Widget, box? : @layout.Box) -> Node
+
+pub fn row(Int, Array[Node], box? : @layout.Box, gap? : Int) -> Node
+
+// Errors
+
+// Types and methods
+pub struct App[D] {
+  driver : D
+  root : Node
+  parser : @input.Parser
+  base : @style.Style
+  frame_ms : Int
+  rects : Map[Int, @geom.Region]
+  inbox : Array[@widget.Out]
+  mut size : @geom.Size
+  mut focus : Int
+  mut prev : Array[@strip.Strip]
+  mut dirty : Bool
+  mut running : Bool
+  mut last_frame : Int
+  mut pending_resize : @geom.Size?
+  mut resize_at : Int
+}
+pub fn[D] App::drain(Self[D]) -> Array[@widget.Out]
+pub fn[D] App::focus_next(Self[D], Int) -> Unit
+pub fn[D] App::focused(Self[D]) -> Int
+pub fn[D] App::new(D, Node, base? : @style.Style, fps? : Int) -> Self[D]
+pub fn[D] App::quit(Self[D]) -> Unit
+pub fn[D] App::rect_of(Self[D], Int) -> @geom.Region
+pub fn[D : @driver.Driver] App::run(Self[D]) -> Unit raise
+pub fn[D] App::screen(Self[D]) -> Array[String]
+pub fn[D : @driver.Driver] App::start(Self[D]) -> Unit raise
+pub fn[D : @driver.Driver] App::step(Self[D]) -> Bool raise
+pub fn[D : @driver.Driver] App::stop(Self[D]) -> Unit raise
+
+pub enum Node {
+  Leaf(id~ : Int, widget~ : &@widget.Widget, box~ : @layout.Box)
+  Stack(id~ : Int, dir~ : @layout.Dir, box~ : @layout.Box, gap~ : Int, kids~ : Array[Node])
+}
+pub fn Node::box(Self) -> @layout.Box
+pub fn Node::find(Self, Int) -> &@widget.Widget?
+pub fn Node::focus_ring(Self) -> Array[Int]
+pub fn Node::hint(Self, @geom.Size, @layout.Dir) -> Int
+pub fn Node::id(Self) -> Int
+pub fn Node::place(Self, @geom.Region, @geom.Region, @comp.Scene, Map[Int, @geom.Region]) -> Unit
+
+// Type aliases
+
+// Traits

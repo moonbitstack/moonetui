@@ -26,8 +26,9 @@ Cell buffer, differential ANSI renderer, incremental key parser, layout, widgets
 | `@driver` | The seam to a terminal — write, poll, size, raw mode, clock — plus the capability sequences and a headless terminal for tests | done |
 | `@layout` | Placing boxes along an axis: fixed cells, percentages, automatic sizes and fractional shares, with integer division that loses no column | done |
 | `@widget` | The widget contract and eight widgets: static text, label, button, input, list, progress bar, header, footer | done |
+| `@app` | The widget tree, the focus ring, and the frame loop: poll, parse, dispatch, lay out, compose, diff, write | done |
 
-Everything else on the way to 0.1.0 — the application loop and the platform drivers — is not in the repository yet.
+What is left for 0.1.0: the three platform drivers (Node, a browser grid, and a native terminal) and the examples.
 
 ## Design
 
@@ -54,7 +55,7 @@ moon check --target all --deny-warn
 moon test --target all
 ```
 
-113 tests, all four backends.
+123 tests, all four backends.
 
 ## License
 
