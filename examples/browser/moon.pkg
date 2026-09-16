@@ -1,0 +1,15 @@
+// The same application as `examples/hello`, drawn in a browser instead of a
+// terminal. The library does not change: only the driver does.
+import {
+  "moonbitstack/moonetui/app",
+  "moonbitstack/moonetui/driver/web",
+  "moonbitstack/moonetui/layout",
+  "moonbitstack/moonetui/style",
+  "moonbitstack/moonetui/widget",
+}
+
+supported_targets = "js"
+
+options(
+  link: { "js": { "exports": [ "start" ], "format": "esm" } },
+)

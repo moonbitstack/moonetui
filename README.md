@@ -27,8 +27,10 @@ Cell buffer, differential ANSI renderer, incremental key parser, layout, widgets
 | `@layout` | Placing boxes along an axis: fixed cells, percentages, automatic sizes and fractional shares, with integer division that loses no column | done |
 | `@widget` | The widget contract and eight widgets: static text, label, button, input, list, progress bar, header, footer | done |
 | `@app` | The widget tree, the focus ring, and the frame loop: poll, parse, dispatch, lay out, compose, diff, write | done |
+| `@driver/node` | Node's terminal: raw mode, a queue the data handler fills, and a frame pump | done |
+| `@driver/web` | A terminal drawn on a canvas: the grid, the escape sequences it understands, key encoding, and in-band resize | done |
 
-What is left for 0.1.0: the three platform drivers (Node, a browser grid, and a native terminal) and the examples.
+What is left for 0.1.0: the native terminal driver (termios and the Windows console), which is written here but verified in CI, since this machine cannot link it.
 
 ## Design
 
@@ -41,6 +43,8 @@ Only four operations ever touch a platform: write, read what is available, set r
 ```
 moon add moonbitstack/moonetui
 ```
+
+Two runnable examples: `moon run --target js examples/hello` for a terminal, and `examples/browser/index.html` for the same application drawn on a canvas.
 
 ```moonbit
 let screen = @geom.Size::new(80, 24)
@@ -55,7 +59,7 @@ moon check --target all --deny-warn
 moon test --target all
 ```
 
-123 tests, all four backends.
+135 tests; the browser grid's own tests run on the js backend, the rest on all four.
 
 ## License
 

@@ -1,0 +1,15 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>moonetui in a browser</title>
+<style>
+  html, body { margin: 0; height: 100%; background: #1e1e1e; }
+  canvas { display: block; width: 100vw; height: 100vh; outline: none; }
+</style>
+<canvas id="moonetui" tabindex="0"></canvas>
+<script type="module">
+  // The build output sits next to the module graph moon produces; serving the
+  // repository root and pointing at it keeps this page free of a bundler.
+  import { start } from "../../_build/js/debug/build/examples/browser/browser.js";
+  start();
+  document.getElementById("moonetui").focus();
+</script>

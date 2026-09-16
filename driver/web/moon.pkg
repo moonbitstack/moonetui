@@ -1,0 +1,14 @@
+// A terminal drawn in a browser: the grid is ours, cell by cell, on a canvas.
+//
+// Nothing here wraps an existing terminal emulator. The application writes the
+// same escape sequences it would send to a real terminal, and this package is
+// the terminal that reads them — which keeps the application identical on every
+// platform and keeps the browser from needing a second rendering path.
+import {
+  "moonbitstack/moonetui/driver",
+  "moonbitstack/moonetui/geom",
+  "moonbitstack/moonetui/strip",
+  "moonbitstack/moonetui/style",
+}
+
+supported_targets = "js"
