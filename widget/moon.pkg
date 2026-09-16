@@ -1,0 +1,12 @@
+// Widgets: things that render lines and react to messages.
+//
+// A widget never reaches outside itself. It draws into a line, and whatever it
+// wants the application to do — take focus, repaint, report a press — it says
+// as a value the caller reads afterwards. That is what lets a widget be tested
+// without an application, a screen, or a terminal.
+import {
+  "moonbitstack/moonetui/event",
+  "moonbitstack/moonetui/geom",
+  "moonbitstack/moonetui/strip",
+  "moonbitstack/moonetui/style",
+}

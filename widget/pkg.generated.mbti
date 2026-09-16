@@ -1,0 +1,175 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "moonbitstack/moonetui/widget"
+
+import {
+  "moonbitlang/core/debug",
+  "moonbitstack/moonetui/event",
+  "moonbitstack/moonetui/geom",
+  "moonbitstack/moonetui/strip",
+  "moonbitstack/moonetui/style",
+}
+
+// Values
+pub fn align_line(String, Int, Align, @style.Style) -> @strip.Strip
+
+pub fn clip_to(String, Int) -> String
+
+pub fn frame(Border, Int, @geom.Size, @style.Style, @strip.Strip) -> @strip.Strip
+
+pub let heavy : Border
+
+pub fn label(String, style? : @style.Style) -> Static
+
+pub let thin : Border
+
+// Errors
+
+// Types and methods
+pub(all) enum Align {
+  Left
+  Center
+  Right
+} derive(Eq, @debug.Debug)
+
+pub(all) struct Border {
+  top_left : String
+  top : String
+  top_right : String
+  left : String
+  right : String
+  bottom_left : String
+  bottom : String
+  bottom_right : String
+} derive(Eq, @debug.Debug)
+
+pub struct Button {
+  mut text : String
+  style : @style.Style
+  focus_style : @style.Style
+  mut disabled : Bool
+  mut focused : Bool
+}
+pub fn Button::disable(Self, Bool) -> Unit
+pub fn Button::has_focus(Self) -> Bool
+pub fn Button::is_disabled(Self) -> Bool
+pub fn Button::new(String, style? : @style.Style, focus_style? : @style.Style) -> Self
+pub fn Button::set(Self, String) -> Unit
+pub fn Button::text(Self) -> String
+pub impl Widget for Button
+
+pub struct Ctx {
+  id : Int
+  size : @geom.Size
+  focused : Bool
+  out : Array[Out]
+}
+pub fn Ctx::asked(Self) -> Array[Out]
+pub fn Ctx::emit(Self, Out) -> Unit
+pub fn Ctx::new(Int, @geom.Size, focused? : Bool) -> Self
+pub fn Ctx::repaint(Self) -> Unit
+
+pub struct Footer {
+  mut bindings : Array[(String, String)]
+  style : @style.Style
+  key_style : @style.Style
+}
+pub fn Footer::new(Array[(String, String)], style? : @style.Style, key_style? : @style.Style) -> Self
+pub fn Footer::set(Self, Array[(String, String)]) -> Unit
+pub impl Widget for Footer
+
+pub struct Header {
+  mut title : String
+  mut note : String
+  style : @style.Style
+}
+pub fn Header::new(String, note? : String, style? : @style.Style) -> Self
+pub fn Header::set(Self, String) -> Unit
+pub fn Header::set_note(Self, String) -> Unit
+pub impl Widget for Header
+
+pub struct Input {
+  mut text : String
+  mut cursor : Int
+  mut offset : Int
+  mut focused : Bool
+  placeholder : String
+  style : @style.Style
+  placeholder_style : @style.Style
+  cursor_style : @style.Style
+}
+pub fn Input::cursor(Self) -> Int
+pub fn Input::cursor_column(Self, Int) -> Int
+pub fn Input::insert(Self, String) -> Unit
+pub fn Input::new(placeholder? : String, style? : @style.Style, placeholder_style? : @style.Style, cursor_style? : @style.Style) -> Self
+pub fn Input::set(Self, String) -> Unit
+pub fn Input::text(Self) -> String
+pub impl Widget for Input
+
+pub struct ListView {
+  mut items : Array[String]
+  mut index : Int
+  mut offset : Int
+  mut focused : Bool
+  style : @style.Style
+  highlight : @style.Style
+  blurred_highlight : @style.Style
+}
+pub fn ListView::index(Self) -> Int
+pub fn ListView::items(Self) -> Array[String]
+pub fn ListView::new(Array[String], style? : @style.Style, highlight? : @style.Style, blurred_highlight? : @style.Style) -> Self
+pub fn ListView::offset(Self) -> Int
+pub fn ListView::select(Self, Int) -> Unit
+pub fn ListView::set(Self, Array[String]) -> Unit
+pub impl Widget for ListView
+
+pub(all) enum Msg {
+  Key(@event.Key)
+  Mouse(@event.Mouse)
+  Paste(String)
+  Focus(Bool)
+  Tick(Int)
+} derive(Eq, @debug.Debug)
+
+pub(all) enum Out {
+  Repaint(id~ : Int)
+  TakeFocus(id~ : Int)
+  Pressed(id~ : Int)
+  Changed(id~ : Int, value~ : String)
+  Selected(id~ : Int, index~ : Int)
+  Quit
+} derive(Eq, @debug.Debug)
+
+pub struct Progress {
+  mut value : Int
+  mut total : Int
+  style : @style.Style
+  bar_style : @style.Style
+  show_percent : Bool
+}
+pub fn Progress::advance(Self, Int) -> Unit
+pub fn Progress::new(total? : Int, style? : @style.Style, bar_style? : @style.Style, show_percent? : Bool) -> Self
+pub fn Progress::percent(Self) -> Int
+pub fn Progress::set(Self, Int) -> Unit
+pub fn Progress::set_total(Self, Int) -> Unit
+pub impl Widget for Progress
+
+pub struct Static {
+  mut lines : Array[String]
+  mut style : @style.Style
+  align : Align
+}
+pub fn Static::new(String, style? : @style.Style, align? : Align) -> Self
+pub fn Static::set(Self, String) -> Unit
+pub fn Static::set_style(Self, @style.Style) -> Unit
+pub fn Static::text(Self) -> String
+pub impl Widget for Static
+
+// Type aliases
+
+// Traits
+pub trait Widget {
+  fn render_line(Self, Int, @geom.Size) -> @strip.Strip
+  fn hint(Self, @geom.Size) -> @geom.Size
+  fn handle(Self, Ctx, Msg) -> Bool
+  fn focusable(Self) -> Bool
+}
