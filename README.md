@@ -29,8 +29,9 @@ Cell buffer, differential ANSI renderer, incremental key parser, layout, widgets
 | `@app` | The widget tree, the focus ring, and the frame loop: poll, parse, dispatch, lay out, compose, diff, write | done |
 | `@driver/node` | Node's terminal: raw mode, a queue the data handler fills, and a frame pump | done |
 | `@driver/web` | A terminal drawn on a canvas: the grid, the escape sequences it understands, key encoding, and in-band resize | done |
+| `@driver/native` | A real terminal through the C library: termios on Unix, virtual terminal mode on Windows | done |
 
-What is left for 0.1.0: the native terminal driver (termios and the Windows console), which is written here but verified in CI, since this machine cannot link it.
+All of 0.1.0 is here. What is deliberately not: the CSS-like style system, scrolling containers, and the thirty-odd widgets beyond the eight below — see AGENTS.md for where the line is.
 
 ## Design
 
@@ -44,7 +45,7 @@ Only four operations ever touch a platform: write, read what is available, set r
 moon add moonbitstack/moonetui
 ```
 
-Two runnable examples: `moon run --target js examples/hello` for a terminal, and `examples/browser/index.html` for the same application drawn on a canvas.
+Three runnable examples of the same application: `moon run --target native examples/tui` on a terminal, `moon run --target js examples/hello` under Node, and `examples/browser/index.html` on a canvas in a browser.
 
 ```moonbit
 let screen = @geom.Size::new(80, 24)

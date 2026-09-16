@@ -1,0 +1,16 @@
+// A real terminal, through the C library.
+//
+// Windows and Unix look the same from here: the console is put into virtual
+// terminal mode, which makes it speak the same escape sequences a Unix terminal
+// does, so one parser and one renderer serve both.
+import {
+  "moonbitlang/core/encoding/utf8",
+  "moonbitstack/moonetui/driver",
+  "moonbitstack/moonetui/geom",
+}
+
+supported_targets = "native"
+
+options(
+  "native-stub": [ "tty.c" ],
+)

@@ -1,0 +1,13 @@
+// The terminal application, on a real terminal. Run it with
+// `moon run --target native examples/tui`.
+import {
+  "moonbitstack/moonetui/app",
+  "moonbitstack/moonetui/driver/native",
+  "moonbitstack/moonetui/layout",
+  "moonbitstack/moonetui/style",
+  "moonbitstack/moonetui/widget",
+}
+
+supported_targets = "native"
+
+pkgtype(kind: "executable")
