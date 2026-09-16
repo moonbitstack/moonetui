@@ -1,0 +1,4 @@
+// Integer rectangle algebra: the coordinate types every other package speaks in.
+// Terminal cells are whole columns and rows, so nothing here is fractional, and
+// every operation clamps rather than raising — an off-screen widget yields an
+// empty region instead of an error.
