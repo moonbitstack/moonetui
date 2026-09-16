@@ -1,0 +1,12 @@
+// The compositor: where a list of placed widgets becomes one screen, and where
+// two consecutive screens become the shortest escape sequence that turns one
+// into the other.
+//
+// Nothing here knows what a widget is. A caller hands in the placements and a
+// function that renders one line of one widget, which keeps the layering honest
+// and makes the whole stage testable without a terminal.
+import {
+  "moonbitstack/moonetui/geom",
+  "moonbitstack/moonetui/strip",
+  "moonbitstack/moonetui/style",
+}

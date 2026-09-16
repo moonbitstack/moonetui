@@ -22,8 +22,9 @@ Cell buffer, differential ANSI renderer, incremental key parser, layout, widgets
 | `@strip` | One rendered line: styled segments measured in terminal columns, with cropping, division, padding and merging, over a generated Unicode width table | done |
 | `@event` | Keys, mouse reports, paste, resize and focus as plain values | done |
 | `@input` | The terminal byte stream turned into events: CSI and SS3 sequences, modifiers, SGR mouse, bracketed paste, in-band resize, UTF-8 split across reads | done |
+| `@comp` | The compositor: placements to composed rows, consecutive screens to the spans that changed, spans to escape sequences | done |
 
-Everything else on the way to 0.1.0 — layout, widgets, the compositor and the three drivers — is not in the repository yet.
+Everything else on the way to 0.1.0 — layout, widgets and the drivers — is not in the repository yet.
 
 ## Design
 
@@ -50,7 +51,7 @@ moon check --target all --deny-warn
 moon test --target all
 ```
 
-54 tests, all four backends.
+70 tests, all four backends.
 
 ## License
 

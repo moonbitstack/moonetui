@@ -1,0 +1,63 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "moonbitstack/moonetui/comp"
+
+import {
+  "moonbitlang/core/debug",
+  "moonbitstack/moonetui/geom",
+  "moonbitstack/moonetui/strip",
+  "moonbitstack/moonetui/style",
+}
+
+// Values
+pub fn cells(@strip.Strip) -> Array[Cell]
+
+pub let clear : String
+
+pub fn cursor_to(Int, Int) -> String
+
+pub fn diff(Array[@strip.Strip], Array[@strip.Strip], base? : @style.Style) -> Array[Span]
+
+pub fn encode(Array[Span], @style.Style) -> String
+
+pub fn full(Array[@strip.Strip]) -> Array[Span]
+
+pub fn line_of(ArrayView[Cell], @style.Style) -> @strip.Strip
+
+pub fn show_cursor(Bool) -> String
+
+// Errors
+
+// Types and methods
+pub(all) struct Cell {
+  text : String
+  style : @style.Style
+  continuation : Bool
+} derive(Eq, @debug.Debug)
+pub fn Cell::blank(@style.Style) -> Self
+
+pub(all) struct Placement {
+  node : Int
+  rect : @geom.Region
+  clip : @geom.Region
+} derive(Eq, @debug.Debug)
+pub fn Placement::visible(Self) -> @geom.Region
+
+pub(all) struct Scene {
+  size : @geom.Size
+  items : Array[Placement]
+} derive(Eq, @debug.Debug)
+pub fn Scene::compose(Self, (Int, Int) -> @strip.Strip, @style.Style) -> Array[@strip.Strip]
+pub fn Scene::compose_line(Self, Int, (Int, Int) -> @strip.Strip, @style.Style) -> @strip.Strip
+pub fn Scene::cuts(Self, Int) -> Array[Int]
+pub fn Scene::new(@geom.Size) -> Self
+pub fn Scene::place(Self, Int, @geom.Region, @geom.Region) -> Unit
+
+pub(all) struct Span {
+  y : Int
+  x : Int
+  line : @strip.Strip
+} derive(Eq, @debug.Debug)
+
+// Type aliases
+
+// Traits
