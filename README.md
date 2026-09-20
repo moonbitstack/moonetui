@@ -31,7 +31,7 @@ Cell buffer, differential ANSI renderer, incremental key parser, layout, widgets
 | `@driver/web` | A terminal drawn on a canvas: the grid, the escape sequences it understands, key encoding, and in-band resize | done |
 | `@driver/native` | A real terminal through the C library: termios on Unix, virtual terminal mode on Windows | done |
 
-All of 0.1.0 is here. What is deliberately not: the CSS-like style system, scrolling containers, and the thirty-odd widgets beyond the eight below — see AGENTS.md for where the line is.
+All of 0.1.0 is here. What is deliberately not: the CSS-like style system, scrolling containers, and the thirty-odd widgets beyond the eight below.
 
 ## Design
 
