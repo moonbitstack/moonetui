@@ -117,3 +117,39 @@ pub(all) enum Event {
   FocusIn
   FocusOut
 } derive(Eq, Debug)
+
+///|
+pub extend Event with Debug::{to_repr}
+
+///|
+pub extend Event with Eq::{not_equal, equal}
+
+///|
+pub extend Key with Debug::{to_repr}
+
+///|
+pub extend Key with Eq::{not_equal, equal}
+
+///|
+pub extend KeyCode with Debug::{to_repr}
+
+///|
+pub extend KeyCode with Eq::{not_equal, equal}
+
+///|
+pub extend Mods with Debug::{to_repr}
+
+///|
+pub extend Mods with Eq::{not_equal, equal}
+
+///|
+pub extend Mouse with Debug::{to_repr}
+
+///|
+pub extend Mouse with Eq::{not_equal, equal}
+
+///|
+pub extend MouseKind with Debug::{to_repr}
+
+///|
+pub extend MouseKind with Eq::{not_equal, equal}

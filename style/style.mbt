@@ -139,3 +139,15 @@ pub fn Style::to_ansi256(self : Style) -> Style {
 pub fn Style::to_ansi16(self : Style) -> Style {
   { ..self, fg: self.fg.to_ansi16(), bg: self.bg.to_ansi16(), }
 }
+
+///|
+pub extend Attrs with Debug::{to_repr}
+
+///|
+pub extend Attrs with Eq::{not_equal, equal}
+
+///|
+pub extend Style with Debug::{to_repr}
+
+///|
+pub extend Style with Eq::{not_equal, equal}

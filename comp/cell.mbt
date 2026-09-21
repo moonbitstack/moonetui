@@ -104,3 +104,9 @@ pub fn line_of(columns : ArrayView[Cell], style : @style.Style) -> @strip.Strip 
 fn not_continuation(cell : Cell) -> Bool {
   !cell.continuation
 }
+
+///|
+pub extend Cell with Debug::{to_repr}
+
+///|
+pub extend Cell with Eq::{not_equal, equal}

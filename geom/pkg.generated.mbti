@@ -15,8 +15,14 @@ pub(all) struct Offset {
   x : Int
   y : Int
 } derive(Eq, @debug.Debug)
+pub fn Offset::add(Self, Self) -> Self
+pub fn Offset::equal(Self, Self) -> Bool
 pub fn Offset::is_origin(Self) -> Bool
+pub fn Offset::neg(Self) -> Self
+pub fn Offset::not_equal(Self, Self) -> Bool
 pub fn Offset::scale(Self, Int) -> Self
+pub fn Offset::sub(Self, Self) -> Self
+pub fn Offset::to_repr(Self) -> @debug.Repr
 pub fn Offset::transpose(Self) -> Self
 pub impl Add for Offset
 pub impl Neg for Offset
@@ -33,16 +39,19 @@ pub fn Region::bottom(Self) -> Int
 pub fn Region::clip(Self, Int, Int) -> Self
 pub fn Region::contains(Self, Int, Int) -> Bool
 pub fn Region::contains_region(Self, Self) -> Bool
+pub fn Region::equal(Self, Self) -> Bool
 pub fn Region::from_corners(Int, Int, Int, Int) -> Self
 pub fn Region::intersection(Self, Self) -> Self
 pub fn Region::is_empty(Self) -> Bool
 pub fn Region::new(Int, Int, Int, Int) -> Self
+pub fn Region::not_equal(Self, Self) -> Bool
 pub fn Region::offset(Self) -> Offset
 pub fn Region::overlaps(Self, Self) -> Bool
 pub fn Region::right(Self) -> Int
 pub fn Region::size(Self) -> Size
 pub fn Region::split_horizontal(Self, Int) -> (Self, Self)
 pub fn Region::split_vertical(Self, Int) -> (Self, Self)
+pub fn Region::to_repr(Self) -> @debug.Repr
 pub fn Region::translate(Self, Offset) -> Self
 pub fn Region::union(Self, Self) -> Self
 
@@ -53,9 +62,12 @@ pub(all) struct Size {
 pub fn Size::area(Self) -> Int
 pub fn Size::clamp_offset(Self, Offset) -> Offset
 pub fn Size::contains(Self, Int, Int) -> Bool
+pub fn Size::equal(Self, Self) -> Bool
 pub fn Size::is_empty(Self) -> Bool
 pub fn Size::new(Int, Int) -> Self
+pub fn Size::not_equal(Self, Self) -> Bool
 pub fn Size::region(Self) -> Region
+pub fn Size::to_repr(Self) -> @debug.Repr
 
 pub(all) struct Spacing {
   top : Int
@@ -64,10 +76,13 @@ pub(all) struct Spacing {
   left : Int
 } derive(Eq, @debug.Debug)
 pub fn Spacing::all(Int) -> Self
+pub fn Spacing::equal(Self, Self) -> Bool
 pub fn Spacing::grow_region(Self, Region) -> Region
 pub fn Spacing::height(Self) -> Int
 pub fn Spacing::horizontal(Int) -> Self
+pub fn Spacing::not_equal(Self, Self) -> Bool
 pub fn Spacing::shrink_region(Self, Region) -> Region
+pub fn Spacing::to_repr(Self) -> @debug.Repr
 pub fn Spacing::vertical(Int) -> Self
 pub fn Spacing::width(Self) -> Int
 

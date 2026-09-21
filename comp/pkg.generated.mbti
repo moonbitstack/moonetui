@@ -34,12 +34,18 @@ pub(all) struct Cell {
   continuation : Bool
 } derive(Eq, @debug.Debug)
 pub fn Cell::blank(@style.Style) -> Self
+pub fn Cell::equal(Self, Self) -> Bool
+pub fn Cell::not_equal(Self, Self) -> Bool
+pub fn Cell::to_repr(Self) -> @debug.Repr
 
 pub(all) struct Placement {
   node : Int
   rect : @geom.Region
   clip : @geom.Region
 } derive(Eq, @debug.Debug)
+pub fn Placement::equal(Self, Self) -> Bool
+pub fn Placement::not_equal(Self, Self) -> Bool
+pub fn Placement::to_repr(Self) -> @debug.Repr
 pub fn Placement::visible(Self) -> @geom.Region
 
 pub(all) struct Scene {
@@ -49,14 +55,20 @@ pub(all) struct Scene {
 pub fn Scene::compose(Self, (Int, Int) -> @strip.Strip, @style.Style) -> Array[@strip.Strip]
 pub fn Scene::compose_line(Self, Int, (Int, Int) -> @strip.Strip, @style.Style) -> @strip.Strip
 pub fn Scene::cuts(Self, Int) -> Array[Int]
+pub fn Scene::equal(Self, Self) -> Bool
 pub fn Scene::new(@geom.Size) -> Self
+pub fn Scene::not_equal(Self, Self) -> Bool
 pub fn Scene::place(Self, Int, @geom.Region, @geom.Region) -> Unit
+pub fn Scene::to_repr(Self) -> @debug.Repr
 
 pub(all) struct Span {
   y : Int
   x : Int
   line : @strip.Strip
 } derive(Eq, @debug.Debug)
+pub fn Span::equal(Self, Self) -> Bool
+pub fn Span::not_equal(Self, Self) -> Bool
+pub fn Span::to_repr(Self) -> @debug.Repr
 
 // Type aliases
 

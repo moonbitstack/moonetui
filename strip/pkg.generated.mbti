@@ -25,7 +25,10 @@ pub(all) struct Seg {
   style : @style.Style
   cells : Int
 } derive(Eq, @debug.Debug)
+pub fn Seg::equal(Self, Self) -> Bool
 pub fn Seg::new(String, @style.Style) -> Self
+pub fn Seg::not_equal(Self, Self) -> Bool
+pub fn Seg::to_repr(Self) -> @debug.Repr
 
 pub(all) struct Strip {
   segs : Array[Seg]
@@ -37,13 +40,16 @@ pub fn Strip::cell_length(Self) -> Int
 pub fn Strip::crop(Self, Int, Int) -> Self
 pub fn Strip::divide(Self, Array[Int]) -> Array[Self]
 pub fn Strip::empty() -> Self
+pub fn Strip::equal(Self, Self) -> Bool
 pub fn Strip::from_segs(Array[Seg]) -> Self
 pub fn Strip::is_empty(Self) -> Bool
 pub fn Strip::join(Array[Self]) -> Self
+pub fn Strip::not_equal(Self, Self) -> Bool
 pub fn Strip::of(String, @style.Style) -> Self
 pub fn Strip::pad_to(Self, Int, @style.Style) -> Self
 pub fn Strip::simplify(Self) -> Self
 pub fn Strip::text(Self) -> String
+pub fn Strip::to_repr(Self) -> @debug.Repr
 
 // Type aliases
 

@@ -124,3 +124,9 @@ pub impl Widget for Footer with fn handle(_self, _ctx, _msg) {
 pub impl Widget for Footer with fn focusable(_self) {
   false
 }
+
+///|
+pub extend Footer with Widget::{focusable, handle, hint, render_line}
+
+///|
+pub extend Header with Widget::{focusable, handle, hint, render_line}

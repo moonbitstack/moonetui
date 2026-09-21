@@ -148,3 +148,15 @@ fn clamp(value : Int, low : Int, high : Int) -> Int {
     value
   }
 }
+
+///|
+pub extend Placement with Debug::{to_repr}
+
+///|
+pub extend Placement with Eq::{not_equal, equal}
+
+///|
+pub extend Scene with Debug::{to_repr}
+
+///|
+pub extend Scene with Eq::{not_equal, equal}

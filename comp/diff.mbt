@@ -106,3 +106,9 @@ fn cell_at(row : Array[Cell], x : Int) -> Cell {
     Cell::blank(@style.default)
   }
 }
+
+///|
+pub extend Span with Debug::{to_repr}
+
+///|
+pub extend Span with Eq::{not_equal, equal}

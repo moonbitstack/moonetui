@@ -216,3 +216,21 @@ fn at_least_zero(value : Int) -> Int {
     value
   }
 }
+
+///|
+pub extend Box with Debug::{to_repr}
+
+///|
+pub extend Box with Eq::{not_equal, equal}
+
+///|
+pub extend Dir with Debug::{to_repr}
+
+///|
+pub extend Dir with Eq::{not_equal, equal}
+
+///|
+pub extend Extent with Debug::{to_repr}
+
+///|
+pub extend Extent with Eq::{not_equal, equal}

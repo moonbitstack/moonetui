@@ -155,3 +155,21 @@ pub fn frame(
     @strip.Strip::of(border.right, style),
   ])
 }
+
+///|
+pub extend Border with Debug::{to_repr}
+
+///|
+pub extend Border with Eq::{not_equal, equal}
+
+///|
+pub extend Msg with Debug::{to_repr}
+
+///|
+pub extend Msg with Eq::{not_equal, equal}
+
+///|
+pub extend Out with Debug::{to_repr}
+
+///|
+pub extend Out with Eq::{not_equal, equal}

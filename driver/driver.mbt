@@ -27,3 +27,6 @@ pub(open) trait Driver {
   /// Milliseconds from an arbitrary origin. Only differences are used.
   fn now(Self) -> Int
 }
+
+///|
+pub extend TtyError with Debug::{to_repr}

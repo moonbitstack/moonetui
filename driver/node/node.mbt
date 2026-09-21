@@ -140,3 +140,14 @@ extern "js" fn js_pump(ms : Int, tick : () -> Bool) -> Unit =
   #|     }
   #|   }, ms);
   #| }
+
+///|
+pub extend NodeTty with @driver.Driver::{
+  flush,
+  start,
+  now,
+  stop,
+  size,
+  poll,
+  write,
+}

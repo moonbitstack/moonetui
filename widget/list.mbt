@@ -239,3 +239,6 @@ fn clamp(value : Int, low : Int, high : Int) -> Int {
     value
   }
 }
+
+///|
+pub extend ListView with Widget::{focusable, handle, hint, render_line}

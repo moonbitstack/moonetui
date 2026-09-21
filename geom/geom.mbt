@@ -344,3 +344,36 @@ fn clamp(value : Int, low : Int, high : Int) -> Int {
     value
   }
 }
+
+///|
+pub extend Offset with Debug::{to_repr}
+
+///|
+pub extend Offset with Add::{add}
+
+///|
+pub extend Offset with Eq::{not_equal, equal}
+
+///|
+pub extend Offset with Neg::{neg}
+
+///|
+pub extend Offset with Sub::{sub}
+
+///|
+pub extend Region with Debug::{to_repr}
+
+///|
+pub extend Region with Eq::{not_equal, equal}
+
+///|
+pub extend Size with Debug::{to_repr}
+
+///|
+pub extend Size with Eq::{not_equal, equal}
+
+///|
+pub extend Spacing with Debug::{to_repr}
+
+///|
+pub extend Spacing with Eq::{not_equal, equal}

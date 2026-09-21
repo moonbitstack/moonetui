@@ -22,12 +22,18 @@ pub(all) struct Box {
   max : Int
   pad : @geom.Spacing
 } derive(Eq, @debug.Debug)
+pub fn Box::equal(Self, Self) -> Bool
 pub fn Box::new(extent? : Extent, min? : Int, max? : Int, pad? : @geom.Spacing) -> Self
+pub fn Box::not_equal(Self, Self) -> Bool
+pub fn Box::to_repr(Self) -> @debug.Repr
 
 pub(all) enum Dir {
   Vertical
   Horizontal
 } derive(Eq, @debug.Debug)
+pub fn Dir::equal(Self, Self) -> Bool
+pub fn Dir::not_equal(Self, Self) -> Bool
+pub fn Dir::to_repr(Self) -> @debug.Repr
 
 pub(all) enum Extent {
   Auto
@@ -35,6 +41,9 @@ pub(all) enum Extent {
   Frac(Int)
   Pct(Int)
 } derive(Eq, @debug.Debug)
+pub fn Extent::equal(Self, Self) -> Bool
+pub fn Extent::not_equal(Self, Self) -> Bool
+pub fn Extent::to_repr(Self) -> @debug.Repr
 
 // Type aliases
 

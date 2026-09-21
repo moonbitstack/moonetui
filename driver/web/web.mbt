@@ -363,3 +363,14 @@ extern "js" fn js_pump(tick : () -> Bool) -> Unit =
   #|   const run = () => { if (tick()) requestAnimationFrame(run); };
   #|   requestAnimationFrame(run);
   #| }
+
+///|
+pub extend WebTty with @driver.Driver::{
+  flush,
+  start,
+  now,
+  stop,
+  size,
+  poll,
+  write,
+}

@@ -118,3 +118,6 @@ pub impl Driver for Headless with fn poll(self, _timeout) {
 pub impl Driver for Headless with fn now(self) {
   self.clock
 }
+
+///|
+pub extend Headless with Driver::{flush, start, now, stop, size, poll, write}

@@ -131,3 +131,14 @@ extern "C" fn tty_size(out : FixedArray[Int]) -> Int = "moonetui_tty_size"
 
 ///|
 extern "C" fn tty_now() -> Int = "moonetui_tty_now"
+
+///|
+pub extend NativeTty with @driver.Driver::{
+  flush,
+  start,
+  now,
+  stop,
+  size,
+  poll,
+  write,
+}

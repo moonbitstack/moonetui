@@ -335,3 +335,9 @@ fn param(params : Array[Int], index : Int, fallback : Int) -> Int {
     fallback
   }
 }
+
+///|
+pub extend Cell with Debug::{to_repr}
+
+///|
+pub extend Cell with Eq::{not_equal, equal}

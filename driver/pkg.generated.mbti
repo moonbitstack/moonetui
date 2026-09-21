@@ -35,6 +35,7 @@ pub let leave_alt : String
 pub(all) suberror TtyError {
   Io(String)
 } derive(@debug.Debug)
+pub fn TtyError::to_repr(Self) -> @debug.Repr
 
 // Types and methods
 pub struct Headless {
@@ -48,11 +49,18 @@ pub struct Headless {
   mut stopped : Bool
 }
 pub fn Headless::clear_output(Self) -> Unit
+pub fn Headless::flush(Self) -> Unit raise TtyError
 pub fn Headless::is_running(Self) -> Bool
 pub fn Headless::new(@geom.Size, script? : Array[Bytes], tick? : Int) -> Self
+pub fn Headless::now(Self) -> Int
 pub fn Headless::output(Self) -> String
+pub fn Headless::poll(Self, Int) -> Bytes raise TtyError
 pub fn Headless::push(Self, Bytes) -> Unit
 pub fn Headless::set_size(Self, @geom.Size) -> Unit
+pub fn Headless::size(Self) -> @geom.Size raise TtyError
+pub fn Headless::start(Self) -> Unit raise TtyError
+pub fn Headless::stop(Self) -> Unit raise TtyError
+pub fn Headless::write(Self, String) -> Unit raise TtyError
 pub impl Driver for Headless
 
 // Type aliases

@@ -131,3 +131,6 @@ fn clamp_value(value : Int, low : Int, high : Int) -> Int {
     value
   }
 }
+
+///|
+pub extend Progress with Widget::{focusable, handle, hint, render_line}

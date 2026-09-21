@@ -118,3 +118,6 @@ fn pressing(key : @event.Key) -> Bool {
 pub fn Button::has_focus(self : Button) -> Bool {
   self.focused
 }
+
+///|
+pub extend Button with Widget::{focusable, handle, hint, render_line}

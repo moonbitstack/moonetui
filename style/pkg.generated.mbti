@@ -61,7 +61,10 @@ pub(all) struct Attrs {
   strike : Bool
 } derive(Eq, @debug.Debug)
 pub fn Attrs::drops_from(Self, Self) -> Bool
+pub fn Attrs::equal(Self, Self) -> Bool
 pub fn Attrs::is_plain(Self) -> Bool
+pub fn Attrs::not_equal(Self, Self) -> Bool
+pub fn Attrs::to_repr(Self) -> @debug.Repr
 pub fn Attrs::union(Self, Self) -> Self
 
 pub(all) enum Color {
@@ -71,10 +74,13 @@ pub(all) enum Color {
   Rgb(Int, Int, Int)
 } derive(Eq, @debug.Debug)
 pub fn Color::blend(Self, Self, Int) -> Self
+pub fn Color::equal(Self, Self) -> Bool
+pub fn Color::not_equal(Self, Self) -> Bool
 pub fn Color::parse(String) -> Self?
 pub fn Color::rgb(Int, Int, Int) -> Self
 pub fn Color::to_ansi16(Self) -> Self
 pub fn Color::to_ansi256(Self) -> Self
+pub fn Color::to_repr(Self) -> @debug.Repr
 pub fn Color::to_rgb(Self) -> (Int, Int, Int)?
 
 pub(all) struct Style {
@@ -82,12 +88,15 @@ pub(all) struct Style {
   bg : Color
   attrs : Attrs
 } derive(Eq, @debug.Debug)
+pub fn Style::equal(Self, Self) -> Bool
 pub fn Style::is_default(Self) -> Bool
 pub fn Style::merge(Self, Self) -> Self
 pub fn Style::new(fg? : Color, bg? : Color, bold? : Bool, dim? : Bool, italic? : Bool, underline? : Bool, blink? : Bool, reverse? : Bool, strike? : Bool) -> Self
+pub fn Style::not_equal(Self, Self) -> Bool
 pub fn Style::swap(Self) -> Self
 pub fn Style::to_ansi16(Self) -> Self
 pub fn Style::to_ansi256(Self) -> Self
+pub fn Style::to_repr(Self) -> @debug.Repr
 
 // Type aliases
 

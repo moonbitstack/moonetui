@@ -323,3 +323,9 @@ fn abs(value : Int) -> Int {
     value
   }
 }
+
+///|
+pub extend Color with Debug::{to_repr}
+
+///|
+pub extend Color with Eq::{not_equal, equal}

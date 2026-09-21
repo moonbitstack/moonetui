@@ -224,3 +224,15 @@ fn spaces(count : Int) -> String {
   }
   out.to_string()
 }
+
+///|
+pub extend Seg with Debug::{to_repr}
+
+///|
+pub extend Seg with Eq::{not_equal, equal}
+
+///|
+pub extend Strip with Debug::{to_repr}
+
+///|
+pub extend Strip with Eq::{not_equal, equal}

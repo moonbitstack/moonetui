@@ -30,6 +30,9 @@ pub(all) enum Align {
   Center
   Right
 } derive(Eq, @debug.Debug)
+pub fn Align::equal(Self, Self) -> Bool
+pub fn Align::not_equal(Self, Self) -> Bool
+pub fn Align::to_repr(Self) -> @debug.Repr
 
 pub(all) struct Border {
   top_left : String
@@ -41,6 +44,9 @@ pub(all) struct Border {
   bottom : String
   bottom_right : String
 } derive(Eq, @debug.Debug)
+pub fn Border::equal(Self, Self) -> Bool
+pub fn Border::not_equal(Self, Self) -> Bool
+pub fn Border::to_repr(Self) -> @debug.Repr
 
 pub struct Button {
   mut text : String
@@ -50,9 +56,13 @@ pub struct Button {
   mut focused : Bool
 }
 pub fn Button::disable(Self, Bool) -> Unit
+pub fn Button::focusable(Self) -> Bool
+pub fn Button::handle(Self, Ctx, Msg) -> Bool
 pub fn Button::has_focus(Self) -> Bool
+pub fn Button::hint(Self, @geom.Size) -> @geom.Size
 pub fn Button::is_disabled(Self) -> Bool
 pub fn Button::new(String, style? : @style.Style, focus_style? : @style.Style) -> Self
+pub fn Button::render_line(Self, Int, @geom.Size) -> @strip.Strip
 pub fn Button::set(Self, String) -> Unit
 pub fn Button::text(Self) -> String
 pub impl Widget for Button
@@ -73,7 +83,11 @@ pub struct Footer {
   style : @style.Style
   key_style : @style.Style
 }
+pub fn Footer::focusable(Self) -> Bool
+pub fn Footer::handle(Self, Ctx, Msg) -> Bool
+pub fn Footer::hint(Self, @geom.Size) -> @geom.Size
 pub fn Footer::new(Array[(String, String)], style? : @style.Style, key_style? : @style.Style) -> Self
+pub fn Footer::render_line(Self, Int, @geom.Size) -> @strip.Strip
 pub fn Footer::set(Self, Array[(String, String)]) -> Unit
 pub impl Widget for Footer
 
@@ -82,7 +96,11 @@ pub struct Header {
   mut note : String
   style : @style.Style
 }
+pub fn Header::focusable(Self) -> Bool
+pub fn Header::handle(Self, Ctx, Msg) -> Bool
+pub fn Header::hint(Self, @geom.Size) -> @geom.Size
 pub fn Header::new(String, note? : String, style? : @style.Style) -> Self
+pub fn Header::render_line(Self, Int, @geom.Size) -> @strip.Strip
 pub fn Header::set(Self, String) -> Unit
 pub fn Header::set_note(Self, String) -> Unit
 pub impl Widget for Header
@@ -99,8 +117,12 @@ pub struct Input {
 }
 pub fn Input::cursor(Self) -> Int
 pub fn Input::cursor_column(Self, Int) -> Int
+pub fn Input::focusable(Self) -> Bool
+pub fn Input::handle(Self, Ctx, Msg) -> Bool
+pub fn Input::hint(Self, @geom.Size) -> @geom.Size
 pub fn Input::insert(Self, String) -> Unit
 pub fn Input::new(placeholder? : String, style? : @style.Style, placeholder_style? : @style.Style, cursor_style? : @style.Style) -> Self
+pub fn Input::render_line(Self, Int, @geom.Size) -> @strip.Strip
 pub fn Input::set(Self, String) -> Unit
 pub fn Input::text(Self) -> String
 pub impl Widget for Input
@@ -114,10 +136,14 @@ pub struct ListView {
   highlight : @style.Style
   blurred_highlight : @style.Style
 }
+pub fn ListView::focusable(Self) -> Bool
+pub fn ListView::handle(Self, Ctx, Msg) -> Bool
+pub fn ListView::hint(Self, @geom.Size) -> @geom.Size
 pub fn ListView::index(Self) -> Int
 pub fn ListView::items(Self) -> Array[String]
 pub fn ListView::new(Array[String], style? : @style.Style, highlight? : @style.Style, blurred_highlight? : @style.Style) -> Self
 pub fn ListView::offset(Self) -> Int
+pub fn ListView::render_line(Self, Int, @geom.Size) -> @strip.Strip
 pub fn ListView::select(Self, Int) -> Unit
 pub fn ListView::set(Self, Array[String]) -> Unit
 pub impl Widget for ListView
@@ -129,6 +155,9 @@ pub(all) enum Msg {
   Focus(Bool)
   Tick(Int)
 } derive(Eq, @debug.Debug)
+pub fn Msg::equal(Self, Self) -> Bool
+pub fn Msg::not_equal(Self, Self) -> Bool
+pub fn Msg::to_repr(Self) -> @debug.Repr
 
 pub(all) enum Out {
   Repaint(id~ : Int)
@@ -138,6 +167,9 @@ pub(all) enum Out {
   Selected(id~ : Int, index~ : Int)
   Quit
 } derive(Eq, @debug.Debug)
+pub fn Out::equal(Self, Self) -> Bool
+pub fn Out::not_equal(Self, Self) -> Bool
+pub fn Out::to_repr(Self) -> @debug.Repr
 
 pub struct Progress {
   mut value : Int
@@ -147,8 +179,12 @@ pub struct Progress {
   show_percent : Bool
 }
 pub fn Progress::advance(Self, Int) -> Unit
+pub fn Progress::focusable(Self) -> Bool
+pub fn Progress::handle(Self, Ctx, Msg) -> Bool
+pub fn Progress::hint(Self, @geom.Size) -> @geom.Size
 pub fn Progress::new(total? : Int, style? : @style.Style, bar_style? : @style.Style, show_percent? : Bool) -> Self
 pub fn Progress::percent(Self) -> Int
+pub fn Progress::render_line(Self, Int, @geom.Size) -> @strip.Strip
 pub fn Progress::set(Self, Int) -> Unit
 pub fn Progress::set_total(Self, Int) -> Unit
 pub impl Widget for Progress
@@ -158,7 +194,11 @@ pub struct Static {
   mut style : @style.Style
   align : Align
 }
+pub fn Static::focusable(Self) -> Bool
+pub fn Static::handle(Self, Ctx, Msg) -> Bool
+pub fn Static::hint(Self, @geom.Size) -> @geom.Size
 pub fn Static::new(String, style? : @style.Style, align? : Align) -> Self
+pub fn Static::render_line(Self, Int, @geom.Size) -> @strip.Strip
 pub fn Static::set(Self, String) -> Unit
 pub fn Static::set_style(Self, @style.Style) -> Unit
 pub fn Static::text(Self) -> String

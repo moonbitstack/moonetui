@@ -258,3 +258,6 @@ fn text_of(code : Int) -> String {
   }
   out.to_string()
 }
+
+///|
+pub extend Input with Widget::{focusable, handle, hint, render_line}

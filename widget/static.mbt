@@ -139,3 +139,12 @@ fn split_lines(text : String) -> Array[String] {
   out.push(text[start:].to_owned())
   out
 }
+
+///|
+pub extend Align with Debug::{to_repr}
+
+///|
+pub extend Align with Eq::{not_equal, equal}
+
+///|
+pub extend Static with Widget::{focusable, handle, hint, render_line}
