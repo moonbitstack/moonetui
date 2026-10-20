@@ -5,7 +5,7 @@
 
 ///|
 /// Code points the East Asian Width property calls Wide or Fullwidth, each of which occupies two terminal columns.
-let wide : Array[(Int, Int)] = [
+let wide : Array[(Int32, Int32)] = [
   (4352, 4447),
   (8986, 8987),
   (9001, 9002),
@@ -132,7 +132,7 @@ let wide : Array[(Int, Int)] = [
 
 ///|
 /// Combining marks and format characters, which occupy no column of their own.
-let zero : Array[(Int, Int)] = [
+let zero : Array[(Int32, Int32)] = [
   (173, 173),
   (768, 879),
   (1155, 1161),

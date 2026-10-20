@@ -13,7 +13,7 @@ pub fn cells(@strip.Strip) -> Array[Cell]
 
 pub let clear : String
 
-pub fn cursor_to(Int, Int) -> String
+pub fn cursor_to(Int32, Int32) -> String
 
 pub fn diff(Array[@strip.Strip], Array[@strip.Strip], base? : @style.Style) -> Array[Span]
 
@@ -39,7 +39,7 @@ pub fn Cell::not_equal(Self, Self) -> Bool
 pub fn Cell::to_repr(Self) -> @debug.Repr
 
 pub(all) struct Placement {
-  node : Int
+  node : Int32
   rect : @geom.Region
   clip : @geom.Region
 } derive(Eq, @debug.Debug)
@@ -52,18 +52,18 @@ pub(all) struct Scene {
   size : @geom.Size
   items : Array[Placement]
 } derive(Eq, @debug.Debug)
-pub fn Scene::compose(Self, (Int, Int) -> @strip.Strip, @style.Style) -> Array[@strip.Strip]
-pub fn Scene::compose_line(Self, Int, (Int, Int) -> @strip.Strip, @style.Style) -> @strip.Strip
-pub fn Scene::cuts(Self, Int) -> Array[Int]
+pub fn Scene::compose(Self, (Int32, Int32) -> @strip.Strip, @style.Style) -> Array[@strip.Strip]
+pub fn Scene::compose_line(Self, Int32, (Int32, Int32) -> @strip.Strip, @style.Style) -> @strip.Strip
+pub fn Scene::cuts(Self, Int32) -> Array[Int32]
 pub fn Scene::equal(Self, Self) -> Bool
 pub fn Scene::new(@geom.Size) -> Self
 pub fn Scene::not_equal(Self, Self) -> Bool
-pub fn Scene::place(Self, Int, @geom.Region, @geom.Region) -> Unit
+pub fn Scene::place(Self, Int32, @geom.Region, @geom.Region) -> Unit
 pub fn Scene::to_repr(Self) -> @debug.Repr
 
 pub(all) struct Span {
-  y : Int
-  x : Int
+  y : Int32
+  x : Int32
   line : @strip.Strip
 } derive(Eq, @debug.Debug)
 pub fn Span::equal(Self, Self) -> Bool

@@ -17,8 +17,8 @@ pub struct Button {
 /// A button with this label.
 pub fn Button::new(
   text : String,
-  style? : @style.Style = @style.Style::new(),
-  focus_style? : @style.Style = @style.Style::new(reverse=true),
+  style~ : @style.Style = @style.Style::new(),
+  focus_style~ : @style.Style = @style.Style::new(reverse=true),
 ) -> Button {
   { text, style, focus_style, disabled: false, focused: false, }
 }

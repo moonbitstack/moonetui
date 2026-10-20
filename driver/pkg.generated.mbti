@@ -41,20 +41,20 @@ pub fn TtyError::to_repr(Self) -> @debug.Repr
 pub struct Headless {
   mut size : @geom.Size
   script : Array[Bytes]
-  mut next : Int
+  mut next : Int32
   out : StringBuilder
-  mut clock : Int
-  tick : Int
+  mut clock : Int32
+  tick : Int32
   mut started : Bool
   mut stopped : Bool
 }
 pub fn Headless::clear_output(Self) -> Unit
 pub fn Headless::flush(Self) -> Unit raise TtyError
 pub fn Headless::is_running(Self) -> Bool
-pub fn Headless::new(@geom.Size, script? : Array[Bytes], tick? : Int) -> Self
-pub fn Headless::now(Self) -> Int
+pub fn Headless::new(@geom.Size, script? : Array[Bytes], tick? : Int32) -> Self
+pub fn Headless::now(Self) -> Int32
 pub fn Headless::output(Self) -> String
-pub fn Headless::poll(Self, Int) -> Bytes raise TtyError
+pub fn Headless::poll(Self, Int32) -> Bytes raise TtyError
 pub fn Headless::push(Self, Bytes) -> Unit
 pub fn Headless::set_size(Self, @geom.Size) -> Unit
 pub fn Headless::size(Self) -> @geom.Size raise TtyError
@@ -72,6 +72,6 @@ pub(open) trait Driver {
   fn write(Self, String) -> Unit raise TtyError
   fn flush(Self) -> Unit raise TtyError
   fn size(Self) -> @geom.Size raise TtyError
-  fn poll(Self, Int) -> Bytes raise TtyError
-  fn now(Self) -> Int
+  fn poll(Self, Int32) -> Bytes raise TtyError
+  fn now(Self) -> Int32
 }

@@ -7,8 +7,8 @@ let screen : @geom.Region = @geom.Region::new(0, 0, 20, 10)
 ///|
 /// The extents of a row of regions along the stacking axis, which is what a
 /// layout is really about.
-fn spans(regions : Array[@geom.Region], dir : @layout.Dir) -> Array[Int] {
-  let out : Array[Int] = []
+fn spans(regions : Array[@geom.Region], dir : @layout.Dir) -> Array[Int32] {
+  let out : Array[Int32] = []
   for r in regions {
     out.push(@layout.main_of(r.size(), dir))
   }

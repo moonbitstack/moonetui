@@ -4,7 +4,7 @@
 ///|
 /// Bytes from code values, which is how a terminal's output is written down in
 /// documentation and how it is easiest to read back here.
-fn bytes(values : Array[Int]) -> Bytes {
+fn bytes(values : Array[Int32]) -> Bytes {
   let out : Array[Byte] = []
   for v in values {
     out.push(v.to_byte())
@@ -15,7 +15,7 @@ fn bytes(values : Array[Int]) -> Bytes {
 ///|
 /// The bytes of an ASCII string.
 fn ascii(text : String) -> Bytes {
-  let out : Array[Int] = []
+  let out : Array[Int32] = []
   for i in 0..<text.length() {
     out.push(text[i].to_int())
   }

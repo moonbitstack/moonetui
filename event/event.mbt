@@ -6,7 +6,7 @@
 /// that an astral character — an emoji typed or pasted into an input — is one
 /// key, not two halves of a surrogate pair.
 pub(all) enum KeyCode {
-  Char(Int)
+  Char(Int32)
   Enter
   Tab
   BackTab
@@ -23,7 +23,7 @@ pub(all) enum KeyCode {
   PageUp
   PageDown
   /// Function key, numbered from one.
-  F(Int)
+  F(Int32)
 } derive(Eq, Debug)
 
 ///|
@@ -41,7 +41,7 @@ pub let none : Mods = { ctrl: false, alt: false, shift: false, }
 ///|
 /// Decode the modifier parameter a terminal sends inside a CSI sequence, where
 /// the value is one plus a bit per modifier.
-pub fn Mods::of_param(param : Int) -> Mods {
+pub fn Mods::of_param(param : Int32) -> Mods {
   if param <= 1 {
     return none
   }
@@ -76,7 +76,7 @@ pub fn Key::with_mods(code : KeyCode, mods : Mods) -> Key {
 
 ///|
 /// A printable character with no modifier.
-pub fn Key::char(code : Int) -> Key {
+pub fn Key::char(code : Int32) -> Key {
   { code: Char(code), mods: none, }
 }
 
@@ -98,9 +98,9 @@ pub(all) enum MouseKind {
 /// the one-based numbers the terminal sends.
 pub(all) struct Mouse {
   kind : MouseKind
-  button : Int
-  x : Int
-  y : Int
+  button : Int32
+  x : Int32
+  y : Int32
   mods : Mods
 } derive(Eq, Debug)
 
@@ -113,7 +113,7 @@ pub(all) enum Event {
   /// told apart from someone typing very fast.
   Paste(String)
   /// The terminal reported a new size, in columns and rows.
-  Resize(Int, Int)
+  Resize(Int32, Int32)
   FocusIn
   FocusOut
 } derive(Eq, Debug)

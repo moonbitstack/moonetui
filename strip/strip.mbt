@@ -8,7 +8,7 @@
 pub(all) struct Seg {
   text : String
   style : @style.Style
-  cells : Int
+  cells : Int32
 } derive(Eq, Debug)
 
 ///|
@@ -22,7 +22,7 @@ pub fn Seg::new(text : String, style : @style.Style) -> Seg {
 /// width kept alongside.
 pub(all) struct Strip {
   segs : Array[Seg]
-  cells : Int
+  cells : Int32
 } derive(Eq, Debug)
 
 ///|
@@ -43,7 +43,7 @@ pub fn Strip::of(text : String, style : @style.Style) -> Strip {
 
 ///|
 /// A line of `width` spaces in one style.
-pub fn Strip::blank(width : Int, style : @style.Style) -> Strip {
+pub fn Strip::blank(width : Int32, style : @style.Style) -> Strip {
   if width <= 0 {
     return Strip::empty()
   }
@@ -62,7 +62,7 @@ pub fn Strip::from_segs(segs : Array[Seg]) -> Strip {
 
 ///|
 /// The width of this line in columns.
-pub fn Strip::cell_length(self : Strip) -> Int {
+pub fn Strip::cell_length(self : Strip) -> Int32 {
   self.cells
 }
 
@@ -88,7 +88,7 @@ pub fn Strip::text(self : Strip) -> String {
 /// A wide character that straddles either boundary cannot be shown in half, so
 /// the visible half becomes a space — the same substitution a terminal makes
 /// when a double-width character is overwritten from one side.
-pub fn Strip::crop(self : Strip, start : Int, end : Int) -> Strip {
+pub fn Strip::crop(self : Strip, start : Int32, end : Int32) -> Strip {
   let from = if start < 0 { 0 } else { start }
   let to = if end > self.cells { self.cells } else { end }
   if to <= from {
@@ -117,7 +117,7 @@ pub fn Strip::crop(self : Strip, start : Int, end : Int) -> Strip {
 ///|
 /// Split the line at each of the given columns, in ascending order. The parts
 /// cover the line exactly, so joining them back gives the original width.
-pub fn Strip::divide(self : Strip, cuts : Array[Int]) -> Array[Strip] {
+pub fn Strip::divide(self : Strip, cuts : Array[Int32]) -> Array[Strip] {
   let parts : Array[Strip] = []
   let mut start = 0
   for cut in cuts {
@@ -144,7 +144,11 @@ pub fn Strip::join(parts : Array[Strip]) -> Strip {
 ///|
 /// Extend the line to `width` columns with spaces in `style`, or crop it when
 /// it is already longer.
-pub fn Strip::pad_to(self : Strip, width : Int, style : @style.Style) -> Strip {
+pub fn Strip::pad_to(
+  self : Strip,
+  width : Int32,
+  style : @style.Style,
+) -> Strip {
   if self.cells == width {
     return self
   }
@@ -188,7 +192,7 @@ pub fn Strip::simplify(self : Strip) -> Strip {
 ///|
 /// Crop one segment's text to the column range, substituting a space for a wide
 /// character the range cuts in half.
-fn crop_text(text : String, start : Int, end : Int) -> String {
+fn crop_text(text : String, start : Int32, end : Int32) -> String {
   let out = StringBuilder()
   let mut column = 0
   let mut i = 0
@@ -217,7 +221,7 @@ fn crop_text(text : String, start : Int, end : Int) -> String {
 }
 
 ///|
-fn spaces(count : Int) -> String {
+fn spaces(count : Int32) -> String {
   let out = StringBuilder()
   for _ in 0..<count {
     out.write_string(" ")

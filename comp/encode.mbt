@@ -29,7 +29,7 @@ pub fn encode(spans : Array[Span], base : @style.Style) -> String {
 
 ///|
 /// Move the cursor to a zero-based column and row. Terminals count from one.
-pub fn cursor_to(y : Int, x : Int) -> String {
+pub fn cursor_to(y : Int32, x : Int32) -> String {
   "\u{1b}[" + (y + 1).to_string() + ";" + (x + 1).to_string() + "H"
 }
 

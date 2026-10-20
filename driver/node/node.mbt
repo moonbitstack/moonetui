@@ -105,11 +105,11 @@ extern "js" fn js_drain() -> Bytes =
   #| }
 
 ///|
-extern "js" fn js_columns() -> Int =
+extern "js" fn js_columns() -> Int32 =
   #| () => (process.stdout.columns || 80)
 
 ///|
-extern "js" fn js_rows() -> Int =
+extern "js" fn js_rows() -> Int32 =
   #| () => (process.stdout.rows || 24)
 
 ///|
@@ -117,7 +117,7 @@ extern "js" fn js_rows() -> Int =
 /// choice, but it does not fit in an `Int`: truncating it to 32 bits turns the
 /// clock into an arbitrary number that can be negative, which makes every
 /// elapsed-time comparison meaningless.
-extern "js" fn js_now() -> Int =
+extern "js" fn js_now() -> Int32 =
   #| () => (performance.now() | 0)
 
 ///|
@@ -126,12 +126,12 @@ extern "js" fn js_now() -> Int =
 /// Node's input arrives through callbacks, so a program that spins in a loop
 /// never lets a key press reach it. The frame has to come from the event loop
 /// instead, which is what this hands back to the caller.
-pub fn pump(ms : Int, tick : () -> Bool) -> Unit {
+pub fn pump(ms : Int32, tick : () -> Bool) -> Unit {
   js_pump(ms, tick)
 }
 
 ///|
-extern "js" fn js_pump(ms : Int, tick : () -> Bool) -> Unit =
+extern "js" fn js_pump(ms : Int32, tick : () -> Bool) -> Unit =
   #| (ms, tick) => {
   #|   const id = setInterval(() => {
   #|     if (!tick()) {

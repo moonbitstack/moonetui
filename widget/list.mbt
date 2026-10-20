@@ -9,8 +9,8 @@
 /// silently point at something else.
 pub struct ListView {
   mut items : Array[String]
-  mut index : Int
-  mut offset : Int
+  mut index : Int32
+  mut offset : Int32
   mut focused : Bool
   style : @style.Style
   highlight : @style.Style
@@ -21,9 +21,9 @@ pub struct ListView {
 /// A list of these rows, with the first one highlighted.
 pub fn ListView::new(
   items : Array[String],
-  style? : @style.Style = @style.Style::new(),
-  highlight? : @style.Style = @style.Style::new(reverse=true),
-  blurred_highlight? : @style.Style = @style.Style::new(dim=true, reverse=true),
+  style~ : @style.Style = @style.Style::new(),
+  highlight~ : @style.Style = @style.Style::new(reverse=true),
+  blurred_highlight~ : @style.Style = @style.Style::new(dim=true, reverse=true),
 ) -> ListView {
   {
     items,
@@ -52,7 +52,7 @@ pub fn ListView::set(self : ListView, items : Array[String]) -> Unit {
 
 ///|
 /// Which row is highlighted, or -1 when the list is empty.
-pub fn ListView::index(self : ListView) -> Int {
+pub fn ListView::index(self : ListView) -> Int32 {
   if self.items.length() == 0 {
     -1
   } else {
@@ -62,13 +62,13 @@ pub fn ListView::index(self : ListView) -> Int {
 
 ///|
 /// Highlight a row.
-pub fn ListView::select(self : ListView, index : Int) -> Unit {
+pub fn ListView::select(self : ListView, index : Int32) -> Unit {
   self.index = clamp(index, 0, self.items.length() - 1)
 }
 
 ///|
 /// The first visible row.
-pub fn ListView::offset(self : ListView) -> Int {
+pub fn ListView::offset(self : ListView) -> Int32 {
   self.offset
 }
 
@@ -183,7 +183,7 @@ pub impl Widget for ListView with fn focusable(_self) {
 }
 
 ///|
-fn page(ctx : Ctx) -> Int {
+fn page(ctx : Ctx) -> Int32 {
   if ctx.size.height > 1 {
     ctx.size.height - 1
   } else {
@@ -192,12 +192,12 @@ fn page(ctx : Ctx) -> Int {
 }
 
 ///|
-fn ListView::move_by(self : ListView, delta : Int, ctx : Ctx) -> Unit {
+fn ListView::move_by(self : ListView, delta : Int32, ctx : Ctx) -> Unit {
   self.move_to(self.index + delta, ctx)
 }
 
 ///|
-fn ListView::move_to(self : ListView, index : Int, ctx : Ctx) -> Unit {
+fn ListView::move_to(self : ListView, index : Int32, ctx : Ctx) -> Unit {
   if self.items.length() == 0 {
     return
   }
@@ -212,7 +212,7 @@ fn ListView::move_to(self : ListView, index : Int, ctx : Ctx) -> Unit {
 
 ///|
 /// Scroll so the highlighted row is inside a view of this height.
-fn ListView::scroll_to_fit(self : ListView, height : Int) -> Unit {
+fn ListView::scroll_to_fit(self : ListView, height : Int32) -> Unit {
   if height <= 0 || self.items.length() == 0 {
     self.offset = 0
     return
@@ -227,7 +227,7 @@ fn ListView::scroll_to_fit(self : ListView, height : Int) -> Unit {
 }
 
 ///|
-fn clamp(value : Int, low : Int, high : Int) -> Int {
+fn clamp(value : Int32, low : Int32, high : Int32) -> Int32 {
   if high < low {
     return low
   }

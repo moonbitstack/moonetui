@@ -8,12 +8,12 @@
 /// widget of their own, so nothing has to pretend to render a container, and the
 /// compositor only ever asks a real widget for a line.
 pub enum Node {
-  Leaf(id~ : Int, widget~ : &@widget.Widget, box~ : @layout.Box)
+  Leaf(id~ : Int32, widget~ : &@widget.Widget, box~ : @layout.Box)
   Stack(
-    id~ : Int,
+    id~ : Int32,
     dir~ : @layout.Dir,
     box~ : @layout.Box,
-    gap~ : Int,
+    gap~ : Int32,
     kids~ : Array[Node]
   )
 }
@@ -21,9 +21,9 @@ pub enum Node {
 ///|
 /// A widget in the tree.
 pub fn leaf(
-  id : Int,
+  id : Int32,
   widget : &@widget.Widget,
-  box? : @layout.Box = @layout.Box::new(),
+  box~ : @layout.Box = @layout.Box::new(),
 ) -> Node {
   Leaf(id~, widget~, box~)
 }
@@ -31,10 +31,10 @@ pub fn leaf(
 ///|
 /// A column of nodes.
 pub fn column(
-  id : Int,
+  id : Int32,
   kids : Array[Node],
-  box? : @layout.Box = @layout.Box::new(extent=Frac(1)),
-  gap? : Int = 0,
+  box~ : @layout.Box = @layout.Box::new(extent=Frac(1)),
+  gap~ : Int32 = 0,
 ) -> Node {
   Stack(id~, dir=Vertical, box~, gap~, kids~)
 }
@@ -42,17 +42,17 @@ pub fn column(
 ///|
 /// A row of nodes.
 pub fn row(
-  id : Int,
+  id : Int32,
   kids : Array[Node],
-  box? : @layout.Box = @layout.Box::new(extent=Frac(1)),
-  gap? : Int = 0,
+  box~ : @layout.Box = @layout.Box::new(extent=Frac(1)),
+  gap~ : Int32 = 0,
 ) -> Node {
   Stack(id~, dir=Horizontal, box~, gap~, kids~)
 }
 
 ///|
 /// The node's own id.
-pub fn Node::id(self : Node) -> Int {
+pub fn Node::id(self : Node) -> Int32 {
   match self {
     Leaf(id~, ..) => id
     Stack(id~, ..) => id
@@ -72,7 +72,7 @@ pub fn Node::box(self : Node) -> @layout.Box {
 /// What the node would like along `dir`, which is what an automatic extent
 /// resolves to. A stack asks for the sum of its children along the stacking
 /// axis and for the largest of them across it.
-pub fn Node::hint(self : Node, space : @geom.Size, dir : @layout.Dir) -> Int {
+pub fn Node::hint(self : Node, space : @geom.Size, dir : @layout.Dir) -> Int32 {
   match self {
     Leaf(widget~, ..) => @layout.main_of(widget.hint(space), dir)
     Stack(dir=own_dir, gap~, kids~, ..) => {
@@ -105,7 +105,7 @@ pub fn Node::place(
   area : @geom.Region,
   clip : @geom.Region,
   scene : @comp.Scene,
-  rects : Map[Int, @geom.Region],
+  rects : Map[Int32, @geom.Region],
 ) -> Unit {
   let visible = area.intersection(clip)
   rects[self.id()] = visible
@@ -113,7 +113,7 @@ pub fn Node::place(
     Leaf(id~, ..) => scene.place(id, area, clip)
     Stack(dir~, gap~, kids~, ..) => {
       let boxes : Array[@layout.Box] = []
-      let content : Array[Int] = []
+      let content : Array[Int32] = []
       for kid in kids {
         boxes.push(kid.box())
         content.push(kid.hint(area.size(), dir))
@@ -128,7 +128,7 @@ pub fn Node::place(
 
 ///|
 /// The leaf widget with this id, if the tree has one.
-pub fn Node::find(self : Node, id : Int) -> &@widget.Widget? {
+pub fn Node::find(self : Node, id : Int32) -> &@widget.Widget? {
   match self {
     Leaf(id=own, widget~, ..) => if own == id { Some(widget) } else { None }
     Stack(kids~, ..) => {
@@ -145,14 +145,14 @@ pub fn Node::find(self : Node, id : Int) -> &@widget.Widget? {
 
 ///|
 /// The ids of the leaves that can hold focus, in the order they appear.
-pub fn Node::focus_ring(self : Node) -> Array[Int] {
-  let out : Array[Int] = []
+pub fn Node::focus_ring(self : Node) -> Array[Int32] {
+  let out : Array[Int32] = []
   self.collect_focusable(out)
   out
 }
 
 ///|
-fn Node::collect_focusable(self : Node, out : Array[Int]) -> Unit {
+fn Node::collect_focusable(self : Node, out : Array[Int32]) -> Unit {
   match self {
     Leaf(id~, widget~, ..) => if widget.focusable() { out.push(id) }
     Stack(kids~, ..) =>
@@ -163,7 +163,7 @@ fn Node::collect_focusable(self : Node, out : Array[Int]) -> Unit {
 }
 
 ///|
-fn at_least_zero(value : Int) -> Int {
+fn at_least_zero(value : Int32) -> Int32 {
   if value < 0 {
     0
   } else {

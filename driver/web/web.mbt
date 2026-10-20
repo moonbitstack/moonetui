@@ -20,8 +20,8 @@ pub struct WebTty {
 /// as fit, which is why a browser terminal has to measure before it can say how
 /// big it is.
 pub fn WebTty::new(
-  canvas? : String = "moonetui",
-  font_px? : Int = 16,
+  canvas~ : String = "moonetui",
+  font_px~ : Int32 = 16,
 ) -> WebTty {
   js_init(canvas, font_px)
   { grid: Grid::new(js_cols(), js_rows()), started: false, }
@@ -140,7 +140,7 @@ fn WebTty::paint(self : WebTty) -> Unit {
 /// A font's block glyphs rarely tile: drawn as text they leave hairlines
 /// between cells, which turns a progress bar into a dotted line. Terminal
 /// emulators paint them as rectangles instead, and so does this one.
-fn eighths(text : String) -> Int {
+fn eighths(text : String) -> Int32 {
   if text.length() != 1 {
     return 0
   }
@@ -178,7 +178,7 @@ fn css(color : @style.Color, fallback : String) -> String {
 
 ///|
 /// Set up the canvas, measure the font, and work out how many cells fit.
-extern "js" fn js_init(canvas : String, font_px : Int) -> Unit =
+extern "js" fn js_init(canvas : String, font_px : Int32) -> Unit =
   #| (id, px) => {
   #|   const g = globalThis;
   #|   const el = document.getElementById(id);
@@ -202,24 +202,24 @@ extern "js" fn js_init(canvas : String, font_px : Int) -> Unit =
   #| }
 
 ///|
-extern "js" fn js_cols() -> Int =
+extern "js" fn js_cols() -> Int32 =
   #| () => globalThis.__moonetui_web.cols
 
 ///|
-extern "js" fn js_rows() -> Int =
+extern "js" fn js_rows() -> Int32 =
   #| () => globalThis.__moonetui_web.rows
 
 ///|
-extern "js" fn js_now() -> Int =
+extern "js" fn js_now() -> Int32 =
   #| () => (performance.now() | 0)
 
 ///|
 /// Paint one cell: its background, then its text.
 extern "js" fn js_draw(
-  block : Int,
-  x : Int,
-  y : Int,
-  width : Int,
+  block : Int32,
+  x : Int32,
+  y : Int32,
+  width : Int32,
   text : String,
   fg : String,
   bg : String,
@@ -327,7 +327,7 @@ extern "js" fn js_unlisten() -> Unit =
 ///|
 /// Queue the in-band size report a terminal would send, so the application
 /// learns about a resized canvas through the same path as everything else.
-extern "js" fn js_report_resize(cols : Int, rows : Int) -> Unit =
+extern "js" fn js_report_resize(cols : Int32, rows : Int32) -> Unit =
   #| (cols, rows) => {
   #|   const s = globalThis.__moonetui_web;
   #|   const enc = new TextEncoder();

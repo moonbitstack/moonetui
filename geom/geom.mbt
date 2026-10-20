@@ -4,8 +4,8 @@
 ///|
 /// A point, in cells, relative to whatever origin the caller has in mind.
 pub(all) struct Offset {
-  x : Int
-  y : Int
+  x : Int32
+  y : Int32
 } derive(Eq, Debug)
 
 ///|
@@ -42,26 +42,26 @@ pub impl Neg for Offset with fn neg(self) {
 
 ///|
 /// Scale both axes by the same whole factor.
-pub fn Offset::scale(self : Offset, factor : Int) -> Offset {
+pub fn Offset::scale(self : Offset, factor : Int32) -> Offset {
   { x: self.x * factor, y: self.y * factor, }
 }
 
 ///|
 /// A width and a height, in cells.
 pub(all) struct Size {
-  width : Int
-  height : Int
+  width : Int32
+  height : Int32
 } derive(Eq, Debug)
 
 ///|
 /// Build a size, clamping negative extents to zero.
-pub fn Size::new(width : Int, height : Int) -> Size {
+pub fn Size::new(width : Int32, height : Int32) -> Size {
   { width: at_least_zero(width), height: at_least_zero(height), }
 }
 
 ///|
 /// The number of cells this size covers.
-pub fn Size::area(self : Size) -> Int {
+pub fn Size::area(self : Size) -> Int32 {
   self.width * self.height
 }
 
@@ -80,7 +80,7 @@ pub fn Size::region(self : Size) -> Region {
 ///|
 /// True when the coordinate falls inside a region of this size anchored at the
 /// origin.
-pub fn Size::contains(self : Size, x : Int, y : Int) -> Bool {
+pub fn Size::contains(self : Size, x : Int32, y : Int32) -> Bool {
   x >= 0 && x < self.width && y >= 0 && y < self.height
 }
 
@@ -96,21 +96,31 @@ pub fn Size::clamp_offset(self : Size, offset : Offset) -> Offset {
 ///|
 /// A rectangle in cell coordinates: a top-left corner plus extents.
 pub(all) struct Region {
-  x : Int
-  y : Int
-  width : Int
-  height : Int
+  x : Int32
+  y : Int32
+  width : Int32
+  height : Int32
 } derive(Eq, Debug)
 
 ///|
 /// Build a region, clamping negative extents to zero.
-pub fn Region::new(x : Int, y : Int, width : Int, height : Int) -> Region {
+pub fn Region::new(
+  x : Int32,
+  y : Int32,
+  width : Int32,
+  height : Int32,
+) -> Region {
   { x, y, width: at_least_zero(width), height: at_least_zero(height), }
 }
 
 ///|
 /// The region spanned by two corners, given in either order.
-pub fn Region::from_corners(x1 : Int, y1 : Int, x2 : Int, y2 : Int) -> Region {
+pub fn Region::from_corners(
+  x1 : Int32,
+  y1 : Int32,
+  x2 : Int32,
+  y2 : Int32,
+) -> Region {
   let left = if x1 < x2 { x1 } else { x2 }
   let top = if y1 < y2 { y1 } else { y2 }
   let right = if x1 < x2 { x2 } else { x1 }
@@ -132,19 +142,19 @@ pub fn Region::size(self : Region) -> Size {
 
 ///|
 /// The first column past the right edge.
-pub fn Region::right(self : Region) -> Int {
+pub fn Region::right(self : Region) -> Int32 {
   self.x + self.width
 }
 
 ///|
 /// The first row past the bottom edge.
-pub fn Region::bottom(self : Region) -> Int {
+pub fn Region::bottom(self : Region) -> Int32 {
   self.y + self.height
 }
 
 ///|
 /// The number of cells covered.
-pub fn Region::area(self : Region) -> Int {
+pub fn Region::area(self : Region) -> Int32 {
   self.width * self.height
 }
 
@@ -163,7 +173,7 @@ pub fn Region::translate(self : Region, offset : Offset) -> Region {
 
 ///|
 /// True when the cell at these coordinates is inside the region.
-pub fn Region::contains(self : Region, x : Int, y : Int) -> Bool {
+pub fn Region::contains(self : Region, x : Int32, y : Int32) -> Bool {
   x >= self.x && x < self.right() && y >= self.y && y < self.bottom()
 }
 
@@ -242,14 +252,14 @@ pub fn Region::union(self : Region, other : Region) -> Region {
 ///|
 /// Cut the region in two at `cut` columns from its left edge. A cut outside the
 /// region gives one full part and one empty part.
-pub fn Region::split_vertical(self : Region, cut : Int) -> (Region, Region) {
+pub fn Region::split_vertical(self : Region, cut : Int32) -> (Region, Region) {
   let at = clamp(cut, 0, self.width)
   ({ ..self, width: at, }, { ..self, x: self.x + at, width: self.width - at, })
 }
 
 ///|
 /// Cut the region in two at `cut` rows from its top edge.
-pub fn Region::split_horizontal(self : Region, cut : Int) -> (Region, Region) {
+pub fn Region::split_horizontal(self : Region, cut : Int32) -> (Region, Region) {
   let at = clamp(cut, 0, self.height)
   (
     { ..self, height: at, },
@@ -259,46 +269,46 @@ pub fn Region::split_horizontal(self : Region, cut : Int) -> (Region, Region) {
 
 ///|
 /// Clip the region to a screen of this size anchored at the origin.
-pub fn Region::clip(self : Region, width : Int, height : Int) -> Region {
+pub fn Region::clip(self : Region, width : Int32, height : Int32) -> Region {
   self.intersection({ x: 0, y: 0, width, height, })
 }
 
 ///|
 /// Padding around a region: the four edges, in the CSS order.
 pub(all) struct Spacing {
-  top : Int
-  right : Int
-  bottom : Int
-  left : Int
+  top : Int32
+  right : Int32
+  bottom : Int32
+  left : Int32
 } derive(Eq, Debug)
 
 ///|
 /// The same padding on all four edges.
-pub fn Spacing::all(amount : Int) -> Spacing {
+pub fn Spacing::all(amount : Int32) -> Spacing {
   { top: amount, right: amount, bottom: amount, left: amount, }
 }
 
 ///|
 /// Padding on the left and right edges only.
-pub fn Spacing::horizontal(amount : Int) -> Spacing {
+pub fn Spacing::horizontal(amount : Int32) -> Spacing {
   { top: 0, right: amount, bottom: 0, left: amount, }
 }
 
 ///|
 /// Padding on the top and bottom edges only.
-pub fn Spacing::vertical(amount : Int) -> Spacing {
+pub fn Spacing::vertical(amount : Int32) -> Spacing {
   { top: amount, right: 0, bottom: amount, left: 0, }
 }
 
 ///|
 /// The total padding across the horizontal axis.
-pub fn Spacing::width(self : Spacing) -> Int {
+pub fn Spacing::width(self : Spacing) -> Int32 {
   self.left + self.right
 }
 
 ///|
 /// The total padding across the vertical axis.
-pub fn Spacing::height(self : Spacing) -> Int {
+pub fn Spacing::height(self : Spacing) -> Int32 {
   self.top + self.bottom
 }
 
@@ -326,7 +336,7 @@ pub fn Spacing::shrink_region(self : Spacing, region : Region) -> Region {
 }
 
 ///|
-fn at_least_zero(value : Int) -> Int {
+fn at_least_zero(value : Int32) -> Int32 {
   if value < 0 {
     0
   } else {
@@ -335,7 +345,7 @@ fn at_least_zero(value : Int) -> Int {
 }
 
 ///|
-fn clamp(value : Int, low : Int, high : Int) -> Int {
+fn clamp(value : Int32, low : Int32, high : Int32) -> Int32 {
   if value < low {
     low
   } else if value > high {

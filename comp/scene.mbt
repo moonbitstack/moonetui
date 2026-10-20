@@ -6,7 +6,7 @@
 /// draw in — usually its container's — so a widget that scrolls out of its
 /// parent simply stops being asked for lines.
 pub(all) struct Placement {
-  node : Int
+  node : Int32
   rect : @geom.Region
   clip : @geom.Region
 } derive(Eq, Debug)
@@ -36,7 +36,7 @@ pub fn Scene::new(size : @geom.Size) -> Scene {
 /// Add a placement behind everything already added.
 pub fn Scene::place(
   self : Scene,
-  node : Int,
+  node : Int32,
   rect : @geom.Region,
   clip : @geom.Region,
 ) -> Unit {
@@ -48,8 +48,8 @@ pub fn Scene::place(
 /// edge in between, sorted and deduplicated. Composing a row means filling the
 /// pieces between consecutive boundaries, and cutting at every edge means no
 /// piece ever straddles two widgets.
-pub fn Scene::cuts(self : Scene, y : Int) -> Array[Int] {
-  let marks : Array[Int] = [0, self.size.width]
+pub fn Scene::cuts(self : Scene, y : Int32) -> Array[Int32] {
+  let marks : Array[Int32] = [0, self.size.width]
   for item in self.items {
     let area = item.visible()
     if area.is_empty() || y < area.y || y >= area.bottom() {
@@ -59,7 +59,7 @@ pub fn Scene::cuts(self : Scene, y : Int) -> Array[Int] {
     marks.push(clamp(area.right(), 0, self.size.width))
   }
   marks.sort()
-  let out : Array[Int] = []
+  let out : Array[Int32] = []
   for mark in marks {
     if out.length() == 0 || out[out.length() - 1] != mark {
       out.push(mark)
@@ -76,13 +76,13 @@ pub fn Scene::cuts(self : Scene, y : Int) -> Array[Int] {
 /// owns. Uncovered pieces become blanks in `base`.
 pub fn Scene::compose_line(
   self : Scene,
-  y : Int,
-  render : (Int, Int) -> @strip.Strip,
+  y : Int32,
+  render : (Int32, Int32) -> @strip.Strip,
   base : @style.Style,
 ) -> @strip.Strip {
   let marks = self.cuts(y)
   let parts : Array[@strip.Strip] = []
-  let rendered : Map[Int, @strip.Strip] = Map([])
+  let rendered : Map[Int32, @strip.Strip] = Map([])
   for i in 0..<(marks.length() - 1) {
     let from = marks[i]
     let to = marks[i + 1]
@@ -116,7 +116,7 @@ pub fn Scene::compose_line(
 /// Compose every row of the screen.
 pub fn Scene::compose(
   self : Scene,
-  render : (Int, Int) -> @strip.Strip,
+  render : (Int32, Int32) -> @strip.Strip,
   base : @style.Style,
 ) -> Array[@strip.Strip] {
   let rows : Array[@strip.Strip] = []
@@ -128,7 +128,7 @@ pub fn Scene::compose(
 
 ///|
 /// The front-most placement covering this column, if any.
-fn Scene::owner(self : Scene, y : Int, x : Int) -> Placement? {
+fn Scene::owner(self : Scene, y : Int32, x : Int32) -> Placement? {
   for item in self.items {
     let area = item.visible()
     if area.contains(x, y) {
@@ -139,7 +139,7 @@ fn Scene::owner(self : Scene, y : Int, x : Int) -> Placement? {
 }
 
 ///|
-fn clamp(value : Int, low : Int, high : Int) -> Int {
+fn clamp(value : Int32, low : Int32, high : Int32) -> Int32 {
   if value < low {
     low
   } else if value > high {

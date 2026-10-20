@@ -23,9 +23,9 @@ pub(open) trait Driver {
   fn write(Self, String) -> Unit raise TtyError
   fn flush(Self) -> Unit raise TtyError
   fn size(Self) -> @geom.Size raise TtyError
-  fn poll(Self, Int) -> Bytes raise TtyError
+  fn poll(Self, Int32) -> Bytes raise TtyError
   /// Milliseconds from an arbitrary origin. Only differences are used.
-  fn now(Self) -> Int
+  fn now(Self) -> Int32
 }
 
 ///|

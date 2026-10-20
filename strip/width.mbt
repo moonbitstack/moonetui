@@ -6,7 +6,7 @@
 /// number of code units it took. A `String` is UTF-16, so an astral character —
 /// most emoji, for one — arrives as a surrogate pair that must be read as a
 /// unit; indexing one half of it gives a number no width table knows.
-pub fn code_at(text : String, index : Int) -> (Int, Int) {
+pub fn code_at(text : String, index : Int32) -> (Int32, Int32) {
   let first = text[index].to_int()
   if first >= 0xD800 && first <= 0xDBFF && index + 1 < text.length() {
     let second = text[index + 1].to_int()
@@ -21,7 +21,7 @@ pub fn code_at(text : String, index : Int) -> (Int, Int) {
 /// How many columns a code point occupies: two for the East Asian wide and
 /// fullwidth ranges, none for combining marks, format characters and control
 /// characters, one for everything else.
-pub fn cell_width(code : Int) -> Int {
+pub fn cell_width(code : Int32) -> Int32 {
   if code < 32 || (code >= 0x7F && code < 0xA0) {
     // Control characters do not advance the cursor; a caller that wants one to
     // mean something has to act on it before it reaches the buffer.
@@ -38,7 +38,7 @@ pub fn cell_width(code : Int) -> Int {
 
 ///|
 /// The number of columns a string occupies.
-pub fn str_cells(text : String) -> Int {
+pub fn str_cells(text : String) -> Int32 {
   let mut total = 0
   let mut i = 0
   while i < text.length() {
@@ -53,7 +53,7 @@ pub fn str_cells(text : String) -> Int {
 /// The code unit index just past the longest prefix that fits in `max_cells`
 /// columns. A wide character is never split: if only one of its two columns
 /// fits, it is left out.
-pub fn cut_at(text : String, max_cells : Int) -> Int {
+pub fn cut_at(text : String, max_cells : Int32) -> Int32 {
   if max_cells <= 0 {
     return 0
   }
@@ -73,7 +73,7 @@ pub fn cut_at(text : String, max_cells : Int) -> Int {
 
 ///|
 /// The number of columns the prefix before code unit `index` occupies.
-pub fn cells_before(text : String, index : Int) -> Int {
+pub fn cells_before(text : String, index : Int32) -> Int32 {
   let stop = if index > text.length() { text.length() } else { index }
   let mut total = 0
   let mut i = 0
@@ -87,7 +87,7 @@ pub fn cells_before(text : String, index : Int) -> Int {
 
 ///|
 /// Binary search over the sorted, disjoint ranges the generated table holds.
-fn in_ranges(table : Array[(Int, Int)], code : Int) -> Bool {
+fn in_ranges(table : Array[(Int32, Int32)], code : Int32) -> Bool {
   let mut low = 0
   let mut high = table.length() - 1
   while low <= high {

@@ -3,7 +3,7 @@
 
 ///|
 /// Bytes from code values, so a test can write down what a terminal sends.
-fn bytes(values : Array[Int]) -> Bytes {
+fn bytes(values : Array[Int32]) -> Bytes {
   let out : Array[Byte] = []
   for v in values {
     out.push(v.to_byte())
@@ -13,7 +13,7 @@ fn bytes(values : Array[Int]) -> Bytes {
 
 ///|
 fn ascii(text : String) -> Bytes {
-  let out : Array[Int] = []
+  let out : Array[Int32] = []
   for i in 0..<text.length() {
     out.push(text[i].to_int())
   }

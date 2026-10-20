@@ -5,7 +5,7 @@
 let plain : @style.Style = @style.default
 
 ///|
-fn size(width : Int, height : Int) -> @geom.Size {
+fn size(width : Int32, height : Int32) -> @geom.Size {
   @geom.Size::new(width, height)
 }
 
@@ -27,7 +27,7 @@ fn key(code : @event.KeyCode) -> @widget.Msg {
 ///|
 fn press(
   w : &@widget.Widget,
-  id : Int,
+  id : Int32,
   at : @geom.Size,
   msg : @widget.Msg,
 ) -> Array[@widget.Out] {

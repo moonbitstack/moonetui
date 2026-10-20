@@ -5,7 +5,7 @@
 /// The terminal this process was started from.
 pub struct NativeTty {
   buffer : FixedArray[Byte]
-  scratch : FixedArray[Int]
+  scratch : FixedArray[Int32]
   mut started : Bool
   mut raw : Bool
 }
@@ -16,7 +16,7 @@ pub struct NativeTty {
 /// The read buffer is allocated once: a terminal hands over a few bytes at a
 /// time, thousands of times a second, and allocating for each of them would be
 /// the only garbage this library produces per frame.
-pub fn NativeTty::new(buffer_size? : Int = 4096) -> NativeTty {
+pub fn NativeTty::new(buffer_size~ : Int32 = 4096) -> NativeTty {
   {
     buffer: FixedArray::make(
       if buffer_size < 64 {
@@ -115,22 +115,26 @@ pub fn run(step : () -> Bool raise) -> Unit raise {
 }
 
 ///|
-extern "C" fn tty_raw(on : Bool) -> Int = "moonetui_tty_raw"
+extern "C" fn tty_raw(on : Bool) -> Int32 = "moonetui_tty_raw"
 
 ///|
 #borrow(text)
-extern "C" fn tty_write(text : Bytes, len : Int) -> Int = "moonetui_tty_write"
+extern "C" fn tty_write(text : Bytes, len : Int32) -> Int32 = "moonetui_tty_write"
 
 ///|
 #borrow(buf)
-extern "C" fn tty_read(buf : FixedArray[Byte], len : Int, timeout : Int) -> Int = "moonetui_tty_read"
+extern "C" fn tty_read(
+  buf : FixedArray[Byte],
+  len : Int32,
+  timeout : Int32,
+) -> Int32 = "moonetui_tty_read"
 
 ///|
 #borrow(out)
-extern "C" fn tty_size(out : FixedArray[Int]) -> Int = "moonetui_tty_size"
+extern "C" fn tty_size(out : FixedArray[Int32]) -> Int32 = "moonetui_tty_size"
 
 ///|
-extern "C" fn tty_now() -> Int = "moonetui_tty_now"
+extern "C" fn tty_now() -> Int32 = "moonetui_tty_now"
 
 ///|
 pub extend NativeTty with @driver.Driver::{

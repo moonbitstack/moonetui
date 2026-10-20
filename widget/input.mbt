@@ -10,8 +10,8 @@
 /// character moves the cursor two columns while being one character.
 pub struct Input {
   mut text : String
-  mut cursor : Int
-  mut offset : Int
+  mut cursor : Int32
+  mut offset : Int32
   mut focused : Bool
   placeholder : String
   style : @style.Style
@@ -22,10 +22,10 @@ pub struct Input {
 ///|
 /// An empty input, with optional placeholder text shown while it is empty.
 pub fn Input::new(
-  placeholder? : String = "",
-  style? : @style.Style = @style.Style::new(),
-  placeholder_style? : @style.Style = @style.Style::new(dim=true),
-  cursor_style? : @style.Style = @style.Style::new(reverse=true),
+  placeholder~ : String = "",
+  style~ : @style.Style = @style.Style::new(),
+  placeholder_style~ : @style.Style = @style.Style::new(dim=true),
+  cursor_style~ : @style.Style = @style.Style::new(reverse=true),
 ) -> Input {
   {
     text: "",
@@ -55,13 +55,13 @@ pub fn Input::set(self : Input, text : String) -> Unit {
 
 ///|
 /// Where the cursor sits, as a code unit index.
-pub fn Input::cursor(self : Input) -> Int {
+pub fn Input::cursor(self : Input) -> Int32 {
   self.cursor
 }
 
 ///|
 /// The column the cursor occupies on screen, given the width it is drawn at.
-pub fn Input::cursor_column(self : Input, width : Int) -> Int {
+pub fn Input::cursor_column(self : Input, width : Int32) -> Int32 {
   self.scroll_to_fit(width)
   @strip.cells_before(self.text, self.cursor) -
   @strip.cells_before(self.text, self.offset)
@@ -204,7 +204,7 @@ pub fn Input::insert(self : Input, text : String) -> Unit {
 
 ///|
 /// The code unit index before `index`, respecting surrogate pairs.
-fn Input::prev(self : Input, index : Int) -> Int {
+fn Input::prev(self : Input, index : Int32) -> Int32 {
   if index <= 0 {
     return 0
   }
@@ -220,7 +220,7 @@ fn Input::prev(self : Input, index : Int) -> Int {
 
 ///|
 /// The code unit index after `index`.
-fn Input::next(self : Input, index : Int) -> Int {
+fn Input::next(self : Input, index : Int32) -> Int32 {
   if index >= self.text.length() {
     return self.text.length()
   }
@@ -230,7 +230,7 @@ fn Input::next(self : Input, index : Int) -> Int {
 
 ///|
 /// Scroll the view so the cursor is inside it.
-fn Input::scroll_to_fit(self : Input, width : Int) -> Unit {
+fn Input::scroll_to_fit(self : Input, width : Int32) -> Unit {
   if width <= 0 {
     self.offset = 0
     return
@@ -250,7 +250,7 @@ fn Input::scroll_to_fit(self : Input, width : Int) -> Unit {
 }
 
 ///|
-fn text_of(code : Int) -> String {
+fn text_of(code : Int32) -> String {
   let out = StringBuilder()
   match code.to_char() {
     Some(c) => out.write_char(c)

@@ -11,15 +11,15 @@ import {
 
 // Types and methods
 pub struct Parser {
-  mut buf : Array[Int]
-  mut head : Int
+  mut buf : Array[Int32]
+  mut head : Int32
   mut pasting : Bool
   pasted : StringBuilder
 }
 pub fn Parser::feed(Self, Bytes, Array[@event.Event]) -> Unit
 pub fn Parser::idle(Self, Array[@event.Event]) -> Unit
 pub fn Parser::new() -> Self
-pub fn Parser::pending(Self) -> Int
+pub fn Parser::pending(Self) -> Int32
 pub fn Parser::reset(Self) -> Unit
 
 // Type aliases

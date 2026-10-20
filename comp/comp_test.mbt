@@ -11,7 +11,7 @@ let red : @style.Style = @style.Style::new(fg=@style.red)
 /// Every widget draws its own letter across eight columns, which is wider than
 /// any of them is placed — a widget renders its own line and the compositor
 /// crops it to the piece the widget owns.
-fn letters(node : Int, _line : Int) -> @strip.Strip {
+fn letters(node : Int32, _line : Int32) -> @strip.Strip {
   let letter = match node {
     1 => "a"
     2 => "b"

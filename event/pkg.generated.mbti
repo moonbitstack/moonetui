@@ -15,7 +15,7 @@ pub(all) enum Event {
   Key(Key)
   Mouse(Mouse)
   Paste(String)
-  Resize(Int, Int)
+  Resize(Int32, Int32)
   FocusIn
   FocusOut
 } derive(Eq, @debug.Debug)
@@ -27,7 +27,7 @@ pub(all) struct Key {
   code : KeyCode
   mods : Mods
 } derive(Eq, @debug.Debug)
-pub fn Key::char(Int) -> Self
+pub fn Key::char(Int32) -> Self
 pub fn Key::equal(Self, Self) -> Bool
 pub fn Key::not_equal(Self, Self) -> Bool
 pub fn Key::of(KeyCode) -> Self
@@ -35,7 +35,7 @@ pub fn Key::to_repr(Self) -> @debug.Repr
 pub fn Key::with_mods(KeyCode, Mods) -> Self
 
 pub(all) enum KeyCode {
-  Char(Int)
+  Char(Int32)
   Enter
   Tab
   BackTab
@@ -51,7 +51,7 @@ pub(all) enum KeyCode {
   End
   PageUp
   PageDown
-  F(Int)
+  F(Int32)
 } derive(Eq, @debug.Debug)
 pub fn KeyCode::equal(Self, Self) -> Bool
 pub fn KeyCode::not_equal(Self, Self) -> Bool
@@ -65,14 +65,14 @@ pub(all) struct Mods {
 pub fn Mods::equal(Self, Self) -> Bool
 pub fn Mods::is_none(Self) -> Bool
 pub fn Mods::not_equal(Self, Self) -> Bool
-pub fn Mods::of_param(Int) -> Self
+pub fn Mods::of_param(Int32) -> Self
 pub fn Mods::to_repr(Self) -> @debug.Repr
 
 pub(all) struct Mouse {
   kind : MouseKind
-  button : Int
-  x : Int
-  y : Int
+  button : Int32
+  x : Int32
+  y : Int32
   mods : Mods
 } derive(Eq, @debug.Debug)
 pub fn Mouse::equal(Self, Self) -> Bool

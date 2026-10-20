@@ -7,23 +7,23 @@ import {
 }
 
 // Values
-pub fn arrange(@geom.Region, Dir, Array[Box], Array[Int], gap? : Int) -> Array[@geom.Region]
+pub fn arrange(@geom.Region, Dir, Array[Box], Array[Int32], gap? : Int32) -> Array[@geom.Region]
 
-pub fn cross_of(@geom.Size, Dir) -> Int
+pub fn cross_of(@geom.Size, Dir) -> Int32
 
-pub fn main_of(@geom.Size, Dir) -> Int
+pub fn main_of(@geom.Size, Dir) -> Int32
 
 // Errors
 
 // Types and methods
 pub(all) struct Box {
   extent : Extent
-  min : Int
-  max : Int
+  min : Int32
+  max : Int32
   pad : @geom.Spacing
 } derive(Eq, @debug.Debug)
 pub fn Box::equal(Self, Self) -> Bool
-pub fn Box::new(extent? : Extent, min? : Int, max? : Int, pad? : @geom.Spacing) -> Self
+pub fn Box::new(extent? : Extent, min? : Int32, max? : Int32, pad? : @geom.Spacing) -> Self
 pub fn Box::not_equal(Self, Self) -> Bool
 pub fn Box::to_repr(Self) -> @debug.Repr
 
@@ -37,9 +37,9 @@ pub fn Dir::to_repr(Self) -> @debug.Repr
 
 pub(all) enum Extent {
   Auto
-  Cells(Int)
-  Frac(Int)
-  Pct(Int)
+  Cells(Int32)
+  Frac(Int32)
+  Pct(Int32)
 } derive(Eq, @debug.Debug)
 pub fn Extent::equal(Self, Self) -> Bool
 pub fn Extent::not_equal(Self, Self) -> Bool

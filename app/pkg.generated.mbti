@@ -13,11 +13,11 @@ import {
 }
 
 // Values
-pub fn column(Int, Array[Node], box? : @layout.Box, gap? : Int) -> Node
+pub fn column(Int32, Array[Node], box? : @layout.Box, gap? : Int32) -> Node
 
-pub fn leaf(Int, &@widget.Widget, box? : @layout.Box) -> Node
+pub fn leaf(Int32, &@widget.Widget, box? : @layout.Box) -> Node
 
-pub fn row(Int, Array[Node], box? : @layout.Box, gap? : Int) -> Node
+pub fn row(Int32, Array[Node], box? : @layout.Box, gap? : Int32) -> Node
 
 // Errors
 
@@ -27,24 +27,24 @@ pub struct App[D] {
   root : Node
   parser : @input.Parser
   base : @style.Style
-  frame_ms : Int
-  rects : Map[Int, @geom.Region]
+  frame_ms : Int32
+  rects : Map[Int32, @geom.Region]
   inbox : Array[@widget.Out]
   mut size : @geom.Size
-  mut focus : Int
+  mut focus : Int32
   mut prev : Array[@strip.Strip]
   mut dirty : Bool
   mut running : Bool
-  mut last_frame : Int
+  mut last_frame : Int32
   mut pending_resize : @geom.Size?
-  mut resize_at : Int
+  mut resize_at : Int32
 }
 pub fn[D] App::drain(Self[D]) -> Array[@widget.Out]
-pub fn[D] App::focus_next(Self[D], Int) -> Unit
-pub fn[D] App::focused(Self[D]) -> Int
-pub fn[D] App::new(D, Node, base? : @style.Style, fps? : Int) -> Self[D]
+pub fn[D] App::focus_next(Self[D], Int32) -> Unit
+pub fn[D] App::focused(Self[D]) -> Int32
+pub fn[D] App::new(D, Node, base? : @style.Style, fps? : Int32) -> Self[D]
 pub fn[D] App::quit(Self[D]) -> Unit
-pub fn[D] App::rect_of(Self[D], Int) -> @geom.Region
+pub fn[D] App::rect_of(Self[D], Int32) -> @geom.Region
 pub fn[D] App::refresh(Self[D]) -> Unit
 pub fn[D : @driver.Driver] App::run(Self[D]) -> Unit raise
 pub fn[D] App::screen(Self[D]) -> Array[String]
@@ -53,15 +53,15 @@ pub fn[D : @driver.Driver] App::step(Self[D]) -> Bool raise
 pub fn[D : @driver.Driver] App::stop(Self[D]) -> Unit raise
 
 pub enum Node {
-  Leaf(id~ : Int, widget~ : &@widget.Widget, box~ : @layout.Box)
-  Stack(id~ : Int, dir~ : @layout.Dir, box~ : @layout.Box, gap~ : Int, kids~ : Array[Node])
+  Leaf(id~ : Int32, widget~ : &@widget.Widget, box~ : @layout.Box)
+  Stack(id~ : Int32, dir~ : @layout.Dir, box~ : @layout.Box, gap~ : Int32, kids~ : Array[Node])
 }
 pub fn Node::box(Self) -> @layout.Box
-pub fn Node::find(Self, Int) -> &@widget.Widget?
-pub fn Node::focus_ring(Self) -> Array[Int]
-pub fn Node::hint(Self, @geom.Size, @layout.Dir) -> Int
-pub fn Node::id(Self) -> Int
-pub fn Node::place(Self, @geom.Region, @geom.Region, @comp.Scene, Map[Int, @geom.Region]) -> Unit
+pub fn Node::find(Self, Int32) -> &@widget.Widget?
+pub fn Node::focus_ring(Self) -> Array[Int32]
+pub fn Node::hint(Self, @geom.Size, @layout.Dir) -> Int32
+pub fn Node::id(Self) -> Int32
+pub fn Node::place(Self, @geom.Region, @geom.Region, @comp.Scene, Map[Int32, @geom.Region]) -> Unit
 
 // Type aliases
 

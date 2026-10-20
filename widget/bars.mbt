@@ -13,8 +13,8 @@ pub struct Header {
 /// A header with this title.
 pub fn Header::new(
   title : String,
-  note? : String = "",
-  style? : @style.Style = @style.Style::new(reverse=true),
+  note~ : String = "",
+  style~ : @style.Style = @style.Style::new(reverse=true),
 ) -> Header {
   { title, note, style, }
 }
@@ -76,8 +76,8 @@ pub struct Footer {
 /// A footer showing these bindings.
 pub fn Footer::new(
   bindings : Array[(String, String)],
-  style? : @style.Style = @style.Style::new(dim=true),
-  key_style? : @style.Style = @style.Style::new(bold=true),
+  style~ : @style.Style = @style.Style::new(dim=true),
+  key_style~ : @style.Style = @style.Style::new(bold=true),
 ) -> Footer {
   { bindings, style, key_style, }
 }

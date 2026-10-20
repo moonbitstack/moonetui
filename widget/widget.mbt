@@ -12,7 +12,7 @@ pub(all) enum Msg {
   /// The widget gained or lost focus.
   Focus(Bool)
   /// Time passed; the argument is milliseconds since the last tick.
-  Tick(Int)
+  Tick(Int32)
 } derive(Eq, Debug)
 
 ///|
@@ -20,11 +20,11 @@ pub(all) enum Msg {
 /// callbacks so that a widget's whole reaction to a message can be written down
 /// and compared in a test.
 pub(all) enum Out {
-  Repaint(id~ : Int)
-  TakeFocus(id~ : Int)
-  Pressed(id~ : Int)
-  Changed(id~ : Int, value~ : String)
-  Selected(id~ : Int, index~ : Int)
+  Repaint(id~ : Int32)
+  TakeFocus(id~ : Int32)
+  Pressed(id~ : Int32)
+  Changed(id~ : Int32, value~ : String)
+  Selected(id~ : Int32, index~ : Int32)
   Quit
 } derive(Eq, Debug)
 
@@ -32,7 +32,7 @@ pub(all) enum Out {
 /// What a widget is told about itself while it handles a message, and where it
 /// puts what it wants done.
 pub struct Ctx {
-  id : Int
+  id : Int32
   size : @geom.Size
   focused : Bool
   out : Array[Out]
@@ -40,7 +40,7 @@ pub struct Ctx {
 
 ///|
 /// A context for the widget with this id, at this size.
-pub fn Ctx::new(id : Int, size : @geom.Size, focused? : Bool = false) -> Ctx {
+pub fn Ctx::new(id : Int32, size : @geom.Size, focused~ : Bool = false) -> Ctx {
   { id, size, focused, out: [], }
 }
 
@@ -70,7 +70,7 @@ pub fn Ctx::asked(self : Ctx) -> Array[Out] {
 /// compositor ask only for the rows it needs, and what keeps a widget that is
 /// mostly off-screen cheap.
 pub(open) trait Widget {
-  fn render_line(Self, Int, @geom.Size) -> @strip.Strip
+  fn render_line(Self, Int32, @geom.Size) -> @strip.Strip
   /// What the widget would like to be, given the space on offer. A layout uses
   /// it for automatic sizes.
   fn hint(Self, @geom.Size) -> @geom.Size
@@ -129,7 +129,7 @@ pub let heavy : Border = {
 /// two columns narrower.
 pub fn frame(
   border : Border,
-  row : Int,
+  row : Int32,
   size : @geom.Size,
   style : @style.Style,
   inner : @strip.Strip,

@@ -69,19 +69,19 @@ pub fn Attrs::union(Self, Self) -> Self
 
 pub(all) enum Color {
   Default
-  Ansi(Int)
-  Ansi256(Int)
-  Rgb(Int, Int, Int)
+  Ansi(Int32)
+  Ansi256(Int32)
+  Rgb(Int32, Int32, Int32)
 } derive(Eq, @debug.Debug)
-pub fn Color::blend(Self, Self, Int) -> Self
+pub fn Color::blend(Self, Self, Int32) -> Self
 pub fn Color::equal(Self, Self) -> Bool
 pub fn Color::not_equal(Self, Self) -> Bool
 pub fn Color::parse(String) -> Self?
-pub fn Color::rgb(Int, Int, Int) -> Self
+pub fn Color::rgb(Int32, Int32, Int32) -> Self
 pub fn Color::to_ansi16(Self) -> Self
 pub fn Color::to_ansi256(Self) -> Self
 pub fn Color::to_repr(Self) -> @debug.Repr
-pub fn Color::to_rgb(Self) -> (Int, Int, Int)?
+pub fn Color::to_rgb(Self) -> (Int32, Int32, Int32)?
 
 pub(all) struct Style {
   fg : Color

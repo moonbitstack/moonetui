@@ -9,32 +9,32 @@ pub struct App[D] {
   root : Node
   parser : @input.Parser
   base : @style.Style
-  frame_ms : Int
-  rects : Map[Int, @geom.Region]
+  frame_ms : Int32
+  rects : Map[Int32, @geom.Region]
   inbox : Array[@widget.Out]
   mut size : @geom.Size
-  mut focus : Int
+  mut focus : Int32
   mut prev : Array[@strip.Strip]
   mut dirty : Bool
   mut running : Bool
-  mut last_frame : Int
+  mut last_frame : Int32
   mut pending_resize : @geom.Size?
-  mut resize_at : Int
+  mut resize_at : Int32
 }
 
 ///|
 /// How long a resize is allowed to settle before the screen is rebuilt. Dragging
 /// a window edge produces a report per pixel; rebuilding the layout for each one
 /// makes the drag crawl.
-const RESIZE_SETTLE_MS : Int = 8
+const RESIZE_SETTLE_MS : Int32 = 8
 
 ///|
 /// An application over this terminal.
 pub fn[D] App::new(
   driver : D,
   root : Node,
-  base? : @style.Style = @style.default,
-  fps? : Int = 60,
+  base~ : @style.Style = @style.default,
+  fps~ : Int32 = 60,
 ) -> App[D] {
   {
     driver,
@@ -166,13 +166,13 @@ pub fn[D] App::refresh(self : App[D]) -> Unit {
 
 ///|
 /// Which widget holds focus, or -1 when none does.
-pub fn[D] App::focused(self : App[D]) -> Int {
+pub fn[D] App::focused(self : App[D]) -> Int32 {
   self.focus
 }
 
 ///|
 /// Move focus to the next focusable widget, wrapping round.
-pub fn[D] App::focus_next(self : App[D], step : Int) -> Unit {
+pub fn[D] App::focus_next(self : App[D], step : Int32) -> Unit {
   let ring = self.root.focus_ring()
   if ring.length() == 0 {
     return
@@ -198,7 +198,7 @@ pub fn[D] App::focus_next(self : App[D], step : Int) -> Unit {
 
 ///|
 /// The area a node was last placed in.
-pub fn[D] App::rect_of(self : App[D], id : Int) -> @geom.Region {
+pub fn[D] App::rect_of(self : App[D], id : Int32) -> @geom.Region {
   match self.rects.get(id) {
     Some(rect) => rect
     None => @geom.Region::new(0, 0, 0, 0)
@@ -253,7 +253,7 @@ fn[D : @driver.Driver] App::dispatch(self : App[D], ev : @event.Event) -> Unit {
 
 ///|
 /// Hand a message to a widget and act on whatever it asks for.
-fn[D] App::deliver(self : App[D], id : Int, msg : @widget.Msg) -> Bool {
+fn[D] App::deliver(self : App[D], id : Int32, msg : @widget.Msg) -> Bool {
   if id < 0 {
     return false
   }
@@ -284,7 +284,7 @@ fn[D] App::act(self : App[D], out : @widget.Out) -> Unit {
 ///|
 /// Move focus, telling both widgets about it. A widget learns it has focus the
 /// same way it learns anything else, so nothing has to ask the application.
-fn[D] App::give_focus(self : App[D], id : Int) -> Unit {
+fn[D] App::give_focus(self : App[D], id : Int32) -> Unit {
   if id == self.focus {
     return
   }
@@ -299,10 +299,10 @@ fn[D] App::give_focus(self : App[D], id : Int) -> Unit {
 
 ///|
 /// The front-most leaf covering a screen position.
-fn[D] App::at(self : App[D], x : Int, y : Int) -> (Int, @geom.Region)? {
+fn[D] App::at(self : App[D], x : Int32, y : Int32) -> (Int32, @geom.Region)? {
   let ring = self.root.focus_ring()
   ignore(ring)
-  let mut found : (Int, @geom.Region)? = None
+  let mut found : (Int32, @geom.Region)? = None
   for id, rect in self.rects {
     if rect.contains(x, y) {
       match found {

@@ -8,8 +8,8 @@
 /// wide has a hundred and sixty steps rather than twenty: a bar that only moves
 /// once per five percent looks stuck.
 pub struct Progress {
-  mut value : Int
-  mut total : Int
+  mut value : Int32
+  mut total : Int32
   style : @style.Style
   bar_style : @style.Style
   show_percent : Bool
@@ -18,10 +18,10 @@ pub struct Progress {
 ///|
 /// A bar at zero out of `total`.
 pub fn Progress::new(
-  total? : Int = 100,
-  style? : @style.Style = @style.Style::new(dim=true),
-  bar_style? : @style.Style = @style.Style::new(),
-  show_percent? : Bool = true,
+  total~ : Int32 = 100,
+  style~ : @style.Style = @style.Style::new(dim=true),
+  bar_style~ : @style.Style = @style.Style::new(),
+  show_percent~ : Bool = true,
 ) -> Progress {
   {
     value: 0,
@@ -38,26 +38,26 @@ pub fn Progress::new(
 
 ///|
 /// Move the bar.
-pub fn Progress::set(self : Progress, value : Int) -> Unit {
+pub fn Progress::set(self : Progress, value : Int32) -> Unit {
   self.value = clamp_value(value, 0, self.total)
 }
 
 ///|
 /// Add to the bar.
-pub fn Progress::advance(self : Progress, amount : Int) -> Unit {
+pub fn Progress::advance(self : Progress, amount : Int32) -> Unit {
   self.set(self.value + amount)
 }
 
 ///|
 /// Change what full means, keeping the current value inside it.
-pub fn Progress::set_total(self : Progress, total : Int) -> Unit {
+pub fn Progress::set_total(self : Progress, total : Int32) -> Unit {
   self.total = if total <= 0 { 1 } else { total }
   self.value = clamp_value(self.value, 0, self.total)
 }
 
 ///|
 /// How far along the bar is, from zero to a hundred.
-pub fn Progress::percent(self : Progress) -> Int {
+pub fn Progress::percent(self : Progress) -> Int32 {
   self.value * 100 / self.total
 }
 
@@ -96,7 +96,7 @@ pub impl Widget for Progress with fn focusable(_self) {
 
 ///|
 /// The bar itself, in eighths of a column.
-fn Progress::bar(self : Progress, width : Int) -> @strip.Strip {
+fn Progress::bar(self : Progress, width : Int32) -> @strip.Strip {
   let eighths = width * 8 * self.value / self.total
   let full = eighths / 8
   let part = eighths % 8
@@ -122,7 +122,7 @@ let partials : Array[String] = [
 ]
 
 ///|
-fn clamp_value(value : Int, low : Int, high : Int) -> Int {
+fn clamp_value(value : Int32, low : Int32, high : Int32) -> Int32 {
   if value < low {
     low
   } else if value > high {

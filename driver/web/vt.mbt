@@ -16,12 +16,12 @@ pub(all) struct Cell {
 /// set a style, put text — and ignores the rest. A general terminal emulator
 /// would be a different project.
 pub struct Grid {
-  mut width : Int
-  mut height : Int
+  mut width : Int32
+  mut height : Int32
   mut cells : Array[Cell]
   mut dirty : Array[Bool]
-  mut cursor_x : Int
-  mut cursor_y : Int
+  mut cursor_x : Int32
+  mut cursor_y : Int32
   mut current : @style.Style
   /// An escape sequence that arrived in pieces waits here for the rest.
   mut pending : String
@@ -29,7 +29,7 @@ pub struct Grid {
 
 ///|
 /// An empty grid of this size.
-pub fn Grid::new(width : Int, height : Int) -> Grid {
+pub fn Grid::new(width : Int32, height : Int32) -> Grid {
   let grid = {
     width,
     height,
@@ -46,7 +46,7 @@ pub fn Grid::new(width : Int, height : Int) -> Grid {
 
 ///|
 /// Change the grid's size, clearing it.
-pub fn Grid::resize(self : Grid, width : Int, height : Int) -> Unit {
+pub fn Grid::resize(self : Grid, width : Int32, height : Int32) -> Unit {
   self.width = if width < 1 { 1 } else { width }
   self.height = if height < 1 { 1 } else { height }
   let count = self.width * self.height
@@ -64,7 +64,7 @@ pub fn Grid::resize(self : Grid, width : Int, height : Int) -> Unit {
 
 ///|
 /// The cell at these coordinates.
-pub fn Grid::at(self : Grid, x : Int, y : Int) -> Cell {
+pub fn Grid::at(self : Grid, x : Int32, y : Int32) -> Cell {
   if x < 0 || x >= self.width || y < 0 || y >= self.height {
     return { text: " ", style: @style.default, }
   }
@@ -87,8 +87,8 @@ pub fn Grid::rows(self : Grid) -> Array[String] {
 
 ///|
 /// The cells that changed since they were last collected, as coordinates.
-pub fn Grid::take_dirty(self : Grid) -> Array[(Int, Int)] {
-  let out : Array[(Int, Int)] = []
+pub fn Grid::take_dirty(self : Grid) -> Array[(Int32, Int32)] {
+  let out : Array[(Int32, Int32)] = []
   for i in 0..<self.dirty.length() {
     if self.dirty[i] {
       out.push((i % self.width, i / self.width))
@@ -147,7 +147,7 @@ pub fn Grid::write(self : Grid, incoming : String) -> Unit {
 ///|
 /// Put one character at the cursor and move on. A wide character takes the
 /// column after it too, which is left empty so that nothing else claims it.
-fn Grid::put(self : Grid, code : Int, body : String) -> Unit {
+fn Grid::put(self : Grid, code : Int32, body : String) -> Unit {
   let width = @strip.cell_width(code)
   if width == 0 {
     // A combining mark joins the cell before the cursor.
@@ -180,7 +180,7 @@ fn Grid::put(self : Grid, code : Int, body : String) -> Unit {
 ///|
 /// Read one escape sequence, returning how many code units it took, or zero
 /// when the sequence is not complete yet.
-fn Grid::escape(self : Grid, text : String, at : Int) -> Int {
+fn Grid::escape(self : Grid, text : String, at : Int32) -> Int32 {
   if at + 1 >= text.length() {
     return 0
   }
@@ -188,7 +188,7 @@ fn Grid::escape(self : Grid, text : String, at : Int) -> Int {
     // Only CSI sequences come out of this library; anything else is skipped.
     return 2
   }
-  let params : Array[Int] = []
+  let params : Array[Int32] = []
   let mut value = -1
   let mut private_marker = false
   let mut i = at + 2
@@ -220,7 +220,7 @@ fn Grid::escape(self : Grid, text : String, at : Int) -> Int {
 }
 
 ///|
-fn Grid::apply(self : Grid, params : Array[Int], last : Int) -> Unit {
+fn Grid::apply(self : Grid, params : Array[Int32], last : Int32) -> Unit {
   match last {
     // Cursor position, counted from one.
     0x48 => {
@@ -244,7 +244,7 @@ fn Grid::apply(self : Grid, params : Array[Int], last : Int) -> Unit {
 ///|
 /// Apply a style change. The parameters are the ones this library emits, which
 /// is a small and fixed set.
-fn Grid::sgr(self : Grid, params : Array[Int]) -> Unit {
+fn Grid::sgr(self : Grid, params : Array[Int32]) -> Unit {
   if params.length() == 0 {
     self.current = @style.default
     return
@@ -304,12 +304,12 @@ fn Grid::sgr(self : Grid, params : Array[Int]) -> Unit {
 /// Add attributes to a style, keeping the ones it already has.
 fn with_attrs(
   base : @style.Style,
-  bold? : Bool = false,
-  dim? : Bool = false,
-  italic? : Bool = false,
-  underline? : Bool = false,
-  reverse? : Bool = false,
-  strike? : Bool = false,
+  bold~ : Bool = false,
+  dim~ : Bool = false,
+  italic~ : Bool = false,
+  underline~ : Bool = false,
+  reverse~ : Bool = false,
+  strike~ : Bool = false,
 ) -> @style.Style {
   {
     ..base,
@@ -326,7 +326,7 @@ fn with_attrs(
 }
 
 ///|
-fn param(params : Array[Int], index : Int, fallback : Int) -> Int {
+fn param(params : Array[Int32], index : Int32, fallback : Int32) -> Int32 {
   if index < params.length() && params[index] > 0 {
     params[index]
   } else if index < params.length() {

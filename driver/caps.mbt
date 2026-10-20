@@ -44,11 +44,11 @@ pub let disable_resize : String = "\u{1b}[?2048l"
 /// program that never reads the mouse should not make the terminal send mouse
 /// reports, and because a pipe — a test harness, a recording — wants none of it.
 pub fn enter(
-  alt? : Bool = true,
-  mouse? : Bool = true,
-  paste? : Bool = true,
-  focus? : Bool = true,
-  resize? : Bool = true,
+  alt~ : Bool = true,
+  mouse~ : Bool = true,
+  paste~ : Bool = true,
+  focus~ : Bool = true,
+  resize~ : Bool = true,
 ) -> String {
   let out = StringBuilder()
   if alt {
@@ -74,11 +74,11 @@ pub fn enter(
 /// What it sends on the way out, in the reverse order, so the terminal unwinds
 /// exactly what was set.
 pub fn leave(
-  alt? : Bool = true,
-  mouse? : Bool = true,
-  paste? : Bool = true,
-  focus? : Bool = true,
-  resize? : Bool = true,
+  alt~ : Bool = true,
+  mouse~ : Bool = true,
+  paste~ : Bool = true,
+  focus~ : Bool = true,
+  resize~ : Bool = true,
 ) -> String {
   let out = StringBuilder()
   out.write_string("\u{1b}[?25h")

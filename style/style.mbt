@@ -83,15 +83,15 @@ pub let default : Style = { fg: Default, bg: Default, attrs: plain, }
 /// Build a style. Every part is optional, so `Style::new(fg=red)` reads as what
 /// it is: a style that only claims the foreground.
 pub fn Style::new(
-  fg? : Color = Default,
-  bg? : Color = Default,
-  bold? : Bool = false,
-  dim? : Bool = false,
-  italic? : Bool = false,
-  underline? : Bool = false,
-  blink? : Bool = false,
-  reverse? : Bool = false,
-  strike? : Bool = false,
+  fg~ : Color = Default,
+  bg~ : Color = Default,
+  bold~ : Bool = false,
+  dim~ : Bool = false,
+  italic~ : Bool = false,
+  underline~ : Bool = false,
+  blink~ : Bool = false,
+  reverse~ : Bool = false,
+  strike~ : Bool = false,
 ) -> Style {
   { fg, bg, attrs: { bold, dim, italic, underline, blink, reverse, strike, }, }
 }

@@ -7,12 +7,12 @@ pub(all) enum Extent {
   /// As much as the content needs.
   Auto
   /// Exactly this many cells.
-  Cells(Int)
+  Cells(Int32)
   /// This many shares of whatever is left after the fixed boxes have taken
   /// theirs.
-  Frac(Int)
+  Frac(Int32)
   /// This percentage of the container, rounded down.
-  Pct(Int)
+  Pct(Int32)
 } derive(Eq, Debug)
 
 ///|
@@ -20,18 +20,18 @@ pub(all) enum Extent {
 /// that cannot be confused with a real limit of zero.
 pub(all) struct Box {
   extent : Extent
-  min : Int
-  max : Int
+  min : Int32
+  max : Int32
   pad : @geom.Spacing
 } derive(Eq, Debug)
 
 ///|
 /// A box with the defaults: automatic size, no limits, no padding.
 pub fn Box::new(
-  extent? : Extent = Auto,
-  min? : Int = 0,
-  max? : Int = -1,
-  pad? : @geom.Spacing = { top: 0, right: 0, bottom: 0, left: 0, },
+  extent~ : Extent = Auto,
+  min~ : Int32 = 0,
+  max~ : Int32 = -1,
+  pad~ : @geom.Spacing = { top: 0, right: 0, bottom: 0, left: 0, },
 ) -> Box {
   { extent, min, max, pad, }
 }
@@ -55,8 +55,8 @@ pub fn arrange(
   area : @geom.Region,
   dir : Dir,
   boxes : Array[Box],
-  content : Array[Int],
-  gap? : Int = 0,
+  content : Array[Int32],
+  gap~ : Int32 = 0,
 ) -> Array[@geom.Region] {
   let count = boxes.length()
   let out : Array[@geom.Region] = []
@@ -89,11 +89,15 @@ pub fn arrange(
 /// boxes. A box whose share would break its own limits is pinned there and the
 /// division runs again without it, because pinning it changes what the others
 /// are entitled to.
-fn solve(boxes : Array[Box], content : Array[Int], space : Int) -> Array[Int] {
+fn solve(
+  boxes : Array[Box],
+  content : Array[Int32],
+  space : Int32,
+) -> Array[Int32] {
   let count = boxes.length()
-  let sizes : Array[Int] = []
+  let sizes : Array[Int32] = []
   let flexible : Array[Bool] = []
-  let shares : Array[Int] = []
+  let shares : Array[Int32] = []
   let mut fixed_total = 0
   let mut share_total = 0
   for i in 0..<count {
@@ -131,8 +135,8 @@ fn solve(boxes : Array[Box], content : Array[Int], space : Int) -> Array[Int] {
     // Largest remainder: hand out the whole part of every share, then give the
     // leftover cells to the boxes with the largest fractions, so the parts add
     // up to the pool exactly.
-    let want : Array[Int] = []
-    let remainders : Array[Int] = []
+    let want : Array[Int32] = []
+    let remainders : Array[Int32] = []
     let mut handed = 0
     for i in 0..<count {
       if flexible[i] {
@@ -181,7 +185,7 @@ fn solve(boxes : Array[Box], content : Array[Int], space : Int) -> Array[Int] {
 }
 
 ///|
-fn clamp_box(box : Box, value : Int) -> Int {
+fn clamp_box(box : Box, value : Int32) -> Int32 {
   let low = at_least_zero(box.min)
   let mut size = if value < low { low } else { value }
   if box.max >= 0 && size > box.max {
@@ -192,7 +196,7 @@ fn clamp_box(box : Box, value : Int) -> Int {
 
 ///|
 /// The extent along the stacking axis.
-pub fn main_of(size : @geom.Size, dir : Dir) -> Int {
+pub fn main_of(size : @geom.Size, dir : Dir) -> Int32 {
   match dir {
     Vertical => size.height
     Horizontal => size.width
@@ -201,7 +205,7 @@ pub fn main_of(size : @geom.Size, dir : Dir) -> Int {
 
 ///|
 /// The extent across the stacking axis.
-pub fn cross_of(size : @geom.Size, dir : Dir) -> Int {
+pub fn cross_of(size : @geom.Size, dir : Dir) -> Int32 {
   match dir {
     Vertical => size.width
     Horizontal => size.height
@@ -209,7 +213,7 @@ pub fn cross_of(size : @geom.Size, dir : Dir) -> Int {
 }
 
 ///|
-fn at_least_zero(value : Int) -> Int {
+fn at_least_zero(value : Int32) -> Int32 {
   if value < 0 {
     0
   } else {

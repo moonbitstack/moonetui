@@ -22,8 +22,8 @@ pub(all) enum Align {
 /// Static text, split on newlines.
 pub fn Static::new(
   text : String,
-  style? : @style.Style = @style.default,
-  align? : Align = Left,
+  style~ : @style.Style = @style.default,
+  align~ : Align = Left,
 ) -> Static {
   { lines: split_lines(text), style, align, }
 }
@@ -86,7 +86,7 @@ pub impl Widget for Static with fn focusable(_self) {
 ///|
 /// One line of text. A label is static text that happens to be one line: the
 /// distinction is what the caller means by it, not what it does.
-pub fn label(text : String, style? : @style.Style = @style.default) -> Static {
+pub fn label(text : String, style~ : @style.Style = @style.default) -> Static {
   Static::new(text, style~)
 }
 
@@ -94,7 +94,7 @@ pub fn label(text : String, style? : @style.Style = @style.default) -> Static {
 /// Place a line inside a width, padding the sides the alignment asks for.
 pub fn align_line(
   text : String,
-  width : Int,
+  width : Int32,
   align : Align,
   style : @style.Style,
 ) -> @strip.Strip {
@@ -119,7 +119,7 @@ pub fn align_line(
 
 ///|
 /// Cut a string to a number of columns without splitting a wide character.
-pub fn clip_to(text : String, width : Int) -> String {
+pub fn clip_to(text : String, width : Int32) -> String {
   if @strip.str_cells(text) <= width {
     return text
   }

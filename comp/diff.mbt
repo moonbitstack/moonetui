@@ -4,8 +4,8 @@
 ///|
 /// A run of columns to repaint: where it goes and what goes there.
 pub(all) struct Span {
-  y : Int
-  x : Int
+  y : Int32
+  x : Int32
   line : @strip.Strip
 } derive(Eq, Debug)
 
@@ -19,7 +19,7 @@ pub(all) struct Span {
 pub fn diff(
   prev : Array[@strip.Strip],
   next : Array[@strip.Strip],
-  base? : @style.Style = @style.default,
+  base~ : @style.Style = @style.default,
 ) -> Array[Span] {
   let spans : Array[Span] = []
   for y in 0..<next.length() {
@@ -38,7 +38,7 @@ pub fn diff(
 }
 
 ///|
-fn padded(row : Array[Cell], width : Int, base : @style.Style) -> Array[Cell] {
+fn padded(row : Array[Cell], width : Int32, base : @style.Style) -> Array[Cell] {
   if row.length() >= width {
     return row
   }
@@ -67,7 +67,7 @@ pub fn full(next : Array[@strip.Strip]) -> Array[Span] {
 /// The half-open column range in which the two rows differ, or `None` when they
 /// are the same. A column that is the second half of a wide character drags its
 /// first half into the range, since neither half can be painted alone.
-fn span_of(before : Array[Cell], after : Array[Cell]) -> (Int, Int)? {
+fn span_of(before : Array[Cell], after : Array[Cell]) -> (Int32, Int32)? {
   let width = if after.length() > before.length() {
     after.length()
   } else {
@@ -99,7 +99,7 @@ fn span_of(before : Array[Cell], after : Array[Cell]) -> (Int, Int)? {
 /// The column, or a blank one past the end of the row: a row that used to be
 /// longer has to have its tail cleared, so the comparison has to see something
 /// there.
-fn cell_at(row : Array[Cell], x : Int) -> Cell {
+fn cell_at(row : Array[Cell], x : Int32) -> Cell {
   if x < row.length() {
     row[x]
   } else {

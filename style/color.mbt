@@ -10,11 +10,11 @@ pub(all) enum Color {
   Default
   /// One of the sixteen named colours, 0 to 15, the last eight being the bright
   /// half.
-  Ansi(Int)
+  Ansi(Int32)
   /// An index into the 256-colour cube.
-  Ansi256(Int)
+  Ansi256(Int32)
   /// True colour, 0 to 255 per channel.
-  Rgb(Int, Int, Int)
+  Rgb(Int32, Int32, Int32)
 } derive(Eq, Debug)
 
 ///|
@@ -68,7 +68,7 @@ pub let bright_white : Color = Ansi(15)
 
 ///|
 /// Build a true colour, clamping each channel to 0–255.
-pub fn Color::rgb(r : Int, g : Int, b : Int) -> Color {
+pub fn Color::rgb(r : Int32, g : Int32, b : Int32) -> Color {
   Rgb(channel(r), channel(g), channel(b))
 }
 
@@ -108,7 +108,7 @@ pub fn Color::parse(text : String) -> Color? {
 ///|
 /// The true-colour triple this colour stands for, using the xterm palette for
 /// the indexed cases. `Default` has no triple — only the terminal knows it.
-pub fn Color::to_rgb(self : Color) -> (Int, Int, Int)? {
+pub fn Color::to_rgb(self : Color) -> (Int32, Int32, Int32)? {
   match self {
     Default => None
     Ansi(i) => Some(ansi16_rgb(i))
@@ -148,7 +148,7 @@ pub fn Color::to_ansi16(self : Color) -> Color {
 /// Mix two colours, `factor` running from 0 (all `self`) to 100 (all `other`).
 /// A colour the terminal owns cannot be mixed, so `Default` on either side wins
 /// whenever it is the dominant end and is otherwise left alone.
-pub fn Color::blend(self : Color, other : Color, factor : Int) -> Color {
+pub fn Color::blend(self : Color, other : Color, factor : Int32) -> Color {
   let f = clamp(factor, 0, 100)
   match (self.to_rgb(), other.to_rgb()) {
     (Some((r1, g1, b1)), Some((r2, g2, b2))) =>
@@ -159,17 +159,17 @@ pub fn Color::blend(self : Color, other : Color, factor : Int) -> Color {
 }
 
 ///|
-fn mix(a : Int, b : Int, factor : Int) -> Int {
+fn mix(a : Int32, b : Int32, factor : Int32) -> Int32 {
   a + (b - a) * factor / 100
 }
 
 ///|
-fn channel(value : Int) -> Int {
+fn channel(value : Int32) -> Int32 {
   clamp(value, 0, 255)
 }
 
 ///|
-fn clamp(value : Int, low : Int, high : Int) -> Int {
+fn clamp(value : Int32, low : Int32, high : Int32) -> Int32 {
   if value < low {
     low
   } else if value > high {
@@ -180,7 +180,7 @@ fn clamp(value : Int, low : Int, high : Int) -> Int {
 }
 
 ///|
-fn hex(unit : UInt16) -> Int {
+fn hex(unit : UInt16) -> Int32 {
   let code = unit.to_int()
   if code >= 48 && code <= 57 {
     code - 48
@@ -194,7 +194,7 @@ fn hex(unit : UInt16) -> Int {
 }
 
 ///|
-fn hex2(hi : UInt16, lo : UInt16) -> Int {
+fn hex2(hi : UInt16, lo : UInt16) -> Int32 {
   let h = hex(hi)
   let l = hex(lo)
   if h < 0 || l < 0 {
@@ -206,7 +206,7 @@ fn hex2(hi : UInt16, lo : UInt16) -> Int {
 
 ///|
 /// The xterm palette for the sixteen named colours.
-let named : Array[(Int, Int, Int)] = [
+let named : Array[(Int32, Int32, Int32)] = [
   (0, 0, 0),
   (128, 0, 0),
   (0, 128, 0),
@@ -227,15 +227,15 @@ let named : Array[(Int, Int, Int)] = [
 
 ///|
 /// The six levels each channel takes inside the 6×6×6 cube.
-let levels : Array[Int] = [0, 95, 135, 175, 215, 255]
+let levels : Array[Int32] = [0, 95, 135, 175, 215, 255]
 
 ///|
-fn ansi16_rgb(index : Int) -> (Int, Int, Int) {
+fn ansi16_rgb(index : Int32) -> (Int32, Int32, Int32) {
   named[clamp(index, 0, 15)]
 }
 
 ///|
-fn ansi256_rgb(index : Int) -> (Int, Int, Int) {
+fn ansi256_rgb(index : Int32) -> (Int32, Int32, Int32) {
   let i = clamp(index, 0, 255)
   if i < 16 {
     named[i]
@@ -250,7 +250,7 @@ fn ansi256_rgb(index : Int) -> (Int, Int, Int) {
 }
 
 ///|
-fn nearest_cube(r : Int, g : Int, b : Int) -> Int {
+fn nearest_cube(r : Int32, g : Int32, b : Int32) -> Int32 {
   let cube = 16 +
     nearest_level(r) * 36 +
     nearest_level(g) * 6 +
@@ -266,7 +266,7 @@ fn nearest_cube(r : Int, g : Int, b : Int) -> Int {
 }
 
 ///|
-fn nearest_level(value : Int) -> Int {
+fn nearest_level(value : Int32) -> Int32 {
   let mut best = 0
   let mut best_gap = 1000
   for i in 0..<levels.length() {
@@ -280,7 +280,7 @@ fn nearest_level(value : Int) -> Int {
 }
 
 ///|
-fn nearest_grey(r : Int, g : Int, b : Int) -> Int {
+fn nearest_grey(r : Int32, g : Int32, b : Int32) -> Int32 {
   let average = (r + g + b) / 3
   if average < 8 {
     232
@@ -292,7 +292,7 @@ fn nearest_grey(r : Int, g : Int, b : Int) -> Int {
 }
 
 ///|
-fn nearest_named(r : Int, g : Int, b : Int) -> Int {
+fn nearest_named(r : Int32, g : Int32, b : Int32) -> Int32 {
   let mut best = 0
   let mut best_gap = 1000000
   for i in 0..<named.length() {
@@ -306,7 +306,7 @@ fn nearest_named(r : Int, g : Int, b : Int) -> Int {
 }
 
 ///|
-fn dist(a : (Int, Int, Int), b : (Int, Int, Int)) -> Int {
+fn dist(a : (Int32, Int32, Int32), b : (Int32, Int32, Int32)) -> Int32 {
   let (r1, g1, b1) = a
   let (r2, g2, b2) = b
   let dr = r1 - r2
@@ -316,7 +316,7 @@ fn dist(a : (Int, Int, Int), b : (Int, Int, Int)) -> Int {
 }
 
 ///|
-fn abs(value : Int) -> Int {
+fn abs(value : Int32) -> Int32 {
   if value < 0 {
     -value
   } else {

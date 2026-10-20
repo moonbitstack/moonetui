@@ -11,10 +11,10 @@
 pub struct Headless {
   mut size : @geom.Size
   script : Array[Bytes]
-  mut next : Int
+  mut next : Int32
   out : StringBuilder
-  mut clock : Int
-  tick : Int
+  mut clock : Int32
+  tick : Int32
   mut started : Bool
   mut stopped : Bool
 }
@@ -24,8 +24,8 @@ pub struct Headless {
 /// one per poll and advance its clock by `tick` milliseconds each time.
 pub fn Headless::new(
   size : @geom.Size,
-  script? : Array[Bytes] = [],
-  tick? : Int = 16,
+  script~ : Array[Bytes] = [],
+  tick~ : Int32 = 16,
 ) -> Headless {
   {
     size,

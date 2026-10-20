@@ -6,7 +6,7 @@
 /// that sends something unknown must not be able to stall the parser for ever,
 /// so past this length the escape is reported as an Escape key and the rest is
 /// read as ordinary text.
-const MAX_SEQ : Int = 32
+const MAX_SEQ : Int32 = 32
 
 ///|
 /// Incremental parser from terminal bytes to events.
@@ -17,8 +17,8 @@ const MAX_SEQ : Int = 32
 /// rest; feeding one byte at a time and feeding a whole chunk produce the same
 /// events.
 pub struct Parser {
-  mut buf : Array[Int]
-  mut head : Int
+  mut buf : Array[Int32]
+  mut head : Int32
   mut pasting : Bool
   pasted : StringBuilder
 }
@@ -41,7 +41,7 @@ pub fn Parser::reset(self : Parser) -> Unit {
 
 ///|
 /// How many bytes are waiting for more input to resolve.
-pub fn Parser::pending(self : Parser) -> Int {
+pub fn Parser::pending(self : Parser) -> Int32 {
   self.buf.length() - self.head
 }
 
@@ -87,7 +87,7 @@ fn Parser::drain(self : Parser, out : Array[@event.Event]) -> Unit {
 ///|
 /// Resolve one thing at the front of the buffer, returning how many bytes it
 /// took, or zero when more input is needed.
-fn Parser::step(self : Parser, out : Array[@event.Event]) -> Int {
+fn Parser::step(self : Parser, out : Array[@event.Event]) -> Int32 {
   if self.pasting {
     return self.step_paste(out)
   }
@@ -126,9 +126,9 @@ fn Parser::step(self : Parser, out : Array[@event.Event]) -> Int {
 ///|
 fn Parser::step_text(
   self : Parser,
-  first : Int,
+  first : Int32,
   out : Array[@event.Event],
-) -> Int {
+) -> Int32 {
   if first < 0x20 || first == 0x7F {
     out.push(Key(control_key(first)))
     return 1
@@ -145,7 +145,7 @@ fn Parser::step_text(
 ///|
 /// Inside a bracketed paste every byte is content until the closing sequence,
 /// so the text cannot be mistaken for keys someone typed very fast.
-fn Parser::step_paste(self : Parser, out : Array[@event.Event]) -> Int {
+fn Parser::step_paste(self : Parser, out : Array[@event.Event]) -> Int32 {
   let close = [0x1B, 0x5B, 0x32, 0x30, 0x31, 0x7E]
   let mut i = 0
   while i < self.pending() {
@@ -175,7 +175,7 @@ fn Parser::step_paste(self : Parser, out : Array[@event.Event]) -> Int {
 }
 
 ///|
-fn Parser::step_ss3(self : Parser, out : Array[@event.Event]) -> Int {
+fn Parser::step_ss3(self : Parser, out : Array[@event.Event]) -> Int32 {
   if self.pending() < 3 {
     return 0
   }
@@ -202,14 +202,14 @@ fn Parser::step_ss3(self : Parser, out : Array[@event.Event]) -> Int {
 /// A parsed control sequence: the private marker if any, the numeric
 /// parameters, and the final byte that says what it means.
 priv struct Csi {
-  private_marker : Int
-  params : Array[Int]
-  last : Int
-  length : Int
+  private_marker : Int32
+  params : Array[Int32]
+  last : Int32
+  length : Int32
 }
 
 ///|
-fn Parser::step_csi(self : Parser, out : Array[@event.Event]) -> Int {
+fn Parser::step_csi(self : Parser, out : Array[@event.Event]) -> Int32 {
   match self.scan_csi() {
     None =>
       if self.pending() >= MAX_SEQ {
@@ -238,7 +238,7 @@ fn Parser::scan_csi(self : Parser) -> Csi? {
       i = i + 1
     }
   }
-  let params : Array[Int] = []
+  let params : Array[Int32] = []
   let mut value = -1
   while i < self.pending() {
     let c = self.at(i)
@@ -348,7 +348,7 @@ fn mouse_of(csi : Csi) -> @event.Mouse? {
 }
 
 ///|
-fn tilde_key(number : Int) -> @event.KeyCode? {
+fn tilde_key(number : Int32) -> @event.KeyCode? {
   match number {
     1 => Some(Home)
     2 => Some(Insert)
@@ -377,7 +377,7 @@ fn tilde_key(number : Int) -> @event.KeyCode? {
 ///|
 /// The C0 controls a terminal sends for keys that have no character of their
 /// own, plus the control-letter combinations.
-fn control_key(byte : Int) -> @event.Key {
+fn control_key(byte : Int32) -> @event.Key {
   let ctrl : @event.Mods = { ctrl: true, alt: false, shift: false, }
   match byte {
     0x09 => @event.Key::of(Tab)
@@ -397,7 +397,7 @@ fn control_key(byte : Int) -> @event.Key {
 }
 
 ///|
-fn param(csi : Csi, index : Int, fallback : Int) -> Int {
+fn param(csi : Csi, index : Int32, fallback : Int32) -> Int32 {
   if index < csi.params.length() {
     csi.params[index]
   } else {
@@ -406,12 +406,12 @@ fn param(csi : Csi, index : Int, fallback : Int) -> Int {
 }
 
 ///|
-fn Parser::at(self : Parser, index : Int) -> Int {
+fn Parser::at(self : Parser, index : Int32) -> Int32 {
   self.buf[self.head + index]
 }
 
 ///|
-fn Parser::consume(self : Parser, count : Int) -> Unit {
+fn Parser::consume(self : Parser, count : Int32) -> Unit {
   self.head = self.head + count
 }
 
@@ -425,7 +425,7 @@ fn Parser::compact(self : Parser) -> Unit {
   if self.head < 256 && self.pending() > 0 {
     return
   }
-  let rest : Array[Int] = []
+  let rest : Array[Int32] = []
   for i in self.head..<self.buf.length() {
     rest.push(self.buf[i])
   }
@@ -436,8 +436,8 @@ fn Parser::compact(self : Parser) -> Unit {
 ///|
 fn Parser::starts_with(
   self : Parser,
-  offset : Int,
-  pattern : Array[Int],
+  offset : Int32,
+  pattern : Array[Int32],
 ) -> Bool {
   if self.pending() - offset < pattern.length() {
     return false
@@ -453,7 +453,11 @@ fn Parser::starts_with(
 ///|
 /// True when the bytes from `offset` are a proper prefix of the pattern, which
 /// means the rest may still arrive.
-fn Parser::prefix_of(self : Parser, offset : Int, pattern : Array[Int]) -> Bool {
+fn Parser::prefix_of(
+  self : Parser,
+  offset : Int32,
+  pattern : Array[Int32],
+) -> Bool {
   let left = self.pending() - offset
   if left <= 0 || left >= pattern.length() {
     return false
@@ -471,7 +475,7 @@ fn Parser::prefix_of(self : Parser, offset : Int, pattern : Array[Int]) -> Bool 
 /// when the buffer holds only part of it. A malformed byte decodes to the
 /// replacement character rather than raising: a terminal that sends rubbish
 /// should not stop the program.
-fn decode(buf : Array[Int], at : Int, end : Int) -> (Int, Int)? {
+fn decode(buf : Array[Int32], at : Int32, end : Int32) -> (Int32, Int32)? {
   let first = buf[at]
   if first < 0x80 {
     return Some((first, 1))
@@ -504,7 +508,7 @@ fn decode(buf : Array[Int], at : Int, end : Int) -> (Int, Int)? {
 }
 
 ///|
-fn write_code(out : StringBuilder, code : Int) -> Unit {
+fn write_code(out : StringBuilder, code : Int32) -> Unit {
   match code.to_char() {
     Some(c) => out.write_char(c)
     None => out.write_string("\u{FFFD}")
