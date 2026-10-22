@@ -103,6 +103,23 @@ pub fn Ctx::emit(Self, Out) -> Unit
 pub fn Ctx::new(Int32, @geom.Size, focused? : Bool) -> Self
 pub fn Ctx::repaint(Self) -> Unit
 
+pub struct Digits {
+  mut value : String
+  style : @style.Style
+} derive(Eq, @debug.Debug)
+pub fn Digits::equal(Self, Self) -> Bool
+pub fn Digits::focusable(Self) -> Bool
+pub fn Digits::handle(Self, Ctx, Msg) -> Bool
+pub fn Digits::hint(Self, @geom.Size) -> @geom.Size
+pub fn Digits::new(value? : String, style? : @style.Style) -> Self
+pub fn Digits::not_equal(Self, Self) -> Bool
+pub fn Digits::render_line(Self, Int32, @geom.Size) -> @strip.Strip
+pub fn Digits::to_repr(Self) -> @debug.Repr
+pub fn Digits::update(Self, String) -> Unit
+pub fn Digits::value(Self) -> String
+pub fn Digits::width_of(String) -> Int32
+pub impl Widget for Digits
+
 pub struct Footer {
   mut bindings : Array[(String, String)]
   style : @style.Style
@@ -173,6 +190,22 @@ pub fn ListView::select(Self, Int32) -> Unit
 pub fn ListView::set(Self, Array[String]) -> Unit
 pub impl Widget for ListView
 
+pub struct LoadingIndicator {
+  mut frame : Int32
+  style : @style.Style
+  dim_style : @style.Style
+} derive(Eq, @debug.Debug)
+pub fn LoadingIndicator::equal(Self, Self) -> Bool
+pub fn LoadingIndicator::focusable(Self) -> Bool
+pub fn LoadingIndicator::frame(Self) -> Int32
+pub fn LoadingIndicator::handle(Self, Ctx, Msg) -> Bool
+pub fn LoadingIndicator::hint(Self, @geom.Size) -> @geom.Size
+pub fn LoadingIndicator::new(style? : @style.Style, dim_style? : @style.Style) -> Self
+pub fn LoadingIndicator::not_equal(Self, Self) -> Bool
+pub fn LoadingIndicator::render_line(Self, Int32, @geom.Size) -> @strip.Strip
+pub fn LoadingIndicator::to_repr(Self) -> @debug.Repr
+pub impl Widget for LoadingIndicator
+
 pub struct Log {
   mut lines : Array[String]
   mut width : Int32
@@ -230,6 +263,33 @@ pub(all) enum Out {
 pub fn Out::equal(Self, Self) -> Bool
 pub fn Out::not_equal(Self, Self) -> Bool
 pub fn Out::to_repr(Self) -> @debug.Repr
+
+pub struct Placeholder {
+  label : String
+  mut variant : PlaceholderVariant
+  colour : Int32
+  style : @style.Style
+} derive(Eq, @debug.Debug)
+pub fn Placeholder::cycle(Self) -> Unit
+pub fn Placeholder::equal(Self, Self) -> Bool
+pub fn Placeholder::focusable(Self) -> Bool
+pub fn Placeholder::handle(Self, Ctx, Msg) -> Bool
+pub fn Placeholder::hint(Self, @geom.Size) -> @geom.Size
+pub fn Placeholder::new(label? : String, variant? : PlaceholderVariant, colour? : Int32, style? : @style.Style) -> Self
+pub fn Placeholder::not_equal(Self, Self) -> Bool
+pub fn Placeholder::render_line(Self, Int32, @geom.Size) -> @strip.Strip
+pub fn Placeholder::to_repr(Self) -> @debug.Repr
+pub fn Placeholder::variant(Self) -> PlaceholderVariant
+pub impl Widget for Placeholder
+
+pub(all) enum PlaceholderVariant {
+  Default
+  Size
+  Text
+} derive(Eq, @debug.Debug)
+pub fn PlaceholderVariant::equal(Self, Self) -> Bool
+pub fn PlaceholderVariant::not_equal(Self, Self) -> Bool
+pub fn PlaceholderVariant::to_repr(Self) -> @debug.Repr
 
 pub struct Progress {
   mut value : Int32
@@ -328,7 +388,66 @@ pub fn RichLog::to_repr(Self) -> @debug.Repr
 pub fn RichLog::write(Self, String, style? : @style.Style, width? : Int32?, scroll_end? : Bool?) -> Unit
 pub impl Widget for RichLog
 
+pub struct Rule {
+  dir : RuleDir
+  mut kind : RuleKind
+  style : @style.Style
+} derive(Eq, @debug.Debug)
+pub fn Rule::equal(Self, Self) -> Bool
+pub fn Rule::focusable(Self) -> Bool
+pub fn Rule::handle(Self, Ctx, Msg) -> Bool
+pub fn Rule::hint(Self, @geom.Size) -> @geom.Size
+pub fn Rule::horizontal(kind? : RuleKind, style? : @style.Style) -> Self
+pub fn Rule::not_equal(Self, Self) -> Bool
+pub fn Rule::render_line(Self, Int32, @geom.Size) -> @strip.Strip
+pub fn Rule::set_kind(Self, RuleKind) -> Unit
+pub fn Rule::to_repr(Self) -> @debug.Repr
+pub fn Rule::vertical(kind? : RuleKind, style? : @style.Style) -> Self
+pub impl Widget for Rule
+
+pub(all) enum RuleDir {
+  Horizontal
+  Vertical
+} derive(Eq, @debug.Debug)
+pub fn RuleDir::equal(Self, Self) -> Bool
+pub fn RuleDir::not_equal(Self, Self) -> Bool
+pub fn RuleDir::to_repr(Self) -> @debug.Repr
+
+pub(all) enum RuleKind {
+  Ascii
+  Blank
+  Dashed
+  Double
+  Heavy
+  Hidden
+  None
+  Solid
+  Thick
+} derive(Eq, @debug.Debug)
+pub fn RuleKind::equal(Self, Self) -> Bool
+pub fn RuleKind::not_equal(Self, Self) -> Bool
+pub fn RuleKind::to_repr(Self) -> @debug.Repr
+
 type Snap
+
+pub struct Sparkline {
+  mut data : Array[Double]
+  summary : Summary
+  min_colour : @style.Colour
+  max_colour : @style.Colour
+  style : @style.Style
+} derive(Eq, @debug.Debug)
+pub fn Sparkline::data(Self) -> Array[Double]
+pub fn Sparkline::equal(Self, Self) -> Bool
+pub fn Sparkline::focusable(Self) -> Bool
+pub fn Sparkline::handle(Self, Ctx, Msg) -> Bool
+pub fn Sparkline::hint(Self, @geom.Size) -> @geom.Size
+pub fn Sparkline::new(data? : Array[Double], summary? : Summary, min_colour? : @style.Colour, max_colour? : @style.Colour, style? : @style.Style) -> Self
+pub fn Sparkline::not_equal(Self, Self) -> Bool
+pub fn Sparkline::render_line(Self, Int32, @geom.Size) -> @strip.Strip
+pub fn Sparkline::set(Self, Array[Double]) -> Unit
+pub fn Sparkline::to_repr(Self) -> @debug.Repr
+pub impl Widget for Sparkline
 
 pub struct Static {
   mut lines : Array[String]
@@ -344,6 +463,17 @@ pub fn Static::set(Self, String) -> Unit
 pub fn Static::set_style(Self, @style.Style) -> Unit
 pub fn Static::text(Self) -> String
 pub impl Widget for Static
+
+pub(all) enum Summary {
+  Maximum
+  Minimum
+  Mean
+  Median
+  Latest
+} derive(Eq, @debug.Debug)
+pub fn Summary::equal(Self, Self) -> Bool
+pub fn Summary::not_equal(Self, Self) -> Bool
+pub fn Summary::to_repr(Self) -> @debug.Repr
 
 pub struct Switch {
   mut value : Bool
