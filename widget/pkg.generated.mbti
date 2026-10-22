@@ -102,6 +102,31 @@ pub fn Choice::new(String, disabled? : Bool) -> Self
 pub fn Choice::not_equal(Self, Self) -> Bool
 pub fn Choice::to_repr(Self) -> @debug.Repr
 
+pub struct Collapsible {
+  mut title : String
+  mut collapsed : Bool
+  collapsed_symbol : String
+  expanded_symbol : String
+  contents : &Widget
+  mut focused : Bool
+  mut hover : Bool
+  bar_style : @style.Style
+  title_style : @style.Style
+  hover_style : @style.Style
+  focus_style : @style.Style
+  style : @style.Style
+}
+pub fn Collapsible::focusable(Self) -> Bool
+pub fn Collapsible::handle(Self, Ctx, Msg) -> Bool
+pub fn Collapsible::hint(Self, @geom.Size) -> @geom.Size
+pub fn Collapsible::is_collapsed(Self) -> Bool
+pub fn Collapsible::new(title~ : String, contents~ : &Widget, collapsed? : Bool, collapsed_symbol? : String, expanded_symbol? : String, bar_style? : @style.Style, title_style? : @style.Style, hover_style? : @style.Style, focus_style? : @style.Style, style? : @style.Style) -> Self
+pub fn Collapsible::render_line(Self, Int32, @geom.Size) -> @strip.Strip
+pub fn Collapsible::set_collapsed(Self, Bool) -> Unit
+pub fn Collapsible::set_title(Self, String) -> Unit
+pub fn Collapsible::title(Self) -> String
+pub impl Widget for Collapsible
+
 pub struct Ctx {
   id : Int32
   size : @geom.Size
@@ -615,6 +640,45 @@ pub fn Switch::to_repr(Self) -> @debug.Repr
 pub fn Switch::toggle(Self) -> Unit
 pub fn Switch::value(Self) -> Bool
 pub impl Widget for Switch
+
+pub struct TabbedContent {
+  tabs : Tabs
+  panes : Array[&Widget]
+}
+pub fn TabbedContent::activate(Self, Int32) -> Unit
+pub fn TabbedContent::active(Self) -> Int32
+pub fn TabbedContent::focusable(Self) -> Bool
+pub fn TabbedContent::handle(Self, Ctx, Msg) -> Bool
+pub fn TabbedContent::hint(Self, @geom.Size) -> @geom.Size
+pub fn TabbedContent::new(labels? : Array[String], panes? : Array[&Widget], active? : Int32) -> Self
+pub fn TabbedContent::render_line(Self, Int32, @geom.Size) -> @strip.Strip
+pub fn TabbedContent::set_disabled(Self, Int32, Bool) -> Unit
+pub impl Widget for TabbedContent
+
+pub struct Tabs {
+  mut labels : Array[String]
+  mut disabled : Array[Bool]
+  mut active : Int32
+  mut focused : Bool
+  style : @style.Style
+  active_style : @style.Style
+  bar_style : @style.Style
+  bar_highlight : @style.Style
+} derive(Eq, @debug.Debug)
+pub fn Tabs::activate(Self, Int32) -> Unit
+pub fn Tabs::active(Self) -> Int32
+pub fn Tabs::equal(Self, Self) -> Bool
+pub fn Tabs::focusable(Self) -> Bool
+pub fn Tabs::handle(Self, Ctx, Msg) -> Bool
+pub fn Tabs::hint(Self, @geom.Size) -> @geom.Size
+pub fn Tabs::labels(Self) -> Array[String]
+pub fn Tabs::new(labels? : Array[String], active? : Int32, style? : @style.Style, active_style? : @style.Style, bar_style? : @style.Style, bar_highlight? : @style.Style) -> Self
+pub fn Tabs::not_equal(Self, Self) -> Bool
+pub fn Tabs::render_line(Self, Int32, @geom.Size) -> @strip.Strip
+pub fn Tabs::set_disabled(Self, Int32, Bool) -> Unit
+pub fn Tabs::set_labels(Self, Array[String]) -> Unit
+pub fn Tabs::to_repr(Self) -> @debug.Repr
+pub impl Widget for Tabs
 
 pub struct TextArea {
   mut lines : Array[String]
