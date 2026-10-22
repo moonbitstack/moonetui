@@ -116,8 +116,11 @@
 moon add moonbitstack/moonetui</pre>
 
   <h3>Run the examples</h3>
-  <p>The same application three ways — a styled TUI on a real terminal, under Node, and on a browser canvas — plus a gallery of every widget and a bare-wire demo of the plain serial line:</p>
-  <pre class="block"><span class="cm"># a real terminal (Unix or Windows)</span>
+  <p>Small ones to see a piece at a time, one complete application with tabs, timers and a command line, and the same app on three runtimes — plus a gallery of every widget and a bare-wire demo of the plain serial line:</p>
+  <pre class="block"><span class="cm"># a complete little application — tabs, timers, a command line</span>
+moon run --target native examples/monitor
+
+<span class="cm"># a real terminal (Unix or Windows)</span>
 moon run --target native examples/tui
 
 <span class="cm"># under Node</span>

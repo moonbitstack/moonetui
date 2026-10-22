@@ -1,0 +1,20 @@
+// Copyright 2026 Leo Cheng
+// SPDX-License-Identifier: Apache-2.0
+
+// A complete little application: a service monitor. Tabs over three panes,
+// a live side panel, a command line, timers that tick every second, and a
+// message handler that answers the widgets. Run it with
+// `moon run --target native examples/monitor`.
+import {
+  "moonbitstack/moonetui/app",
+  "moonbitstack/moonetui/design",
+  "moonbitstack/moonetui/driver/native",
+  "moonbitstack/moonetui/geom",
+  "moonbitstack/moonetui/layout",
+  "moonbitstack/moonetui/style",
+  "moonbitstack/moonetui/widget",
+}
+
+supported_targets = "native"
+
+pkgtype(kind: "executable")
