@@ -21,6 +21,8 @@ pub fn leaf(Int32, &@widget.Widget, box? : @layout.Box, name? : String, classes?
 
 pub fn row(Int32, Array[Node], box? : @layout.Box, gap? : Int32, name? : String, classes? : Array[String], styles? : @design.Styles) -> Node
 
+pub fn scroll(Int32, Node, box? : @layout.Box, state? : ScrollState, bar? : @style.Style, name? : String, classes? : Array[String], styles? : @design.Styles) -> Node
+
 // Errors
 
 // Types and methods
@@ -32,6 +34,8 @@ pub struct App[D] {
   sheet : @design.Stylesheet
   frame_ms : Int32
   rects : Map[Int32, @geom.Region]
+  bare : Map[Int32, @geom.Region]
+  views : Map[Int32, View]
   styled : Map[Int32, @design.Resolved]
   inbox : Array[@widget.Out]
   mut size : @geom.Size
@@ -59,14 +63,34 @@ pub fn[D : @driver.Driver] App::stop(Self[D]) -> Unit raise
 pub enum Node {
   Leaf(id~ : Int32, widget~ : &@widget.Widget, box~ : @layout.Box, name~ : String, classes~ : Array[String], styles~ : @design.Styles)
   Stack(id~ : Int32, dir~ : @layout.Dir, box~ : @layout.Box, gap~ : Int32, kids~ : Array[Node], name~ : String, classes~ : Array[String], styles~ : @design.Styles)
+  Scroll(id~ : Int32, kid~ : Node, box~ : @layout.Box, state~ : ScrollState, bar~ : @style.Style, name~ : String, classes~ : Array[String], styles~ : @design.Styles)
 }
 pub fn Node::box(Self) -> @layout.Box
+pub fn Node::contains_id(Self, Int32) -> Bool
 pub fn Node::find(Self, Int32) -> &@widget.Widget?
 pub fn Node::focus_ring(Self) -> Array[Int32]
 pub fn Node::hint(Self, @geom.Size, @layout.Dir, theme? : Theme) -> Int32
 pub fn Node::id(Self) -> Int32
-pub fn Node::place(Self, @geom.Region, @geom.Region, @comp.Scene, Map[Int32, @geom.Region], styled? : Map[Int32, @design.Resolved], theme? : Theme, inherited? : @style.Style) -> Unit
+pub fn Node::place(Self, @geom.Region, @geom.Region, @comp.Scene, Map[Int32, @geom.Region], styled? : Map[Int32, @design.Resolved], theme? : Theme, inherited? : @style.Style, views? : Map[Int32, View], bare? : Map[Int32, @geom.Region]) -> Unit
 pub fn Node::resolve(Self, Theme, @style.Style) -> @design.Resolved
+pub fn Node::scroll_around(Self, Int32) -> (Int32, ScrollState)?
+
+pub(all) struct ScrollState {
+  mut x : Int32
+  mut y : Int32
+  mut vw : Int32
+  mut vh : Int32
+  mut cw : Int32
+  mut ch : Int32
+} derive(Eq, @debug.Debug)
+pub fn ScrollState::equal(Self, Self) -> Bool
+pub fn ScrollState::max_x(Self) -> Int32
+pub fn ScrollState::max_y(Self) -> Int32
+pub fn ScrollState::new() -> Self
+pub fn ScrollState::not_equal(Self, Self) -> Bool
+pub fn ScrollState::scroll_by(Self, dx? : Int32, dy? : Int32) -> Bool
+pub fn ScrollState::scroll_to(Self, x? : Int32?, y? : Int32?) -> Bool
+pub fn ScrollState::to_repr(Self) -> @debug.Repr
 
 pub(all) struct Theme {
   sheet : @design.Stylesheet
@@ -77,6 +101,16 @@ pub fn Theme::equal(Self, Self) -> Bool
 pub fn Theme::new(sheet? : @design.Stylesheet, focus? : Int32, base? : @style.Style) -> Self
 pub fn Theme::not_equal(Self, Self) -> Bool
 pub fn Theme::to_repr(Self) -> @debug.Repr
+
+pub(all) struct View {
+  state : ScrollState
+  bar : @style.Style
+  vbar : Bool
+  hbar : Bool
+} derive(Eq, @debug.Debug)
+pub fn View::equal(Self, Self) -> Bool
+pub fn View::not_equal(Self, Self) -> Bool
+pub fn View::to_repr(Self) -> @debug.Repr
 
 // Type aliases
 

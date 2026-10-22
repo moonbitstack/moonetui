@@ -4,7 +4,7 @@
 
 **A terminal UI toolkit for [MoonBit](https://www.moonbitlang.com/)**
 
-Cell buffer, differential ANSI renderer, incremental key parser, layout, a CSS-like design system, widgets, and pluggable terminal drivers — after Python's [Textual](https://github.com/Textualize/textual).
+Cell buffer, differential ANSI renderer, incremental key parser, layout, a CSS-like design system, scrolling containers, widgets, and pluggable terminal drivers — after Python's [Textual](https://github.com/Textualize/textual).
 
 [![Check and Test](https://img.shields.io/github/actions/workflow/status/moonbitstack/moonetui/ci.yml?branch=master&label=CI&logo=github)](https://github.com/moonbitstack/moonetui/actions)
 [![license](https://img.shields.io/badge/license-Apache--2.0-blue)](LICENSE)
@@ -27,12 +27,12 @@ Cell buffer, differential ANSI renderer, incremental key parser, layout, a CSS-l
 | `@layout` | Placing boxes along an axis: fixed cells, percentages, automatic sizes and fractional shares, with integer division that loses no column | done |
 | `@design` | The style system: rules over name, id, class and `:focus` selectors, stacked by specificity and cascade; border, padding, margin, alignment, display, and the text style a node inherits from its container | done |
 | `@widget` | The widget contract and eight widgets: static text, label, button, input, list, progress bar, header, footer | done |
-| `@app` | The widget tree, the focus ring, and the frame loop: poll, parse, dispatch, lay out, compose, diff, write | done |
+| `@app` | The widget tree, the focus ring, scrolling containers, and the frame loop: poll, parse, dispatch, lay out, compose, diff, write | done |
 | `@driver/node` | Node's terminal: raw mode, a queue the data handler fills, and a frame pump | done |
 | `@driver/web` | A terminal drawn on a canvas: the grid, the escape sequences it understands, key encoding, and in-band resize | done |
 | `@driver/native` | A real terminal through the C library: termios on Unix, virtual terminal mode on Windows | done |
 
-All of 0.1.0 is here, and the style system with it. What is deliberately not: scrolling containers, and the thirty-odd widgets beyond the eight below.
+All of 0.1.0 is here, the style system with it, and scroll containers: a pane sizes its child to the child's own content, shows a window of it, draws bars that track the window, and moves by wheel, by the arrow, page, home and end keys, and to whatever just took focus. What is deliberately not: the thirty-odd widgets beyond the eight below.
 
 ## Design
 
@@ -61,7 +61,7 @@ moon check --target all --deny-warn
 moon test --target all
 ```
 
-161 tests; the browser grid's own tests run on the js backend, the rest on all four.
+170 tests; the browser grid's own tests run on the js backend, the rest on all four.
 
 ## License
 

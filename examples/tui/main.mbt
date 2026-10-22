@@ -27,6 +27,19 @@ fn sheet() -> @design.Stylesheet {
 }
 
 ///|
+fn pane(list : @widget.ListView) -> @app.Node {
+  let kids : Array[@app.Node] = [
+    @app.leaf(10, list, box=@layout.Box::new(extent=Cells(6))),
+  ]
+  for i in 0..<24 {
+    kids.push(
+      @app.leaf(11 + i, @widget.Static::new("log line " + (i + 1).to_string())),
+    )
+  }
+  @app.column(7, kids, gap=1)
+}
+
+///|
 fn main raise {
   let head = @widget.Header::new("moonetui", note="ctrl-c to quit")
   let list = @widget.ListView::new([
@@ -38,11 +51,14 @@ fn main raise {
     ("tab", "next"),
     ("up down", "move"),
     ("enter", "choose"),
+    ("wheel", "scroll"),
   ])
   bar.set(35)
   let tree = @app.column(0, [
     @app.leaf(1, head, box=@layout.Box::new(extent=Cells(1)), name="Header"),
-    @app.leaf(2, list, box=@layout.Box::new(extent=Frac(1)), classes=["framed"]),
+    @app.scroll(6, pane(list), box=@layout.Box::new(extent=Frac(1)), classes=[
+      "framed",
+    ]),
     @app.leaf(3, field, box=@layout.Box::new(extent=Cells(1)), classes=[
       "framed",
     ]),
