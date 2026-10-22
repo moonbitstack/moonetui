@@ -114,6 +114,8 @@ test "navigation keys and shift-tab" {
   assert_eq(parse(ascii("\u{1b}[5~")), [Key({ code: PageUp, mods: no_mods, })])
   assert_eq(parse(ascii("\u{1b}[H")), [Key({ code: Home, mods: no_mods, })])
   assert_eq(parse(ascii("\u{1b}[Z")), [Key({ code: BackTab, mods: no_mods, })])
+  // Five is control, the same one-plus-bits encoding the arrows carry.
+  assert_eq(parse(ascii("\u{1b}[1;5Z")), [Key({ code: BackTab, mods: ctrl, })])
 }
 
 ///|

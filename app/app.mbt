@@ -477,8 +477,6 @@ fn[D] App::give_focus(self : App[D], id : Int32) -> Unit {
 
 ///|
 fn[D] App::at(self : App[D], x : Int32, y : Int32) -> (Int32, @geom.Region)? {
-  let ring = self.root.focus_ring()
-  ignore(ring)
   let mut found : (Int32, @geom.Region)? = None
   for id, rect in self.rects {
     if rect.contains(x, y) {

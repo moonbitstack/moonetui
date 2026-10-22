@@ -249,7 +249,7 @@ fn Parser::emit_csi(
     0x44 => out.push(Key(@event.Key::with_mods(Left, mods)))
     0x46 => out.push(Key(@event.Key::with_mods(End, mods)))
     0x48 => out.push(Key(@event.Key::with_mods(Home, mods)))
-    0x5A => out.push(Key(@event.Key::of(BackTab)))
+    0x5A => out.push(Key(@event.Key::with_mods(BackTab, mods)))
     0x49 => out.push(FocusIn)
     0x4F => out.push(FocusOut)
     0x74 =>

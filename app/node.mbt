@@ -304,8 +304,7 @@ pub fn Node::place(
   rects[self.id()] = visible
   bare[self.id()] = framed
   match self {
-    Leaf(id~, widget~, ..) => {
-      ignore(widget)
+    Leaf(id~, ..) => {
       scene.place(id, framed, clip)
       styled[id] = res
     }
