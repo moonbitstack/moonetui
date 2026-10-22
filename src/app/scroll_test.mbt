@@ -112,9 +112,9 @@ test "scroll offsets clamp at both ends" {
   assert_eq(state.scroll_by(dy=999), true)
   assert_eq(state.y, 6)
   assert_eq(state.scroll_by(dy=999), false)
-  assert_eq(state.scroll_to(y=Some(-5)), true)
+  assert_eq(state.scroll_to(y=-5), true)
   assert_eq(state.y, 0)
-  assert_eq(state.scroll_to(y=Some(3)), true)
+  assert_eq(state.scroll_to(y=3), true)
   assert_eq(state.x, 0)
   ui.refresh()
   ui.step() |> ignore
@@ -131,7 +131,7 @@ test "a hidden scroll and its child are gone" {
     @app.scroll(
       1,
       lines(10),
-      styles=@design.Styles::new(display=Some(@design.Hidden)),
+      styles=@design.Styles::new(display=@design.Hidden),
     ),
   )
   ui.start()
@@ -145,11 +145,7 @@ test "a border frames the window, not the content" {
   let tty = @driver.Headless::new(@geom.Size::new(12, 6))
   let ui = @app.App::new(
     tty,
-    @app.scroll(
-      1,
-      lines(10),
-      styles=@design.Styles::new(border=Some(@design.Thin)),
-    ),
+    @app.scroll(1, lines(10), styles=@design.Styles::new(border=@design.Thin)),
   )
   ui.start()
   assert_eq(ui.screen(), [

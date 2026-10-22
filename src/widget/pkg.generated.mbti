@@ -354,15 +354,15 @@ pub fn Log::handle(Self, Ctx, Msg) -> Bool
 pub fn Log::hint(Self, @geom.Size) -> @geom.Size
 pub fn Log::line_count(Self) -> Int32
 pub fn Log::lines(Self) -> Array[String]
-pub fn Log::new(max_lines? : Int32?, auto_scroll? : Bool, style? : @style.Style) -> Self
+pub fn Log::new(max_lines? : Int32, auto_scroll? : Bool, style? : @style.Style) -> Self
 pub fn Log::not_equal(Self, Self) -> Bool
 pub fn Log::offset(Self) -> (Int32, Int32)
 pub fn Log::render_line(Self, Int32, @geom.Size) -> @strip.Strip
 pub fn Log::set_auto_scroll(Self, Bool) -> Unit
 pub fn Log::to_repr(Self) -> @debug.Repr
-pub fn Log::write(Self, String, scroll_end? : Bool?) -> Unit
-pub fn Log::write_line(Self, String, scroll_end? : Bool?) -> Unit
-pub fn Log::write_lines(Self, Array[String], scroll_end? : Bool?) -> Unit
+pub fn Log::write(Self, String, scroll_end? : Bool) -> Unit
+pub fn Log::write_line(Self, String, scroll_end? : Bool) -> Unit
+pub fn Log::write_lines(Self, Array[String], scroll_end? : Bool) -> Unit
 pub impl Widget for Log
 
 pub struct Markdown {
@@ -570,14 +570,14 @@ pub fn RichLog::handle(Self, Ctx, Msg) -> Bool
 pub fn RichLog::hint(Self, @geom.Size) -> @geom.Size
 pub fn RichLog::line_count(Self) -> Int32
 pub fn RichLog::lines(Self) -> Array[@strip.Strip]
-pub fn RichLog::new(max_lines? : Int32?, min_width? : Int32, wrap? : Bool, auto_scroll? : Bool, style? : @style.Style) -> Self
+pub fn RichLog::new(max_lines? : Int32, min_width? : Int32, wrap? : Bool, auto_scroll? : Bool, style? : @style.Style) -> Self
 pub fn RichLog::not_equal(Self, Self) -> Bool
 pub fn RichLog::offset(Self) -> (Int32, Int32)
 pub fn RichLog::render_line(Self, Int32, @geom.Size) -> @strip.Strip
 pub fn RichLog::set_auto_scroll(Self, Bool) -> Unit
 pub fn RichLog::set_wrap(Self, Bool) -> Unit
 pub fn RichLog::to_repr(Self) -> @debug.Repr
-pub fn RichLog::write(Self, String, style? : @style.Style, width? : Int32?, scroll_end? : Bool?) -> Unit
+pub fn RichLog::write(Self, String, style? : @style.Style, width? : Int32, scroll_end? : Bool) -> Unit
 pub impl Widget for RichLog
 
 pub(all) struct Row {
@@ -653,7 +653,7 @@ pub fn Select::focusable(Self) -> Bool
 pub fn Select::handle(Self, Ctx, Msg) -> Bool
 pub fn Select::hint(Self, @geom.Size) -> @geom.Size
 pub fn Select::is_blank(Self) -> Bool
-pub fn Select::new(options? : Array[(String, String)], prompt? : String, allow_blank? : Bool, value? : String?, style? : @style.Style, dim_style? : @style.Style, arrow_style? : @style.Style, highlight? : @style.Style, blurred_highlight? : @style.Style) -> Self
+pub fn Select::new(options? : Array[(String, String)], prompt? : String, allow_blank? : Bool, value? : String, style? : @style.Style, dim_style? : @style.Style, arrow_style? : @style.Style, highlight? : @style.Style, blurred_highlight? : @style.Style) -> Self
 pub fn Select::not_equal(Self, Self) -> Bool
 pub fn Select::render_line(Self, Int32, @geom.Size) -> @strip.Strip
 pub fn Select::set_value(Self, String) -> Unit

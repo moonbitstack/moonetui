@@ -18,19 +18,19 @@ pub extend Preset with Eq::{not_equal, equal}
 ///|
 fn base_sheet(base : @style.Style) -> Stylesheet {
   let sheet = Stylesheet::new()
-  sheet.add(Sel::new(), Styles::new(text=Some(base)))
+  sheet.add(Sel::new(), Styles::new(text=base))
   sheet.add(
     Sel::new(name="Header"),
-    Styles::new(text=Some(@style.Style::new(bold=true, fg=@style.cyan))),
+    Styles::new(text=@style.Style::new(bold=true, fg=@style.cyan)),
   )
   sheet.add(
     Sel::new(classes=["framed"]),
-    Styles::new(border=Some(Round), padding=Some(@geom.Spacing::horizontal(1))),
+    Styles::new(border=Round, padding=@geom.Spacing::horizontal(1)),
   )
-  sheet.add(Sel::new(focus=true), Styles::new(border=Some(Heavy)))
+  sheet.add(Sel::new(focus=true), Styles::new(border=Heavy))
   sheet.add(
     Sel::new(hover=true),
-    Styles::new(text=Some(@style.Style::new(fg=@style.yellow))),
+    Styles::new(text=@style.Style::new(fg=@style.yellow)),
   )
   sheet
 }
@@ -49,9 +49,7 @@ pub fn Preset::light() -> Preset {
   let sheet = base_sheet(base)
   sheet.add(
     Sel::new(),
-    Styles::new(
-      scrollbar=Some(@style.Style::new(fg=@style.white, bg=@style.black)),
-    ),
+    Styles::new(scrollbar=@style.Style::new(fg=@style.white, bg=@style.black)),
   )
   { base, sheet, }
 }

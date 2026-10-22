@@ -19,7 +19,7 @@ pub struct RichLog {
 
 ///|
 pub fn RichLog::new(
-  max_lines~ : Int32? = None,
+  max_lines? : Int32,
   min_width~ : Int32 = 78,
   wrap~ : Bool = false,
   auto_scroll~ : Bool = true,
@@ -56,8 +56,8 @@ pub fn RichLog::write(
   self : RichLog,
   text : String,
   style~ : @style.Style = @style.Style::new(),
-  width~ : Int32? = None,
-  scroll_end~ : Bool? = None,
+  width? : Int32,
+  scroll_end? : Bool,
 ) -> Unit {
   let was_end = self.at_end()
   let pieces = plain_lines(text)

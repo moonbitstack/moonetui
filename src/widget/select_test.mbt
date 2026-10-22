@@ -5,7 +5,7 @@
 test "select shows the current choice and expands in flow" {
   let select = @widget.Select::new(
     options=[("Apple", "apple"), ("Banana", "banana"), ("Cherry", "cherry")],
-    value=Some("banana"),
+    value="banana",
   )
   let w : &@widget.Widget = select
   let at = size(12, 6)

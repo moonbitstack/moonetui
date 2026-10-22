@@ -6,11 +6,11 @@ test "a hover rule restyles the node under the pointer" {
   let sheet = @design.Stylesheet::new()
   sheet.add(
     @design.Sel::new(name="Hot"),
-    @design.Styles::new(border=Some(@design.Thin)),
+    @design.Styles::new(border=@design.Thin),
   )
   sheet.add(
     @design.Sel::new(name="Hot", hover=true),
-    @design.Styles::new(border=Some(@design.Heavy)),
+    @design.Styles::new(border=@design.Heavy),
   )
   let tree = @app.row(0, [
     @app.leaf(
@@ -46,11 +46,11 @@ test "a disabled node is restyled, skipped and takes no input" {
   let sheet = @design.Stylesheet::new()
   sheet.add(
     @design.Sel::new(name="Go"),
-    @design.Styles::new(border=Some(@design.Thin)),
+    @design.Styles::new(border=@design.Thin),
   )
   sheet.add(
     @design.Sel::new(name="Go", disabled=true),
-    @design.Styles::new(border=Some(@design.Ascii)),
+    @design.Styles::new(border=@design.Ascii),
   )
   let tree = @app.row(0, [
     @app.leaf(
@@ -109,7 +109,7 @@ test "an offset moves a node without telling the layout" {
       2,
       @widget.Static::new("bb"),
       box=@layout.Box::new(extent=Frac(1)),
-      styles=@design.Styles::new(offset_x=Some(2), offset_y=Some(1)),
+      styles=@design.Styles::new(offset_x=2, offset_y=1),
     ),
   ])
   let tty = @driver.Headless::new(@geom.Size::new(8, 3))
@@ -124,7 +124,7 @@ test "a stylesheet rule restyles the scroll bars" {
   sheet.add(
     @design.Sel::new(),
     @design.Styles::new(
-      scrollbar=Some(@style.Style::new(reverse=false, fg=@style.red)),
+      scrollbar=@style.Style::new(reverse=false, fg=@style.red),
     ),
   )
   let kids : Array[@app.Node] = []
@@ -151,14 +151,14 @@ test "a transition glides a node to its new place" {
   let moved = @app.leaf(
     1,
     @widget.Static::new("x"),
-    styles=@design.Styles::new(transition=Some(160)),
+    styles=@design.Styles::new(transition=160),
   )
   let before = @app.column(0, [
     @app.leaf(9, @widget.Static::new("")),
     @app.leaf(
       10,
       @widget.Static::new(""),
-      styles=@design.Styles::new(display=Some(@design.Block)),
+      styles=@design.Styles::new(display=@design.Block),
     ),
     moved,
   ])
@@ -167,7 +167,7 @@ test "a transition glides a node to its new place" {
     @app.leaf(
       10,
       @widget.Static::new(""),
-      styles=@design.Styles::new(display=Some(@design.Hidden)),
+      styles=@design.Styles::new(display=@design.Hidden),
     ),
     moved,
   ])

@@ -128,7 +128,7 @@ pub fn ScrollState::max_y(Self) -> Int32
 pub fn ScrollState::new() -> Self
 pub fn ScrollState::not_equal(Self, Self) -> Bool
 pub fn ScrollState::scroll_by(Self, dx? : Int32, dy? : Int32) -> Bool
-pub fn ScrollState::scroll_to(Self, x? : Int32?, y? : Int32?) -> Bool
+pub fn ScrollState::scroll_to(Self, x? : Int32, y? : Int32) -> Bool
 pub fn ScrollState::to_repr(Self) -> @debug.Repr
 
 pub(all) struct Theme {

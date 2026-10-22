@@ -42,11 +42,11 @@ test "the most specific rule wins regardless of order" {
   let sheet = @design.Stylesheet::new()
   sheet.add(
     @design.Sel::new(id=1),
-    @design.Styles::new(padding=Some(@geom.Spacing::all(1))),
+    @design.Styles::new(padding=@geom.Spacing::all(1)),
   )
   sheet.add(
     @design.Sel::new(),
-    @design.Styles::new(padding=Some(@geom.Spacing::all(9))),
+    @design.Styles::new(padding=@geom.Spacing::all(9)),
   )
   let picked = sheet.pick("", 1, [], false)
   assert_eq(picked.padding, Some(@geom.Spacing::all(1)))
@@ -57,11 +57,11 @@ test "rules of equal weight are settled by which was written later" {
   let sheet = @design.Stylesheet::new()
   sheet.add(
     @design.Sel::new(name="Panel"),
-    @design.Styles::new(border=Some(@design.Thin)),
+    @design.Styles::new(border=@design.Thin),
   )
   sheet.add(
     @design.Sel::new(name="Panel"),
-    @design.Styles::new(border=Some(@design.Round)),
+    @design.Styles::new(border=@design.Round),
   )
   let picked = sheet.pick("Panel", -1, [], false)
   assert_eq(picked.border, Some(@design.Round))
@@ -72,11 +72,11 @@ test "a class rule overrides the name rule it is more specific than" {
   let sheet = @design.Stylesheet::new()
   sheet.add(
     @design.Sel::new(classes=["tall"]),
-    @design.Styles::new(border=Some(@design.Double)),
+    @design.Styles::new(border=@design.Double),
   )
   sheet.add(
     @design.Sel::new(name="Panel"),
-    @design.Styles::new(border=Some(@design.Ascii)),
+    @design.Styles::new(border=@design.Ascii),
   )
   let picked = sheet.pick("Panel", -1, ["tall"], false)
   assert_eq(picked.border, Some(@design.Double))
@@ -85,7 +85,7 @@ test "a class rule overrides the name rule it is more specific than" {
 ///|
 test "resolving inherits the container's text style under the node's own" {
   let inherited = @style.Style::new(bg=@style.blue)
-  let own = @design.Styles::new(text=Some(@style.Style::new(fg=@style.white)))
+  let own = @design.Styles::new(text=@style.Style::new(fg=@style.white))
   let resolved = @design.Resolved::of(own, inherited)
   assert_eq(resolved.text.fg, @style.white)
   assert_eq(resolved.text.bg, @style.blue)
@@ -112,12 +112,23 @@ test "a disabled rule stacks over the plain one in the cascade" {
   let sheet = @design.Stylesheet::new()
   sheet.add(
     @design.Sel::new(name="Go"),
-    @design.Styles::new(border=Some(@design.Thin)),
+    @design.Styles::new(border=@design.Thin),
   )
   sheet.add(
     @design.Sel::new(name="Go", disabled=true),
-    @design.Styles::new(border=Some(@design.Ascii)),
+    @design.Styles::new(border=@design.Ascii),
   )
   let styles = sheet.pick("Go", 1, [], false, disabled=true)
   assert_eq(styles.border, Some(@design.Ascii))
+}
+
+///|
+test "no number of classes outweighs an id" {
+  let many = @design.Sel::new(classes=Array::makei(11, i => "c\{i}"))
+  assert_eq(@design.Sel::new(id=1).specificity() > many.specificity(), true)
+  let named = @design.Sel::new(name="Panel")
+  assert_eq(
+    @design.Sel::new(classes=["a"]).specificity() > named.specificity(),
+    true,
+  )
 }

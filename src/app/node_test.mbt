@@ -7,7 +7,7 @@ test "a docked sidebar takes its edge and the flow keeps the rest" {
     @app.leaf(
       1,
       @widget.Static::new("S"),
-      styles=@design.Styles::new(dock=Some(@design.Left)),
+      styles=@design.Styles::new(dock=@design.Left),
     ),
     @app.leaf(2, @widget.Static::new("body")),
   ])
@@ -23,12 +23,12 @@ test "docked headers hold the top and bottom edges" {
     @app.leaf(
       1,
       @widget.Static::new("head"),
-      styles=@design.Styles::new(dock=Some(@design.Top)),
+      styles=@design.Styles::new(dock=@design.Top),
     ),
     @app.leaf(
       2,
       @widget.Static::new("foot"),
-      styles=@design.Styles::new(dock=Some(@design.Bottom)),
+      styles=@design.Styles::new(dock=@design.Bottom),
     ),
     @app.leaf(3, @widget.Static::new("mid")),
   ])
@@ -45,7 +45,7 @@ test "a stylesheet rule can dock a node by name" {
   let sheet = @design.Stylesheet::new()
   sheet.add(
     @design.Sel::new(name="Side"),
-    @design.Styles::new(dock=Some(@design.Right)),
+    @design.Styles::new(dock=@design.Right),
   )
   let tree = @app.column(0, [
     @app.leaf(1, @widget.Static::new("side"), name="Side"),
@@ -63,12 +63,12 @@ test "two docks on one edge overlap and the later child draws on top" {
     @app.leaf(
       1,
       @widget.Static::new("S1"),
-      styles=@design.Styles::new(dock=Some(@design.Left)),
+      styles=@design.Styles::new(dock=@design.Left),
     ),
     @app.leaf(
       2,
       @widget.Static::new("T"),
-      styles=@design.Styles::new(dock=Some(@design.Left)),
+      styles=@design.Styles::new(dock=@design.Left),
     ),
   ])
   let tty = @driver.Headless::new(@geom.Size::new(10, 1))
@@ -99,7 +99,7 @@ test "a column span reaches across the row" {
       @app.leaf(
         1,
         @widget.Static::new("aaaaaa"),
-        styles=@design.Styles::new(column_span=Some(2)),
+        styles=@design.Styles::new(column_span=2),
       ),
       @app.leaf(2, @widget.Static::new("b")),
       @app.leaf(3, @widget.Static::new("c")),
@@ -120,7 +120,7 @@ test "a row span holds its column over several rows" {
       @app.leaf(
         1,
         @widget.Static::new("a"),
-        styles=@design.Styles::new(row_span=Some(2)),
+        styles=@design.Styles::new(row_span=2),
       ),
       @app.leaf(2, @widget.Static::new("b")),
       @app.leaf(3, @widget.Static::new("c")),

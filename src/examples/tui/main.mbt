@@ -6,26 +6,26 @@ fn sheet() -> @design.Stylesheet {
   let sheet = @design.Stylesheet::new()
   sheet.add(
     @design.Sel::new(),
-    @design.Styles::new(text=Some(@style.Style::new(fg=@style.bright_white))),
+    @design.Styles::new(text=@style.Style::new(fg=@style.bright_white)),
   )
   sheet.add(
     @design.Sel::new(name="Header"),
-    @design.Styles::new(text=Some(@style.Style::new(bold=true, fg=@style.cyan))),
+    @design.Styles::new(text=@style.Style::new(bold=true, fg=@style.cyan)),
   )
   sheet.add(
     @design.Sel::new(classes=["framed"]),
     @design.Styles::new(
-      border=Some(@design.Round),
-      padding=Some(@geom.Spacing::horizontal(1)),
+      border=@design.Round,
+      padding=@geom.Spacing::horizontal(1),
     ),
   )
   sheet.add(
     @design.Sel::new(focus=true),
-    @design.Styles::new(border=Some(@design.Heavy)),
+    @design.Styles::new(border=@design.Heavy),
   )
   sheet.add(
     @design.Sel::new(classes=["bar"]),
-    @design.Styles::new(dock=Some(@design.Bottom)),
+    @design.Styles::new(dock=@design.Bottom),
   )
   sheet
 }
@@ -49,7 +49,7 @@ fn dial(bar : @widget.Progress, field : @widget.Input) -> @app.Node {
     8,
     [
       @app.leaf(4, bar),
-      @app.leaf(3, field, styles=@design.Styles::new(column_span=Some(2))),
+      @app.leaf(3, field, styles=@design.Styles::new(column_span=2)),
     ],
     cols=2,
     gutter=1,

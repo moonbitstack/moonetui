@@ -5,6 +5,9 @@
 const MAX_SEQ : Int32 = 32
 
 ///|
+let alt : @event.Mods = { ctrl: false, alt: true, shift: false, }
+
+///|
 pub struct Parser {
   mut buf : Array[Int32]
   mut head : Int32
@@ -77,18 +80,19 @@ fn Parser::step(self : Parser, out : Array[@event.Event]) -> Int32 {
   match self.at(1) {
     0x5B => self.step_csi(out)
     0x4F => self.step_ss3(out)
+    0x1B => {
+      out.push(Key(@event.Key::with_mods(Escape, alt)))
+      2
+    }
+    next if next < 0x20 || next == 0x7F => {
+      let key = control_key(next)
+      out.push(Key({ ..key, mods: { ..key.mods, alt: true, }, }))
+      2
+    }
     _ =>
       match decode(self.buf, self.head + 1, self.buf.length()) {
         Some((code, size)) => {
-          out.push(
-            Key(
-              @event.Key::with_mods(Char(code), {
-                ctrl: false,
-                alt: true,
-                shift: false,
-              }),
-            ),
-          )
+          out.push(Key(@event.Key::with_mods(Char(code), alt)))
           1 + size
         }
         None => 0
@@ -149,28 +153,29 @@ fn Parser::step_ss3(self : Parser, out : Array[@event.Event]) -> Int32 {
   if self.pending() < 3 {
     return 0
   }
-  let code = match self.at(2) {
-    0x50 => Some(@event.KeyCode::F(1))
-    0x51 => Some(@event.KeyCode::F(2))
-    0x52 => Some(@event.KeyCode::F(3))
-    0x53 => Some(@event.KeyCode::F(4))
+  let code : @event.KeyCode? = match self.at(2) {
+    0x41 => Some(Up)
+    0x42 => Some(Down)
+    0x43 => Some(Right)
+    0x44 => Some(Left)
+    0x48 => Some(Home)
+    0x46 => Some(End)
+    0x50 => Some(F(1))
+    0x51 => Some(F(2))
+    0x52 => Some(F(3))
+    0x53 => Some(F(4))
     _ => None
   }
-  match code {
-    Some(c) => {
-      out.push(Key(@event.Key::of(c)))
-      3
-    }
-    None => {
-      out.push(Key(@event.Key::of(Escape)))
-      1
-    }
+  if code is Some(c) {
+    out.push(Key(@event.Key::of(c)))
   }
+  3
 }
 
 ///|
 priv struct Csi {
   private_marker : Int32
+  intermediate : Bool
   params : Array[Int32]
   last : Int32
   length : Int32
@@ -206,9 +211,13 @@ fn Parser::scan_csi(self : Parser) -> Csi? {
   }
   let params : Array[Int32] = []
   let mut value = -1
+  let mut intermediate = false
   while i < self.pending() {
     let c = self.at(i)
-    if c >= 0x30 && c <= 0x39 {
+    if c >= 0x20 && c <= 0x2F {
+      intermediate = true
+      i = i + 1
+    } else if c >= 0x30 && c <= 0x39 {
       value = (if value < 0 { 0 } else { value }) * 10 + (c - 0x30)
       i = i + 1
     } else if c == 0x3B || c == 0x3A {
@@ -219,7 +228,13 @@ fn Parser::scan_csi(self : Parser) -> Csi? {
       if value >= 0 {
         params.push(value)
       }
-      return Some({ private_marker: marker, params, last: c, length: i + 1, })
+      return Some({
+        private_marker: marker,
+        intermediate,
+        params,
+        last: c,
+        length: i + 1,
+      })
     } else {
       return None
     }
@@ -233,11 +248,16 @@ fn Parser::emit_csi(
   csi : Csi,
   out : Array[@event.Event],
 ) -> Unit {
+  if csi.intermediate {
+    return
+  }
   if csi.private_marker == 0x3C {
-    match mouse_of(csi) {
-      Some(m) => out.push(Mouse(m))
-      None => ()
+    if mouse_of(csi) is Some(m) {
+      out.push(Mouse(m))
     }
+    return
+  }
+  if csi.private_marker != 0 {
     return
   }
   let first = param(csi, 0, 1)

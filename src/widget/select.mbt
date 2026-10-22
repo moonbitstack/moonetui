@@ -25,7 +25,7 @@ pub fn Select::new(
   options~ : Array[(String, String)] = [],
   prompt~ : String = "Select",
   allow_blank~ : Bool = true,
-  value~ : String? = None,
+  value? : String,
   style~ : @style.Style = @style.Style::new(),
   dim_style~ : @style.Style = @style.Style::new(dim=true),
   arrow_style~ : @style.Style = @style.Style::new(dim=true),

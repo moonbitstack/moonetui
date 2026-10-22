@@ -60,16 +60,16 @@ test "log follows the tail and lets the reader pull free" {
 test "log scroll_end overrides auto scroll" {
   let log = @widget.Log::new()
   log.write_line("one")
-  log.write_line("two", scroll_end=Some(false))
+  log.write_line("two", scroll_end=false)
   let w : &@widget.Widget = log
   assert_eq(rows(w, size(6, 1)), ["one   "])
-  log.write_line("three", scroll_end=Some(true))
+  log.write_line("three", scroll_end=true)
   assert_eq(rows(w, size(6, 1)), ["three "])
 }
 
 ///|
 test "log prunes to max_lines" {
-  let log = @widget.Log::new(max_lines=Some(2))
+  let log = @widget.Log::new(max_lines=2)
   for i in 0..<5 {
     log.write_line("nope\{i}")
   }

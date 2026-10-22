@@ -167,3 +167,34 @@ test "spans claim the first free block that fits" {
   let heights = @layout.grid_row_heights(kids, slots)
   assert_eq(heights, [1, 1, 1])
 }
+
+///|
+test "a span wider than the grid is held to the grid" {
+  let kids = [
+    @layout.GridChild::new(col_span=5, height=1),
+    @layout.GridChild::new(height=1),
+  ]
+  let slots = @layout.grid_slots(kids, cols=2)
+  assert_eq(slots, [(0, 0), (1, 0)])
+  let rects = @layout.arrange_grid(
+    @geom.Region::new(0, 0, 10, 2),
+    slots,
+    kids,
+    cols=2,
+  )
+  assert_eq(rects, [
+    @geom.Region::new(0, 0, 10, 1),
+    @geom.Region::new(0, 1, 5, 1),
+  ])
+}
+
+///|
+test "columns share the width and lose no column to rounding" {
+  let kids = Array::make(3, @layout.GridChild::new(height=1))
+  let slots = @layout.grid_slots(kids, cols=3)
+  let area = @geom.Region::new(0, 0, 10, 1)
+  let plain = @layout.arrange_grid(area, slots, kids, cols=3)
+  assert_eq(plain.map(r => (r.x, r.width)), [(0, 4), (4, 3), (7, 3)])
+  let spaced = @layout.arrange_grid(area, slots, kids, cols=3, gutter=1)
+  assert_eq(spaced.map(r => (r.x, r.width)), [(0, 3), (4, 3), (8, 2)])
+}

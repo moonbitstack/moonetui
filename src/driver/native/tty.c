@@ -15,6 +15,8 @@
 
 static DWORD saved_in_mode = 0;
 static DWORD saved_out_mode = 0;
+static UINT saved_in_cp = 0;
+static UINT saved_out_cp = 0;
 static int saved = 0;
 
 MOONBIT_FFI_EXPORT
@@ -30,23 +32,58 @@ int32_t moonetui_tty_raw(int32_t on) {
           !GetConsoleMode(out, &saved_out_mode)) {
         return -1;
       }
+      saved_in_cp = GetConsoleCP();
+      saved_out_cp = GetConsoleOutputCP();
       saved = 1;
     }
     // Virtual terminal input makes the console send the same escape sequences a
-    // Unix terminal does, which is what lets one parser serve both.
+    // Unix terminal does, which is what lets one parser serve both. Mouse and
+    // window records stay out of the buffer: the mouse arrives as escape
+    // sequences once the application asks for it, the size is polled, and a
+    // record that is not a character would wake the wait below for nothing.
+    // Quick edit would turn a click into a text selection.
     DWORD in_mode = saved_in_mode;
-    in_mode &= ~(ENABLE_LINE_INPUT | ENABLE_ECHO_INPUT | ENABLE_PROCESSED_INPUT);
-    in_mode |= ENABLE_VIRTUAL_TERMINAL_INPUT | ENABLE_WINDOW_INPUT;
+    in_mode &= ~(ENABLE_LINE_INPUT | ENABLE_ECHO_INPUT | ENABLE_PROCESSED_INPUT |
+                 ENABLE_MOUSE_INPUT | ENABLE_WINDOW_INPUT | ENABLE_QUICK_EDIT_MODE);
+    in_mode |= ENABLE_VIRTUAL_TERMINAL_INPUT | ENABLE_EXTENDED_FLAGS;
     DWORD out_mode = saved_out_mode | ENABLE_VIRTUAL_TERMINAL_PROCESSING |
                      DISABLE_NEWLINE_AUTO_RETURN;
     if (!SetConsoleMode(in, in_mode) || !SetConsoleMode(out, out_mode)) {
       return -1;
     }
+    // The parser reads UTF-8 and the renderer writes it, whatever code page the
+    // console was opened with.
+    SetConsoleCP(CP_UTF8);
+    SetConsoleOutputCP(CP_UTF8);
     return 0;
   }
   if (saved) {
     SetConsoleMode(in, saved_in_mode);
     SetConsoleMode(out, saved_out_mode);
+    SetConsoleCP(saved_in_cp);
+    SetConsoleOutputCP(saved_out_cp);
+  }
+  return 0;
+}
+
+// Whether a read would return at once. ReadFile waits for a character, but the
+// handle is signalled by any record, a modifier pressed alone among them; those
+// are dropped here so the wait does not wake for them again.
+static int characters_waiting(HANDLE in) {
+  INPUT_RECORD records[64];
+  DWORD count = 0;
+  while (PeekConsoleInputW(in, records, 64, &count) && count > 0) {
+    for (DWORD i = 0; i < count; i++) {
+      if (records[i].EventType == KEY_EVENT &&
+          records[i].Event.KeyEvent.bKeyDown &&
+          records[i].Event.KeyEvent.uChar.UnicodeChar != 0) {
+        return 1;
+      }
+    }
+    DWORD dropped = 0;
+    if (!ReadConsoleInputW(in, records, count, &dropped)) {
+      return 0;
+    }
   }
   return 0;
 }
@@ -69,7 +106,7 @@ MOONBIT_FFI_EXPORT
 int32_t moonetui_tty_read(uint8_t *buf, int32_t len, int32_t timeout_ms) {
   HANDLE in = GetStdHandle(STD_INPUT_HANDLE);
   DWORD ready = WaitForSingleObject(in, (DWORD)(timeout_ms < 0 ? 0 : timeout_ms));
-  if (ready != WAIT_OBJECT_0) {
+  if (ready != WAIT_OBJECT_0 || !characters_waiting(in)) {
     return 0;
   }
   DWORD got = 0;

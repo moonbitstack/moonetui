@@ -185,8 +185,8 @@ test "an inline border and padding frame the content" {
       1,
       @widget.Static::new("hi"),
       styles=@design.Styles::new(
-        border=Some(@design.Thin),
-        padding=Some(@geom.Spacing::all(1)),
+        border=@design.Thin,
+        padding=@geom.Spacing::all(1),
       ),
     ),
   ])
@@ -203,11 +203,11 @@ test "a class rule outweighs the name rule it beats" {
   let sheet = @design.Stylesheet::new()
   sheet.add(
     @design.Sel::new(name="Panel"),
-    @design.Styles::new(border=Some(@design.Ascii)),
+    @design.Styles::new(border=@design.Ascii),
   )
   sheet.add(
     @design.Sel::new(classes=["fancy"]),
-    @design.Styles::new(border=Some(@design.Double)),
+    @design.Styles::new(border=@design.Double),
   )
   let tree = @app.column(0, [
     @app.leaf(1, @widget.Static::new("x"), name="Panel", classes=["fancy"]),
@@ -225,14 +225,14 @@ test "inline styles sit on top of the rules" {
   let sheet = @design.Stylesheet::new()
   sheet.add(
     @design.Sel::new(name="Panel"),
-    @design.Styles::new(border=Some(@design.Thin)),
+    @design.Styles::new(border=@design.Thin),
   )
   let tree = @app.column(0, [
     @app.leaf(
       1,
       @widget.Static::new("x"),
       name="Panel",
-      styles=@design.Styles::new(border=Some(@design.Round)),
+      styles=@design.Styles::new(border=@design.Round),
     ),
   ])
   let tty = @driver.Headless::new(@geom.Size::new(6, 3))
@@ -249,7 +249,7 @@ test "a hidden node and its slot are gone" {
     @app.leaf(
       1,
       @widget.Static::new("a"),
-      styles=@design.Styles::new(display=Some(@design.Hidden)),
+      styles=@design.Styles::new(display=@design.Hidden),
     ),
     @app.leaf(2, @widget.Static::new("b")),
   ])
@@ -264,7 +264,7 @@ test "a rule can hide a node it matches" {
   let sheet = @design.Stylesheet::new()
   sheet.add(
     @design.Sel::new(classes=["gone"]),
-    @design.Styles::new(display=Some(@design.Hidden)),
+    @design.Styles::new(display=@design.Hidden),
   )
   let tree = @app.row(0, [
     @app.leaf(1, @widget.Static::new("a"), classes=["gone"]),
@@ -282,7 +282,7 @@ test "margin keeps space the node does not draw in" {
     @app.leaf(
       1,
       @widget.Static::new("ab"),
-      styles=@design.Styles::new(margin=Some(@geom.Spacing::horizontal(1))),
+      styles=@design.Styles::new(margin=@geom.Spacing::horizontal(1)),
     ),
     @app.leaf(2, @widget.Static::new("cd")),
   ])
@@ -297,11 +297,11 @@ test "a focus rule restyles the widget focus moves onto" {
   let sheet = @design.Stylesheet::new()
   sheet.add(
     @design.Sel::new(focus=true),
-    @design.Styles::new(border=Some(@design.Heavy)),
+    @design.Styles::new(border=@design.Heavy),
   )
   sheet.add(
     @design.Sel::new(name="Edge"),
-    @design.Styles::new(border=Some(@design.Thin)),
+    @design.Styles::new(border=@design.Thin),
   )
   let tree = @app.row(0, [
     @app.leaf(
@@ -334,7 +334,7 @@ test "alignment puts a short block where the style says" {
   let tree = @app.column(
     0,
     [@app.leaf(1, @widget.Button::new("go"))],
-    styles=@design.Styles::new(align=Some(@design.Align::new(v=@design.Middle))),
+    styles=@design.Styles::new(align=@design.Align::new(v=@design.Middle)),
   )
   let tty = @driver.Headless::new(@geom.Size::new(6, 5))
   let ui = @app.App::new(tty, tree)
@@ -347,7 +347,7 @@ test "a container's background is placed behind its children" {
   let sheet = @design.Stylesheet::new()
   sheet.add(
     @design.Sel::new(name="Panel"),
-    @design.Styles::new(text=Some(@style.Style::new(bg=@style.blue))),
+    @design.Styles::new(text=@style.Style::new(bg=@style.blue)),
   )
   let tree = @app.column(
     0,

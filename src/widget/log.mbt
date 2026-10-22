@@ -17,7 +17,7 @@ pub struct Log {
 
 ///|
 pub fn Log::new(
-  max_lines~ : Int32? = None,
+  max_lines? : Int32,
   auto_scroll~ : Bool = true,
   style~ : @style.Style = @style.Style::new(),
 ) -> Log {
@@ -51,11 +51,7 @@ pub fn Log::line_count(self : Log) -> Int32 {
 }
 
 ///|
-pub fn Log::write(
-  self : Log,
-  data : String,
-  scroll_end~ : Bool? = None,
-) -> Unit {
+pub fn Log::write(self : Log, data : String, scroll_end? : Bool) -> Unit {
   let was_end = self.at_end()
   if data.length() > 0 {
     if self.lines.length() == 0 {
@@ -78,19 +74,15 @@ pub fn Log::write(
 }
 
 ///|
-pub fn Log::write_line(
-  self : Log,
-  line : String,
-  scroll_end~ : Bool? = None,
-) -> Unit {
-  self.write_lines([line], scroll_end~)
+pub fn Log::write_line(self : Log, line : String, scroll_end? : Bool) -> Unit {
+  self.write_lines([line], scroll_end?)
 }
 
 ///|
 pub fn Log::write_lines(
   self : Log,
   lines : Array[String],
-  scroll_end~ : Bool? = None,
+  scroll_end? : Bool,
 ) -> Unit {
   let was_end = self.at_end()
   for line in lines {

@@ -253,7 +253,7 @@ pub fn grid_slots(
     out.clear()
     settled = true
     for kid in kids {
-      let cs = at_least_one(kid.col_span)
+      let cs = col_span(kid, cols)
       let rs = at_least_one(kid.row_span)
       let mut found : (Int32, Int32)? = None
       let top = rows - rs + 1
@@ -356,7 +356,16 @@ pub fn arrange_grid(
   let heights = grid_row_heights(kids, slots)
   let nrows = heights.length()
   let gut_w = gutter * (cols - 1)
-  let col_w = if area.width > gut_w { (area.width - gut_w) / cols } else { 0 }
+  let room = at_least_zero(area.width - gut_w)
+  let col_x : Array[Int32] = []
+  let col_w : Array[Int32] = []
+  let mut x = area.x
+  for c in 0..<cols {
+    let w = room / cols + (if c < room % cols { 1 } else { 0 })
+    col_x.push(x)
+    col_w.push(w)
+    x = x + w + gutter
+  }
   let mut total = gutter * (nrows - 1)
   for h in heights {
     total = total + h
@@ -379,21 +388,33 @@ pub fn arrange_grid(
   }
   for i in 0..<kids.length() {
     let (r, c) = slots[i]
-    let cs = at_least_one(kids[i].col_span)
+    let cs = col_span(kids[i], cols)
     let rs = at_least_one(kids[i].row_span)
     let mut h = (rs - 1) * gutter
     for k in 0..<rs {
       h = h + row_h[r + k]
     }
+    let last = c + cs - 1
     let rect = @geom.Region::new(
-      area.x + c * (col_w + gutter),
+      col_x[c],
       row_y[r],
-      cs * col_w + (cs - 1) * gutter,
+      col_x[last] + col_w[last] - col_x[c],
       h,
     )
     out.push(rect.intersection(area))
   }
   out
+}
+
+///|
+/// A column span held to the grid: a child cannot reach past the last column.
+fn col_span(kid : GridChild, cols : Int32) -> Int32 {
+  let span = at_least_one(kid.col_span)
+  if span > cols {
+    cols
+  } else {
+    span
+  }
 }
 
 ///|

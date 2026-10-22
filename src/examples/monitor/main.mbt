@@ -8,22 +8,22 @@ fn sheet() -> @design.Stylesheet {
   let sheet = @design.Stylesheet::new()
   sheet.add(
     @design.Sel::new(),
-    @design.Styles::new(text=Some(@style.Style::new(fg=@style.bright_white))),
+    @design.Styles::new(text=@style.Style::new(fg=@style.bright_white)),
   )
   sheet.add(
     @design.Sel::new(name="Header"),
-    @design.Styles::new(text=Some(@style.Style::new(bold=true, fg=@style.cyan))),
+    @design.Styles::new(text=@style.Style::new(bold=true, fg=@style.cyan)),
   )
   sheet.add(
     @design.Sel::new(classes=["framed"]),
     @design.Styles::new(
-      border=Some(@design.Round),
-      padding=Some(@geom.Spacing::horizontal(1)),
+      border=@design.Round,
+      padding=@geom.Spacing::horizontal(1),
     ),
   )
   sheet.add(
     @design.Sel::new(focus=true),
-    @design.Styles::new(border=Some(@design.Heavy)),
+    @design.Styles::new(border=@design.Heavy),
   )
   sheet
 }
@@ -60,7 +60,7 @@ fn main raise {
   let head = @widget.Header::new("monitor", note="ctrl-c to quit")
   let table = services()
   let tree = regions()
-  let feed = @widget.RichLog::new(max_lines=Some(200))
+  let feed = @widget.RichLog::new(max_lines=200)
   feed.write("monitor started", style=@style.Style::new(fg=@style.cyan))
   let panes : Array[&@widget.Widget] = [table, tree, feed]
   let tabs = @widget.TabbedContent::new(

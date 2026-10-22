@@ -762,8 +762,8 @@ fn[D] App::scroll_key(self : App[D], key : @event.Key) -> Bool {
     PageDown => state.scroll_by(dy=state.vh)
     Left => state.scroll_by(dx=-1)
     Right => state.scroll_by(dx=1)
-    Home => state.scroll_to(y=Some(0))
-    End => state.scroll_to(y=Some(state.max_y()))
+    Home => state.scroll_to(y=0)
+    End => state.scroll_to(y=state.max_y())
     _ => false
   }
   if moved {
@@ -856,14 +856,14 @@ fn[D] App::ensure_visible(self : App[D], id : Int32) -> Unit {
     let right = left + rect.width
     let mut moved = false
     if top < state.y {
-      moved = state.scroll_to(y=Some(top)) || moved
+      moved = state.scroll_to(y=top) || moved
     } else if bottom > state.y + state.vh {
-      moved = state.scroll_to(y=Some(bottom - state.vh)) || moved
+      moved = state.scroll_to(y=bottom - state.vh) || moved
     }
     if left < state.x {
-      moved = state.scroll_to(x=Some(left)) || moved
+      moved = state.scroll_to(x=left) || moved
     } else if right > state.x + state.vw {
-      moved = state.scroll_to(x=Some(right - state.vw)) || moved
+      moved = state.scroll_to(x=right - state.vw) || moved
     }
     if moved {
       self.dirty = true

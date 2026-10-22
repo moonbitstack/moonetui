@@ -191,8 +191,60 @@ test "every sequence parses the same whether split or whole" {
     ascii("\u{1b}[200~pasted\u{1b}[201~"),
     ascii("\u{1b}a"),
     bytes([0xE4, 0xB8, 0xAD, 0x0D, 0x1B, 0x5B, 0x42]),
+    ascii("\u{1b}OA"),
+    ascii("\u{1b}[2 q"),
+    ascii("\u{1b}[?1;2c"),
+    bytes([0x1B, 0x7F]),
   ]
   for sample in corpus {
     assert_eq(parse_split(sample), parse(sample))
   }
+}
+
+///|
+let alt : @event.Mods = { ctrl: false, alt: true, shift: false, }
+
+///|
+test "a sequence with an intermediate byte is passed over whole" {
+  assert_eq(parse(ascii("\u{1b}[2 qa")), [Key(@event.Key::char(97))])
+  assert_eq(parse(ascii("\u{1b}[?1;2$yb")), [Key(@event.Key::char(98))])
+}
+
+///|
+test "a private sequence that is not a mouse report is passed over" {
+  assert_eq(parse(ascii("\u{1b}[?1;2cx")), [Key(@event.Key::char(120))])
+  assert_eq(parse(ascii("\u{1b}[?5u")), [])
+}
+
+///|
+test "arrows, home and end arrive in the SS3 spelling too" {
+  assert_eq(parse(ascii("\u{1b}OA\u{1b}OB\u{1b}OC\u{1b}OD\u{1b}OH\u{1b}OF")), [
+    Key(@event.Key::of(Up)),
+    Key(@event.Key::of(Down)),
+    Key(@event.Key::of(Right)),
+    Key(@event.Key::of(Left)),
+    Key(@event.Key::of(Home)),
+    Key(@event.Key::of(End)),
+  ])
+}
+
+///|
+test "an SS3 key nobody recognises is dropped, not typed" {
+  assert_eq(parse(ascii("\u{1b}OZq")), [Key(@event.Key::char(113))])
+}
+
+///|
+test "alt with a control key keeps the key it names" {
+  assert_eq(parse(bytes([0x1B, 0x7F])), [
+    Key(@event.Key::with_mods(Backspace, alt)),
+  ])
+  assert_eq(parse(bytes([0x1B, 0x0D])), [Key(@event.Key::with_mods(Enter, alt))])
+  assert_eq(parse(bytes([0x1B, 0x1B])), [
+    Key(@event.Key::with_mods(Escape, alt)),
+  ])
+  assert_eq(parse(bytes([0x1B, 0x01])), [
+    Key(
+      @event.Key::with_mods(Char(97), { ctrl: true, alt: true, shift: false, }),
+    ),
+  ])
 }

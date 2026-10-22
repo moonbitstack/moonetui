@@ -14,7 +14,7 @@ test "rich log writes padded strips" {
 ///|
 test "rich log wraps words when asked" {
   let log = @widget.RichLog::new(min_width=8, wrap=true)
-  log.write("aaa bbb ccc", width=Some(8))
+  log.write("aaa bbb ccc", width=8)
   assert_eq(log.line_count(), 2)
   let w : &@widget.Widget = log
   assert_eq(rows(w, size(8, 4)), [
@@ -25,7 +25,7 @@ test "rich log wraps words when asked" {
 ///|
 test "rich log honours a caller width" {
   let log = @widget.RichLog::new()
-  log.write("abcdef", width=Some(3))
+  log.write("abcdef", width=3)
   let w : &@widget.Widget = log
   assert_eq(rows(w, size(4, 2)), ["abc ", "    "])
   assert_eq(log.hint(size(80, 24)), size(3, 1))
@@ -33,7 +33,7 @@ test "rich log honours a caller width" {
 
 ///|
 test "rich log prunes and clears" {
-  let log = @widget.RichLog::new(max_lines=Some(2))
+  let log = @widget.RichLog::new(max_lines=2)
   for i in 0..<4 {
     log.write("n\{i}")
   }

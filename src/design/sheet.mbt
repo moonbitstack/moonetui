@@ -54,37 +54,18 @@ pub fn Sel::matches(
   if self.disabled && !disabled {
     return false
   }
-  for wanted in self.classes {
-    let mut found = false
-    for own in classes {
-      if own == wanted {
-        found = true
-        break
-      }
-    }
-    if !found {
-      return false
-    }
-  }
-  true
+  self.classes.iter().all(wanted => classes.contains(wanted))
 }
 
 ///|
+/// The CSS weight of the selector: ids, then classes and pseudo-classes, then
+/// names, packed so that one number orders the same way the triple does.
 pub fn Sel::specificity(self : Sel) -> Int32 {
-  let id = if self.id >= 0 { 100 } else { 0 }
-  let mut state = 0
-  if self.focus {
-    state = state + 10
-  }
-  if self.hover {
-    state = state + 10
-  }
-  if self.disabled {
-    state = state + 10
-  }
-  let class = self.classes.length() * 10 + state
-  let named = if self.name.length() > 0 { 1 } else { 0 }
-  id + class + named
+  let ids = if self.id >= 0 { 1 } else { 0 }
+  let states = [self.focus, self.hover, self.disabled].filter(on => on).length()
+  let classes = self.classes.length() + states
+  let names = if self.name.length() > 0 { 1 } else { 0 }
+  ids * 1_000_000 + classes * 1_000 + names
 }
 
 ///|

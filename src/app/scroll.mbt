@@ -35,8 +35,8 @@ pub fn ScrollState::max_y(self : ScrollState) -> Int32 {
 ///|
 pub fn ScrollState::scroll_to(
   self : ScrollState,
-  x~ : Int32? = None,
-  y~ : Int32? = None,
+  x? : Int32,
+  y? : Int32,
 ) -> Bool {
   let to_x = match x {
     Some(value) => clamp_int(value, 0, self.max_x())
@@ -60,7 +60,7 @@ pub fn ScrollState::scroll_by(
   dx~ : Int32 = 0,
   dy~ : Int32 = 0,
 ) -> Bool {
-  self.scroll_to(x=Some(self.x + dx), y=Some(self.y + dy))
+  self.scroll_to(x=self.x + dx, y=self.y + dy)
 }
 
 ///|

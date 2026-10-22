@@ -4,10 +4,10 @@
 ///|
 test "merge replaces what is set and keeps what is not" {
   let lower = @design.Styles::new(
-    border=Some(@design.Thin),
-    padding=Some(@geom.Spacing::all(1)),
+    border=@design.Thin,
+    padding=@geom.Spacing::all(1),
   )
-  let upper = @design.Styles::new(border=Some(@design.Heavy))
+  let upper = @design.Styles::new(border=@design.Heavy)
   let merged = lower.merge(upper)
   assert_eq(merged.border, Some(@design.Heavy))
   assert_eq(merged.padding, Some(@geom.Spacing::all(1)))
@@ -17,9 +17,9 @@ test "merge replaces what is set and keeps what is not" {
 ///|
 test "merge layers a set text style field by field" {
   let lower = @design.Styles::new(
-    text=Some(@style.Style::new(fg=@style.white, bg=@style.blue)),
+    text=@style.Style::new(fg=@style.white, bg=@style.blue),
   )
-  let upper = @design.Styles::new(text=Some(@style.Style::new(bg=@style.green)))
+  let upper = @design.Styles::new(text=@style.Style::new(bg=@style.green))
   let merged = lower.merge(upper)
   let text = match merged.text {
     Some(text) => text
@@ -32,12 +32,12 @@ test "merge layers a set text style field by field" {
 ///|
 test "a hidden display hides, a block display does not" {
   let hidden = @design.Resolved::of(
-    @design.Styles::new(display=Some(@design.Hidden)),
+    @design.Styles::new(display=@design.Hidden),
     @style.default,
   )
   assert_eq(hidden.hidden, true)
   let shown = @design.Resolved::of(
-    @design.Styles::new(display=Some(@design.Block)),
+    @design.Styles::new(display=@design.Block),
     @style.default,
   )
   assert_eq(shown.hidden, false)
@@ -48,11 +48,7 @@ test "a hidden display hides, a block display does not" {
 test "a resolved box overrides the axis the stack is stacking along" {
   let base = @layout.Box::new(extent=Frac(1), min=1, max=4)
   let resolved = @design.Resolved::of(
-    @design.Styles::new(
-      height=Some(Cells(2)),
-      width=Some(Cells(9)),
-      max_height=Some(8),
-    ),
+    @design.Styles::new(height=Cells(2), width=Cells(9), max_height=8),
     @style.default,
   )
   let vertical = resolved.box(Vertical, base)
@@ -70,10 +66,7 @@ test "a border and a padding both take from the content region" {
   let plain = @design.Resolved::of(@design.empty, @style.default)
   assert_eq(plain.content_region(outer), outer)
   let framed = @design.Resolved::of(
-    @design.Styles::new(
-      border=Some(@design.Thin),
-      padding=Some(@geom.Spacing::all(1)),
-    ),
+    @design.Styles::new(border=@design.Thin, padding=@geom.Spacing::all(1)),
     @style.default,
   )
   assert_eq(framed.content_region(outer), @geom.Region::new(2, 2, 6, 2))
@@ -84,12 +77,12 @@ test "chrome is drawn for borders, padding, and styled text, not for bare text" 
   let bare_node = @design.Resolved::of(@design.empty, @style.default)
   assert_eq(bare_node.has_chrome(), false)
   let borderless = @design.Resolved::of(
-    @design.Styles::new(text=Some(@style.Style::new(bg=@style.blue))),
+    @design.Styles::new(text=@style.Style::new(bg=@style.blue)),
     @style.default,
   )
   assert_eq(borderless.has_chrome(), true)
   let framed = @design.Resolved::of(
-    @design.Styles::new(border=Some(@design.Ascii)),
+    @design.Styles::new(border=@design.Ascii),
     @style.default,
   )
   assert_eq(framed.has_chrome(), true)
@@ -135,8 +128,8 @@ test "align divides the slack along the stacking axis" {
 
 ///|
 test "offset and scrollbar styles merge like the rest" {
-  let under = @design.Styles::new(offset_x=Some(1))
-  let over = @design.Styles::new(offset_y=Some(2), transition=Some(50))
+  let under = @design.Styles::new(offset_x=1)
+  let over = @design.Styles::new(offset_y=2, transition=50)
   let merged = under.merge(over)
   assert_eq(merged.offset_x, Some(1))
   assert_eq(merged.offset_y, Some(2))
