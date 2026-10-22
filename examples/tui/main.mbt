@@ -23,6 +23,10 @@ fn sheet() -> @design.Stylesheet {
     @design.Sel::new(focus=true),
     @design.Styles::new(border=Some(@design.Heavy)),
   )
+  sheet.add(
+    @design.Sel::new(classes=["bar"]),
+    @design.Styles::new(dock=Some(@design.Bottom)),
+  )
   sheet
 }
 
@@ -37,6 +41,19 @@ fn pane(list : @widget.ListView) -> @app.Node {
     )
   }
   @app.column(7, kids, gap=1)
+}
+
+///|
+fn dial(bar : @widget.Progress, field : @widget.Input) -> @app.Node {
+  @app.grid(
+    8,
+    [
+      @app.leaf(4, bar),
+      @app.leaf(3, field, styles=@design.Styles::new(column_span=Some(2))),
+    ],
+    cols=2,
+    gutter=1,
+  )
 }
 
 ///|
@@ -59,11 +76,8 @@ fn main raise {
     @app.scroll(6, pane(list), box=@layout.Box::new(extent=Frac(1)), classes=[
       "framed",
     ]),
-    @app.leaf(3, field, box=@layout.Box::new(extent=Cells(1)), classes=[
-      "framed",
-    ]),
-    @app.leaf(4, bar, box=@layout.Box::new(extent=Cells(1))),
-    @app.leaf(5, foot, box=@layout.Box::new(extent=Cells(1))),
+    dial(bar, field),
+    @app.leaf(5, foot, box=@layout.Box::new(extent=Cells(1)), classes=["bar"]),
   ])
   let tty = @native.NativeTty::new()
   let ui = @app.App::new(tty, tree, sheet=sheet())

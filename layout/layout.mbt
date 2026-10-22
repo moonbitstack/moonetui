@@ -195,6 +195,217 @@ fn at_least_zero(value : Int32) -> Int32 {
 }
 
 ///|
+pub(all) struct GridChild {
+  col_span : Int32
+  row_span : Int32
+  height : Int32
+} derive(Eq, Debug)
+
+///|
+pub extend GridChild with Debug::{to_repr}
+
+///|
+pub extend GridChild with Eq::{not_equal, equal}
+
+///|
+pub fn GridChild::new(
+  col_span~ : Int32 = 1,
+  row_span~ : Int32 = 1,
+  height~ : Int32 = 0,
+) -> GridChild {
+  { col_span, row_span, height, }
+}
+
+///|
+/// The cell each child lands in, row-major over the first free block that
+/// fits its spans. A `rows` of zero or less grows rows until every child
+/// fits, which is how Textual's grid-size without a row count behaves.
+pub fn grid_slots(
+  kids : Array[GridChild],
+  cols~ : Int32,
+  rows~ : Int32 = 0,
+) -> Array[(Int32, Int32)] {
+  let cols = if cols < 1 { 1 } else { cols }
+  let count = kids.length()
+  let mut rows = if rows > 0 {
+    rows
+  } else if count == 0 {
+    1
+  } else {
+    (count + cols - 1) / cols
+  }
+  if rows < 1 {
+    rows = 1
+  }
+  let out : Array[(Int32, Int32)] = []
+  let mut settled = false
+  let mut rounds = 0
+  while !settled && rounds <= count + 1 {
+    rounds = rounds + 1
+    let occ : Array[Array[Bool]] = []
+    for _r in 0..<rows {
+      let line : Array[Bool] = []
+      for _c in 0..<cols {
+        line.push(false)
+      }
+      occ.push(line)
+    }
+    out.clear()
+    settled = true
+    for kid in kids {
+      let cs = at_least_one(kid.col_span)
+      let rs = at_least_one(kid.row_span)
+      let mut found : (Int32, Int32)? = None
+      let top = rows - rs + 1
+      if top > 0 {
+        for r in 0..<top {
+          if found != None {
+            break
+          }
+          let across = cols - cs + 1
+          if across > 0 {
+            for c in 0..<across {
+              if cell_free(occ, r, c, rs, cs) {
+                found = Some((r, c))
+                break
+              }
+            }
+          }
+        }
+      }
+      match found {
+        Some((r, c)) => {
+          for dr in 0..<rs {
+            for dc in 0..<cs {
+              occ[r + dr][c + dc] = true
+            }
+          }
+          out.push((r, c))
+        }
+        None => {
+          rows = rows + 1
+          settled = false
+          break
+        }
+      }
+    }
+  }
+  out
+}
+
+///|
+fn cell_free(
+  occ : Array[Array[Bool]],
+  row : Int32,
+  col : Int32,
+  rows : Int32,
+  cols : Int32,
+) -> Bool {
+  for r in 0..<rows {
+    for c in 0..<cols {
+      if occ[row + r][col + c] {
+        return false
+      }
+    }
+  }
+  true
+}
+
+///|
+/// What each row of the grid asks for: the tallest child that touches it,
+/// counting a spanning child's height once per row it covers.
+pub fn grid_row_heights(
+  kids : Array[GridChild],
+  slots : Array[(Int32, Int32)],
+) -> Array[Int32] {
+  let mut nrows = 1
+  for i in 0..<kids.length() {
+    let (r, _) = slots[i]
+    let rs = at_least_one(kids[i].row_span)
+    if r + rs > nrows {
+      nrows = r + rs
+    }
+  }
+  let heights = Array::make(nrows, 0)
+  for i in 0..<kids.length() {
+    let (r, _) = slots[i]
+    let rs = at_least_one(kids[i].row_span)
+    let share = (at_least_zero(kids[i].height) + rs - 1) / rs
+    for k in 0..<rs {
+      if share > heights[r + k] {
+        heights[r + k] = share
+      }
+    }
+  }
+  heights
+}
+
+///|
+/// Regions for the slots `grid_slots` handed out: equal columns, rows tall
+/// enough for their content with the leftover shared out evenly, gutters
+/// between cells.
+pub fn arrange_grid(
+  area : @geom.Region,
+  slots : Array[(Int32, Int32)],
+  kids : Array[GridChild],
+  cols~ : Int32,
+  gutter~ : Int32 = 0,
+) -> Array[@geom.Region] {
+  let cols = at_least_one(cols)
+  let out : Array[@geom.Region] = []
+  let heights = grid_row_heights(kids, slots)
+  let nrows = heights.length()
+  let gut_w = gutter * (cols - 1)
+  let col_w = if area.width > gut_w { (area.width - gut_w) / cols } else { 0 }
+  let mut total = gutter * (nrows - 1)
+  for h in heights {
+    total = total + h
+  }
+  let slack = area.height - total
+  let extra = if slack > 0 { slack / nrows } else { 0 }
+  let mut rem = if slack > 0 { slack % nrows } else { 0 }
+  let row_y : Array[Int32] = []
+  let row_h : Array[Int32] = []
+  let mut y = area.y
+  for r in 0..<nrows {
+    let mut h = heights[r] + extra
+    if rem > 0 {
+      h = h + 1
+      rem = rem - 1
+    }
+    row_y.push(y)
+    row_h.push(h)
+    y = y + h + gutter
+  }
+  for i in 0..<kids.length() {
+    let (r, c) = slots[i]
+    let cs = at_least_one(kids[i].col_span)
+    let rs = at_least_one(kids[i].row_span)
+    let mut h = (rs - 1) * gutter
+    for k in 0..<rs {
+      h = h + row_h[r + k]
+    }
+    let rect = @geom.Region::new(
+      area.x + c * (col_w + gutter),
+      row_y[r],
+      cs * col_w + (cs - 1) * gutter,
+      h,
+    )
+    out.push(rect.intersection(area))
+  }
+  out
+}
+
+///|
+fn at_least_one(value : Int32) -> Int32 {
+  if value < 1 {
+    1
+  } else {
+    value
+  }
+}
+
+///|
 pub extend Box with Debug::{to_repr}
 
 ///|

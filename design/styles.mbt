@@ -80,6 +80,20 @@ pub fn Align::main_offset(
 }
 
 ///|
+pub(all) enum Edge {
+  Top
+  Right
+  Bottom
+  Left
+} derive(Eq, Debug)
+
+///|
+pub extend Edge with Debug::{to_repr}
+
+///|
+pub extend Edge with Eq::{not_equal, equal}
+
+///|
 pub(all) enum EdgeKind {
   Off
   Ascii
@@ -150,6 +164,9 @@ pub(all) struct Styles {
   margin : @geom.Spacing?
   border : EdgeKind?
   align : Align?
+  dock : Edge?
+  column_span : Int32?
+  row_span : Int32?
   text : @style.Style?
 } derive(Eq, Debug)
 
@@ -172,6 +189,9 @@ pub let empty : Styles = {
   margin: None,
   border: None,
   align: None,
+  dock: None,
+  column_span: None,
+  row_span: None,
   text: None,
 }
 
@@ -188,6 +208,9 @@ pub fn Styles::new(
   margin~ : @geom.Spacing? = None,
   border~ : EdgeKind? = None,
   align~ : Align? = None,
+  dock~ : Edge? = None,
+  column_span~ : Int32? = None,
+  row_span~ : Int32? = None,
   text~ : @style.Style? = None,
 ) -> Styles {
   {
@@ -202,6 +225,9 @@ pub fn Styles::new(
     margin,
     border,
     align,
+    dock,
+    column_span,
+    row_span,
     text,
   }
 }
@@ -225,6 +251,9 @@ pub fn Styles::merge(self : Styles, other : Styles) -> Styles {
     margin: pick(other.margin, self.margin),
     border: pick(other.border, self.border),
     align: pick(other.align, self.align),
+    dock: pick(other.dock, self.dock),
+    column_span: pick(other.column_span, self.column_span),
+    row_span: pick(other.row_span, self.row_span),
     text: match (self.text, other.text) {
       (Some(lower), Some(upper)) => Some(lower.merge(upper))
       (_, Some(upper)) => Some(upper)
@@ -249,6 +278,9 @@ pub(all) struct Resolved {
   padding : @geom.Spacing
   border : EdgeKind
   align : Align
+  dock : Edge?
+  column_span : Int32?
+  row_span : Int32?
   width : @layout.Extent?
   height : @layout.Extent?
   min_width : Int32?
@@ -271,6 +303,9 @@ pub let bare : Resolved = {
   padding: { top: 0, right: 0, bottom: 0, left: 0, },
   border: Off,
   align: Align::new(),
+  dock: None,
+  column_span: None,
+  row_span: None,
   width: None,
   height: None,
   min_width: None,
@@ -307,6 +342,9 @@ pub fn Resolved::of(styles : Styles, inherited : @style.Style) -> Resolved {
       Some(align) => align
       None => bare.align
     },
+    dock: styles.dock,
+    column_span: styles.column_span,
+    row_span: styles.row_span,
     width: styles.width,
     height: styles.height,
     min_width: styles.min_width,

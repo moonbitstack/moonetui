@@ -144,3 +144,26 @@ test "horizontal and vertical are the same rules on the other axis" {
   assert_eq(across[0], @geom.Region::new(0, 0, 5, 10))
   assert_eq(across[1], @geom.Region::new(5, 0, 15, 10))
 }
+
+///|
+test "rows grow until every child has a cell" {
+  let kids : Array[@layout.GridChild] = []
+  for _ in 0..<3 {
+    kids.push(@layout.GridChild::new(col_span=2, height=1))
+  }
+  assert_eq(@layout.grid_slots(kids, cols=2), [(0, 0), (1, 0), (2, 0)])
+}
+
+///|
+test "spans claim the first free block that fits" {
+  let kids = [
+    @layout.GridChild::new(col_span=2, height=1),
+    @layout.GridChild::new(height=1),
+    @layout.GridChild::new(row_span=2, height=2),
+    @layout.GridChild::new(height=1),
+  ]
+  let slots = @layout.grid_slots(kids, cols=3, rows=2)
+  assert_eq(slots, [(0, 0), (0, 2), (1, 0), (1, 1)])
+  let heights = @layout.grid_row_heights(kids, slots)
+  assert_eq(heights, [1, 1, 1])
+}

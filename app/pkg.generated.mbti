@@ -17,6 +17,8 @@ import {
 // Values
 pub fn column(Int32, Array[Node], box? : @layout.Box, gap? : Int32, name? : String, classes? : Array[String], styles? : @design.Styles) -> Node
 
+pub fn grid(Int32, Array[Node], cols~ : Int32, rows? : Int32, gutter? : Int32, box? : @layout.Box, name? : String, classes? : Array[String], styles? : @design.Styles) -> Node
+
 pub fn leaf(Int32, &@widget.Widget, box? : @layout.Box, name? : String, classes? : Array[String], styles? : @design.Styles) -> Node
 
 pub fn row(Int32, Array[Node], box? : @layout.Box, gap? : Int32, name? : String, classes? : Array[String], styles? : @design.Styles) -> Node
@@ -63,6 +65,7 @@ pub fn[D : @driver.Driver] App::stop(Self[D]) -> Unit raise
 pub enum Node {
   Leaf(id~ : Int32, widget~ : &@widget.Widget, box~ : @layout.Box, name~ : String, classes~ : Array[String], styles~ : @design.Styles)
   Stack(id~ : Int32, dir~ : @layout.Dir, box~ : @layout.Box, gap~ : Int32, kids~ : Array[Node], name~ : String, classes~ : Array[String], styles~ : @design.Styles)
+  Grid(id~ : Int32, cols~ : Int32, rows~ : Int32, gutter~ : Int32, box~ : @layout.Box, kids~ : Array[Node], name~ : String, classes~ : Array[String], styles~ : @design.Styles)
   Scroll(id~ : Int32, kid~ : Node, box~ : @layout.Box, state~ : ScrollState, bar~ : @style.Style, name~ : String, classes~ : Array[String], styles~ : @design.Styles)
 }
 pub fn Node::box(Self) -> @layout.Box

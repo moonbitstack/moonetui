@@ -9,7 +9,13 @@ import {
 // Values
 pub fn arrange(@geom.Region, Dir, Array[Box], Array[Int32], gap? : Int32) -> Array[@geom.Region]
 
+pub fn arrange_grid(@geom.Region, Array[(Int32, Int32)], Array[GridChild], cols~ : Int32, gutter? : Int32) -> Array[@geom.Region]
+
 pub fn cross_of(@geom.Size, Dir) -> Int32
+
+pub fn grid_row_heights(Array[GridChild], Array[(Int32, Int32)]) -> Array[Int32]
+
+pub fn grid_slots(Array[GridChild], cols~ : Int32, rows? : Int32) -> Array[(Int32, Int32)]
 
 pub fn main_of(@geom.Size, Dir) -> Int32
 
@@ -44,6 +50,16 @@ pub(all) enum Extent {
 pub fn Extent::equal(Self, Self) -> Bool
 pub fn Extent::not_equal(Self, Self) -> Bool
 pub fn Extent::to_repr(Self) -> @debug.Repr
+
+pub(all) struct GridChild {
+  col_span : Int32
+  row_span : Int32
+  height : Int32
+} derive(Eq, @debug.Debug)
+pub fn GridChild::equal(Self, Self) -> Bool
+pub fn GridChild::new(col_span? : Int32, row_span? : Int32, height? : Int32) -> Self
+pub fn GridChild::not_equal(Self, Self) -> Bool
+pub fn GridChild::to_repr(Self) -> @debug.Repr
 
 // Type aliases
 
