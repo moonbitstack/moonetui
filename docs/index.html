@@ -38,7 +38,7 @@
 <!-- ============================= HOME ============================= -->
 <section class="page" id="page-home">
   <div class="hero">
-    <div class="eyebrow"><span class="dot"></span>0.1.1 · four backends · 28 widgets</div>
+    <div class="eyebrow"><span class="dot"></span>0.1.1 · four backends · 32 widgets</div>
     <h1>Interfaces for the terminal,<br><span class="grad">down to the serial line.</span></h1>
     <p class="tag">moonetui is a terminal UI toolkit for <a href="https://www.moonbitlang.com/">MoonBit</a> — a synchronous, portable core with a cell buffer, a differential ANSI renderer, a CSS-like design system, and widgets that run the same on wasm, on Node, in the browser — and on a plain UART.</p>
     <div class="cta">
@@ -116,7 +116,7 @@
 moon add moonbitstack/moonetui</pre>
 
   <h3>Run the examples</h3>
-  <p>The same application three ways — a styled TUI on a real terminal, under Node, and on a browser canvas:</p>
+  <p>The same application three ways — a styled TUI on a real terminal, under Node, and on a browser canvas — plus a gallery of every widget and a bare-wire demo of the plain serial line:</p>
   <pre class="block"><span class="cm"># a real terminal (Unix or Windows)</span>
 moon run --target native examples/tui
 
@@ -124,7 +124,13 @@ moon run --target native examples/tui
 moon run --target js examples/hello
 
 <span class="cm"># in a browser — open it directly</span>
-start examples/browser/index.html</pre>
+start examples/browser/index.html
+
+<span class="cm"># every widget, rendered one after another</span>
+moon run --target native examples/gallery
+
+<span class="cm"># the same app as whole frames of text — a bare serial line</span>
+moon run --target native examples/uart</pre>
 
   <h3>A first application</h3>
   <p>Widgets are values. They render a line at a time, report what they want through typed messages, and never call back into your code:</p>
@@ -204,68 +210,354 @@ w.handle(ctx, @widget.Msg::Key(@event.Key::of(Enter)))
   </div>
 
   <h2>Widgets</h2>
-  <p class="lead">Thirty-two widgets, each with its own keyboard contract, message shape and rendering.</p>
-
+  <p class="lead">Thirty-two widgets, each with its own keyboard contract, message shape and rendering. Every snippet below is a live excerpt from <code class="inline">examples/gallery</code>, and every output block is what that example really renders.</p>
+  <pre class="block">moon run --target native examples/gallery</pre>
   <h3>Text and display</h3>
-  <table>
-    <thead><tr><th>Widget</th><th>What it does</th><th>Status</th></tr></thead>
-    <tbody>
-      <tr><td><code class="inline">Static</code> / <code class="inline">label()</code></td><td>Text, clipped at a character boundary, with left/centre/right alignment.</td><td><span class="pill ok">done</span></td></tr>
-      <tr><td><code class="inline">Header</code> · <code class="inline">Footer</code></td><td>The app chrome: a title bar and the bound key hints.</td><td><span class="pill ok">done</span></td></tr>
-      <tr><td><code class="inline">Rule</code></td><td>A horizontal or vertical rule in nine styles — ascii, blank, dashed, double, heavy, hidden, solid, thick.</td><td><span class="pill ok">done</span></td></tr>
-      <tr><td><code class="inline">Digits</code></td><td>Big 3×3 digit glyphs, plain or bold, for clocks and counters.</td><td><span class="pill ok">done</span></td></tr>
-      <tr><td><code class="inline">Sparkline</code></td><td>An eight-level block bar chart with bucketing and five summary functions — maximum, minimum, mean, median, latest.</td><td><span class="pill ok">done</span></td></tr>
-      <tr><td><code class="inline">Progress</code></td><td>A determinate progress bar with a total, or an indeterminate one that drifts.</td><td><span class="pill ok">done</span></td></tr>
-      <tr><td><code class="inline">LoadingIndicator</code></td><td>The five-dot pulse that says "working".</td><td><span class="pill ok">done</span></td></tr>
-      <tr><td><code class="inline">Placeholder</code></td><td>Three lorem variants in a twelve-colour palette, for mockups that cycle on click.</td><td><span class="pill ok">done</span></td></tr>
-    </tbody>
-  </table>
-
+  <div class="wcard">
+    <h4><code class="inline">Static</code></h4>
+    <p class="wdesc">Text clipped at a character boundary — left, centre or right; <code class="inline">label()</code> gives it a style in one call.</p>
+    <div class="wcols">
+      <pre class="block wcode">@widget.Static::new(&quot;Hello, moonetui&quot;, align=@widget.Align::Centre)</pre>
+      <div class="term-body wout">       Hello, moonetui</div>
+    </div>
+  </div>
+  <div class="wcard">
+    <h4><code class="inline">Header</code></h4>
+    <p class="wdesc">The title bar: the title in the centre, a note at the right edge — reverse video by default.</p>
+    <div class="wcols">
+      <pre class="block wcode">@widget.Header::new(&quot;moonetui&quot;, note=&quot;ctrl-c to quit&quot;)</pre>
+      <div class="term-body wout"><span class="rev">                   moonetui                   ctrl-c to quit</span></div>
+    </div>
+  </div>
+  <div class="wcard">
+    <h4><code class="inline">Footer</code></h4>
+    <p class="wdesc">The bound key hints along the bottom edge, from the pairs you pass in.</p>
+    <div class="wcols">
+      <pre class="block wcode">@widget.Footer::new([(&quot;tab&quot;, &quot;next&quot;), (&quot;enter&quot;, &quot;choose&quot;), (&quot;q&quot;, &quot;quit&quot;)])</pre>
+      <div class="term-body wout"> <span class="b">tab</span> next  <span class="b">enter</span> choose  <span class="b">q</span> quit</div>
+    </div>
+  </div>
+  <div class="wcard">
+    <h4><code class="inline">Rule</code></h4>
+    <p class="wdesc">A horizontal or vertical rule in nine styles — ascii, blank, dashed, double, heavy, hidden, solid, thick.</p>
+    <div class="wcols">
+      <pre class="block wcode">@widget.Rule::horizontal(kind=@widget.RuleKind::Heavy)</pre>
+      <div class="term-body wout">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</div>
+    </div>
+  </div>
+  <div class="wcard">
+    <h4><code class="inline">Digits</code></h4>
+    <p class="wdesc">Big 3-row digit glyphs, plain or bold, for clocks and counters — any character passes through.</p>
+    <div class="wcols">
+      <pre class="block wcode">@widget.Digits::new(value=&quot;12:34&quot;)</pre>
+      <div class="term-body wout">╶╮ ╶─╮   ╶─╮╷ ╷
+ │ ┌─┘ :  ─┤╰─┤
+╶┴╴╰─╴   ╶─╯  ╵</div>
+    </div>
+  </div>
+  <div class="wcard">
+    <h4><code class="inline">Sparkline</code></h4>
+    <p class="wdesc">An eight-level block bar chart with bucketing and five summary functions — maximum, minimum, mean, median, latest. Low readings lean green, high ones red.</p>
+    <div class="wcols">
+      <pre class="block wcode">@widget.Sparkline::new(data=[3.0, 5.0, 2.0, 8.0, 6.0, 4.0, 7.0])</pre>
+      <div class="term-body wout"><span class="green">▂▂▂▂▂</span><span class="gold">▄▄▄▄</span><span class="green">▁▁▁▁</span><span class="pink">█████</span><span class="gold">▅▅▅▅▃▃▃▃</span><span class="pink">▆▆▆▆</span></div>
+    </div>
+  </div>
+  <div class="wcard">
+    <h4><code class="inline">Progress</code></h4>
+    <p class="wdesc">A determinate bar against a total — or an indeterminate one that drifts on its own.</p>
+    <div class="wcols">
+      <pre class="block wcode">let bar = @widget.Progress::new(total=100)
+bar.set(62)</pre>
+      <div class="term-body wout">████████████████<span class="dim">           62%</span></div>
+    </div>
+  </div>
+  <div class="wcard">
+    <h4><code class="inline">LoadingIndicator</code></h4>
+    <p class="wdesc">The five-dot pulse that says "working"; the dots breathe on the tick.</p>
+    <div class="wcols">
+      <pre class="block wcode">@widget.LoadingIndicator::new()</pre>
+      <div class="term-body wout"> ● ● ● ● ●</div>
+    </div>
+  </div>
+  <div class="wcard">
+    <h4><code class="inline">Placeholder</code></h4>
+    <p class="wdesc">Three lorem variants in a twelve-colour palette — click to cycle, for mockups.</p>
+    <div class="wcols">
+      <pre class="block wcode">@widget.Placeholder::new(label=&quot;Widget slot&quot;)</pre>
+      <div class="term-body wout">       Widget slot</div>
+    </div>
+  </div>
   <h3>Text entry and logs</h3>
-  <table>
-    <thead><tr><th>Widget</th><th>What it does</th><th>Status</th></tr></thead>
-    <tbody>
-      <tr><td><code class="inline">Input</code></td><td>Single-line entry: cursor by grapheme, history, word ops, selection, paste.</td><td><span class="pill ok">done</span></td></tr>
-      <tr><td><code class="inline">TextArea</code></td><td>Multi-line editing — smart home, word movement, undo runs, a line-number gutter, selection and clipboard ops.</td><td><span class="pill ok">done</span></td></tr>
-      <tr><td><code class="inline">Log</code></td><td>A plain capture log: line tail-following, tab expansion, pruning, and scrolling that stays glued to the end.</td><td><span class="pill ok">done</span></td></tr>
-      <tr><td><code class="inline">RichLog</code></td><td>Styled strips with min-width, at-width, and greedy word wrap.</td><td><span class="pill ok">done</span></td></tr>
-    </tbody>
-  </table>
-
+  <div class="wcard">
+    <h4><code class="inline">Input</code></h4>
+    <p class="wdesc">Single-line entry: cursor by grapheme, history, word operations, selection, bracketed paste.</p>
+    <div class="wcols">
+      <pre class="block wcode">let field = @widget.Input::new(placeholder=&quot;type here&quot;)
+field.set(&quot;hello&quot;)</pre>
+      <div class="term-body wout">hello</div>
+    </div>
+  </div>
+  <div class="wcard">
+    <h4><code class="inline">TextArea</code></h4>
+    <p class="wdesc">Multi-line editing — smart home, word movement, undo runs, a line-number gutter, selection and clipboard operations.</p>
+    <div class="wcols">
+      <pre class="block wcode">let area = @widget.TextArea::new(show_line_numbers=true)
+area.load_text(&quot;line one\nline two\nline three&quot;)</pre>
+      <div class="term-body wout"> 1 line one
+ 2 line two
+ 3 line three</div>
+    </div>
+  </div>
+  <div class="wcard">
+    <h4><code class="inline">Log</code></h4>
+    <p class="wdesc">A plain capture log: line tail-following, tab expansion, pruning, and scrolling that stays glued to the end.</p>
+    <div class="wcols">
+      <pre class="block wcode">let log = @widget.Log::new()
+log.write_lines([&quot;boot ok&quot;, &quot;loading modules&quot;, &quot;ready&quot;])</pre>
+      <div class="term-body wout">boot ok
+loading modules
+ready</div>
+    </div>
+  </div>
+  <div class="wcard">
+    <h4><code class="inline">RichLog</code></h4>
+    <p class="wdesc">Styled strips with min-width, at-width and greedy word wrap.</p>
+    <div class="wcols">
+      <pre class="block wcode">let rich = @widget.RichLog::new()
+rich.write(&quot;deploy passed&quot;, style=@style.Style::new(fg=@style.green))
+rich.write(&quot;2 warnings&quot;, style=@style.Style::new(fg=@style.yellow))
+rich.write(&quot;done&quot;)</pre>
+      <div class="term-body wout"><span class="green">deploy passed</span>
+<span class="gold">2 warnings</span>
+done</div>
+    </div>
+  </div>
   <h3>Choices</h3>
-  <table>
-    <thead><tr><th>Widget</th><th>What it does</th><th>Status</th></tr></thead>
-    <tbody>
-      <tr><td><code class="inline">Switch</code> · <code class="inline">Checkbox</code> · <code class="inline">RadioSet</code></td><td>The toggle family, with the Toggled message contract.</td><td><span class="pill ok">done</span></td></tr>
-      <tr><td><code class="inline">OptionList</code></td><td>Prompts with separators and disabled entries; the highlight never rests on a disabled one.</td><td><span class="pill ok">done</span></td></tr>
-      <tr><td><code class="inline">SelectionList</code></td><td>Checkbox-style multi-select with the three-glyph mark and the ToggledAt message.</td><td><span class="pill ok">done</span></td></tr>
-      <tr><td><code class="inline">Select</code></td><td>A collapsed prompt that expands in flow, with substring search and fold-away on escape.</td><td><span class="pill ok">done</span></td></tr>
-    </tbody>
-  </table>
-
+  <div class="wcard">
+    <h4><code class="inline">Switch</code></h4>
+    <p class="wdesc">A four-wide strip: half thumb, half track — the thumb sits left when off, right when on. State is colour, so the plain wire carries it for free… as nothing at all.</p>
+    <div class="wcols">
+      <pre class="block wcode">@widget.Switch::new(value=true)</pre>
+      <div class="term-body wout"><span class="rev-d">  </span><span class="rev-g">  </span></div>
+    </div>
+  </div>
+  <div class="wcard">
+    <h4><code class="inline">Checkbox</code></h4>
+    <p class="wdesc">The three-glyph toggle — side, mark, side — with the label beside it in either order; the mark's colour is the state.</p>
+    <div class="wcols">
+      <pre class="block wcode">@widget.Checkbox::new(&quot;Enable extras&quot;, value=true)</pre>
+      <div class="term-body wout"><span class="green">▐X▌</span> Enable extras</div>
+    </div>
+  </div>
+  <div class="wcard">
+    <h4><code class="inline">RadioSet</code></h4>
+    <p class="wdesc">Radio buttons as a set: turning one on turns the others off; the cursor and the pressed button are separate, and a click moves both.</p>
+    <div class="wcols">
+      <pre class="block wcode">@widget.RadioSet::new([
+  @widget.RadioButton::new(&quot;Fast&quot;),
+  @widget.RadioButton::new(&quot;Balanced&quot;, value=true),
+  @widget.RadioButton::new(&quot;Quiet&quot;),
+])</pre>
+      <div class="term-body wout"><span class="dim">▐●▌</span> Fast
+<span class="green">▐●▌</span> Balanced
+<span class="dim">▐●▌</span> Quiet</div>
+    </div>
+  </div>
+  <div class="wcard">
+    <h4><code class="inline">OptionList</code></h4>
+    <p class="wdesc">Prompts with separators and disabled entries; the highlight never rests on a disabled one.</p>
+    <div class="wcols">
+      <pre class="block wcode">let list = @widget.OptionList::new(options=[
+  @widget.Choice::new(&quot;Alpha&quot;),
+  @widget.Choice::new(&quot;Beta&quot;),
+  @widget.Choice::new(&quot;Retired&quot;, disabled=true),
+])
+list.add_separator()
+list.add_option(@widget.Choice::new(&quot;Omega&quot;))</pre>
+      <div class="term-body wout">Alpha
+Beta
+<span class="dim">Retired</span>
+<span class="dim">────────────────────────</span>
+Omega</div>
+    </div>
+  </div>
+  <div class="wcard">
+    <h4><code class="inline">SelectionList</code></h4>
+    <p class="wdesc">Checkbox-style multi-select with the three-glyph mark and the <code class="inline">ToggledAt</code> message.</p>
+    <div class="wcols">
+      <pre class="block wcode">@widget.SelectionList::new(options=[
+  @widget.Selection::new(&quot;Clean build&quot;, &quot;clean&quot;, initial_state=true),
+  @widget.Selection::new(&quot;All targets&quot;, &quot;targets&quot;, initial_state=true),
+  @widget.Selection::new(&quot;Sign the tag&quot;, &quot;sign&quot;),
+])</pre>
+      <div class="term-body wout"><span class="dim">▐X▌</span> Clean build
+<span class="dim">▐X▌</span> All targets
+<span class="dim">▐X▌</span> Sign the tag</div>
+    </div>
+  </div>
+  <div class="wcard">
+    <h4><code class="inline">Select</code></h4>
+    <p class="wdesc">A collapsed prompt that expands in flow — substring search narrows the options, Escape folds it away.</p>
+    <div class="wcols">
+      <pre class="block wcode">let pick = @widget.Select::new(
+  options=[(&quot;alpha&quot;, &quot;Alpha&quot;), (&quot;beta&quot;, &quot;Beta&quot;), (&quot;gamma&quot;, &quot;Gamma&quot;)],
+  prompt=&quot;Pick&quot;,
+)</pre>
+      <div class="term-body wout"> Pick              ▲
+ alpha
+ beta
+ gamma</div>
+    </div>
+  </div>
   <h3>Navigation and structure</h3>
-  <table>
-    <thead><tr><th>Widget</th><th>What it does</th><th>Status</th></tr></thead>
-    <tbody>
-      <tr><td><code class="inline">Button</code></td><td>Enter or space presses; disabled buttons take neither focus nor input.</td><td><span class="pill ok">done</span></td></tr>
-      <tr><td><code class="inline">ListView</code></td><td>A vertical list with a moving highlight and mouse picking.</td><td><span class="pill ok">done</span></td></tr>
-      <tr><td><code class="inline">Tabs</code> · <code class="inline">TabbedContent</code></td><td>Labels with a highlighted underline that skips disabled tabs, and panes beneath.</td><td><span class="pill ok">done</span></td></tr>
-      <tr><td><code class="inline">Collapsible</code></td><td>A fold with the triangle marker; keys and clicks pass through to the contents when open.</td><td><span class="pill ok">done</span></td></tr>
-      <tr><td><code class="inline">Tree</code></td><td>Guides, icons, the full shift-arrow family walk, and shift-space batch toggling.</td><td><span class="pill ok">done</span></td></tr>
-      <tr><td><code class="inline">DirectoryTree</code></td><td>A tree over a directory listing — folders first, lazily loaded, with the loader injected so any platform can feed it.</td><td><span class="pill ok">done</span></td></tr>
-    </tbody>
-  </table>
+  <div class="wcard">
+    <h4><code class="inline">Button</code></h4>
+    <p class="wdesc">Enter or space presses; a disabled button takes neither focus nor input. Focused, the label turns reverse video.</p>
+    <div class="wcols">
+      <pre class="block wcode">@widget.Button::new(&quot; Press me &quot;)
+// focused: Enter answers Pressed(id=...)</pre>
+      <div class="term-body wout">  <span class="rev"> Press me</span></div>
+    </div>
+  </div>
+  <div class="wcard">
+    <h4><code class="inline">ListView</code></h4>
+    <p class="wdesc">A vertical list with a moving highlight and mouse picking.</p>
+    <div class="wcols">
+      <pre class="block wcode">let list = @widget.ListView::new([&quot;alpha&quot;, &quot;beta&quot;, &quot;gamma&quot;, &quot;delta&quot;, &quot;epsilon&quot;])
+list.select(1)</pre>
+      <div class="term-body wout">alpha
+<span class="rev">beta                </span>
+gamma
+delta</div>
+    </div>
+  </div>
+  <div class="wcard">
+    <h4><code class="inline">Tabs</code></h4>
+    <p class="wdesc">Labels with a highlighted underline that skips disabled tabs.</p>
+    <div class="wcols">
+      <pre class="block wcode">@widget.Tabs::new(labels=[&quot;Inbox&quot;, &quot;Reports&quot;, &quot;Settings&quot;])</pre>
+      <div class="term-body wout"> Inbox  <span class="dim">Reports</span>  <span class="dim">Settings</span>
+<span class="rev">━━━━━━━</span><span class="dim">━━━━━━━━━━━━━━━━━━━━━━━</span></div>
+    </div>
+  </div>
+  <div class="wcard">
+    <h4><code class="inline">TabbedContent</code></h4>
+    <p class="wdesc">Tabs and their panes together: the bar above, the active pane beneath.</p>
+    <div class="wcols">
+      <pre class="block wcode">@widget.TabbedContent::new(
+  labels=[&quot;Overview&quot;, &quot;Logs&quot;],
+  panes=[@widget.Static::new(&quot;3 unread, 1 flagged&quot;),
+         @widget.Static::new(&quot;last run: 42 seconds&quot;)],
+)</pre>
+      <div class="term-body wout"> Overview  <span class="dim">Logs</span>
+<span class="rev">━━━━━━━━━━</span><span class="dim">━━━━━━━━━━━━━━━━━━━━━━━━</span>
+3 unread, 1 flagged</div>
+    </div>
+  </div>
+  <div class="wcard">
+    <h4><code class="inline">Collapsible</code></h4>
+    <p class="wdesc">A fold with the triangle marker; keys and clicks pass through to the contents when open.</p>
+    <div class="wcols">
+      <pre class="block wcode">let fold = @widget.Collapsible::new(
+  title=&quot;Details&quot;,
+  contents=@widget.Static::new(&quot;All checks passed.&quot;),
+)
+fold.set_collapsed(false)</pre>
+      <div class="term-body wout">──────────────────────────────
+ ▼ Details
 
+   All checks passed.</div>
+    </div>
+  </div>
+  <div class="wcard">
+    <h4><code class="inline">Tree</code></h4>
+    <p class="wdesc">Guides, icons, the full shift-arrow family walk, and shift-space batch toggling.</p>
+    <div class="wcols">
+      <pre class="block wcode">let tree = @widget.Tree::new(root_label=&quot;Dune&quot;)
+tree.expand(tree.root_id())
+let arrakis = tree.add(tree.root_id(), &quot;Arrakis&quot;, expand=true)
+ignore(tree.add(tree.root_id(), &quot;Caladan&quot;))
+ignore(tree.add_leaf(arrakis, &quot;Arrakeen&quot;))
+ignore(tree.add_leaf(arrakis, &quot;Carthag&quot;))</pre>
+      <div class="term-body wout"><span class="dim"></span>▼ Dune
+<span class="dim">├── </span>▼ Arrakis
+<span class="dim">│   ├── </span>Arrakeen
+<span class="dim">│   └── </span>Carthag
+<span class="dim">└── </span>▶ Caladan</div>
+    </div>
+  </div>
+  <div class="wcard">
+    <h4><code class="inline">DirectoryTree</code></h4>
+    <p class="wdesc">A tree over a directory listing — folders first, expanded lazily through a loader you inject, so any platform can feed it.</p>
+    <div class="wcols">
+      <pre class="block wcode">@widget.DirectoryTree::new(path=&quot;.&quot;, loader=read_dir)</pre>
+      <div class="term-body wout">📂 .
+├── 📁 src
+├── 📁 tests
+├── 📄 moon.pkg
+└── 📄 README.md</div>
+    </div>
+  </div>
   <h3>Data and notices</h3>
-  <table>
-    <thead><tr><th>Widget</th><th>What it does</th><th>Status</th></tr></thead>
-    <tbody>
-      <tr><td><code class="inline">DataTable</code></td><td>Tabular data: auto or fixed column widths, three cursor shapes, zebra rows, hover, clicks that pick headers, labels and cells, and sorts that keep rows whole.</td><td><span class="pill ok">done</span></td></tr>
-      <tr><td><code class="inline">Markdown</code></td><td>Documents from source: headings, paragraphs, lists, quotes, code fences, rules and pipe tables, with bold, italic, code and link styling inline.</td><td><span class="pill ok">done</span></td></tr>
-      <tr><td><code class="inline">Tooltip</code></td><td>A padded hint that wraps within a maximum width, for status strips and hover help.</td><td><span class="pill ok">done</span></td></tr>
-      <tr><td><code class="inline">Toast</code></td><td>A transient notice with a severity bar — information, warning or error — that expires on its own timer or retires on a click.</td><td><span class="pill ok">done</span></td></tr>
-    </tbody>
-  </table>
+  <div class="wcard">
+    <h4><code class="inline">DataTable</code></h4>
+    <p class="wdesc">Tabular data: auto or fixed column widths, three cursor shapes, zebra rows, hover, clicks that pick headers, labels and cells, and sorts that keep rows whole.</p>
+    <div class="wcols">
+      <pre class="block wcode">let table = @widget.DataTable::new(zebra=true)
+ignore(table.add_column(&quot;Name&quot;, width=12))
+ignore(table.add_column(&quot;Size&quot;, width=6, align=@widget.Align::Right))
+ignore(table.add_column(&quot;Kind&quot;))
+ignore(table.add_row([&quot;moon.pkg&quot;, &quot;184&quot;, &quot;package&quot;]))
+ignore(table.add_row([&quot;main.mbt&quot;, &quot;4096&quot;, &quot;source&quot;]))
+ignore(table.add_row([&quot;README.md&quot;, &quot;2211&quot;, &quot;text&quot;]))</pre>
+      <div class="term-body wout"><span class="b"> Name            Size  Kind</span>
+ moon.pkg         184  package
+ main.mbt        4096  source
+ README.md       2211  text</div>
+    </div>
+  </div>
+  <div class="wcard">
+    <h4><code class="inline">Markdown</code></h4>
+    <p class="wdesc">Documents from source: headings, paragraphs, lists, quotes, code fences, rules and pipe tables — bold, italic, code and link styling inline.</p>
+    <div class="wcols">
+      <pre class="block wcode">@widget.Markdown::new(
+  &quot;# Deploy report\n\nAll four backends pass.\n\n- wasm ok\n- native ok\n\n| target | tests |\n|:-|:-:|\n| wasm | 273 |\n&quot;,
+)</pre>
+      <div class="term-body wout"><span class="b">Deploy report</span>
+
+All four backends pass.
+
+• wasm ok
+• native ok
+
+ target │ tests
+────────┼───────
+ wasm   │  273</div>
+    </div>
+  </div>
+  <div class="wcard">
+    <h4><code class="inline">Tooltip</code></h4>
+    <p class="wdesc">A padded hint that wraps within a maximum width, for status strips and hover help; it swallows keys and clicks.</p>
+    <div class="wcols">
+      <pre class="block wcode">@widget.Tooltip::new(&quot;The build passed on all four backends.&quot;)</pre>
+      <div class="term-body wout">  The build passed on all four</div>
+    </div>
+  </div>
+  <div class="wcard">
+    <h4><code class="inline">Toast</code></h4>
+    <p class="wdesc">A transient notice with a severity bar — information, warning or error — that expires on its own timer or retires on a click.</p>
+    <div class="wcols">
+      <pre class="block wcode">@widget.Toast::new(
+  &quot;Everything is nominal.&quot;,
+  title=&quot;Deployed&quot;,
+  level=@widget.ToastLevel::Information,
+  duration=6,
+)</pre>
+      <div class="term-body wout"><span class="green">▌</span> <span class="b">Deployed</span>
+<span class="green">▌</span> Everything is nominal.</div>
+    </div>
+  </div>
 </section>
 
 <!-- ============================= DESIGN ============================= -->

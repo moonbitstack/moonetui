@@ -525,3 +525,43 @@ tr:hover td { background: rgba(122, 162, 247, 0.04); }
   .hero h1 { font-size: 38px; }
   .term-body { font-size: 11.5px; }
 }
+
+/* ---------- widget cards ---------- */
+
+.wcard {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--bg-card);
+  padding: 18px 22px 20px;
+  margin: 14px 0 24px;
+}
+
+.wcard:hover { border-color: var(--accent); }
+
+.wcard h4 { margin: 0 0 4px; font-size: 16px; }
+
+.wcard .wdesc { color: var(--ink-dim); font-size: 13.5px; margin: 0 0 14px; }
+
+.wcols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  align-items: stretch;
+}
+
+.wcols pre.block { margin: 0; overflow-x: auto; }
+
+.wout {
+  margin: 0;
+  overflow-x: auto;
+  font-size: 12.5px;
+  line-height: 1.6;
+}
+
+.term-body .rev-d { background: #565f89; color: #0d1117; }
+.term-body .rev-g { background: #9ece6a; color: #0d1117; font-weight: 700; }
+
+@media (max-width: 900px) {
+  .wcols { grid-template-columns: 1fr; }
+  .wout { font-size: 11.5px; }
+}

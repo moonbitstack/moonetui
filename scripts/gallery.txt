@@ -1,0 +1,153 @@
+── Static
+       Hello, moonetui
+
+── Header · Footer
+                   moonetui                   ctrl-c to quit
+
+── Footer
+ tab next  enter choose  q quit
+
+── Rule (heavy)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+── Digits
+╶╮ ╶─╮   ╶─╮╷ ╷
+ │ ┌─┘ :  ─┤╰─┤
+╶┴╴╰─╴   ╶─╯  ╵
+
+── Sparkline
+▂▂▂▂▂▄▄▄▄▁▁▁▁█████▅▅▅▅▃▃▃▃▆▆▆▆
+
+── Progress
+████████████████           62%
+
+── LoadingIndicator
+ ● ● ● ● ●
+
+── Placeholder
+
+       Widget slot
+
+
+
+── Input
+hello
+
+── TextArea
+ 1 line one
+ 2 line two
+ 3 line three
+
+
+── Log
+boot ok
+loading modules
+ready
+
+
+── RichLog
+deploy passed
+2 warnings
+done
+
+
+── Switch (on)
+
+
+── Checkbox
+▐X▌ Enable extras
+
+── RadioSet
+▐●▌ Fast
+▐●▌ Balanced
+▐●▌ Quiet
+
+── OptionList
+Alpha
+Beta
+Retired
+────────────────────────
+Omega
+
+── SelectionList
+▐X▌ Clean build
+▐X▌ All targets
+▐X▌ Sign the tag
+
+
+── Select (expanded)
+ Pick              ▲
+ alpha
+ beta
+ gamma
+
+── Button
+   Press me
+
+── ListView
+alpha
+beta
+gamma
+delta
+
+── Tabs
+ Inbox  Reports  Settings
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+── TabbedContent
+ Overview  Logs
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+3 unread, 1 flagged
+
+
+── Collapsible (open)
+──────────────────────────────
+ ▼ Details
+
+   All checks passed.
+
+
+── Tree
+▼ Dune
+├── ▼ Arrakis
+│   ├── Arrakeen
+│   └── Carthag
+└── ▶ Caladan
+
+
+── DirectoryTree
+📂 .
+├── 📁 src
+├── 📁 tests
+├── 📄 moon.pkg
+└── 📄 README.md
+
+
+── DataTable
+ Name            Size  Kind
+ moon.pkg         184  package
+ main.mbt        4096  source
+ README.md       2211  text
+
+
+── Markdown
+Deploy report
+
+All four backends pass.
+
+• wasm ok
+• native ok
+
+ target │ tests
+────────┼───────
+ wasm   │  273
+
+── Tooltip
+
+  The build passed on all four
+
+── Toast
+▌ Deployed
+▌ Everything is nominal.
+
+
