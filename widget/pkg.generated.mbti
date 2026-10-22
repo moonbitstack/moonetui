@@ -67,6 +67,31 @@ pub fn Button::set(Self, String) -> Unit
 pub fn Button::text(Self) -> String
 pub impl Widget for Button
 
+pub struct Checkbox {
+  mut label : String
+  mut value : Bool
+  button_first : Bool
+  on_style : @style.Style
+  off_style : @style.Style
+  label_style : @style.Style
+  focus_style : @style.Style
+  mut focused : Bool
+} derive(Eq, @debug.Debug)
+pub fn Checkbox::equal(Self, Self) -> Bool
+pub fn Checkbox::focusable(Self) -> Bool
+pub fn Checkbox::handle(Self, Ctx, Msg) -> Bool
+pub fn Checkbox::hint(Self, @geom.Size) -> @geom.Size
+pub fn Checkbox::label(Self) -> String
+pub fn Checkbox::new(String, value? : Bool, button_first? : Bool, on_style? : @style.Style, off_style? : @style.Style, label_style? : @style.Style, focus_style? : @style.Style) -> Self
+pub fn Checkbox::not_equal(Self, Self) -> Bool
+pub fn Checkbox::render_line(Self, Int32, @geom.Size) -> @strip.Strip
+pub fn Checkbox::set_label(Self, String) -> Unit
+pub fn Checkbox::set_value(Self, Bool) -> Unit
+pub fn Checkbox::to_repr(Self) -> @debug.Repr
+pub fn Checkbox::toggle(Self) -> Unit
+pub fn Checkbox::value(Self) -> Bool
+pub impl Widget for Checkbox
+
 pub struct Ctx {
   id : Int32
   size : @geom.Size
@@ -194,6 +219,54 @@ pub fn Progress::set(Self, Int32) -> Unit
 pub fn Progress::set_total(Self, Int32) -> Unit
 pub impl Widget for Progress
 
+pub struct RadioButton {
+  mut label : String
+  mut value : Bool
+  button_first : Bool
+  on_style : @style.Style
+  off_style : @style.Style
+  label_style : @style.Style
+  focus_style : @style.Style
+  mut focused : Bool
+} derive(Eq, @debug.Debug)
+pub fn RadioButton::equal(Self, Self) -> Bool
+pub fn RadioButton::focusable(Self) -> Bool
+pub fn RadioButton::handle(Self, Ctx, Msg) -> Bool
+pub fn RadioButton::hint(Self, @geom.Size) -> @geom.Size
+pub fn RadioButton::label(Self) -> String
+pub fn RadioButton::new(String, value? : Bool, button_first? : Bool, on_style? : @style.Style, off_style? : @style.Style, label_style? : @style.Style, focus_style? : @style.Style) -> Self
+pub fn RadioButton::not_equal(Self, Self) -> Bool
+pub fn RadioButton::render_line(Self, Int32, @geom.Size) -> @strip.Strip
+pub fn RadioButton::set_label(Self, String) -> Unit
+pub fn RadioButton::set_value(Self, Bool) -> Unit
+pub fn RadioButton::to_repr(Self) -> @debug.Repr
+pub fn RadioButton::value(Self) -> Bool
+pub impl Widget for RadioButton
+
+pub struct RadioSet {
+  buttons : Array[RadioButton]
+  mut selected : Int32
+  mut pressed : Int32
+  mut offset : Int32
+  mut focused : Bool
+  cursor : @style.Style
+  blurred_cursor : @style.Style
+} derive(Eq, @debug.Debug)
+pub fn RadioSet::buttons(Self) -> Array[RadioButton]
+pub fn RadioSet::equal(Self, Self) -> Bool
+pub fn RadioSet::focusable(Self) -> Bool
+pub fn RadioSet::handle(Self, Ctx, Msg) -> Bool
+pub fn RadioSet::hint(Self, @geom.Size) -> @geom.Size
+pub fn RadioSet::new(Array[RadioButton], cursor? : @style.Style, blurred_cursor? : @style.Style) -> Self
+pub fn RadioSet::not_equal(Self, Self) -> Bool
+pub fn RadioSet::pressed_index(Self) -> Int32
+pub fn RadioSet::render_line(Self, Int32, @geom.Size) -> @strip.Strip
+pub fn RadioSet::selected_index(Self) -> Int32
+pub fn RadioSet::set_pressed(Self, Int32) -> Unit
+pub fn RadioSet::set_selected(Self, Int32) -> Unit
+pub fn RadioSet::to_repr(Self) -> @debug.Repr
+pub impl Widget for RadioSet
+
 pub struct Static {
   mut lines : Array[String]
   mut style : @style.Style
@@ -208,6 +281,25 @@ pub fn Static::set(Self, String) -> Unit
 pub fn Static::set_style(Self, @style.Style) -> Unit
 pub fn Static::text(Self) -> String
 pub impl Widget for Static
+
+pub struct Switch {
+  mut value : Bool
+  on_style : @style.Style
+  off_style : @style.Style
+  track : @style.Style
+} derive(Eq, @debug.Debug)
+pub fn Switch::equal(Self, Self) -> Bool
+pub fn Switch::focusable(Self) -> Bool
+pub fn Switch::handle(Self, Ctx, Msg) -> Bool
+pub fn Switch::hint(Self, @geom.Size) -> @geom.Size
+pub fn Switch::new(value? : Bool, on_style? : @style.Style, off_style? : @style.Style, track? : @style.Style) -> Self
+pub fn Switch::not_equal(Self, Self) -> Bool
+pub fn Switch::render_line(Self, Int32, @geom.Size) -> @strip.Strip
+pub fn Switch::set_value(Self, Bool) -> Unit
+pub fn Switch::to_repr(Self) -> @debug.Repr
+pub fn Switch::toggle(Self) -> Unit
+pub fn Switch::value(Self) -> Bool
+pub impl Widget for Switch
 
 // Type aliases
 
