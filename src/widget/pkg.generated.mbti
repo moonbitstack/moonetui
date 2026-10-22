@@ -883,7 +883,7 @@ pub fn Toast::expired(Self) -> Bool
 pub fn Toast::focusable(Self) -> Bool
 pub fn Toast::handle(Self, Ctx, Msg) -> Bool
 pub fn Toast::hint(Self, @geom.Size) -> @geom.Size
-pub fn Toast::new(String, title? : String, level? : ToastLevel, duration? : Int32, style? : @style.Style, title_style? : @style.Style) -> Self
+pub fn Toast::new(String, title? : String, level? : ToastLevel, duration? : Int32, style? : @style.Style, title_style? : @style.Style, bar_info? : @style.Style, bar_warning? : @style.Style, bar_error? : @style.Style) -> Self
 pub fn Toast::not_equal(Self, Self) -> Bool
 pub fn Toast::render_line(Self, Int32, @geom.Size) -> @strip.Strip
 pub fn Toast::set_message(Self, String) -> Unit

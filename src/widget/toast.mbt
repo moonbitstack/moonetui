@@ -42,6 +42,9 @@ pub fn Toast::new(
   duration~ : Int32 = 4000,
   style~ : @style.Style = @style.Style::new(),
   title_style~ : @style.Style = @style.Style::new(fg=@style.white, bold=true),
+  bar_info~ : @style.Style = @style.Style::new(fg=@style.green),
+  bar_warning~ : @style.Style = @style.Style::new(fg=@style.yellow),
+  bar_error~ : @style.Style = @style.Style::new(fg=@style.red),
 ) -> Toast {
   {
     title,
@@ -51,9 +54,9 @@ pub fn Toast::new(
     elapsed: 0,
     style,
     title_style,
-    bar_info: @style.Style::new(fg=@style.green),
-    bar_warning: @style.Style::new(fg=@style.yellow),
-    bar_error: @style.Style::new(fg=@style.red),
+    bar_info,
+    bar_warning,
+    bar_error,
   }
 }
 
@@ -127,13 +130,14 @@ pub impl Widget for Toast with fn handle(self, ctx, msg) {
       if self.duration <= 0 {
         return false
       }
+      let was = self.expired()
       self.elapsed = self.elapsed + ms
-      if self.expired() {
+      if !was && self.expired() {
         ctx.emit(Dismissed(id=ctx.id))
       }
       false
     }
-    Mouse(_) => {
+    Mouse({ kind: Down, .. }) => {
       if self.expired() {
         return false
       }

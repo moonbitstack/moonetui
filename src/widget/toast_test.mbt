@@ -33,3 +33,31 @@ test "toast expires after its duration and retires on a click" {
     [@widget.Dismissed(id=6)],
   )
 }
+
+///|
+test "a toast is dismissed once, and a passing pointer leaves it be" {
+  let toast = @widget.Toast::new("saved", duration=100)
+  let w : &@widget.Widget = toast
+  let at = size(20, 1)
+  let pass = @widget.Msg::Mouse({
+    kind: Move,
+    button: 0,
+    x: 1,
+    y: 0,
+    mods: @event.none,
+  })
+  assert_eq(press(w, 9, at, pass), [])
+  assert_eq(toast.expired(), false)
+  assert_eq(press(w, 9, at, Tick(150)), [Dismissed(id=9)])
+  assert_eq(press(w, 9, at, Tick(16)), [])
+}
+
+///|
+test "the level bar colours are the caller's to choose" {
+  let toast = @widget.Toast::new(
+    "careful",
+    level=Warning,
+    bar_warning=@style.Style::new(fg=@style.magenta),
+  )
+  assert_eq(toast.bar_style().fg, @style.magenta)
+}

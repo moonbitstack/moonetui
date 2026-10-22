@@ -8,7 +8,7 @@ priv enum MDFlow {
   MDQuote(String)
   MDBullet(Int32, String)
   MDNumbered(Int32, Int32, String)
-  MDCode(String)
+  MDCode(Array[String])
   MDRule
   MDTable(Array[Align], Array[String], Array[Array[String]])
 }
@@ -229,10 +229,12 @@ fn md_parse(text : String) -> Array[MDFlow] {
         quote = ""
       }
       i = i + 1
+      let code : Array[String] = []
       while i < total && !md_starts_with(md_trim(lines[i]), "```") {
-        blocks.push(MDCode(lines[i]))
+        code.push(lines[i])
         i = i + 1
       }
+      blocks.push(MDCode(code))
       i = i + 1
       continue
     }
@@ -503,17 +505,77 @@ fn md_inline(text : String, base : @style.Style) -> Array[@strip.Seg] {
 }
 
 ///|
-fn md_strip_inline(
+/// Inline markup laid out in lines no wider than `width`, broken at spaces and
+/// carrying each word's style across the break; a word wider than a line is
+/// cut where the line ends.
+fn md_wrap(
   text : String,
   width : Int32,
   base : @style.Style,
-) -> @strip.Strip {
-  let lines = wrap_text(text, width)
-  let pieces : Array[@strip.Strip] = []
-  for line in lines {
-    pieces.push(@strip.Strip::from_segs(md_inline(line, base)))
+) -> Array[@strip.Strip] {
+  let lines : Array[@strip.Strip] = []
+  let line : Array[@strip.Seg] = []
+  let mut used = 0
+  let mut gap : @strip.Seg? = None
+  fn flush() {
+    lines.push(@strip.Strip::from_segs(line.copy()))
+    line.clear()
+    used = 0
   }
-  @strip.Strip::join(pieces)
+  for seg in md_inline(text, base) {
+    for piece in md_pieces(seg.text) {
+      let cells = @strip.str_cells(piece)
+      if piece.trim() == "" {
+        if used > 0 {
+          gap = Some(@strip.Seg::new(" ", seg.style))
+        }
+        continue
+      }
+      let space = if gap is Some(_) { 1 } else { 0 }
+      if used > 0 && used + space + cells > width {
+        flush()
+        gap = None
+      }
+      if gap is Some(g) && used > 0 {
+        line.push(g)
+        used += 1
+      }
+      gap = None
+      let mut rest = piece
+      while used + @strip.str_cells(rest) > width && width > 0 {
+        let cut = @strip.cut_at(rest, width - used)
+        let cut = if cut == 0 { @strip.cut_at(rest, width) } else { cut }
+        line.push(@strip.Seg::new(rest[:cut].to_owned(), seg.style))
+        flush()
+        rest = rest[cut:].to_owned()
+      }
+      if rest != "" {
+        line.push(@strip.Seg::new(rest, seg.style))
+        used += @strip.str_cells(rest)
+      }
+    }
+  }
+  if line.length() > 0 || lines.length() == 0 {
+    flush()
+  }
+  lines
+}
+
+///|
+/// Words and the runs of spaces between them, in order.
+fn md_pieces(text : String) -> Array[String] {
+  let out : Array[String] = []
+  let mut start = 0
+  for i in 0..<text.length() {
+    if i > start && (text[i] == ' ') != (text[i - 1] == ' ') {
+      out.push(text[start:i].to_owned())
+      start = i
+    }
+  }
+  if start < text.length() {
+    out.push(text[start:].to_owned())
+  }
+  out
 }
 
 ///|
@@ -716,6 +778,23 @@ fn md_is_list(flow : MDFlow) -> Bool {
 }
 
 ///|
+/// A list item: the marker on its first line, the rest indented under it.
+fn Markdown::lay_item(
+  self : Markdown,
+  marker : String,
+  text : String,
+  width : Int32,
+  out : Array[@strip.Strip],
+) -> Unit {
+  let indent = @strip.str_cells(marker)
+  let lines = md_wrap(text, @cmp.maximum(1, width - indent), self.style)
+  for i, line in lines {
+    let lead = if i == 0 { marker } else { " ".repeat(indent) }
+    out.push(@strip.Strip::join([@strip.Strip::of(lead, self.style), line]))
+  }
+}
+
+///|
 fn Markdown::lay(self : Markdown, width : Int32) -> Unit {
   let blocks = md_parse(self.source)
   let safe = if width < 4 { 4 } else { width }
@@ -734,75 +813,26 @@ fn Markdown::lay(self : Markdown, width : Int32) -> Unit {
         } else {
           self.heading_style
         }
-        out.push(md_strip_inline(text, safe, style.merge(self.style)))
+        out.append(md_wrap(text, safe, style.merge(self.style)))
       }
-      MDParagraph(text) => out.push(md_strip_inline(text, safe, self.style))
-      MDQuote(text) => {
-        let lines = wrap_text(text, safe - 2)
-        for line in lines {
+      MDParagraph(text) => out.append(md_wrap(text, safe, self.style))
+      MDQuote(text) =>
+        for line in md_wrap(text, safe - 2, self.quote_style) {
           out.push(
             @strip.Strip::join([
-              @strip.Strip::of("▌", self.quote_style),
-              @strip.Strip::from_segs(md_inline(" \{line}", self.quote_style)),
+              @strip.Strip::of("▌ ", self.quote_style),
+              line,
             ]),
           )
         }
-      }
-      MDBullet(depth, text) => {
-        let marker = md_marker(depth, true, 0)
-        let indent = @strip.str_cells(marker)
-        let inner = if safe - indent > 0 { safe - indent } else { 1 }
-        let lines = wrap_text(text, inner)
-        let mut first = true
-        for line in lines {
-          let lead = if first {
-            marker
-          } else {
-            let blank = StringBuilder()
-            let mut spaces = indent
-            while spaces > 0 {
-              blank.write_char(' ')
-              spaces = spaces - 1
-            }
-            blank.to_string()
-          }
-          out.push(
-            @strip.Strip::join([
-              @strip.Strip::of(lead, self.style),
-              @strip.Strip::from_segs(md_inline(line, self.style)),
-            ]),
-          )
-          first = false
+      MDBullet(depth, text) =>
+        self.lay_item(md_marker(depth, true, 0), text, safe, out)
+      MDNumbered(depth, number, text) =>
+        self.lay_item(md_marker(depth, false, number), text, safe, out)
+      MDCode(code) =>
+        for line in code {
+          out.push(@strip.Strip::of(line, self.code_style))
         }
-      }
-      MDNumbered(depth, number, text) => {
-        let marker = md_marker(depth, false, number)
-        let indent = @strip.str_cells(marker)
-        let inner = if safe - indent > 0 { safe - indent } else { 1 }
-        let lines = wrap_text(text, inner)
-        let mut first = true
-        for line in lines {
-          let lead = if first {
-            marker
-          } else {
-            let blank = StringBuilder()
-            let mut spaces = indent
-            while spaces > 0 {
-              blank.write_char(' ')
-              spaces = spaces - 1
-            }
-            blank.to_string()
-          }
-          out.push(
-            @strip.Strip::join([
-              @strip.Strip::of(lead, self.style),
-              @strip.Strip::from_segs(md_inline(line, self.style)),
-            ]),
-          )
-          first = false
-        }
-      }
-      MDCode(text) => out.push(@strip.Strip::of(text, self.code_style))
       MDRule => {
         let bar = StringBuilder()
         let mut dashes = safe
