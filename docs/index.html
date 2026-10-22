@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>moonetui — a terminal UI toolkit for MoonBit</title>
+<meta name="description" content="moonetui is a terminal UI toolkit for MoonBit: cell buffer, differential ANSI renderer, a CSS-like design system, widgets and pluggable terminal drivers — from a browser canvas down to a bare serial line.">
+<link rel="stylesheet" href="assets/style.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%237aa2f7'/%3E%3Ctext x='32' y='42' font-family='monospace' font-size='30' font-weight='bold' fill='white' text-anchor='middle'%3Em%3C/text%3E%3C/svg%3E">
+</head>
+<body>
+<div class="shell">
+
+<aside class="side">
+  <a class="brand" href="#/">
+    <span class="mark">m▚</span>
+    <span><b>moonetui</b><small>v0.1.1 · MoonBit</small></span>
+  </a>
+  <nav>
+    <a href="#/" class="active"><span class="k">⌂</span>Home</a>
+    <a href="#/started"><span class="k">▸</span>Getting started</a>
+    <a href="#/architecture"><span class="k">▤</span>Architecture</a>
+    <a href="#/widgets"><span class="k">◧</span>Widgets</a>
+    <a href="#/design"><span class="k">✦</span>Design system</a>
+    <a href="#/drivers"><span class="k">⌨</span>Drivers &amp; terminals</a>
+    <a href="#/testing"><span class="k">✓</span>Testing</a>
+  </nav>
+  <div class="foot">
+    <a href="https://github.com/moonbitstack/moonetui">GitHub</a>
+    <a href="https://www.moonbitlang.com/">MoonBit</a>
+    <a href="https://mooncakes.io/docs/#/moonbitstack/moonetui/">mooncakes</a>
+    <span>Apache-2.0</span>
+  </div>
+</aside>
+
+<main class="main">
+
+<!-- ============================= HOME ============================= -->
+<section class="page" id="page-home">
+  <div class="hero">
+    <div class="eyebrow"><span class="dot"></span>0.1.1 · four backends · 28 widgets</div>
+    <h1>Interfaces for the terminal,<br><span class="grad">down to the serial line.</span></h1>
+    <p class="tag">moonetui is a terminal UI toolkit for <a href="https://www.moonbitlang.com/">MoonBit</a> — a synchronous, portable core with a cell buffer, a differential ANSI renderer, a CSS-like design system, and widgets that run the same on wasm, on Node, in the browser — and on a plain UART.</p>
+    <div class="cta">
+      <a class="btn primary" href="#/started">Get started</a>
+      <a class="btn soft" href="https://github.com/moonbitstack/moonetui">View on GitHub</a>
+    </div>
+  </div>
+
+  <div class="term-window">
+    <div class="term-bar">
+      <span class="light r"></span><span class="light y"></span><span class="light g"></span>
+      <span class="title">moonetui — examples/tui · 80×24</span>
+    </div>
+    <div class="term-body"><span class="dim">╭──────────────────────────────────────────────────────────────────────────╮</span>
+<span class="dim">│</span> <span class="rev"> ◉ moonetui </span><span class="dim"> · the design system in a terminal window                     </span><span class="dim">│</span>
+<span class="dim">│</span> <span class="blue"> ◆ Inbox </span> <span class="dim"> ◆ Reports </span> <span class="dim"> ◆ Settings                            </span><span class="dim"> │</span>
+<span class="dim">│</span> <span class="blue">━━━━━━</span><span class="dim">──────────────────────────────────────────────────────────────────│</span>
+<span class="dim">│</span> <span class="dim"> </span> ▼ <span class="b">Today</span>      <span class="dim">│</span> <span class="cyan">requests per minute</span>                    <span class="dim">│</span>
+<span class="dim">│</span> <span class="dim"> </span> ├── <span class="green">deploy passed</span>  <span class="dim">│</span>  <span class="cyan">▅▆█</span>  <span class="dim">▂▄▆</span>  <span class="cyan">▆█▇</span>  <span class="dim">▁▃▅</span>  <span class="cyan">▇██</span>          <span class="dim">│</span>
+<span class="dim">│</span> <span class="dim"> </span> ├── <span class="green">tests passed</span>   <span class="dim">│</span>  <span class="green">▁▂▃▄▅▆▇█ </span><span class="dim">248 · 249 · 249 · 250 · 256</span>     <span class="dim">│</span>
+<span class="dim">│</span> <span class="dim"> </span> └── <span class="gold">docs deployed</span>  <span class="dim">│</span>                                        <span class="dim">│</span>
+<span class="dim">│</span> <span class="dim"> </span> ▶ <span class="b">This week</span>    <span class="dim">│</span> <span class="purple">[✓] clean build</span>  <span class="dim">[ ] audit</span>          <span class="dim">│</span>
+<span class="dim">│</span>                    <span class="dim">│</span> <span class="purple">[✓] all targets</span>  <span class="dim">[ ] sign</span>           <span class="dim">│</span>
+<span class="dim">│</span>  <span class="pink">◐</span> 42% <span class="cyan">▰▰▰▰▰▰▰▱▱▱▱▱</span>  <span class="dim">│</span> <span class="purple">( ) beta</span>   <span class="purple">(●)</span> <span class="b">stable</span>            <span class="dim">│</span>
+<span class="dim">│</span>──────────────────────────────────────────────────────────────────────────<span class="dim">│</span>
+<span class="dim">│</span> <span class="dim">tab focus</span>   <span class="dim">enter select</span>   <span class="dim">space toggle</span>   <span class="dim">q quit</span>              <span class="dim">│</span>
+<span class="dim">╰──────────────────────────────────────────────────────────────────────────╯</span>
+<span class="dim">$</span> <span id="typed"></span><span class="cursor"></span></div>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><div class="n">4</div><div class="l">backends · wasm, wasm-gc, js, native</div></div>
+    <div class="stat"><div class="n">258</div><div class="l">tests per backend, all passing</div></div>
+    <div class="stat"><div class="n">28</div><div class="l">widgets, from toggles to trees</div></div>
+    <div class="stat"><div class="n">0</div><div class="l">dependencies · a single pure core</div></div>
+  </div>
+
+  <h2>Why moonetui</h2>
+  <p class="lead">Everything a terminal interface needs, on a core that fits in a microcontroller's flash.</p>
+  <div class="grid">
+    <div class="card"><div class="ic">⟳</div><h4>Synchronous by design</h4><p>No async, no event loop you can't see. The host drives one <code class="inline">step()</code>: poll, parse, dispatch, lay out, compose, diff, write.</p></div>
+    <div class="card"><div class="ic">▚</div><h4>A real design system</h4><p>Selectors, specificity and cascade over name, id and class — the CSS model you already know, applied to the terminal.</p></div>
+    <div class="card"><div class="ic">⇄</div><h4>Differential renderer</h4><p>Two frames become only the spans that changed, then only the escape sequences needed — efficient on any wire.</p></div>
+    <div class="card"><div class="ic">⌗</div><h4>Unicode-honest</h4><p>A generated width table measures every line: CJK double width, emoji, combining marks. Padding is never a guess.</p></div>
+    <div class="card"><div class="ic">▤</div><h4>Layout that adds up</h4><p>Fixed, percentage, auto and fractional sizes along an axis, plus a grid with spans and gutters — integer division that loses no column.</p></div>
+    <div class="card"><div class="ic">✓</div><h4>Tested on four backends</h4><p>The same suite runs on wasm, wasm-gc, js and native, so a regression in one world fails loudly everywhere.</p></div>
+  </div>
+
+  <h2>Where it runs</h2>
+  <p>The core is pure and portable; only four operations touch a platform — write, read, raw mode, and the size query. Bring your own terminal: a real one through the C library, a canvas in a browser, a Node pipe — or a serial line with no cursor addressing at all.</p>
+  <table>
+    <thead><tr><th>Target</th><th>Driver</th><th>What you get</th></tr></thead>
+    <tbody>
+      <tr><td>Native terminal</td><td><code class="inline">@driver/native</code></td><td>termios on Unix, VT mode on Windows — the full modern feature set</td></tr>
+      <tr><td>Node.js</td><td><code class="inline">@driver/node</code></td><td>raw mode over stdin/stdout with a queue-fed frame pump</td></tr>
+      <tr><td>Browser</td><td><code class="inline">@driver/web</code></td><td>a terminal drawn on a canvas, keys encoded, resize in-band</td></tr>
+      <tr><td>Serial UART</td><td>your <code class="inline">Driver</code></td><td>ECMA-48 / ISO 6429 subset over a byte stream; full repaint degrades gracefully</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ============================= STARTED ============================= -->
+<section class="page" id="page-started">
+  <div class="topbar">
+    <div class="crumbs">docs / <b class="crumb-here">started</b></div>
+    <div class="acts"><button class="ghost-btn" class="theme-toggle">◐ theme</button></div>
+  </div>
+
+  <h2>Getting started</h2>
+  <p class="lead">One command to add the toolkit, three to see it run.</p>
+
+  <h3>Install</h3>
+  <p>moonetui is published on mooncakes under the <code class="inline">moonbitstack</code> account:</p>
+  <pre class="block"><span class="cm"># in your MoonBit project</span>
+moon add moonbitstack/moonetui</pre>
+
+  <h3>Run the examples</h3>
+  <p>The same application three ways — a styled TUI on a real terminal, under Node, and on a browser canvas:</p>
+  <pre class="block"><span class="cm"># a real terminal (Unix or Windows)</span>
+moon run --target native examples/tui
+
+<span class="cm"># under Node</span>
+moon run --target js examples/hello
+
+<span class="cm"># in a browser — open it directly</span>
+start examples/browser/index.html</pre>
+
+  <h3>A first application</h3>
+  <p>Widgets are values. They render a line at a time, report what they want through typed messages, and never call back into your code:</p>
+  <pre class="block"><span class="kw">let</span> button = @widget.Button::new(<span class="st">" Press me "</span>)
+
+<span class="kw">let</span> w : &amp;@widget.Widget = button
+<span class="kw">let</span> ctx = @widget.Ctx::new(1, @geom.Size::new(20, 3))
+w.handle(ctx, @widget.Msg::Key(@event.Key::of(Enter)))
+<span class="cm">// ctx.asked() == [Pressed(id=1)]</span></pre>
+  <p>Compose them in a tree, style them with a stylesheet, and drive the frame loop from a driver — the <a href="#/architecture">architecture</a> page lays out the pieces.</p>
+
+  <h3>What the library expects of you</h3>
+  <ul>
+    <li>A <code class="inline">Driver</code> for your terminal — or one of the three shipped.</li>
+    <li>A stylesheet if you want one — plain styles work without.</li>
+    <li>A message handler that answers the widgets' typed messages.</li>
+  </ul>
+</section>
+
+<!-- ============================= ARCHITECTURE ============================= -->
+<section class="page" id="page-architecture">
+  <div class="topbar">
+    <div class="crumbs">docs / <b class="crumb-here">architecture</b></div>
+    <div class="acts"><button class="ghost-btn" class="theme-toggle">◐ theme</button></div>
+  </div>
+
+  <h2>Architecture</h2>
+  <p class="lead">Eleven packages, one direction of flow, four points of contact with the platform.</p>
+
+  <h3>The frame, step by step</h3>
+  <p>The core is <strong>synchronous</strong>. <code class="inline">wasm-gc</code> has no async, and the core must run there — so the main loop is a <code class="inline">step()</code> the host drives: a blocking poll on native, <code class="inline">setInterval</code> under Node, <code class="inline">requestAnimationFrame</code> in a browser.</p>
+  <pre class="block">poll <span class="fn">→</span> parse <span class="fn">→</span> dispatch <span class="fn">→</span> lay out <span class="fn">→</span> compose <span class="fn">→</span> diff <span class="fn">→</span> write</pre>
+  <ul>
+    <li><strong>poll</strong> — the driver reports what arrived, bytes or ticks.</li>
+    <li><strong>parse</strong> — <code class="inline">@input</code> turns the byte stream into events: CSI and SS3 sequences, modifiers, SGR mouse, bracketed paste, UTF-8 split across reads.</li>
+    <li><strong>dispatch</strong> — the app walks the focus ring and hands each event to a widget; widgets answer with typed messages.</li>
+    <li><strong>lay out</strong> — <code class="inline">@layout</code> and the design system place boxes along an axis or on the grid.</li>
+    <li><strong>compose</strong> — <code class="inline">@comp</code> turns placements into composed rows of styled cells.</li>
+    <li><strong>diff</strong> — consecutive screens become only the spans that changed.</li>
+    <li><strong>write</strong> — <code class="inline">@style</code> renders the changed styles as differential SGR sequences, and the driver writes them.</li>
+  </ul>
+
+  <h3>The package map</h3>
+  <table>
+    <thead><tr><th>Package</th><th>Responsibility</th></tr></thead>
+    <tbody>
+      <tr><td><code class="inline">@geom</code></td><td>Integer rectangle algebra — <code class="inline">Offset</code>, <code class="inline">Size</code>, <code class="inline">Region</code>, <code class="inline">Spacing</code> — with intersection, union, splitting and clamping.</td></tr>
+      <tr><td><code class="inline">@style</code></td><td>Colours (named, indexed, true colour), text attributes, palette quantisation, differential SGR rendering.</td></tr>
+      <tr><td><code class="inline">@strip</code></td><td>One rendered line: styled segments measured in terminal columns over a generated Unicode width table.</td></tr>
+      <tr><td><code class="inline">@event</code></td><td>Keys, mouse reports, paste, resize and focus as plain values.</td></tr>
+      <tr><td><code class="inline">@input</code></td><td>The incremental terminal byte parser.</td></tr>
+      <tr><td><code class="inline">@comp</code></td><td>The compositor: placements to rows, rows to diffs, diffs to escape sequences.</td></tr>
+      <tr><td><code class="inline">@driver</code></td><td>The seam to a terminal, plus a headless terminal for tests.</td></tr>
+      <tr><td><code class="inline">@layout</code></td><td>Axis placement and the grid — spans, gutters, integer division that loses no column.</td></tr>
+      <tr><td><code class="inline">@design</code></td><td>The style system: rules, specificity, cascade, inheritance, chrome.</td></tr>
+      <tr><td><code class="inline">@widget</code></td><td>The widget contract and the widget inventory.</td></tr>
+      <tr><td><code class="inline">@app</code></td><td>The widget tree, focus ring, scroll containers, docks, grids, screens, timers, and the frame loop.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>The widget contract</h3>
+  <p>A widget is a value with four operations. No callbacks, no inheritance, no hidden state:</p>
+  <pre class="block"><span class="kw">pub</span>(<span class="kw">open</span>) <span class="kw">trait</span> Widget {
+  <span class="kw">fn</span> <span class="fn">render_line</span>(Self, Int32, @geom.Size) <span class="fn">-&gt;</span> @strip.Strip
+  <span class="kw">fn</span> <span class="fn">hint</span>(Self, @geom.Size) <span class="fn">-&gt;</span> @geom.Size
+  <span class="kw">fn</span> <span class="fn">handle</span>(Self, Ctx, Msg) <span class="fn">-&gt;</span> Bool
+  <span class="kw">fn</span> <span class="fn">focusable</span>(Self) <span class="fn">-&gt;</span> Bool
+}</pre>
+  <p><code class="inline">render_line</code> draws one row — the compositor asks only for rows it can see. <code class="inline">hint</code> reports the size the content wants. <code class="inline">handle</code> takes a message and answers through the <code class="inline">Ctx</code>: typed outputs like <code class="inline">Pressed</code>, <code class="inline">Changed</code>, <code class="inline">Selected</code>, <code class="inline">Highlighted</code>, <code class="inline">Toggled</code> — which a handler can claim before the app acts on them.</p>
+</section>
+
+<!-- ============================= WIDGETS ============================= -->
+<section class="page" id="page-widgets">
+  <div class="topbar">
+    <div class="crumbs">docs / <b class="crumb-here">widgets</b></div>
+    <div class="acts"><button class="ghost-btn" class="theme-toggle">◐ theme</button></div>
+  </div>
+
+  <h2>Widgets</h2>
+  <p class="lead">Twenty-eight widgets, each with its own keyboard contract, message shape and rendering. Four more are on the way for the next release.</p>
+
+  <h3>Text and display</h3>
+  <table>
+    <thead><tr><th>Widget</th><th>What it does</th><th>Status</th></tr></thead>
+    <tbody>
+      <tr><td><code class="inline">Static</code> / <code class="inline">label()</code></td><td>Text, clipped at a character boundary, with left/centre/right alignment.</td><td><span class="pill ok">done</span></td></tr>
+      <tr><td><code class="inline">Header</code> · <code class="inline">Footer</code></td><td>The app chrome: a title bar and the bound key hints.</td><td><span class="pill ok">done</span></td></tr>
+      <tr><td><code class="inline">Rule</code></td><td>A horizontal or vertical rule in nine styles — ascii, blank, dashed, double, heavy, hidden, solid, thick.</td><td><span class="pill ok">done</span></td></tr>
+      <tr><td><code class="inline">Digits</code></td><td>Big 3×3 digit glyphs, plain or bold, for clocks and counters.</td><td><span class="pill ok">done</span></td></tr>
+      <tr><td><code class="inline">Sparkline</code></td><td>An eight-level block bar chart with bucketing and five summary functions — maximum, minimum, mean, median, latest.</td><td><span class="pill ok">done</span></td></tr>
+      <tr><td><code class="inline">Progress</code></td><td>A determinate progress bar with a total, or an indeterminate one that drifts.</td><td><span class="pill ok">done</span></td></tr>
+      <tr><td><code class="inline">LoadingIndicator</code></td><td>The five-dot pulse that says "working".</td><td><span class="pill ok">done</span></td></tr>
+      <tr><td><code class="inline">Placeholder</code></td><td>Three lorem variants in a twelve-colour palette, for mockups that cycle on click.</td><td><span class="pill ok">done</span></td></tr>
+    </tbody>
+  </table>
+
+  <h3>Text entry and logs</h3>
+  <table>
+    <thead><tr><th>Widget</th><th>What it does</th><th>Status</th></tr></thead>
+    <tbody>
+      <tr><td><code class="inline">Input</code></td><td>Single-line entry: cursor by grapheme, history, word ops, selection, paste.</td><td><span class="pill ok">done</span></td></tr>
+      <tr><td><code class="inline">TextArea</code></td><td>Multi-line editing — smart home, word movement, undo runs, a line-number gutter, selection and clipboard ops.</td><td><span class="pill ok">done</span></td></tr>
+      <tr><td><code class="inline">Log</code></td><td>A plain capture log: line tail-following, tab expansion, pruning, and scrolling that stays glued to the end.</td><td><span class="pill ok">done</span></td></tr>
+      <tr><td><code class="inline">RichLog</code></td><td>Styled strips with min-width, at-width, and greedy word wrap.</td><td><span class="pill ok">done</span></td></tr>
+    </tbody>
+  </table>
+
+  <h3>Choices</h3>
+  <table>
+    <thead><tr><th>Widget</th><th>What it does</th><th>Status</th></tr></thead>
+    <tbody>
+      <tr><td><code class="inline">Switch</code> · <code class="inline">Checkbox</code> · <code class="inline">RadioSet</code></td><td>The toggle family, with the Toggled message contract.</td><td><span class="pill ok">done</span></td></tr>
+      <tr><td><code class="inline">OptionList</code></td><td>Prompts with separators and disabled entries; the highlight never rests on a disabled one.</td><td><span class="pill ok">done</span></td></tr>
+      <tr><td><code class="inline">SelectionList</code></td><td>Checkbox-style multi-select with the three-glyph mark and the ToggledAt message.</td><td><span class="pill ok">done</span></td></tr>
+      <tr><td><code class="inline">Select</code></td><td>A collapsed prompt that expands in flow, with substring search and fold-away on escape.</td><td><span class="pill ok">done</span></td></tr>
+    </tbody>
+  </table>
+
+  <h3>Navigation and structure</h3>
+  <table>
+    <thead><tr><th>Widget</th><th>What it does</th><th>Status</th></tr></thead>
+    <tbody>
+      <tr><td><code class="inline">Button</code></td><td>Enter or space presses; disabled buttons take neither focus nor input.</td><td><span class="pill ok">done</span></td></tr>
+      <tr><td><code class="inline">ListView</code></td><td>A vertical list with a moving highlight and mouse picking.</td><td><span class="pill ok">done</span></td></tr>
+      <tr><td><code class="inline">Tabs</code> · <code class="inline">TabbedContent</code></td><td>Labels with a highlighted underline that skips disabled tabs, and panes beneath.</td><td><span class="pill ok">done</span></td></tr>
+      <tr><td><code class="inline">Collapsible</code></td><td>A fold with the triangle marker; keys and clicks pass through to the contents when open.</td><td><span class="pill ok">done</span></td></tr>
+      <tr><td><code class="inline">Tree</code></td><td>Guides, icons, the full shift-arrow family walk, and shift-space batch toggling.</td><td><span class="pill ok">done</span></td></tr>
+      <tr><td><code class="inline">DirectoryTree</code></td><td>A tree over a directory listing — folders first, lazily loaded, with the loader injected so any platform can feed it.</td><td><span class="pill ok">done</span></td></tr>
+    </tbody>
+  </table>
+
+  <h3>Coming in the next release</h3>
+  <table>
+    <thead><tr><th>Widget</th><th>What it will do</th><th>Status</th></tr></thead>
+    <tbody>
+      <tr><td><code class="inline">DataTable</code></td><td>Sortable, traversable tabular data.</td><td><span class="pill next">in progress</span></td></tr>
+      <tr><td><code class="inline">Markdown</code></td><td>Rendered Markdown documents.</td><td><span class="pill next">in progress</span></td></tr>
+      <tr><td><code class="inline">Tooltip</code></td><td>Hover hints for the pointer.</td><td><span class="pill next">in progress</span></td></tr>
+      <tr><td><code class="inline">Toast</code></td><td>Transient notifications.</td><td><span class="pill next">in progress</span></td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ============================= DESIGN ============================= -->
+<section class="page" id="page-design">
+  <div class="topbar">
+    <div class="crumbs">docs / <b class="crumb-here">design</b></div>
+    <div class="acts"><button class="ghost-btn" class="theme-toggle">◐ theme</button></div>
+  </div>
+
+  <h2>Design system</h2>
+  <p class="lead">The CSS model you already know — selectors, specificity, cascade, inheritance — applied to the terminal.</p>
+
+  <h3>Rules and cascade</h3>
+  <p>Give a node a name, an id and classes; write rules against them. Rules stack by specificity — id 100, class 10, name 1 — then by position, and a node inherits the text style of its container:</p>
+  <pre class="block"><span class="kw">let</span> sheet = @design.Stylesheet::<span class="fn">new</span>()
+
+sheet.<span class="fn">add</span>(
+  @design.Sel::new(name=<span class="st">"Header"</span>),
+  @design.Styles::new(text=Some(@style.Style::new(bold=<span class="kw">true</span>, fg=@style.cyan))),
+)
+sheet.<span class="fn">add</span>(
+  @design.Sel::new(classes=[<span class="st">"framed"</span>], focus=<span class="kw">true</span>),
+  @design.Styles::new(border=Some(@design.Heavy)),
+)</pre>
+  <ul>
+    <li><strong>Selectors</strong> — name, id, class, and the <code class="inline">:focus</code>, <code class="inline">:hover</code> and <code class="inline">:disabled</code> pseudo-classes.</li>
+    <li><strong>Properties</strong> — border, padding, margin, alignment, display, dock, grid spans, offsets, transitions, scroll-bar styles, and the text style itself.</li>
+    <li><strong>Chrome</strong> — borders, padding and margins draw behind the children, so a framed container never clips its own frame.</li>
+    <li><strong>States</strong> — a node the pointer rests on takes <code class="inline">:hover</code>; a disabled one takes <code class="inline">:disabled</code> and neither focus nor input.</li>
+    <li><strong>Transitions</strong> — an offset moves a node without telling the layout; a transition glides it to wherever the next layout puts it.</li>
+  </ul>
+
+  <h3>Scroll containers and docks</h3>
+  <p>A pane sizes its child to the child's own content, shows a window of it, draws bars that track the window, and moves by wheel, by the arrow, page, home and end keys, and to whatever just took focus. A docked child sits against an edge of its container, over the flow that gives up the space.</p>
+</section>
+
+<!-- ============================= DRIVERS ============================= -->
+<section class="page" id="page-drivers">
+  <div class="topbar">
+    <div class="crumbs">docs / <b class="crumb-here">drivers</b></div>
+    <div class="acts"><button class="ghost-btn" class="theme-toggle">◐ theme</button></div>
+  </div>
+
+  <h2>Drivers &amp; terminals</h2>
+  <p class="lead">Four operations touch a platform: write, read what is available, set raw mode, and ask for the terminal size. Everything else is pure.</p>
+
+  <h3>Shipped drivers</h3>
+  <table>
+    <thead><tr><th>Driver</th><th>Environment</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td><code class="inline">@driver/native</code></td><td>A real terminal</td><td>termios on Unix; virtual terminal mode on Windows.</td></tr>
+      <tr><td><code class="inline">@driver/node</code></td><td>Node.js</td><td>Raw mode, a queue the data handler fills, a frame pump on the clock.</td></tr>
+      <tr><td><code class="inline">@driver/web</code></td><td>Browser</td><td>A terminal on a canvas — a grid of cells, its own escape handling, key encoding, resize in-band.</td></tr>
+      <tr><td><code class="inline">@driver</code> (headless)</td><td>Tests</td><td>A terminal that understands the sequences — the whole suite runs against it.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>The three terminal worlds</h3>
+  <div class="std">
+    <div class="card"><div class="ic">▮</div><h4>Bare serial UART</h4><p>A microcontroller and a wire. No cursor addressing, no colour: the renderer's output degrades to a full ordered repaint — the same cell buffer, written line by line. Bring a Driver that writes bytes; nothing else changes.</p></div>
+    <div class="card"><div class="ic">▤</div><h4>Serial-era terminals</h4><p>Anything speaking the classic control set: cursor movement, erase, and the eight-colour palette. moonetui emits only the ECMA-48 / ISO 6429 subset these terminals understand — SGR (<code class="inline">CSI … m</code>) for style runs, CUP (<code class="inline">CSI H</code>) for addressing — and quantises true colour down to the palette the far end actually has.</p></div>
+    <div class="card"><div class="ic">_rgba</div><h4>Modern terminals</h4><p>The full feature set: true colour, box-drawing glyphs, double-width CJK and emoji, bracketed paste, SGR mouse reports, focus events. The differential renderer keeps the wire quiet between frames.</p></div>
+  </div>
+
+  <h3>Standards</h3>
+  <ul>
+    <li><strong>Unicode</strong> — every line is measured in terminal columns over a generated width table: wide CJK characters, double-width emoji, combining marks. Alignment and padding are never guesses.</li>
+    <li><strong>ECMA-48 / ISO 6429</strong> — the control sequences moonetui emits follow the international standard for control functions for coded character sets: SGR for character attributes, CUP and friends for cursor addressing, ED for erase. A terminal built to the standard renders moonetui output without negotiation.</li>
+    <li><strong>UTF-8</strong> — the input side decodes UTF-8 incrementally, so a code point split across two reads arrives whole.</li>
+  </ul>
+</section>
+
+<!-- ============================= TESTING ============================= -->
+<section class="page" id="page-testing">
+  <div class="topbar">
+    <div class="crumbs">docs / <b class="crumb-here">testing</b></div>
+    <div class="acts"><button class="ghost-btn" class="theme-toggle">◐ theme</button></div>
+  </div>
+
+  <h2>Testing</h2>
+  <p class="lead">The same suite on four backends — a regression in one world fails loudly everywhere.</p>
+
+  <div class="stats">
+    <div class="stat"><div class="n">258</div><div class="l">wasm</div></div>
+    <div class="stat"><div class="n">258</div><div class="l">wasm-gc</div></div>
+    <div class="stat"><div class="n">270</div><div class="l">js</div></div>
+    <div class="stat"><div class="n">258</div><div class="l">native</div></div>
+  </div>
+
+  <h3>Run the suite</h3>
+  <pre class="block">moon check --target all --deny-warn
+moon build --target all
+moon test  --target all
+moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must stay clean</span></pre>
+
+  <h3>What the suite covers</h3>
+  <ul>
+    <li><strong>Geometry and strips</strong> — rectangle algebra, clipping at character boundaries, Unicode width.</li>
+    <li><strong>The parser</strong> — CSI and SS3 sequences, modifiers, mouse, paste, split UTF-8, against a headless terminal.</li>
+    <li><strong>The compositor</strong> — rows from placements, diffs from consecutive frames, spans to escape sequences.</li>
+    <li><strong>Layout and design</strong> — axis and grid placement, the cascade, inheritance, chrome behind children.</li>
+    <li><strong>Every widget</strong> — each one's keyboard contract, message shape and rendered rows asserted against expected text.</li>
+  </ul>
+  <p>CI runs the whole gate on Ubuntu, macOS and Windows on every pull request and every push to <code class="inline">master</code>, and a tag publishes the module to mooncakes.</p>
+</section>
+
+</main>
+</div>
+<script src="assets/app.js"></script>
+</body>
+</html>

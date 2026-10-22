@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="880" height="500" viewBox="0 0 880 500" font-family="Cascadia Code, JetBrains Mono, ui-monospace, Menlo, Consolas, monospace">
+  <defs>
+    <linearGradient id="glow" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#7aa2f7"/>
+      <stop offset=".55" stop-color="#7ddfff"/>
+      <stop offset="1" stop-color="#bb9af7"/>
+    </linearGradient>
+    <linearGradient id="btn" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#7aa2f7"/>
+      <stop offset="1" stop-color="#bb9af7"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="150%">
+      <feDropShadow dx="0" dy="14" stdDeviation="18" flood-color="#000000" flood-opacity="0.5"/>
+    </filter>
+  </defs>
+
+  <rect width="880" height="500" fill="#0b0f17"/>
+  <circle cx="440" cy="255" r="230" fill="url(#glow)" opacity="0.05"/>
+
+  <g filter="url(#shadow)">
+    <rect x="48" y="34" width="784" height="432" rx="14" fill="#0d1117" stroke="#232b3b"/>
+    <rect x="48" y="34" width="784" height="38" rx="14" fill="#121826"/>
+    <rect x="48" y="56" width="784" height="16" fill="#121826"/>
+    <line x1="48" y1="72" x2="832" y2="72" stroke="#232b3b"/>
+    <circle cx="72" cy="53" r="6" fill="#f7768e"/>
+    <circle cx="92" cy="53" r="6" fill="#e0af68"/>
+    <circle cx="112" cy="53" r="6" fill="#9ece6a"/>
+    <text x="440" y="58" text-anchor="middle" font-size="13" fill="#8b96ab">moonetui — examples/tui · 80×24</text>
+
+    <!-- row 1: header -->
+    <rect x="68" y="88" width="128" height="24" rx="5" fill="#7aa2f7"/>
+    <text x="78" y="105" font-size="14" font-weight="bold" fill="#0d1117"> ◉ moonetui </text>
+    <text x="206" y="105" font-size="14" fill="#8b96ab">· the design system in a terminal window</text>
+
+    <!-- row 2-3: tabs -->
+    <text x="72" y="140" font-size="14"><tspan fill="#7aa2f7"> ◆ Inbox </tspan><tspan fill="#5c6a85"> ◆ Reports   ◆ Settings</tspan></text>
+    <text x="72" y="160" font-size="14"><tspan fill="#7aa2f7">━━━━━━</tspan><tspan fill="#2c3546">─</tspan></text>
+
+    <!-- left column: tree -->
+    <text x="76" y="196" font-size="14" fill="#dce3f1">▼ <tspan font-weight="bold">Today</tspan></text>
+    <text x="76" y="220" font-size="14"><tspan fill="#5c6a85">├── </tspan><tspan fill="#9ece6a">deploy passed</tspan></text>
+    <text x="76" y="244" font-size="14"><tspan fill="#5c6a85">├── </tspan><tspan fill="#9ece6a">tests passed</tspan></text>
+    <text x="76" y="268" font-size="14"><tspan fill="#5c6a85">└── </tspan><tspan fill="#e0af68">docs deployed</tspan></text>
+    <text x="76" y="292" font-size="14" fill="#dce3f1">▶ <tspan font-weight="bold">This week</tspan></text>
+
+    <!-- right column: sparkline -->
+    <text x="412" y="196" font-size="14" fill="#7ddfff">requests per minute</text>
+    <text x="412" y="222" font-size="14"><tspan fill="#7ddfff">▅▆█</tspan><tspan fill="#5c6a85"> ▂▄▆ </tspan><tspan fill="#7ddfff">▆█▇</tspan><tspan fill="#5c6a85"> ▁▃▅ </tspan><tspan fill="#7ddfff">▇██</tspan></text>
+    <text x="412" y="246" font-size="13" fill="#9ece6a">▁▂▃▄▅▆▇█</text>
+    <text x="500" y="246" font-size="13" fill="#5c6a85">248 · 249 · 249 · 250 · 256</text>
+
+    <!-- checkboxes + radio -->
+    <text x="412" y="282" font-size="14"><tspan fill="#bb9af7">[✓] clean build</tspan><tspan fill="#5c6a85">  [ ] audit</tspan></text>
+    <text x="412" y="306" font-size="14"><tspan fill="#bb9af7">[✓] all targets</tspan><tspan fill="#5c6a85">  [ ] sign</tspan></text>
+    <text x="412" y="330" font-size="14"><tspan fill="#bb9af7">( ) beta</tspan><tspan fill="#bb9af7">  (●) </tspan><tspan fill="#dce3f1" font-weight="bold">stable</tspan></text>
+
+    <!-- progress -->
+    <text x="76" y="360" font-size="14"><tspan fill="#f7768e">◐</tspan><tspan fill="#dce3f1"> 42% </tspan><tspan fill="#7ddfff">▰▰▰▰▰▰▰</tspan><tspan fill="#5c6a85">▱▱▱▱▱</tspan></text>
+
+    <!-- rule + footer -->
+    <line x1="68" y1="384" x2="812" y2="384" stroke="#232b3b"/>
+    <text x="76" y="410" font-size="13" fill="#5c6a85"><tspan>tab focus</tspan><tspan dx="24">enter select</tspan><tspan dx="24">space toggle</tspan><tspan dx="24">q quit</tspan></text>
+
+    <!-- prompt -->
+    <text x="68" y="442" font-size="14" fill="#5c6a85">$ </text>
+    <text x="86" y="442" font-size="14" fill="#dce3f1">moon run --target native examples/tui</text>
+    <rect x="428" y="430" width="9" height="16" fill="#7aa2f7"/>
+  </g>
+</svg>
