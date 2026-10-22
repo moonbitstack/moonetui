@@ -2,11 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 ///|
-/// A vertical list with one highlighted row.
-///
-/// The view scrolls to keep the highlight visible, and the highlight is a row
-/// index rather than a value, so a list that changes under the cursor does not
-/// silently point at something else.
 pub struct ListView {
   mut items : Array[String]
   mut index : Int32
@@ -18,7 +13,6 @@ pub struct ListView {
 }
 
 ///|
-/// A list of these rows, with the first one highlighted.
 pub fn ListView::new(
   items : Array[String],
   style~ : @style.Style = @style.Style::new(),
@@ -37,13 +31,11 @@ pub fn ListView::new(
 }
 
 ///|
-/// The rows as they stand.
 pub fn ListView::items(self : ListView) -> Array[String] {
   self.items
 }
 
 ///|
-/// Replace the rows, keeping the highlight inside the new list.
 pub fn ListView::set(self : ListView, items : Array[String]) -> Unit {
   self.items = items
   self.index = clamp(self.index, 0, items.length() - 1)
@@ -51,7 +43,6 @@ pub fn ListView::set(self : ListView, items : Array[String]) -> Unit {
 }
 
 ///|
-/// Which row is highlighted, or -1 when the list is empty.
 pub fn ListView::index(self : ListView) -> Int32 {
   if self.items.length() == 0 {
     -1
@@ -61,13 +52,11 @@ pub fn ListView::index(self : ListView) -> Int32 {
 }
 
 ///|
-/// Highlight a row.
 pub fn ListView::select(self : ListView, index : Int32) -> Unit {
   self.index = clamp(index, 0, self.items.length() - 1)
 }
 
 ///|
-/// The first visible row.
 pub fn ListView::offset(self : ListView) -> Int32 {
   self.offset
 }
@@ -84,8 +73,6 @@ pub impl Widget for ListView with fn render_line(self, row, size) {
   } else if self.focused {
     self.highlight
   } else {
-    // An unfocused list still shows where the cursor is, more quietly: losing
-    // focus should not lose the reader's place.
     self.blurred_highlight
   }
   align_line(self.items[item], size.width, Left, style)
@@ -211,7 +198,6 @@ fn ListView::move_to(self : ListView, index : Int32, ctx : Ctx) -> Unit {
 }
 
 ///|
-/// Scroll so the highlighted row is inside a view of this height.
 fn ListView::scroll_to_fit(self : ListView, height : Int32) -> Unit {
   if height <= 0 || self.items.length() == 0 {
     self.offset = 0

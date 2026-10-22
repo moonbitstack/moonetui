@@ -2,11 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 ///|
-/// The widget tree.
-///
-/// A leaf is a widget; a stack is a row or a column of nodes. Containers hold no
-/// widget of their own, so nothing has to pretend to render a container, and the
-/// compositor only ever asks a real widget for a line.
 pub enum Node {
   Leaf(
     id~ : Int32,
@@ -29,10 +24,6 @@ pub enum Node {
 }
 
 ///|
-/// What a node is styled against: the rules, which widget holds focus, and the
-/// style the application paints uncovered cells in. Focus is part of it because
-/// a `:focus` rule restyles a node the moment focus moves onto it, which is
-/// every frame the focus is somewhere new.
 pub(all) struct Theme {
   sheet : @design.Stylesheet
   focus : Int32
@@ -46,7 +37,6 @@ pub extend Theme with Debug::{to_repr}
 pub extend Theme with Eq::{not_equal, equal}
 
 ///|
-/// A theme over no rules, no focus, and the terminal's own colours.
 pub fn Theme::new(
   sheet~ : @design.Stylesheet = @design.Stylesheet::new(),
   focus~ : Int32 = -1,
@@ -56,7 +46,6 @@ pub fn Theme::new(
 }
 
 ///|
-/// A widget in the tree.
 pub fn leaf(
   id : Int32,
   widget : &@widget.Widget,
@@ -69,7 +58,6 @@ pub fn leaf(
 }
 
 ///|
-/// A column of nodes.
 pub fn column(
   id : Int32,
   kids : Array[Node],
@@ -83,7 +71,6 @@ pub fn column(
 }
 
 ///|
-/// A row of nodes.
 pub fn row(
   id : Int32,
   kids : Array[Node],
@@ -97,7 +84,6 @@ pub fn row(
 }
 
 ///|
-/// The node's own id.
 pub fn Node::id(self : Node) -> Int32 {
   match self {
     Leaf(id~, ..) => id
@@ -106,7 +92,6 @@ pub fn Node::id(self : Node) -> Int32 {
 }
 
 ///|
-/// How the node asks to be sized, before any style has its say.
 pub fn Node::box(self : Node) -> @layout.Box {
   match self {
     Leaf(box~, ..) => box
@@ -115,9 +100,6 @@ pub fn Node::box(self : Node) -> @layout.Box {
 }
 
 ///|
-/// What the rules, the inline styles, and the container together say this node
-/// looks like. The rules come first, the inline styles over them — which is the
-/// whole of CSS in one merge — and the container's text style under both.
 pub fn Node::resolve(
   self : Node,
   theme : Theme,
@@ -132,13 +114,6 @@ pub fn Node::resolve(
 }
 
 ///|
-/// What the node would like along `dir`, which is what an automatic extent
-/// resolves to. A node asks for its content plus everything it wraps the
-/// content in — border, padding, margin — so a bordered node that asks for its
-/// own size still has room to draw its text inside the frame.
-///
-/// A stack asks for the sum of its children along the stacking axis and for
-/// the largest of them across it; a hidden child is not asking.
 pub fn Node::hint(
   self : Node,
   space : @geom.Size,
@@ -174,8 +149,6 @@ pub fn Node::hint(
 }
 
 ///|
-/// The cells a node takes on top of its content along an axis: a border is one
-/// cell each side, then the padding, then the margin outside it all.
 fn outer_extent(res : @design.Resolved, dir : @layout.Dir) -> Int32 {
   let ring = match res.border {
     @design.Off => 0
@@ -193,18 +166,6 @@ fn outer_extent(res : @design.Resolved, dir : @layout.Dir) -> Int32 {
 }
 
 ///|
-/// Walk the tree, placing every node, and add the leaves to a scene.
-///
-/// Placements go in front-to-back order, and a child is added after its parent,
-/// so a child covers the container it sits in — which is what makes a container
-/// a background rather than something that paints over its contents. A node
-/// with a border, padding, or a background of its own is added too, behind its
-/// children: its chrome shows wherever they do not reach.
-///
-/// Every leaf's resolved styles are collected into `styled`, so the frame that
-/// renders a line knows what the node carries — and a leaf carries its
-/// inherited text style even when it draws no chrome, because the container's
-/// background has to reach the characters a widget never styled.
 pub fn Node::place(
   self : Node,
   area : @geom.Region,
@@ -244,8 +205,6 @@ pub fn Node::place(
         wants.push(pair.0.hint(content.size(), dir, theme~))
       }
       let slots = @layout.arrange(content, dir, boxes, wants, gap~)
-      // How much of the content the children left unused, and where the
-      // alignment says that slack goes.
       let mut used = 0
       for slot in slots {
         used = used + @layout.main_of(slot.size(), dir)
@@ -256,9 +215,6 @@ pub fn Node::place(
         Vertical => { x: 0, y: res.align.main_offset(dir, slack), }
         Horizontal => { x: res.align.main_offset(dir, slack), y: 0, }
       }
-      // The children are placed before this container's own chrome, because
-      // the compositor settles a contested column for the placement that came
-      // first: a background goes behind whatever sits inside it.
       for i in 0..<shown.length() {
         let (kid, _) = shown[i]
         kid.place(
@@ -271,6 +227,8 @@ pub fn Node::place(
           inherited=res.text,
         )
       }
+      // Placed after the children so the chrome lands behind them: the first
+      // placement covering a column wins it.
       if res.has_chrome() {
         scene.place(id, framed, clip)
         styled[id] = res
@@ -280,7 +238,6 @@ pub fn Node::place(
 }
 
 ///|
-/// The leaf widget with this id, if the tree has one.
 pub fn Node::find(self : Node, id : Int32) -> &@widget.Widget? {
   match self {
     Leaf(id=own, widget~, ..) => if own == id { Some(widget) } else { None }
@@ -297,7 +254,6 @@ pub fn Node::find(self : Node, id : Int32) -> &@widget.Widget? {
 }
 
 ///|
-/// The ids of the leaves that can hold focus, in the order they appear.
 pub fn Node::focus_ring(self : Node) -> Array[Int32] {
   let out : Array[Int32] = []
   self.collect_focusable(out)

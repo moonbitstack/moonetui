@@ -30,7 +30,7 @@ labels: bug
 
 **Steps to reproduce** (required)
 
-**Expected and actual behavior** (required)
+**Expected and actual behaviour** (required)
 
 <!-- For a rendering bug, the headless driver writes the escape sequences to a
      buffer; pasting that output pins down what was actually emitted. -->

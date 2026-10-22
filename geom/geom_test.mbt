@@ -30,7 +30,6 @@ test "size contains and clamps offsets" {
   assert_eq(size.contains(-1, 0), false)
   assert_eq(size.clamp_offset({ x: 99, y: 99, }), { x: 5, y: 3, })
   assert_eq(size.clamp_offset({ x: -99, y: 2, }), { x: 0, y: 2, })
-  // A zero-extent axis has no valid cell, so it clamps to zero rather than -1.
   assert_eq(@geom.Size::new(0, 0).clamp_offset({ x: 4, y: 4, }), { x: 0, y: 0, })
 }
 

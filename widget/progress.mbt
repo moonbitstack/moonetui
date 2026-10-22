@@ -2,11 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 ///|
-/// A progress bar.
-///
-/// The bar is drawn with eighth-width block characters, so a bar twenty columns
-/// wide has a hundred and sixty steps rather than twenty: a bar that only moves
-/// once per five percent looks stuck.
 pub struct Progress {
   mut value : Int32
   mut total : Int32
@@ -16,7 +11,6 @@ pub struct Progress {
 }
 
 ///|
-/// A bar at zero out of `total`.
 pub fn Progress::new(
   total~ : Int32 = 100,
   style~ : @style.Style = @style.Style::new(dim=true),
@@ -37,26 +31,22 @@ pub fn Progress::new(
 }
 
 ///|
-/// Move the bar.
 pub fn Progress::set(self : Progress, value : Int32) -> Unit {
   self.value = clamp_value(value, 0, self.total)
 }
 
 ///|
-/// Add to the bar.
 pub fn Progress::advance(self : Progress, amount : Int32) -> Unit {
   self.set(self.value + amount)
 }
 
 ///|
-/// Change what full means, keeping the current value inside it.
 pub fn Progress::set_total(self : Progress, total : Int32) -> Unit {
   self.total = if total <= 0 { 1 } else { total }
   self.value = clamp_value(self.value, 0, self.total)
 }
 
 ///|
-/// How far along the bar is, from zero to a hundred.
 pub fn Progress::percent(self : Progress) -> Int32 {
   self.value * 100 / self.total
 }
@@ -95,7 +85,6 @@ pub impl Widget for Progress with fn focusable(_self) {
 }
 
 ///|
-/// The bar itself, in eighths of a column.
 fn Progress::bar(self : Progress, width : Int32) -> @strip.Strip {
   let eighths = width * 8 * self.value / self.total
   let full = eighths / 8
@@ -116,7 +105,6 @@ fn Progress::bar(self : Progress, width : Int32) -> @strip.Strip {
 }
 
 ///|
-/// The partial blocks, indexed by how many eighths are filled.
 let partials : Array[String] = [
   "", "▏", "▎", "▍", "▌", "▋", "▊", "▉",
 ]

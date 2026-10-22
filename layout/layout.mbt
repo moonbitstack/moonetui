@@ -2,22 +2,15 @@
 // SPDX-License-Identifier: Apache-2.0
 
 ///|
-/// How much of the main axis a box asks for.
 pub(all) enum Extent {
-  /// As much as the content needs.
   Auto
-  /// Exactly this many cells.
   Cells(Int32)
-  /// This many shares of whatever is left after the fixed boxes have taken
-  /// theirs.
   Frac(Int32)
-  /// This percentage of the container, rounded down.
   Pct(Int32)
 } derive(Eq, Debug)
 
 ///|
-/// What a box asks for. `max` of -1 means unbounded, which is the only value
-/// that cannot be confused with a real limit of zero.
+/// A `max` of -1 means unbounded, which no real limit can be confused with.
 pub(all) struct Box {
   extent : Extent
   min : Int32
@@ -26,7 +19,6 @@ pub(all) struct Box {
 } derive(Eq, Debug)
 
 ///|
-/// A box with the defaults: automatic size, no limits, no padding.
 pub fn Box::new(
   extent~ : Extent = Auto,
   min~ : Int32 = 0,
@@ -37,20 +29,12 @@ pub fn Box::new(
 }
 
 ///|
-/// Which way boxes are stacked.
 pub(all) enum Dir {
   Vertical
   Horizontal
 } derive(Eq, Debug)
 
 ///|
-/// Place boxes along the main axis of `area`.
-///
-/// `content[i]` is what box `i` would like along that axis, which only matters
-/// for an automatic extent. Each box fills the cross axis. The returned regions
-/// are in the same order as the boxes, already shrunk by their padding, and
-/// clipped to `area` — a box pushed off the end comes back empty rather than
-/// out of bounds.
 pub fn arrange(
   area : @geom.Region,
   dir : Dir,
@@ -83,12 +67,6 @@ pub fn arrange(
 }
 
 ///|
-/// Split the available space between the boxes.
-///
-/// Fixed sizes are taken first; what is left is shared out by the fractional
-/// boxes. A box whose share would break its own limits is pinned there and the
-/// division runs again without it, because pinning it changes what the others
-/// are entitled to.
 fn solve(
   boxes : Array[Box],
   content : Array[Int32],
@@ -132,9 +110,6 @@ fn solve(
     if weight <= 0 {
       break
     }
-    // Largest remainder: hand out the whole part of every share, then give the
-    // leftover cells to the boxes with the largest fractions, so the parts add
-    // up to the pool exactly.
     let want : Array[Int32] = []
     let remainders : Array[Int32] = []
     let mut handed = 0
@@ -195,7 +170,6 @@ fn clamp_box(box : Box, value : Int32) -> Int32 {
 }
 
 ///|
-/// The extent along the stacking axis.
 pub fn main_of(size : @geom.Size, dir : Dir) -> Int32 {
   match dir {
     Vertical => size.height
@@ -204,7 +178,6 @@ pub fn main_of(size : @geom.Size, dir : Dir) -> Int32 {
 }
 
 ///|
-/// The extent across the stacking axis.
 pub fn cross_of(size : @geom.Size, dir : Dir) -> Int32 {
   match dir {
     Vertical => size.width

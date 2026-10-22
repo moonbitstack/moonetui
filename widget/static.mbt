@@ -2,8 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 ///|
-/// Text that does nothing. Every widget that only shows something is built on
-/// this one, which is why it is the only place where plain text becomes lines.
 pub struct Static {
   mut lines : Array[String]
   mut style : @style.Style
@@ -11,15 +9,13 @@ pub struct Static {
 }
 
 ///|
-/// Where a line sits when it is narrower than the widget.
 pub(all) enum Align {
   Left
-  Center
+  Centre
   Right
 } derive(Eq, Debug)
 
 ///|
-/// Static text, split on newlines.
 pub fn Static::new(
   text : String,
   style~ : @style.Style = @style.default,
@@ -29,19 +25,16 @@ pub fn Static::new(
 }
 
 ///|
-/// Replace the text.
 pub fn Static::set(self : Static, text : String) -> Unit {
   self.lines = split_lines(text)
 }
 
 ///|
-/// Replace the style.
 pub fn Static::set_style(self : Static, style : @style.Style) -> Unit {
   self.style = style
 }
 
 ///|
-/// The text as it stands.
 pub fn Static::text(self : Static) -> String {
   let out = StringBuilder()
   for i in 0..<self.lines.length() {
@@ -84,14 +77,11 @@ pub impl Widget for Static with fn focusable(_self) {
 }
 
 ///|
-/// One line of text. A label is static text that happens to be one line: the
-/// distinction is what the caller means by it, not what it does.
 pub fn label(text : String, style~ : @style.Style = @style.default) -> Static {
   Static::new(text, style~)
 }
 
 ///|
-/// Place a line inside a width, padding the sides the alignment asks for.
 pub fn align_line(
   text : String,
   width : Int32,
@@ -106,7 +96,7 @@ pub fn align_line(
   match align {
     Left => body.pad_to(width, style)
     Right => @strip.Strip::join([@strip.Strip::blank(slack, style), body])
-    Center => {
+    Centre => {
       let left = slack / 2
       @strip.Strip::join([
         @strip.Strip::blank(left, style),
@@ -118,7 +108,6 @@ pub fn align_line(
 }
 
 ///|
-/// Cut a string to a number of columns without splitting a wide character.
 pub fn clip_to(text : String, width : Int32) -> String {
   if @strip.str_cells(text) <= width {
     return text

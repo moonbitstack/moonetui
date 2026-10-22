@@ -2,9 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 ///|
-/// The rules this application is styled by. Rules stack by specificity — the
-/// focus rule outweighs the name rule, a class rule over both when it matches
-/// — and a rule that names nothing styles every node at once.
 fn sheet() -> @design.Stylesheet {
   let sheet = @design.Stylesheet::new()
   sheet.add(
@@ -22,8 +19,6 @@ fn sheet() -> @design.Stylesheet {
       padding=Some(@geom.Spacing::horizontal(1)),
     ),
   )
-  // The widget that holds focus trades its frame for a heavier one, which is
-  // the rule that moves with the tab key.
   sheet.add(
     @design.Sel::new(focus=true),
     @design.Styles::new(border=Some(@design.Heavy)),
@@ -57,7 +52,6 @@ fn main raise {
   let tty = @native.NativeTty::new()
   let ui = @app.App::new(tty, tree, sheet=sheet())
   ui.start()
-  // A native program can block on the terminal, so the loop is a loop.
   @native.run(() => {
     let alive = ui.step()
     for report in ui.drain() {

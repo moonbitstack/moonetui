@@ -27,7 +27,7 @@ pub let thin : Border
 // Types and methods
 pub(all) enum Align {
   Left
-  Center
+  Centre
   Right
 } derive(Eq, @debug.Debug)
 pub fn Align::equal(Self, Self) -> Bool

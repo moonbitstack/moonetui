@@ -5,8 +5,6 @@
 let screen : @geom.Region = @geom.Region::new(0, 0, 20, 10)
 
 ///|
-/// The extents of a row of regions along the stacking axis, which is what a
-/// layout is really about.
 fn spans(regions : Array[@geom.Region], dir : @layout.Dir) -> Array[Int32] {
   let out : Array[Int32] = []
   for r in regions {
@@ -36,8 +34,6 @@ test "an automatic box takes what its content asks for" {
 
 ///|
 test "fractions divide what is left and lose nothing to rounding" {
-  // Ten rows between three shares does not divide evenly; the parts must still
-  // add up to ten, or the layout leaves a blank row behind.
   let boxes = [
     @layout.Box::new(extent=Frac(1)),
     @layout.Box::new(extent=Frac(1)),
@@ -87,8 +83,6 @@ test "limits pin a box and the rest divide what is left" {
     @layout.Box::new(extent=Frac(1)),
   ]
   let placed = @layout.arrange(screen, Vertical, boxes, [])
-  // The first box wanted five rows, is capped at two, and the second takes the
-  // rest — pinning one box changes what the others are entitled to.
   assert_eq(spans(placed, Vertical), [2, 8])
 }
 
@@ -110,7 +104,6 @@ test "gaps come out of the shared space" {
   ]
   let placed = @layout.arrange(screen, Vertical, boxes, [], gap=2)
   assert_eq(spans(placed, Vertical), [4, 4])
-  // The second box starts after the first one plus the gap.
   assert_eq(placed[1].y, 6)
 }
 
@@ -122,7 +115,6 @@ test "padding shrinks the box, not its slot" {
   ]
   let placed = @layout.arrange(screen, Vertical, boxes, [])
   assert_eq(placed[0], @geom.Region::new(1, 1, 18, 4))
-  // The next box still starts where the unpadded slot ended.
   assert_eq(placed[1].y, 6)
 }
 
@@ -134,8 +126,6 @@ test "boxes pushed past the end come back empty" {
   ]
   let placed = @layout.arrange(screen, Vertical, boxes, [])
   assert_eq(placed[0].height, 8)
-  // Only two rows are left, so the second box is cut short rather than drawn
-  // outside the container.
   assert_eq(placed[1], @geom.Region::new(0, 8, 20, 2))
 }
 

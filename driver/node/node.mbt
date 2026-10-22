@@ -2,13 +2,11 @@
 // SPDX-License-Identifier: Apache-2.0
 
 ///|
-/// The terminal a Node process is attached to.
 pub struct NodeTty {
   mut started : Bool
 }
 
 ///|
-/// A driver over Node's standard input and output.
 pub fn NodeTty::new() -> NodeTty {
   { started: false, }
 }
@@ -47,7 +45,6 @@ pub impl @driver.Driver for NodeTty with fn size(_self) {
 
 ///|
 pub impl @driver.Driver for NodeTty with fn poll(_self, _timeout) {
-  // Node cannot block: whatever the data handler has queued is what there is.
   js_drain()
 }
 
@@ -57,9 +54,6 @@ pub impl @driver.Driver for NodeTty with fn now(_self) {
 }
 
 ///|
-/// Put stdin into raw mode and start collecting what arrives. The queue lives on
-/// the global object rather than in a closure so that a reload — a test runner
-/// importing the module twice — does not end up with two of them.
 extern "js" fn js_start() -> Unit =
   #| () => {
   #|   const g = globalThis;
@@ -90,7 +84,6 @@ extern "js" fn js_write(text : String) -> Unit =
   #| (text) => { process.stdout.write(text); }
 
 ///|
-/// Everything queued since the last call, in one piece.
 extern "js" fn js_drain() -> Bytes =
   #| () => {
   #|   const s = globalThis.__moonetui;
@@ -113,19 +106,10 @@ extern "js" fn js_rows() -> Int32 =
   #| () => (process.stdout.rows || 24)
 
 ///|
-/// Milliseconds since the process started. `Date.now()` would be the obvious
-/// choice, but it does not fit in an `Int`: truncating it to 32 bits turns the
-/// clock into an arbitrary number that can be negative, which makes every
-/// elapsed-time comparison meaningless.
 extern "js" fn js_now() -> Int32 =
   #| () => (performance.now() | 0)
 
 ///|
-/// Drive `tick` every `ms` milliseconds until it returns false.
-///
-/// Node's input arrives through callbacks, so a program that spins in a loop
-/// never lets a key press reach it. The frame has to come from the event loop
-/// instead, which is what this hands back to the caller.
 pub fn pump(ms : Int32, tick : () -> Bool) -> Unit {
   js_pump(ms, tick)
 }

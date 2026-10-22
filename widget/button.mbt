@@ -2,9 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 ///|
-/// A press. The label is centred, the widget takes focus when clicked, and both
-/// Enter and Space press it — a terminal application is driven from the keyboard
-/// at least as often as from the mouse.
 pub struct Button {
   mut text : String
   style : @style.Style
@@ -14,7 +11,6 @@ pub struct Button {
 }
 
 ///|
-/// A button with this label.
 pub fn Button::new(
   text : String,
   style~ : @style.Style = @style.Style::new(),
@@ -24,25 +20,21 @@ pub fn Button::new(
 }
 
 ///|
-/// Replace the label.
 pub fn Button::set(self : Button, text : String) -> Unit {
   self.text = text
 }
 
 ///|
-/// The label as it stands.
 pub fn Button::text(self : Button) -> String {
   self.text
 }
 
 ///|
-/// A disabled button still draws, but does not take focus and cannot be pressed.
 pub fn Button::disable(self : Button, disabled : Bool) -> Unit {
   self.disabled = disabled
 }
 
 ///|
-/// Whether the button is disabled.
 pub fn Button::is_disabled(self : Button) -> Bool {
   self.disabled
 }
@@ -53,13 +45,11 @@ pub impl Widget for Button with fn render_line(self, row, size) {
   if row != 0 {
     return @strip.Strip::blank(size.width, style)
   }
-  align_line(self.text, size.width, Center, style)
+  align_line(self.text, size.width, Centre, style)
 }
 
 ///|
 pub impl Widget for Button with fn hint(self, _size) {
-  // Two columns of breathing room on each side, which is what makes a button
-  // read as a button rather than as a word.
   @geom.Size::new(@strip.str_cells(self.text) + 4, 1)
 }
 
@@ -70,8 +60,6 @@ pub impl Widget for Button with fn handle(self, ctx, msg) {
   }
   match msg {
     Focus(gained) => {
-      // A widget learns it has focus the same way it learns anything else, so
-      // rendering never has to ask the application about its own state.
       self.focused = gained
       ctx.repaint()
       true
@@ -114,7 +102,6 @@ fn pressing(key : @event.Key) -> Bool {
 }
 
 ///|
-/// Whether the button currently holds focus.
 pub fn Button::has_focus(self : Button) -> Bool {
   self.focused
 }

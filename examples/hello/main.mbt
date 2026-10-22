@@ -22,14 +22,10 @@ fn main raise {
   let tty = @node.NodeTty::new()
   let ui = @app.App::new(tty, tree, base=@style.Style::new())
   ui.start()
-  // Node delivers input through its event loop, so the frame has to come from
-  // the event loop too: a program that spins here never receives a key.
   @node.pump(16, () => {
     let alive = ui.step() catch { _ => false }
     for report in ui.drain() {
       match report {
-        // Choosing a row puts it in the field, which shows a widget's report
-        // reaching the application and coming back out again.
         Selected(index~, ..) => {
           field.set(list.items()[index])
           ui.refresh()

@@ -2,9 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 ///|
-/// A run of text in one style. `cells` is measured when the segment is built,
-/// because a line is cropped and divided far more often than it is created, and
-/// re-measuring on every crop is what makes a naive renderer quadratic.
 pub(all) struct Seg {
   text : String
   style : @style.Style
@@ -12,27 +9,22 @@ pub(all) struct Seg {
 } derive(Eq, Debug)
 
 ///|
-/// Build a segment, measuring its width.
 pub fn Seg::new(text : String, style : @style.Style) -> Seg {
   { text, style, cells: str_cells(text), }
 }
 
 ///|
-/// One line of a rendered screen: the segments left to right, with the total
-/// width kept alongside.
 pub(all) struct Strip {
   segs : Array[Seg]
   cells : Int32
 } derive(Eq, Debug)
 
 ///|
-/// A line with nothing on it.
 pub fn Strip::empty() -> Strip {
   { segs: [], cells: 0, }
 }
 
 ///|
-/// A line holding one run of text.
 pub fn Strip::of(text : String, style : @style.Style) -> Strip {
   if text.length() == 0 {
     return Strip::empty()
@@ -42,7 +34,6 @@ pub fn Strip::of(text : String, style : @style.Style) -> Strip {
 }
 
 ///|
-/// A line of `width` spaces in one style.
 pub fn Strip::blank(width : Int32, style : @style.Style) -> Strip {
   if width <= 0 {
     return Strip::empty()
@@ -51,7 +42,6 @@ pub fn Strip::blank(width : Int32, style : @style.Style) -> Strip {
 }
 
 ///|
-/// Build a line from segments, measuring the total.
 pub fn Strip::from_segs(segs : Array[Seg]) -> Strip {
   let mut total = 0
   for seg in segs {
@@ -61,19 +51,16 @@ pub fn Strip::from_segs(segs : Array[Seg]) -> Strip {
 }
 
 ///|
-/// The width of this line in columns.
 pub fn Strip::cell_length(self : Strip) -> Int32 {
   self.cells
 }
 
 ///|
-/// True when the line holds no columns.
 pub fn Strip::is_empty(self : Strip) -> Bool {
   self.cells == 0
 }
 
 ///|
-/// The text of the line with its styles dropped.
 pub fn Strip::text(self : Strip) -> String {
   let out = StringBuilder()
   for seg in self.segs {
@@ -83,11 +70,6 @@ pub fn Strip::text(self : Strip) -> String {
 }
 
 ///|
-/// The columns from `start` up to but not including `end`.
-///
-/// A wide character that straddles either boundary cannot be shown in half, so
-/// the visible half becomes a space — the same substitution a terminal makes
-/// when a double-width character is overwritten from one side.
 pub fn Strip::crop(self : Strip, start : Int32, end : Int32) -> Strip {
   let from = if start < 0 { 0 } else { start }
   let to = if end > self.cells { self.cells } else { end }
@@ -115,8 +97,6 @@ pub fn Strip::crop(self : Strip, start : Int32, end : Int32) -> Strip {
 }
 
 ///|
-/// Split the line at each of the given columns, in ascending order. The parts
-/// cover the line exactly, so joining them back gives the original width.
 pub fn Strip::divide(self : Strip, cuts : Array[Int32]) -> Array[Strip] {
   let parts : Array[Strip] = []
   let mut start = 0
@@ -130,7 +110,6 @@ pub fn Strip::divide(self : Strip, cuts : Array[Int32]) -> Array[Strip] {
 }
 
 ///|
-/// Lay the lines end to end.
 pub fn Strip::join(parts : Array[Strip]) -> Strip {
   let out : Array[Seg] = []
   for part in parts {
@@ -142,8 +121,6 @@ pub fn Strip::join(parts : Array[Strip]) -> Strip {
 }
 
 ///|
-/// Extend the line to `width` columns with spaces in `style`, or crop it when
-/// it is already longer.
 pub fn Strip::pad_to(
   self : Strip,
   width : Int32,
@@ -159,8 +136,6 @@ pub fn Strip::pad_to(
 }
 
 ///|
-/// Layer a style under every segment of the line: the segment's own style wins
-/// wherever it names something.
 pub fn Strip::apply(self : Strip, style : @style.Style) -> Strip {
   let out : Array[Seg] = []
   for seg in self.segs {
@@ -170,9 +145,6 @@ pub fn Strip::apply(self : Strip, style : @style.Style) -> Strip {
 }
 
 ///|
-/// Merge neighbouring segments that share a style, and drop empty ones. Two
-/// lines that look identical compare equal only once both are simplified, so
-/// the differ runs this first.
 pub fn Strip::simplify(self : Strip) -> Strip {
   let out : Array[Seg] = []
   for seg in self.segs {
@@ -190,8 +162,6 @@ pub fn Strip::simplify(self : Strip) -> Strip {
 }
 
 ///|
-/// Crop one segment's text to the column range, substituting a space for a wide
-/// character the range cuts in half.
 fn crop_text(text : String, start : Int32, end : Int32) -> String {
   let out = StringBuilder()
   let mut column = 0
@@ -207,8 +177,6 @@ fn crop_text(text : String, start : Int32, end : Int32) -> String {
       if w == 2 && (column < start || next > end) {
         out.write_string(" ")
       } else if w == 0 && column < start {
-        // A combining mark whose base character was cropped away has nothing to
-        // attach to, so it goes with the base.
         ()
       } else {
         out.write_substring(text, i, used)

@@ -9,7 +9,6 @@ let red : @style.Style = @style.Style::new(fg=@style.red)
 
 ///|
 test "code points come back whole, surrogate pairs included" {
-  // A grinning face is one character but two code units.
   let emoji = "😀"
   assert_eq(emoji.length(), 2)
   assert_eq(@strip.code_at(emoji, 0), (0x1F600, 2))
@@ -22,9 +21,7 @@ test "column widths follow the character database" {
   assert_eq(@strip.cell_width(97), 1)
   assert_eq(@strip.cell_width(0x4E2D), 2)
   assert_eq(@strip.cell_width(0x1F600), 2)
-  // A combining acute accent sits on the character before it.
   assert_eq(@strip.cell_width(0x0301), 0)
-  // A zero width joiner holds an emoji sequence together and takes no column.
   assert_eq(@strip.cell_width(0x200D), 0)
   assert_eq(@strip.cell_width(9), 0)
 }
@@ -40,7 +37,6 @@ test "string width adds up per column, not per character" {
 
 ///|
 test "cut_at never splits a wide character" {
-  // Three columns fit one wide character; the second would need a fourth.
   assert_eq(@strip.cut_at("中文", 3), 1)
   assert_eq(@strip.cut_at("中文", 4), 2)
   assert_eq(@strip.cut_at("中文", 1), 0)
@@ -80,8 +76,6 @@ test "crop keeps the requested columns" {
 ///|
 test "a wide character cut in half becomes a space" {
   let s = @strip.Strip::of("中文", plain)
-  // One column of a two column character cannot be shown, so the half that
-  // survives is blank — exactly what a terminal displays in that situation.
   assert_eq(s.crop(0, 1).text(), " ")
   assert_eq(s.crop(1, 4).text(), " 文")
   assert_eq(s.crop(0, 2).text(), "中")
@@ -135,10 +129,9 @@ test "apply layers a style under the segments" {
     @strip.Strip::of("cd", plain),
   ])
   let on_blue = s.apply(@style.Style::new(bg=@style.blue))
-  // The red segment keeps its foreground and gains the background.
   assert_eq(on_blue.segs[0].style.fg, @style.red)
   assert_eq(on_blue.segs[0].style.bg, @style.blue)
-  assert_eq(on_blue.segs[1].style.fg, @style.Color::Default)
+  assert_eq(on_blue.segs[1].style.fg, @style.Colour::Default)
   assert_eq(on_blue.segs[1].style.bg, @style.blue)
   assert_eq(on_blue.cell_length(), s.cell_length())
 }

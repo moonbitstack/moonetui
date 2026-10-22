@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 ///|
-/// Bytes from code values, so a test can write down what a terminal sends.
 fn bytes(values : Array[Int32]) -> Bytes {
   let out : Array[Byte] = []
   for v in values {
@@ -36,7 +35,6 @@ test "an application draws its tree on the first frame" {
   assert_eq(ui.screen(), [
     "  moonetui  ", "alpha       ", "beta        ", " q quit     ",
   ])
-  // The list is the only widget that can hold focus, so it has it.
   assert_eq(ui.focused(), 2)
 }
 
@@ -52,7 +50,6 @@ test "a key press reaches the focused widget and repaints" {
   tty.clear_output()
   ui.step() |> ignore
   assert_eq(list.index(), 1)
-  // Only the two rows whose highlight changed are repainted.
   let written = tty.output()
   assert_eq(written.length() > 0, true)
   assert_eq(ui.screen()[1], "two     ")
@@ -75,7 +72,6 @@ test "tab moves focus round the ring" {
   assert_eq(ui.focused(), 1)
   ui.step() |> ignore
   assert_eq(ui.focused(), 2)
-  // The ring wraps rather than stopping at the end.
   ui.step() |> ignore
   assert_eq(ui.focused(), 1)
 }
@@ -90,7 +86,6 @@ test "what a widget reports reaches the host" {
   assert_eq(ui.drain(), [])
   ui.step() |> ignore
   assert_eq(ui.drain(), [Pressed(id=1)])
-  // Draining twice does not report the same press again.
   assert_eq(ui.drain(), [])
 }
 
@@ -103,7 +98,6 @@ test "a click goes to the widget under the pointer" {
     @app.leaf(2, bottom, box=@layout.Box::new(extent=Cells(1))),
   ])
   let tty = @driver.Headless::new(@geom.Size::new(6, 3), script=[
-    // Row three, column one: the button.
     ascii("\u{1b}[<0;1;3M"),
   ])
   let ui = @app.App::new(tty, tree)
@@ -127,14 +121,11 @@ test "a resize settles before the screen is rebuilt" {
   let list = @widget.ListView::new(["a", "b", "c", "d"])
   let tree = @app.column(0, [@app.leaf(1, list)])
   let tty = @driver.Headless::new(@geom.Size::new(6, 2), script=[
-    // CSI 48 ; rows ; columns t
     ascii("\u{1b}[48;4;6t"),
   ])
   let ui = @app.App::new(tty, tree)
   ui.start()
   assert_eq(ui.screen().length(), 2)
-  // The report arrives on this step; the rebuild waits for the clock to move
-  // past the settle time, which the next poll provides.
   ui.step() |> ignore
   ui.step() |> ignore
   assert_eq(ui.screen().length(), 4)
@@ -148,7 +139,6 @@ test "starting and stopping hand the terminal over and back" {
   let ui = @app.App::new(tty, tree)
   ui.start()
   let opening = tty.output()
-  // The alternate screen is entered before anything is drawn on it.
   assert_eq(opening[0:8].to_owned(), @driver.enter_alt)
   tty.clear_output()
   ui.stop()
@@ -166,8 +156,6 @@ test "a frame with nothing to say writes nothing" {
   tty.clear_output()
   ui.step() |> ignore
   ui.step() |> ignore
-  // Nothing happened, so nothing was sent — which is the whole point of
-  // comparing frames rather than repainting on a timer.
   assert_eq(tty.output(), "")
 }
 
@@ -331,7 +319,6 @@ test "a focus rule restyles the widget focus moves onto" {
   let tty = @driver.Headless::new(@geom.Size::new(14, 3), script=[ascii("\t")])
   let ui = @app.App::new(tty, tree, sheet~)
   ui.start()
-  // The first button holds focus, so its rule is the heavy one.
   assert_eq(ui.screen(), [
     "┏━━━━━┓┌─────┐", "┃ go  ┃│ ok  │", "┗━━━━━┛└─────┘",
   ])
@@ -369,9 +356,6 @@ test "a container's background is placed behind its children" {
   let tty = @driver.Headless::new(@geom.Size::new(8, 3))
   let ui = @app.App::new(tty, tree, sheet~)
   ui.start()
-  // The panel paints its background wherever the child does not reach, and
-  // the child still draws its own text.
   assert_eq(ui.screen(), ["hi      ", "        ", "        "])
-  // The blue background was sent to the terminal: the whole screen carries it.
   assert_eq(tty.output().contains("\u{1b}[44m"), true)
 }

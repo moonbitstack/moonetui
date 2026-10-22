@@ -2,10 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 ///|
-/// Build the application and hand the browser the frame loop.
-///
-/// Every line below is the same as the terminal example except the driver: that
-/// is the point of the driver seam.
 pub fn start() -> Unit {
   let head = @widget.Header::new("moonetui in a browser", note="tab to move")
   let list = @widget.ListView::new([

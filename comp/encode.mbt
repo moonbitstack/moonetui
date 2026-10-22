@@ -2,12 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 ///|
-/// Turn spans into the bytes that paint them.
-///
-/// The terminal keeps the last style it was given, so the style in effect is
-/// tracked across the whole batch and each segment emits only the parameters
-/// that changed. The batch starts and ends at `base`, which leaves the terminal
-/// in a known state for whoever writes next.
 pub fn encode(spans : Array[Span], base : @style.Style) -> String {
   if spans.length() == 0 {
     return ""
@@ -28,17 +22,14 @@ pub fn encode(spans : Array[Span], base : @style.Style) -> String {
 }
 
 ///|
-/// Move the cursor to a zero-based column and row. Terminals count from one.
 pub fn cursor_to(y : Int32, x : Int32) -> String {
   "\u{1b}[" + (y + 1).to_string() + ";" + (x + 1).to_string() + "H"
 }
 
 ///|
-/// Clear the screen and put the cursor at the top left.
 pub let clear : String = "\u{1b}[2J\u{1b}[H"
 
 ///|
-/// Show or hide the cursor.
 pub fn show_cursor(visible : Bool) -> String {
   if visible {
     "\u{1b}[?25h"

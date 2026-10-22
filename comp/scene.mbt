@@ -2,9 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 ///|
-/// Where one widget sits on the screen. `clip` is the region it is allowed to
-/// draw in — usually its container's — so a widget that scrolls out of its
-/// parent simply stops being asked for lines.
 pub(all) struct Placement {
   node : Int32
   rect : @geom.Region
@@ -12,28 +9,22 @@ pub(all) struct Placement {
 } derive(Eq, Debug)
 
 ///|
-/// The visible area of that placement: what it covers after clipping.
 pub fn Placement::visible(self : Placement) -> @geom.Region {
   self.rect.intersection(self.clip)
 }
 
 ///|
-/// Everything on the screen, front to back. The first placement that covers a
-/// column wins it, which is how one widget hides another without anything being
-/// drawn twice.
 pub(all) struct Scene {
   size : @geom.Size
   items : Array[Placement]
 } derive(Eq, Debug)
 
 ///|
-/// A screen with nothing on it.
 pub fn Scene::new(size : @geom.Size) -> Scene {
   { size, items: [], }
 }
 
 ///|
-/// Add a placement behind everything already added.
 pub fn Scene::place(
   self : Scene,
   node : Int32,
@@ -44,10 +35,6 @@ pub fn Scene::place(
 }
 
 ///|
-/// The column boundaries on one row: zero, the screen width, and every visible
-/// edge in between, sorted and deduplicated. Composing a row means filling the
-/// pieces between consecutive boundaries, and cutting at every edge means no
-/// piece ever straddles two widgets.
 pub fn Scene::cuts(self : Scene, y : Int32) -> Array[Int32] {
   let marks : Array[Int32] = [0, self.size.width]
   for item in self.items {
@@ -69,11 +56,8 @@ pub fn Scene::cuts(self : Scene, y : Int32) -> Array[Int32] {
 }
 
 ///|
-/// Compose one row.
-///
-/// `render(node, line)` gives the widget's own line, in its own coordinates and
-/// its full width; the compositor crops it to the piece the widget actually
-/// owns. Uncovered pieces become blanks in `base`.
+/// One row of the screen: the first placement covering a column wins it, so
+/// nothing is drawn twice and front items hide those behind them.
 pub fn Scene::compose_line(
   self : Scene,
   y : Int32,
@@ -100,8 +84,6 @@ pub fn Scene::compose_line(
             fresh
           }
         }
-        // The widget drew in its own coordinates, so the piece it owns starts
-        // at the offset of this cut inside the widget.
         let piece = line
           .pad_to(item.rect.width, base)
           .crop(from - item.rect.x, to - item.rect.x)
@@ -113,7 +95,6 @@ pub fn Scene::compose_line(
 }
 
 ///|
-/// Compose every row of the screen.
 pub fn Scene::compose(
   self : Scene,
   render : (Int32, Int32) -> @strip.Strip,
@@ -127,7 +108,6 @@ pub fn Scene::compose(
 }
 
 ///|
-/// The front-most placement covering this column, if any.
 fn Scene::owner(self : Scene, y : Int32, x : Int32) -> Placement? {
   for item in self.items {
     let area = item.visible()

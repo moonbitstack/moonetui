@@ -2,23 +2,12 @@
 // SPDX-License-Identifier: Apache-2.0
 
 ///|
-/// A terminal drawn on a canvas in a browser.
-///
-/// The application writes escape sequences as it would to any terminal; this
-/// driver keeps the grid they describe and paints the cells that changed. Input
-/// goes the other way: a key press is encoded into the same bytes a terminal
-/// would send, so the parser above has nothing to special-case.
 pub struct WebTty {
   grid : Grid
   mut started : Bool
 }
 
 ///|
-/// Take over the canvas with this element id and build a terminal on it.
-///
-/// The size comes from the canvas and the font: the grid is as many whole cells
-/// as fit, which is why a browser terminal has to measure before it can say how
-/// big it is.
 pub fn WebTty::new(
   canvas~ : String = "moonetui",
   font_px~ : Int32 = 16,
@@ -28,8 +17,6 @@ pub fn WebTty::new(
 }
 
 ///|
-/// The grid as it stands, one string per row. A test reads this instead of
-/// looking at pixels.
 pub fn WebTty::rows(self : WebTty) -> Array[String] {
   self.grid.rows()
 }
@@ -68,8 +55,6 @@ pub impl @driver.Driver for WebTty with fn size(self) {
 
 ///|
 pub impl @driver.Driver for WebTty with fn poll(self, _timeout) {
-  // The browser cannot be blocked, so a frame gets whatever the listeners have
-  // queued since the last one.
   self.check_size()
   js_drain()
 }
@@ -80,8 +65,6 @@ pub impl @driver.Driver for WebTty with fn now(_self) {
 }
 
 ///|
-/// Notice a canvas that changed size and tell the application in band, the way
-/// a terminal does.
 fn WebTty::check_size(self : WebTty) -> Unit {
   let cols = js_cols()
   let rows = js_rows()
@@ -93,13 +76,11 @@ fn WebTty::check_size(self : WebTty) -> Unit {
 }
 
 ///|
-/// Draw every cell that changed.
 fn WebTty::paint(self : WebTty) -> Unit {
   for at in self.grid.take_dirty() {
     let (x, y) = at
     let cell = self.grid.at(x, y)
     if cell.text.length() == 0 {
-      // The second half of a wide character: its owner drew both columns.
       continue
     }
     let reverse = cell.style.attrs.reverse
@@ -134,12 +115,6 @@ fn WebTty::paint(self : WebTty) -> Unit {
 }
 
 ///|
-/// How many eighths of a cell a block character fills, or zero when the text is
-/// not one.
-///
-/// A font's block glyphs rarely tile: drawn as text they leave hairlines
-/// between cells, which turns a progress bar into a dotted line. Terminal
-/// emulators paint them as rectangles instead, and so does this one.
 fn eighths(text : String) -> Int32 {
   if text.length() != 1 {
     return 0
@@ -158,18 +133,14 @@ fn eighths(text : String) -> Int32 {
 }
 
 ///|
-/// What the terminal's own foreground is, when a style does not name one.
 let fore : String = "#d4d4d4"
 
 ///|
-/// And its background.
 let back : String = "#1e1e1e"
 
 ///|
-/// A colour as CSS. The indexed colours use the palette the library already
-/// knows, so the browser shows what a terminal would.
-fn css(color : @style.Color, fallback : String) -> String {
-  match color.to_rgb() {
+fn css(colour : @style.Colour, fallback : String) -> String {
+  match colour.to_rgb() {
     None => fallback
     Some((r, g, b)) =>
       "rgb(" + r.to_string() + "," + g.to_string() + "," + b.to_string() + ")"
@@ -177,7 +148,6 @@ fn css(color : @style.Color, fallback : String) -> String {
 }
 
 ///|
-/// Set up the canvas, measure the font, and work out how many cells fit.
 extern "js" fn js_init(canvas : String, font_px : Int32) -> Unit =
   #| (id, px) => {
   #|   const g = globalThis;
@@ -214,7 +184,6 @@ extern "js" fn js_now() -> Int32 =
   #| () => (performance.now() | 0)
 
 ///|
-/// Paint one cell: its background, then its text.
 extern "js" fn js_draw(
   block : Int32,
   x : Int32,
@@ -231,8 +200,8 @@ extern "js" fn js_draw(
   #|   const s = globalThis.__moonetui_web;
   #|   const px = x * s.cw, py = y * s.ch;
   #|   s.ctx.fillStyle = bg;
-  #|   // Cell metrics are fractional, so a background filled at the exact width
-  #|   // leaves a hairline of the page showing between cells.
+  #|
+  #|
   #|   s.ctx.fillRect(Math.floor(px), Math.floor(py),
   #|                  Math.ceil(px + s.cw * width) - Math.floor(px),
   #|                  Math.ceil(py + s.ch) - Math.floor(py));
@@ -255,7 +224,6 @@ extern "js" fn js_draw(
   #| }
 
 ///|
-/// Start listening for keys, pasted text and canvas resizes.
 extern "js" fn js_listen() -> Unit =
   #| () => {
   #|   const s = globalThis.__moonetui_web;
@@ -325,8 +293,6 @@ extern "js" fn js_unlisten() -> Unit =
   #| }
 
 ///|
-/// Queue the in-band size report a terminal would send, so the application
-/// learns about a resized canvas through the same path as everything else.
 extern "js" fn js_report_resize(cols : Int32, rows : Int32) -> Unit =
   #| (cols, rows) => {
   #|   const s = globalThis.__moonetui_web;
@@ -350,9 +316,6 @@ extern "js" fn js_drain() -> Bytes =
   #| }
 
 ///|
-/// Drive `tick` on every animation frame until it returns false. A browser
-/// paints when it is ready, so the frame comes from the browser rather than
-/// from a loop.
 pub fn pump(tick : () -> Bool) -> Unit {
   js_pump(tick)
 }

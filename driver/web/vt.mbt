@@ -2,19 +2,14 @@
 // SPDX-License-Identifier: Apache-2.0
 
 ///|
-/// One cell of the browser's grid.
 pub(all) struct Cell {
   text : String
   style : @style.Style
 } derive(Eq, Debug)
 
 ///|
-/// The grid a browser terminal keeps, and the small part of the escape language
-/// it understands.
-///
-/// It is small on purpose: this reads what moonetui writes — move the cursor,
-/// set a style, put text — and ignores the rest. A general terminal emulator
-/// would be a different project.
+/// The browser's cell grid, plus the fragment of the escape language it
+/// needs: it reads what moonetui writes and ignores the rest.
 pub struct Grid {
   mut width : Int32
   mut height : Int32
@@ -23,12 +18,10 @@ pub struct Grid {
   mut cursor_x : Int32
   mut cursor_y : Int32
   mut current : @style.Style
-  /// An escape sequence that arrived in pieces waits here for the rest.
   mut pending : String
 }
 
 ///|
-/// An empty grid of this size.
 pub fn Grid::new(width : Int32, height : Int32) -> Grid {
   let grid = {
     width,
@@ -45,7 +38,6 @@ pub fn Grid::new(width : Int32, height : Int32) -> Grid {
 }
 
 ///|
-/// Change the grid's size, clearing it.
 pub fn Grid::resize(self : Grid, width : Int32, height : Int32) -> Unit {
   self.width = if width < 1 { 1 } else { width }
   self.height = if height < 1 { 1 } else { height }
@@ -63,7 +55,6 @@ pub fn Grid::resize(self : Grid, width : Int32, height : Int32) -> Unit {
 }
 
 ///|
-/// The cell at these coordinates.
 pub fn Grid::at(self : Grid, x : Int32, y : Int32) -> Cell {
   if x < 0 || x >= self.width || y < 0 || y >= self.height {
     return { text: " ", style: @style.default, }
@@ -72,7 +63,6 @@ pub fn Grid::at(self : Grid, x : Int32, y : Int32) -> Cell {
 }
 
 ///|
-/// The grid as one string per row, which is what a test reads.
 pub fn Grid::rows(self : Grid) -> Array[String] {
   let out : Array[String] = []
   for y in 0..<self.height {
@@ -86,7 +76,6 @@ pub fn Grid::rows(self : Grid) -> Array[String] {
 }
 
 ///|
-/// The cells that changed since they were last collected, as coordinates.
 pub fn Grid::take_dirty(self : Grid) -> Array[(Int32, Int32)] {
   let out : Array[(Int32, Int32)] = []
   for i in 0..<self.dirty.length() {
@@ -99,8 +88,6 @@ pub fn Grid::take_dirty(self : Grid) -> Array[(Int32, Int32)] {
 }
 
 ///|
-/// Mark every cell as needing to be drawn again, after a resize or a font
-/// change, where the browser lost what was on the canvas.
 pub fn Grid::dirty_all(self : Grid) -> Unit {
   for i in 0..<self.dirty.length() {
     self.dirty[i] = true
@@ -108,7 +95,6 @@ pub fn Grid::dirty_all(self : Grid) -> Unit {
 }
 
 ///|
-/// Feed output from the application.
 pub fn Grid::write(self : Grid, incoming : String) -> Unit {
   let text = if self.pending.length() > 0 {
     self.pending + incoming
@@ -122,9 +108,6 @@ pub fn Grid::write(self : Grid, incoming : String) -> Unit {
     if unit == 0x1B {
       let used = self.escape(text, i)
       if used == 0 {
-        // The sequence is incomplete. Keeping it is the whole point: output
-        // arrives in whatever pieces the caller wrote it in, and a colour that
-        // was split across two writes still has to reach the cell.
         self.pending = text[i:].to_owned()
         return
       }
@@ -145,12 +128,9 @@ pub fn Grid::write(self : Grid, incoming : String) -> Unit {
 }
 
 ///|
-/// Put one character at the cursor and move on. A wide character takes the
-/// column after it too, which is left empty so that nothing else claims it.
 fn Grid::put(self : Grid, code : Int32, body : String) -> Unit {
   let width = @strip.cell_width(code)
   if width == 0 {
-    // A combining mark joins the cell before the cursor.
     let x = self.cursor_x - 1
     if x >= 0 && x < self.width && self.cursor_y < self.height {
       let at = self.cursor_y * self.width + x
@@ -178,14 +158,11 @@ fn Grid::put(self : Grid, code : Int32, body : String) -> Unit {
 }
 
 ///|
-/// Read one escape sequence, returning how many code units it took, or zero
-/// when the sequence is not complete yet.
 fn Grid::escape(self : Grid, text : String, at : Int32) -> Int32 {
   if at + 1 >= text.length() {
     return 0
   }
   if text[at + 1].to_int() != 0x5B {
-    // Only CSI sequences come out of this library; anything else is skipped.
     return 2
   }
   let params : Array[Int32] = []
@@ -222,12 +199,10 @@ fn Grid::escape(self : Grid, text : String, at : Int32) -> Int32 {
 ///|
 fn Grid::apply(self : Grid, params : Array[Int32], last : Int32) -> Unit {
   match last {
-    // Cursor position, counted from one.
     0x48 => {
       self.cursor_y = param(params, 0, 1) - 1
       self.cursor_x = param(params, 1, 1) - 1
     }
-    // Erase in display.
     0x4A => {
       for i in 0..<self.cells.length() {
         self.cells[i] = { text: " ", style: self.current, }
@@ -242,8 +217,6 @@ fn Grid::apply(self : Grid, params : Array[Int32], last : Int32) -> Unit {
 }
 
 ///|
-/// Apply a style change. The parameters are the ones this library emits, which
-/// is a small and fixed set.
 fn Grid::sgr(self : Grid, params : Array[Int32]) -> Unit {
   if params.length() == 0 {
     self.current = @style.default
@@ -280,20 +253,20 @@ fn Grid::sgr(self : Grid, params : Array[Int32]) -> Unit {
       self.current = { ..self.current, bg: Ansi(p - 100 + 8), }
     } else if p == 38 || p == 48 {
       let kind = param(params, i + 1, 5)
-      let color = if kind == 5 {
+      let colour = if kind == 5 {
         i = i + 2
-        @style.Color::Ansi256(param(params, i, 0))
+        @style.Colour::Ansi256(param(params, i, 0))
       } else {
         let r = param(params, i + 2, 0)
         let g = param(params, i + 3, 0)
         let b = param(params, i + 4, 0)
         i = i + 4
-        @style.Color::Rgb(r, g, b)
+        @style.Colour::Rgb(r, g, b)
       }
       self.current = if p == 38 {
-        { ..self.current, fg: color, }
+        { ..self.current, fg: colour, }
       } else {
-        { ..self.current, bg: color, }
+        { ..self.current, bg: colour, }
       }
     }
     i = i + 1
@@ -301,7 +274,6 @@ fn Grid::sgr(self : Grid, params : Array[Int32]) -> Unit {
 }
 
 ///|
-/// Add attributes to a style, keeping the ones it already has.
 fn with_attrs(
   base : @style.Style,
   bold~ : Bool = false,

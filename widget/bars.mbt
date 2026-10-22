@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 ///|
-/// The bar across the top: a title, and an optional note on the right.
 pub struct Header {
   mut title : String
   mut note : String
@@ -10,7 +9,6 @@ pub struct Header {
 }
 
 ///|
-/// A header with this title.
 pub fn Header::new(
   title : String,
   note~ : String = "",
@@ -20,13 +18,11 @@ pub fn Header::new(
 }
 
 ///|
-/// Change the title.
 pub fn Header::set(self : Header, title : String) -> Unit {
   self.title = title
 }
 
 ///|
-/// Change the note on the right.
 pub fn Header::set_note(self : Header, note : String) -> Unit {
   self.note = note
 }
@@ -38,9 +34,9 @@ pub impl Widget for Header with fn render_line(self, row, size) {
   }
   let note_cells = @strip.str_cells(self.note)
   if note_cells == 0 || note_cells + 2 >= size.width {
-    return align_line(self.title, size.width, Center, self.style)
+    return align_line(self.title, size.width, Centre, self.style)
   }
-  let left = align_line(self.title, size.width - note_cells, Center, self.style)
+  let left = align_line(self.title, size.width - note_cells, Centre, self.style)
   @strip.Strip::join([left, @strip.Strip::of(self.note, self.style)])
 }
 
@@ -61,11 +57,6 @@ pub impl Widget for Header with fn focusable(_self) {
 }
 
 ///|
-/// The bar across the bottom: the keys that do something here.
-///
-/// Each binding is a key and what it does. They are drawn left to right and cut
-/// off where the width runs out, which keeps the most important ones — the ones
-/// listed first — visible on a narrow terminal.
 pub struct Footer {
   mut bindings : Array[(String, String)]
   style : @style.Style
@@ -73,7 +64,6 @@ pub struct Footer {
 }
 
 ///|
-/// A footer showing these bindings.
 pub fn Footer::new(
   bindings : Array[(String, String)],
   style~ : @style.Style = @style.Style::new(dim=true),
@@ -83,7 +73,6 @@ pub fn Footer::new(
 }
 
 ///|
-/// Replace the bindings.
 pub fn Footer::set(self : Footer, bindings : Array[(String, String)]) -> Unit {
   self.bindings = bindings
 }

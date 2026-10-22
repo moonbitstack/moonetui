@@ -6,47 +6,47 @@ import {
 }
 
 // Values
-pub let black : Color
+pub let black : Colour
 
-pub let blue : Color
+pub let blue : Colour
 
-pub let bright_black : Color
+pub let bright_black : Colour
 
-pub let bright_blue : Color
+pub let bright_blue : Colour
 
-pub let bright_cyan : Color
+pub let bright_cyan : Colour
 
-pub let bright_green : Color
+pub let bright_green : Colour
 
-pub let bright_magenta : Color
+pub let bright_magenta : Colour
 
-pub let bright_red : Color
+pub let bright_red : Colour
 
-pub let bright_white : Color
+pub let bright_white : Colour
 
-pub let bright_yellow : Color
+pub let bright_yellow : Colour
 
-pub let cyan : Color
+pub let cyan : Colour
 
 pub let default : Style
 
 pub fn delta(Style, Style) -> String
 
-pub let green : Color
+pub let green : Colour
 
-pub let magenta : Color
+pub let magenta : Colour
 
 pub let plain : Attrs
 
-pub let red : Color
+pub let red : Colour
 
 pub fn render(Style) -> String
 
 pub let reset : String
 
-pub let white : Color
+pub let white : Colour
 
-pub let yellow : Color
+pub let yellow : Colour
 
 // Errors
 
@@ -67,31 +67,31 @@ pub fn Attrs::not_equal(Self, Self) -> Bool
 pub fn Attrs::to_repr(Self) -> @debug.Repr
 pub fn Attrs::union(Self, Self) -> Self
 
-pub(all) enum Color {
+pub(all) enum Colour {
   Default
   Ansi(Int32)
   Ansi256(Int32)
   Rgb(Int32, Int32, Int32)
 } derive(Eq, @debug.Debug)
-pub fn Color::blend(Self, Self, Int32) -> Self
-pub fn Color::equal(Self, Self) -> Bool
-pub fn Color::not_equal(Self, Self) -> Bool
-pub fn Color::parse(String) -> Self?
-pub fn Color::rgb(Int32, Int32, Int32) -> Self
-pub fn Color::to_ansi16(Self) -> Self
-pub fn Color::to_ansi256(Self) -> Self
-pub fn Color::to_repr(Self) -> @debug.Repr
-pub fn Color::to_rgb(Self) -> (Int32, Int32, Int32)?
+pub fn Colour::blend(Self, Self, Int32) -> Self
+pub fn Colour::equal(Self, Self) -> Bool
+pub fn Colour::not_equal(Self, Self) -> Bool
+pub fn Colour::parse(String) -> Self?
+pub fn Colour::rgb(Int32, Int32, Int32) -> Self
+pub fn Colour::to_ansi16(Self) -> Self
+pub fn Colour::to_ansi256(Self) -> Self
+pub fn Colour::to_repr(Self) -> @debug.Repr
+pub fn Colour::to_rgb(Self) -> (Int32, Int32, Int32)?
 
 pub(all) struct Style {
-  fg : Color
-  bg : Color
+  fg : Colour
+  bg : Colour
   attrs : Attrs
 } derive(Eq, @debug.Debug)
 pub fn Style::equal(Self, Self) -> Bool
 pub fn Style::is_default(Self) -> Bool
 pub fn Style::merge(Self, Self) -> Self
-pub fn Style::new(fg? : Color, bg? : Color, bold? : Bool, dim? : Bool, italic? : Bool, underline? : Bool, blink? : Bool, reverse? : Bool, strike? : Bool) -> Self
+pub fn Style::new(fg? : Colour, bg? : Colour, bold? : Bool, dim? : Bool, italic? : Bool, underline? : Bool, blink? : Bool, reverse? : Bool, strike? : Bool) -> Self
 pub fn Style::not_equal(Self, Self) -> Bool
 pub fn Style::swap(Self) -> Self
 pub fn Style::to_ansi16(Self) -> Self

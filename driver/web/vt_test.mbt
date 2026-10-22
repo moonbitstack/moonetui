@@ -18,8 +18,6 @@ test "a wide character claims the column after it" {
   let grid = @web.Grid::new(6, 1)
   grid.write("中x")
   assert_eq(grid.at(0, 0).text, "中")
-  // The second column belongs to the same character and is left empty so that
-  // nothing paints over half of it.
   assert_eq(grid.at(1, 0).text, "")
   assert_eq(grid.at(2, 0).text, "x")
 }
@@ -38,7 +36,7 @@ test "styles carry from the escape sequence onto the cells" {
   grid.write(esc + "31mab" + esc + "39mc")
   assert_eq(grid.at(0, 0).style.fg, @style.red)
   assert_eq(grid.at(1, 0).style.fg, @style.red)
-  assert_eq(grid.at(2, 0).style.fg, @style.Color::Default)
+  assert_eq(grid.at(2, 0).style.fg, @style.Colour::Default)
 }
 
 ///|
@@ -72,8 +70,6 @@ test "erase clears the grid and parks the cursor" {
 ///|
 test "private sequences are ignored rather than printed" {
   let grid = @web.Grid::new(4, 1)
-  // Hiding the cursor, entering the alternate screen, enabling the mouse: all
-  // real output from the library, none of it text.
   grid.write(esc + "?25l" + esc + "?1049h" + esc + "?1000hok")
   assert_eq(grid.rows(), ["ok  "])
 }
@@ -85,7 +81,6 @@ test "only the cells that changed are reported as dirty" {
   grid.write(esc + "1;2Hx")
   let changed = grid.take_dirty()
   assert_eq(changed, [(1, 0)])
-  // Collecting them clears the marks, so an unchanged frame draws nothing.
   assert_eq(grid.take_dirty(), [])
 }
 
@@ -112,7 +107,5 @@ test "a sequence split across writes still arrives whole" {
   let grid = @web.Grid::new(4, 1)
   grid.write("a" + esc[0:1].to_owned())
   grid.write("[31mb")
-  // The escape opened in one write and finished in the next; the colour still
-  // reaches the cell.
   assert_eq(grid.at(1, 0).text, "b")
 }

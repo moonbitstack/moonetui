@@ -10,7 +10,6 @@ fn size(width : Int32, height : Int32) -> @geom.Size {
 }
 
 ///|
-/// Render a widget's rows as text, which is what a test can read.
 fn rows(w : &@widget.Widget, at : @geom.Size) -> Array[String] {
   let out : Array[String] = []
   for y in 0..<at.height {
@@ -47,7 +46,7 @@ test "static text renders one line per line of text" {
 ///|
 test "alignment puts the slack where it was asked for" {
   let left : &@widget.Widget = @widget.Static::new("ab")
-  let middle : &@widget.Widget = @widget.Static::new("ab", align=Center)
+  let middle : &@widget.Widget = @widget.Static::new("ab", align=Centre)
   let right : &@widget.Widget = @widget.Static::new("ab", align=Right)
   assert_eq(left.render_line(0, size(6, 1)).text(), "ab    ")
   assert_eq(middle.render_line(0, size(6, 1)).text(), "  ab  ")
@@ -57,7 +56,6 @@ test "alignment puts the slack where it was asked for" {
 ///|
 test "text wider than the widget is cut at a character boundary" {
   let s : &@widget.Widget = @widget.Static::new("中文字")
-  // Five columns hold two wide characters and leave one column over.
   assert_eq(s.render_line(0, size(5, 1)).text(), "中文 ")
 }
 
@@ -152,8 +150,6 @@ test "backspace and delete take whole characters, surrogate pairs included" {
   input.set("a😀b")
   let w : &@widget.Widget = input
   let at = size(10, 1)
-  // The cursor is at the end; one backspace removes the b, the next removes
-  // both code units of the emoji.
   w.handle(@widget.Ctx::new(1, at), key(Backspace)) |> ignore
   assert_eq(input.text(), "a😀")
   w.handle(@widget.Ctx::new(1, at), key(Backspace)) |> ignore
@@ -195,7 +191,6 @@ test "an empty unfocused input shows its placeholder" {
   let w : &@widget.Widget = input
   assert_eq(w.render_line(0, size(8, 1)).text(), "name    ")
   w.handle(@widget.Ctx::new(1, size(8, 1)), @widget.Msg::Focus(true)) |> ignore
-  // Focused, the placeholder gives way to the cursor.
   assert_eq(w.render_line(0, size(8, 1)).text(), "        ")
 }
 
@@ -204,8 +199,6 @@ test "a long input scrolls to keep the cursor visible" {
   let input = @widget.Input::new()
   input.set("abcdefghij")
   let w : &@widget.Widget = input
-  // Five columns cannot show ten characters, and the cursor sits past the last
-  // one, so the view ends with a column for it to occupy.
   assert_eq(w.render_line(0, size(5, 1)).text(), "ghij ")
   assert_eq(input.cursor_column(5), 4)
 }
@@ -266,7 +259,6 @@ test "a progress bar fills in eighths and prints its percentage" {
   let w : &@widget.Widget = bar
   bar.set(4)
   assert_eq(bar.percent(), 50)
-  // Eight columns less the four the label takes leaves four for the bar.
   assert_eq(w.render_line(0, size(8, 1)).text(), "██   50%")
   bar.advance(4)
   assert_eq(bar.percent(), 100)
@@ -288,7 +280,6 @@ test "a bar clamps rather than overflowing" {
 test "the header centres its title and keeps the note on the right" {
   let head = @widget.Header::new("moonetui", note="v0")
   let w : &@widget.Widget = head
-  // The title is centred in what the note leaves it, not in the whole width.
   assert_eq(w.render_line(0, size(14, 1)).text(), "  moonetui  v0")
   head.set("short")
   head.set_note("")
@@ -300,6 +291,5 @@ test "the footer lists what it can fit and drops the rest" {
   let foot = @widget.Footer::new([("q", "quit"), ("?", "help")])
   let w : &@widget.Widget = foot
   assert_eq(w.render_line(0, size(20, 1)).text(), " q quit  ? help     ")
-  // Eight columns hold the first binding only.
   assert_eq(w.render_line(0, size(8, 1)).text(), " q quit ")
 }

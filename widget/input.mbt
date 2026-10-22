@@ -2,12 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 ///|
-/// A single line of editable text.
-///
-/// The cursor is an index into the text measured in code units, and the view
-/// scrolls horizontally to keep it visible. Editing works on code points, so a
-/// character that takes two code units — an emoji — is deleted whole, and a wide
-/// character moves the cursor two columns while being one character.
 pub struct Input {
   mut text : String
   mut cursor : Int32
@@ -20,7 +14,6 @@ pub struct Input {
 }
 
 ///|
-/// An empty input, with optional placeholder text shown while it is empty.
 pub fn Input::new(
   placeholder~ : String = "",
   style~ : @style.Style = @style.Style::new(),
@@ -40,13 +33,11 @@ pub fn Input::new(
 }
 
 ///|
-/// The text as it stands.
 pub fn Input::text(self : Input) -> String {
   self.text
 }
 
 ///|
-/// Replace the text, putting the cursor at the end.
 pub fn Input::set(self : Input, text : String) -> Unit {
   self.text = text
   self.cursor = text.length()
@@ -54,13 +45,11 @@ pub fn Input::set(self : Input, text : String) -> Unit {
 }
 
 ///|
-/// Where the cursor sits, as a code unit index.
 pub fn Input::cursor(self : Input) -> Int32 {
   self.cursor
 }
 
 ///|
-/// The column the cursor occupies on screen, given the width it is drawn at.
 pub fn Input::cursor_column(self : Input, width : Int32) -> Int32 {
   self.scroll_to_fit(width)
   @strip.cells_before(self.text, self.cursor) -
@@ -87,9 +76,6 @@ pub impl Widget for Input with fn render_line(self, row, size) {
   if !self.focused {
     return body
   }
-  // The cursor is drawn by inverting the column it sits on, which is what a
-  // terminal without a real cursor — a recording, a browser grid — still shows
-  // correctly.
   let column = self.cursor_column(size.width)
   if column < 0 || column >= size.width {
     return body
@@ -194,7 +180,6 @@ fn Input::key(self : Input, ctx : Ctx, key : @event.Key) -> Bool {
 }
 
 ///|
-/// Insert text at the cursor and leave the cursor after it.
 pub fn Input::insert(self : Input, text : String) -> Unit {
   self.text = self.text[0:self.cursor].to_owned() +
     text +
@@ -203,7 +188,6 @@ pub fn Input::insert(self : Input, text : String) -> Unit {
 }
 
 ///|
-/// The code unit index before `index`, respecting surrogate pairs.
 fn Input::prev(self : Input, index : Int32) -> Int32 {
   if index <= 0 {
     return 0
@@ -219,7 +203,6 @@ fn Input::prev(self : Input, index : Int32) -> Int32 {
 }
 
 ///|
-/// The code unit index after `index`.
 fn Input::next(self : Input, index : Int32) -> Int32 {
   if index >= self.text.length() {
     return self.text.length()
@@ -229,7 +212,6 @@ fn Input::next(self : Input, index : Int32) -> Int32 {
 }
 
 ///|
-/// Scroll the view so the cursor is inside it.
 fn Input::scroll_to_fit(self : Input, width : Int32) -> Unit {
   if width <= 0 {
     self.offset = 0
@@ -239,8 +221,6 @@ fn Input::scroll_to_fit(self : Input, width : Int32) -> Unit {
     self.offset = self.cursor
     return
   }
-  // Walk the start of the view forward until the cursor fits, which keeps the
-  // view anchored to a character boundary rather than a column.
   while @strip.cells_before(self.text, self.cursor) -
         @strip.cells_before(self.text, self.offset) >=
         width {

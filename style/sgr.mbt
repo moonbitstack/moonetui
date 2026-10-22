@@ -2,13 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 ///|
-/// Return the terminal to its own colours with no attributes.
 pub let reset : String = "\u{1b}[0m"
 
 ///|
-/// The full escape sequence for a style, starting from a reset. Use it when the
-/// style in effect is unknown; use `delta` when it is known, since that emits
-/// only what changed.
 pub fn render(style : Style) -> String {
   let params = ["0"]
   attr_params(style.attrs, params)
@@ -18,12 +14,6 @@ pub fn render(style : Style) -> String {
 }
 
 ///|
-/// The shortest escape sequence that turns `prev` into `next`, empty when they
-/// are already the same.
-///
-/// A terminal can switch an attribute on but not off — there is no "stop bold"
-/// that leaves everything else alone — so dropping one costs a reset and a full
-/// render. Adding attributes and changing colours are incremental.
 pub fn delta(prev : Style, next : Style) -> String {
   if prev == next {
     return ""
@@ -43,7 +33,6 @@ pub fn delta(prev : Style, next : Style) -> String {
 }
 
 ///|
-/// The attributes `next` sets that `prev` did not.
 fn added(prev : Attrs, next : Attrs) -> Attrs {
   {
     bold: next.bold && !prev.bold,
@@ -99,8 +88,8 @@ fn attr_params(attrs : Attrs, out : Array[String]) -> Unit {
 }
 
 ///|
-fn fg_params(color : Color, out : Array[String]) -> Unit {
-  match color {
+fn fg_params(colour : Colour, out : Array[String]) -> Unit {
+  match colour {
     Default => out.push("39")
     Ansi(i) =>
       if i < 8 {
@@ -124,8 +113,8 @@ fn fg_params(color : Color, out : Array[String]) -> Unit {
 }
 
 ///|
-fn bg_params(color : Color, out : Array[String]) -> Unit {
-  match color {
+fn bg_params(colour : Colour, out : Array[String]) -> Unit {
+  match colour {
     Default => out.push("49")
     Ansi(i) =>
       if i < 8 {

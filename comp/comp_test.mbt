@@ -8,9 +8,6 @@ let plain : @style.Style = @style.default
 let red : @style.Style = @style.Style::new(fg=@style.red)
 
 ///|
-/// Every widget draws its own letter across eight columns, which is wider than
-/// any of them is placed — a widget renders its own line and the compositor
-/// crops it to the piece the widget owns.
 fn letters(node : Int32, _line : Int32) -> @strip.Strip {
   let letter = match node {
     1 => "a"
@@ -58,9 +55,7 @@ test "a combining mark rides along with the column before it" {
 test "rebuilding a range substitutes a space for a halved character" {
   let columns = @comp.cells(@strip.Strip::of("中文", plain))
   assert_eq(@comp.line_of(columns[0:4], plain).text(), "中文")
-  // Starting on the second half of 中: only a space can be shown.
   assert_eq(@comp.line_of(columns[1:4], plain).text(), " 文")
-  // Ending before the second half of 文: likewise.
   assert_eq(@comp.line_of(columns[0:3], plain).text(), "中 ")
 }
 
@@ -71,7 +66,6 @@ test "cuts are the screen edges plus every visible widget edge" {
   scene.place(1, @geom.Region::new(2, 0, 3, 1), screen)
   scene.place(2, @geom.Region::new(6, 0, 2, 3), screen)
   assert_eq(scene.cuts(0), [0, 2, 5, 6, 8, 10])
-  // The first widget is one row tall, so it leaves no edge on the second row.
   assert_eq(scene.cuts(1), [0, 6, 8, 10])
 }
 
@@ -79,7 +73,6 @@ test "cuts are the screen edges plus every visible widget edge" {
 test "the front widget wins the columns it covers" {
   let scene = @comp.Scene::new(@geom.Size::new(8, 1))
   let screen = @geom.Region::new(0, 0, 8, 1)
-  // Placed front to back: the second is partly hidden by the first.
   scene.place(1, @geom.Region::new(2, 0, 4, 1), screen)
   scene.place(2, @geom.Region::new(0, 0, 8, 1), screen)
   assert_eq(scene.compose_line(0, letters, plain).text(), "bbaaaabb")
@@ -96,7 +89,6 @@ test "uncovered columns are blank in the base style" {
 ///|
 test "a widget outside its clip draws nothing" {
   let scene = @comp.Scene::new(@geom.Size::new(6, 1))
-  // The clip covers the first two columns; the widget starts after them.
   scene.place(1, @geom.Region::new(3, 0, 3, 1), @geom.Region::new(0, 0, 2, 1))
   assert_eq(scene.compose_line(0, letters, plain).text(), "      ")
 }
@@ -140,7 +132,6 @@ test "a row that got shorter has its tail cleared" {
   let spans = @comp.diff(before, after)
   assert_eq(spans.length(), 1)
   assert_eq(spans[0].x, 4)
-  // The columns past the end of the new row are repainted as blanks.
   assert_eq(spans[0].line.text(), "  ")
 }
 
@@ -170,8 +161,6 @@ test "encoding moves the cursor and emits only the style changes" {
     { y: 1, x: 0, line: @strip.Strip::of("x", red), },
   ]
   let text = @comp.encode(spans, plain)
-  // Reset, jump to row one column three, the text, jump to row two column one,
-  // turn the foreground red, the text, and back to the base style.
   assert_eq(
     text, "\u{1b}[0;39;49m\u{1b}[1;3Hhi\u{1b}[2;1H\u{1b}[31mx\u{1b}[39m",
   )

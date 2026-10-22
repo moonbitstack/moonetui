@@ -2,20 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 ///|
-/// How long a sequence may get before the parser gives up on it. A terminal
-/// that sends something unknown must not be able to stall the parser for ever,
-/// so past this length the escape is reported as an Escape key and the rest is
-/// read as ordinary text.
 const MAX_SEQ : Int32 = 32
 
 ///|
-/// Incremental parser from terminal bytes to events.
-///
-/// Bytes arrive in whatever pieces the operating system feels like giving, so a
-/// sequence can be split anywhere — including between the two halves of a UTF-8
-/// character. `feed` therefore consumes only what it can resolve and keeps the
-/// rest; feeding one byte at a time and feeding a whole chunk produce the same
-/// events.
 pub struct Parser {
   mut buf : Array[Int32]
   mut head : Int32
@@ -24,14 +13,11 @@ pub struct Parser {
 }
 
 ///|
-/// A parser with nothing pending.
 pub fn Parser::new() -> Parser {
   { buf: [], head: 0, pasting: false, pasted: StringBuilder(), }
 }
 
 ///|
-/// Drop everything pending. Used when a driver restarts the terminal, where any
-/// half-read sequence belongs to the old mode.
 pub fn Parser::reset(self : Parser) -> Unit {
   self.buf = []
   self.head = 0
@@ -40,13 +26,11 @@ pub fn Parser::reset(self : Parser) -> Unit {
 }
 
 ///|
-/// How many bytes are waiting for more input to resolve.
 pub fn Parser::pending(self : Parser) -> Int32 {
   self.buf.length() - self.head
 }
 
 ///|
-/// Feed bytes and append whatever they resolve to.
 pub fn Parser::feed(
   self : Parser,
   data : Bytes,
@@ -59,12 +43,6 @@ pub fn Parser::feed(
 }
 
 ///|
-/// Tell the parser that no more bytes are coming for now.
-///
-/// A lone escape byte is ambiguous while input might still arrive: it could be
-/// the Escape key, or the start of a sequence whose remainder is still in
-/// flight. Only the caller knows that the read timed out, so resolving it is
-/// the caller's move to make.
 pub fn Parser::idle(self : Parser, out : Array[@event.Event]) -> Unit {
   if self.pending() == 1 && self.at(0) == 0x1B {
     out.push(Key(@event.Key::of(Escape)))
@@ -85,8 +63,6 @@ fn Parser::drain(self : Parser, out : Array[@event.Event]) -> Unit {
 }
 
 ///|
-/// Resolve one thing at the front of the buffer, returning how many bytes it
-/// took, or zero when more input is needed.
 fn Parser::step(self : Parser, out : Array[@event.Event]) -> Int32 {
   if self.pasting {
     return self.step_paste(out)
@@ -99,12 +75,9 @@ fn Parser::step(self : Parser, out : Array[@event.Event]) -> Int32 {
     return 0
   }
   match self.at(1) {
-    // CSI: the parameterised sequences, which is nearly all of them.
     0x5B => self.step_csi(out)
-    // SS3: the four function keys an application-mode keypad sends.
     0x4F => self.step_ss3(out)
     _ =>
-      // Escape followed by anything else is that key with Alt held.
       match decode(self.buf, self.head + 1, self.buf.length()) {
         Some((code, size)) => {
           out.push(
@@ -143,8 +116,6 @@ fn Parser::step_text(
 }
 
 ///|
-/// Inside a bracketed paste every byte is content until the closing sequence,
-/// so the text cannot be mistaken for keys someone typed very fast.
 fn Parser::step_paste(self : Parser, out : Array[@event.Event]) -> Int32 {
   let close = [0x1B, 0x5B, 0x32, 0x30, 0x31, 0x7E]
   let mut i = 0
@@ -156,7 +127,6 @@ fn Parser::step_paste(self : Parser, out : Array[@event.Event]) -> Int32 {
       return i + close.length()
     }
     if self.prefix_of(i, close) {
-      // The closing sequence may be split across reads; keep the partial match.
       break
     }
     match decode(self.buf, self.head + i, self.buf.length()) {
@@ -199,8 +169,6 @@ fn Parser::step_ss3(self : Parser, out : Array[@event.Event]) -> Int32 {
 }
 
 ///|
-/// A parsed control sequence: the private marker if any, the numeric
-/// parameters, and the final byte that says what it means.
 priv struct Csi {
   private_marker : Int32
   params : Array[Int32]
@@ -213,8 +181,6 @@ fn Parser::step_csi(self : Parser, out : Array[@event.Event]) -> Int32 {
   match self.scan_csi() {
     None =>
       if self.pending() >= MAX_SEQ {
-        // Unrecognisable and too long to keep waiting on: report the escape and
-        // let the rest be read as text.
         out.push(Key(@event.Key::of(Escape)))
         1
       } else {
@@ -286,14 +252,10 @@ fn Parser::emit_csi(
     0x5A => out.push(Key(@event.Key::of(BackTab)))
     0x49 => out.push(FocusIn)
     0x4F => out.push(FocusOut)
-    // CSI 48 ; rows ; cols t is the in-band size report a terminal sends when
-    // the window changes, which beats waiting for a signal that browsers and
-    // Windows do not have.
     0x74 =>
       if first == 48 && csi.params.length() >= 3 {
         out.push(Resize(param(csi, 2, 0), param(csi, 1, 0)))
       }
-    // The kitty keyboard protocol reports a code point and its modifiers.
     0x75 => out.push(Key(@event.Key::with_mods(Char(first), mods)))
     0x7E =>
       match first {
@@ -305,8 +267,6 @@ fn Parser::emit_csi(
             None => ()
           }
       }
-    // Anything else — a cursor position report, a device attribute answer — is
-    // a reply to something the program asked for, not a key.
     _ => ()
   }
 }
@@ -327,7 +287,6 @@ fn mouse_of(csi : Csi) -> @event.Mouse? {
   let released = csi.last == 0x6D
   let button = code % 4
   if code / 64 % 2 == 1 {
-    // Wheel events arrive as buttons 64 upwards and are never released.
     let kind = match button {
       0 => @event.MouseKind::ScrollUp
       1 => @event.MouseKind::ScrollDown
@@ -375,8 +334,6 @@ fn tilde_key(number : Int32) -> @event.KeyCode? {
 }
 
 ///|
-/// The C0 controls a terminal sends for keys that have no character of their
-/// own, plus the control-letter combinations.
 fn control_key(byte : Int32) -> @event.Key {
   let ctrl : @event.Mods = { ctrl: true, alt: false, shift: false, }
   match byte {
@@ -388,7 +345,6 @@ fn control_key(byte : Int32) -> @event.Key {
     0x00 => @event.Key::with_mods(Char(0x20), ctrl)
     _ =>
       if byte >= 0x01 && byte <= 0x1A {
-        // Control-A through Control-Z arrive as one through twenty-six.
         @event.Key::with_mods(Char(byte + 0x60), ctrl)
       } else {
         @event.Key::with_mods(Char(byte + 0x40), ctrl)
@@ -416,8 +372,6 @@ fn Parser::consume(self : Parser, count : Int32) -> Unit {
 }
 
 ///|
-/// Drop what has been consumed once it is worth the copy. A long paste would
-/// otherwise keep growing the buffer behind the read head.
 fn Parser::compact(self : Parser) -> Unit {
   if self.head == 0 {
     return
@@ -451,8 +405,6 @@ fn Parser::starts_with(
 }
 
 ///|
-/// True when the bytes from `offset` are a proper prefix of the pattern, which
-/// means the rest may still arrive.
 fn Parser::prefix_of(
   self : Parser,
   offset : Int32,
@@ -471,10 +423,6 @@ fn Parser::prefix_of(
 }
 
 ///|
-/// Decode one UTF-8 character, returning it with its length in bytes, or `None`
-/// when the buffer holds only part of it. A malformed byte decodes to the
-/// replacement character rather than raising: a terminal that sends rubbish
-/// should not stop the program.
 fn decode(buf : Array[Int32], at : Int32, end : Int32) -> (Int32, Int32)? {
   let first = buf[at]
   if first < 0x80 {

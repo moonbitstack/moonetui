@@ -2,80 +2,68 @@
 // SPDX-License-Identifier: Apache-2.0
 
 ///|
-/// A terminal colour. `Default` means the terminal's own foreground or
-/// background — it is not black, and it is not white; it is whatever the user
-/// configured, which is why it has to survive as its own case rather than being
-/// resolved to a value.
-pub(all) enum Color {
+pub(all) enum Colour {
   Default
-  /// One of the sixteen named colours, 0 to 15, the last eight being the bright
-  /// half.
   Ansi(Int32)
-  /// An index into the 256-colour cube.
   Ansi256(Int32)
-  /// True colour, 0 to 255 per channel.
   Rgb(Int32, Int32, Int32)
 } derive(Eq, Debug)
 
 ///|
-/// The sixteen named colours, in the order the terminal numbers them.
-pub let black : Color = Ansi(0)
+pub let black : Colour = Ansi(0)
 
 ///|
-pub let red : Color = Ansi(1)
+pub let red : Colour = Ansi(1)
 
 ///|
-pub let green : Color = Ansi(2)
+pub let green : Colour = Ansi(2)
 
 ///|
-pub let yellow : Color = Ansi(3)
+pub let yellow : Colour = Ansi(3)
 
 ///|
-pub let blue : Color = Ansi(4)
+pub let blue : Colour = Ansi(4)
 
 ///|
-pub let magenta : Color = Ansi(5)
+pub let magenta : Colour = Ansi(5)
 
 ///|
-pub let cyan : Color = Ansi(6)
+pub let cyan : Colour = Ansi(6)
 
 ///|
-pub let white : Color = Ansi(7)
+pub let white : Colour = Ansi(7)
 
 ///|
-pub let bright_black : Color = Ansi(8)
+pub let bright_black : Colour = Ansi(8)
 
 ///|
-pub let bright_red : Color = Ansi(9)
+pub let bright_red : Colour = Ansi(9)
 
 ///|
-pub let bright_green : Color = Ansi(10)
+pub let bright_green : Colour = Ansi(10)
 
 ///|
-pub let bright_yellow : Color = Ansi(11)
+pub let bright_yellow : Colour = Ansi(11)
 
 ///|
-pub let bright_blue : Color = Ansi(12)
+pub let bright_blue : Colour = Ansi(12)
 
 ///|
-pub let bright_magenta : Color = Ansi(13)
+pub let bright_magenta : Colour = Ansi(13)
 
 ///|
-pub let bright_cyan : Color = Ansi(14)
+pub let bright_cyan : Colour = Ansi(14)
 
 ///|
-pub let bright_white : Color = Ansi(15)
+pub let bright_white : Colour = Ansi(15)
 
 ///|
-/// Build a true colour, clamping each channel to 0–255.
-pub fn Color::rgb(r : Int32, g : Int32, b : Int32) -> Color {
+pub fn Colour::rgb(r : Int32, g : Int32, b : Int32) -> Colour {
   Rgb(channel(r), channel(g), channel(b))
 }
 
 ///|
-/// Parse `#rgb` or `#rrggbb`. Returns `None` for anything else, so it doubles as
-/// validation for a colour written in a configuration file.
-pub fn Color::parse(text : String) -> Color? {
+pub fn Colour::parse(text : String) -> Colour? {
   if text.length() == 0 || text[0] != '#' {
     return None
   }
@@ -87,7 +75,6 @@ pub fn Color::parse(text : String) -> Color? {
       if r < 0 || g < 0 || b < 0 {
         None
       } else {
-        // #abc means #aabbcc: each digit is repeated, not padded with zero.
         Some(Rgb(r * 17, g * 17, b * 17))
       }
     }
@@ -106,9 +93,7 @@ pub fn Color::parse(text : String) -> Color? {
 }
 
 ///|
-/// The true-colour triple this colour stands for, using the xterm palette for
-/// the indexed cases. `Default` has no triple — only the terminal knows it.
-pub fn Color::to_rgb(self : Color) -> (Int32, Int32, Int32)? {
+pub fn Colour::to_rgb(self : Colour) -> (Int32, Int32, Int32)? {
   match self {
     Default => None
     Ansi(i) => Some(ansi16_rgb(i))
@@ -118,10 +103,7 @@ pub fn Color::to_rgb(self : Color) -> (Int32, Int32, Int32)? {
 }
 
 ///|
-/// Quantise to the 256-colour cube, for a terminal that cannot do true colour.
-/// Named colours pass through: an `Ansi` index already exists in that cube, and
-/// resolving it would throw away the user's palette.
-pub fn Color::to_ansi256(self : Color) -> Color {
+pub fn Colour::to_ansi256(self : Colour) -> Colour {
   match self {
     Default => Default
     Ansi(_) => self
@@ -131,8 +113,7 @@ pub fn Color::to_ansi256(self : Color) -> Color {
 }
 
 ///|
-/// Quantise to the sixteen named colours, for a terminal that can do no better.
-pub fn Color::to_ansi16(self : Color) -> Color {
+pub fn Colour::to_ansi16(self : Colour) -> Colour {
   match self {
     Default => Default
     Ansi(_) => self
@@ -145,10 +126,7 @@ pub fn Color::to_ansi16(self : Color) -> Color {
 }
 
 ///|
-/// Mix two colours, `factor` running from 0 (all `self`) to 100 (all `other`).
-/// A colour the terminal owns cannot be mixed, so `Default` on either side wins
-/// whenever it is the dominant end and is otherwise left alone.
-pub fn Color::blend(self : Color, other : Color, factor : Int32) -> Color {
+pub fn Colour::blend(self : Colour, other : Colour, factor : Int32) -> Colour {
   let f = clamp(factor, 0, 100)
   match (self.to_rgb(), other.to_rgb()) {
     (Some((r1, g1, b1)), Some((r2, g2, b2))) =>
@@ -205,7 +183,6 @@ fn hex2(hi : UInt16, lo : UInt16) -> Int32 {
 }
 
 ///|
-/// The xterm palette for the sixteen named colours.
 let named : Array[(Int32, Int32, Int32)] = [
   (0, 0, 0),
   (128, 0, 0),
@@ -226,7 +203,6 @@ let named : Array[(Int32, Int32, Int32)] = [
 ]
 
 ///|
-/// The six levels each channel takes inside the 6×6×6 cube.
 let levels : Array[Int32] = [0, 95, 135, 175, 215, 255]
 
 ///|
@@ -256,8 +232,6 @@ fn nearest_cube(r : Int32, g : Int32, b : Int32) -> Int32 {
     nearest_level(g) * 6 +
     nearest_level(b)
   let grey = nearest_grey(r, g, b)
-  // Grey text is common enough that the ramp usually wins for it; compare both
-  // candidates rather than assuming the cube is closer.
   if dist(ansi256_rgb(cube), (r, g, b)) <= dist(ansi256_rgb(grey), (r, g, b)) {
     cube
   } else {
@@ -325,7 +299,7 @@ fn abs(value : Int32) -> Int32 {
 }
 
 ///|
-pub extend Color with Debug::{to_repr}
+pub extend Colour with Debug::{to_repr}
 
 ///|
-pub extend Color with Eq::{not_equal, equal}
+pub extend Colour with Eq::{not_equal, equal}

@@ -2,8 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 ///|
-/// A running application: a widget tree, a terminal, and the state that turns
-/// one into the other.
 pub struct App[D] {
   driver : D
   root : Node
@@ -25,13 +23,9 @@ pub struct App[D] {
 }
 
 ///|
-/// How long a resize is allowed to settle before the screen is rebuilt. Dragging
-/// a window edge produces a report per pixel; rebuilding the layout for each one
-/// makes the drag crawl.
 const RESIZE_SETTLE_MS : Int32 = 8
 
 ///|
-/// An application over this terminal.
 pub fn[D] App::new(
   driver : D,
   root : Node,
@@ -65,7 +59,6 @@ pub fn[D] App::new(
 }
 
 ///|
-/// Take over the terminal and draw the first frame.
 pub fn[D : @driver.Driver] App::start(self : App[D]) -> Unit raise {
   self.driver.start()
   self.driver.write(@driver.enter())
@@ -82,7 +75,6 @@ pub fn[D : @driver.Driver] App::start(self : App[D]) -> Unit raise {
 }
 
 ///|
-/// Give the terminal back.
 pub fn[D : @driver.Driver] App::stop(self : App[D]) -> Unit raise {
   self.running = false
   self.driver.write(@driver.leave())
@@ -91,8 +83,6 @@ pub fn[D : @driver.Driver] App::stop(self : App[D]) -> Unit raise {
 }
 
 ///|
-/// Run one frame: read what the terminal has to say, let the widgets react, and
-/// repaint if anything changed. Returns false once the application has quit.
 pub fn[D : @driver.Driver] App::step(self : App[D]) -> Bool raise {
   if !self.running {
     return false
@@ -102,8 +92,6 @@ pub fn[D : @driver.Driver] App::step(self : App[D]) -> Bool raise {
   if chunk.length() > 0 {
     self.parser.feed(chunk, events)
   } else {
-    // Nothing arrived, so a lone escape is the Escape key rather than the start
-    // of a sequence that never came.
     self.parser.idle(events)
   }
   for ev in events {
@@ -120,8 +108,6 @@ pub fn[D : @driver.Driver] App::step(self : App[D]) -> Bool raise {
       }
     None => ()
   }
-  // A clock that went backwards — a driver whose milliseconds wrap, a test that
-  // rewinds one — means the frame is due rather than infinitely far away.
   let since = now - self.last_frame
   if self.dirty && (since < 0 || since >= self.frame_ms) {
     self.render()
@@ -131,8 +117,6 @@ pub fn[D : @driver.Driver] App::step(self : App[D]) -> Bool raise {
 }
 
 ///|
-/// Step until the application quits. A native program can call this; a browser
-/// cannot, and calls `step` from its own frame callback instead.
 pub fn[D : @driver.Driver] App::run(self : App[D]) -> Unit raise {
   self.start()
   while self.step() {
@@ -142,14 +126,11 @@ pub fn[D : @driver.Driver] App::run(self : App[D]) -> Unit raise {
 }
 
 ///|
-/// Ask the application to quit after this frame.
 pub fn[D] App::quit(self : App[D]) -> Unit {
   self.running = false
 }
 
 ///|
-/// Take everything the widgets have reported since the last call: presses,
-/// edits, selections. The host reads these instead of registering callbacks.
 pub fn[D] App::drain(self : App[D]) -> Array[@widget.Out] {
   let out : Array[@widget.Out] = []
   for item in self.inbox {
@@ -160,23 +141,16 @@ pub fn[D] App::drain(self : App[D]) -> Array[@widget.Out] {
 }
 
 ///|
-/// Mark the screen as out of date.
-///
-/// A widget that the host changed directly — a list whose rows were replaced
-/// between frames — has no way to say so, since the request to repaint travels
-/// with a message and there was none.
 pub fn[D] App::refresh(self : App[D]) -> Unit {
   self.dirty = true
 }
 
 ///|
-/// Which widget holds focus, or -1 when none does.
 pub fn[D] App::focused(self : App[D]) -> Int32 {
   self.focus
 }
 
 ///|
-/// Move focus to the next focusable widget, wrapping round.
 pub fn[D] App::focus_next(self : App[D], step : Int32) -> Unit {
   let ring = self.root.focus_ring()
   if ring.length() == 0 {
@@ -202,7 +176,6 @@ pub fn[D] App::focus_next(self : App[D], step : Int32) -> Unit {
 }
 
 ///|
-/// The area a node was last placed in.
 pub fn[D] App::rect_of(self : App[D], id : Int32) -> @geom.Region {
   match self.rects.get(id) {
     Some(rect) => rect
@@ -211,8 +184,6 @@ pub fn[D] App::rect_of(self : App[D], id : Int32) -> @geom.Region {
 }
 
 ///|
-/// The screen as it stands, one string per row. What a test reads instead of a
-/// terminal.
 pub fn[D] App::screen(self : App[D]) -> Array[String] {
   let out : Array[String] = []
   for row in self.prev {
@@ -257,7 +228,6 @@ fn[D : @driver.Driver] App::dispatch(self : App[D], ev : @event.Event) -> Unit {
 }
 
 ///|
-/// Hand a message to a widget and act on whatever it asks for.
 fn[D] App::deliver(self : App[D], id : Int32, msg : @widget.Msg) -> Bool {
   if id < 0 {
     return false
@@ -266,9 +236,6 @@ fn[D] App::deliver(self : App[D], id : Int32, msg : @widget.Msg) -> Bool {
     None => false
     Some(widget) => {
       let rect = self.rect_of(id)
-      // A widget is told the size of its content, not of its chrome: the
-      // border and padding around it are the style's business, and a widget
-      // that thinks it owns them draws underneath them.
       let content = match self.styled.get(id) {
         Some(res) => res.content_region(rect).size()
         None => rect.size()
@@ -294,8 +261,6 @@ fn[D] App::act(self : App[D], out : @widget.Out) -> Unit {
 }
 
 ///|
-/// Move focus, telling both widgets about it. A widget learns it has focus the
-/// same way it learns anything else, so nothing has to ask the application.
 fn[D] App::give_focus(self : App[D], id : Int32) -> Unit {
   if id == self.focus {
     return
@@ -310,7 +275,6 @@ fn[D] App::give_focus(self : App[D], id : Int32) -> Unit {
 }
 
 ///|
-/// The front-most leaf covering a screen position.
 fn[D] App::at(self : App[D], x : Int32, y : Int32) -> (Int32, @geom.Region)? {
   let ring = self.root.focus_ring()
   ignore(ring)
@@ -318,8 +282,6 @@ fn[D] App::at(self : App[D], x : Int32, y : Int32) -> (Int32, @geom.Region)? {
   for id, rect in self.rects {
     if rect.contains(x, y) {
       match found {
-        // Deeper nodes are placed after their containers, and a smaller area
-        // means further in, so the smallest match is the one the click is for.
         Some((_, best)) =>
           if rect.area() < best.area() {
             found = Some((id, rect))
@@ -381,10 +343,6 @@ fn[D : @driver.Driver] App::render(self : App[D]) -> Unit raise {
 }
 
 ///|
-/// One row of a styled node: a container's chrome alone, or a leaf's chrome
-/// with its widget's line inside. The resolved text style is laid under the
-/// widget's own styling, which is how a container's background reaches the
-/// characters a widget never coloured.
 fn[D] App::dress_line(
   self : App[D],
   id : Int32,
@@ -398,8 +356,6 @@ fn[D] App::dress_line(
     size: rect.size(),
   }
   match self.root.find(id) {
-    // A container: only the chrome is this node's to draw; the children are
-    // placed in front of it and cover the content.
     None => decor.line(line)
     Some(widget) => {
       let ring = match res.border {
@@ -424,8 +380,6 @@ fn[D] App::dress_line(
 }
 
 ///|
-/// Control-C quits. A terminal application that cannot be interrupted is a
-/// terminal application people have to kill from another window.
 fn quits(key : @event.Key) -> Bool {
   key.mods.ctrl && key.code == Char(99)
 }

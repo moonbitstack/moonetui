@@ -11,7 +11,6 @@ test "merge replaces what is set and keeps what is not" {
   let merged = lower.merge(upper)
   assert_eq(merged.border, Some(@design.Heavy))
   assert_eq(merged.padding, Some(@geom.Spacing::all(1)))
-  // What neither rule names stays unset: the cascade supplies it from below.
   assert_eq(merged.margin, None)
 }
 
@@ -26,8 +25,6 @@ test "merge layers a set text style field by field" {
     Some(text) => text
     None => @style.default
   }
-  // The upper rule's background replaced the lower one's; the lower one's
-  // foreground, which the upper rule never named, survived.
   assert_eq(text.fg, @style.white)
   assert_eq(text.bg, @style.green)
 }
@@ -116,9 +113,7 @@ test "resolving inherits the container's text style under the node's own" {
   let own = @design.Styles::new(text=Some(@style.Style::new(fg=@style.white)))
   let resolved = @design.Resolved::of(own, inherited)
   assert_eq(resolved.text.fg, @style.white)
-  // The background was never named, so the container's shows through.
   assert_eq(resolved.text.bg, @style.blue)
-  // With nothing named at all, the inherited style is the resolved one.
   assert_eq(@design.Resolved::of(@design.empty, inherited).text, inherited)
 }
 
@@ -154,7 +149,6 @@ test "a resolved box overrides the axis the stack is stacking along" {
   assert_eq(vertical.min, 1)
   let horizontal = resolved.box(Horizontal, base)
   assert_eq(horizontal.extent, Cells(9))
-  // The height rules are not the row's business.
   assert_eq(horizontal.max, 4)
 }
 
@@ -217,14 +211,12 @@ test "a decor with a border draws the ring and the background inside it" {
 ///|
 test "align divides the slack along the stacking axis" {
   let top_left = @design.Align::new()
-  let centered = @design.Align::new(h=@design.Center, v=@design.Middle)
+  let centred = @design.Align::new(h=@design.Centre, v=@design.Middle)
   assert_eq(top_left.main_offset(Vertical, 6), 0)
-  assert_eq(centered.main_offset(Vertical, 6), 3)
-  assert_eq(centered.main_offset(Vertical, 5), 2)
+  assert_eq(centred.main_offset(Vertical, 6), 3)
+  assert_eq(centred.main_offset(Vertical, 5), 2)
   assert_eq(top_left.main_offset(Horizontal, 6), 0)
-  // The horizontal component is the one that moves a row.
-  assert_eq(centered.main_offset(Horizontal, 6), 3)
-  // More slack than height is someone else's problem; none of it is ours.
+  assert_eq(centred.main_offset(Horizontal, 6), 3)
   let bottom = @design.Align::new(v=@design.Bottom)
   assert_eq(bottom.main_offset(Vertical, -4), 0)
 }

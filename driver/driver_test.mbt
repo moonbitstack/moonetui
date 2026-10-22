@@ -6,11 +6,8 @@ test "entering and leaving unwind the same capabilities" {
   let on = @driver.enter()
   let off = @driver.leave()
   assert_eq(on.length() > 0, true)
-  // The alternate screen is the first thing entered and the last thing left, so
-  // nothing is drawn on the shell's screen in between.
   assert_eq(on[0:8].to_owned(), @driver.enter_alt)
   assert_eq(off[off.length() - 8:].to_owned(), @driver.leave_alt)
-  // The cursor is hidden while the application owns the screen.
   assert_eq(on[on.length() - 6:].to_owned(), "\u{1b}[?25l")
 }
 
@@ -48,8 +45,6 @@ test "polling hands out the script one chunk at a time" {
   tty.start()
   assert_eq(tty.poll(10), b"ab")
   assert_eq(tty.poll(10), b"cd")
-  // Once the script runs out the terminal simply has nothing to say, which is
-  // what a real one does between key presses.
   assert_eq(tty.poll(10), b"")
 }
 
