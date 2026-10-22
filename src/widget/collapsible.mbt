@@ -125,6 +125,9 @@ pub impl Widget for Collapsible with fn handle(self, ctx, msg) {
   match msg {
     Focus(gained) => {
       self.focused = gained
+      if !self.collapsed {
+        self.inside(ctx, msg) |> ignore
+      }
       ctx.repaint()
       true
     }
@@ -133,10 +136,7 @@ pub impl Widget for Collapsible with fn handle(self, ctx, msg) {
         self.toggle(ctx)
         return true
       }
-      if self.collapsed {
-        return false
-      }
-      self.contents.handle(ctx, msg)
+      !self.collapsed && self.inside(ctx, msg)
     }
     Mouse(mouse) =>
       match mouse.kind {
@@ -147,7 +147,7 @@ pub impl Widget for Collapsible with fn handle(self, ctx, msg) {
             return true
           }
           if !self.collapsed && mouse.y >= 3 {
-            return self.contents.handle(ctx, Mouse(collapsible_shift(mouse)))
+            return self.inside(ctx, Mouse(collapsible_shift(mouse)))
           }
           false
         }
@@ -158,13 +158,13 @@ pub impl Widget for Collapsible with fn handle(self, ctx, msg) {
             ctx.repaint()
           }
           if !self.collapsed && mouse.y >= 3 {
-            return self.contents.handle(ctx, Mouse(collapsible_shift(mouse)))
+            return self.inside(ctx, Mouse(collapsible_shift(mouse)))
           }
           true
         }
         ScrollUp | ScrollDown => {
           if !self.collapsed && mouse.y >= 3 {
-            return self.contents.handle(ctx, Mouse(collapsible_shift(mouse)))
+            return self.inside(ctx, Mouse(collapsible_shift(mouse)))
           }
           false
         }
@@ -182,8 +182,16 @@ pub impl Widget for Collapsible with fn focusable(_self) {
 ///|
 fn Collapsible::toggle(self : Collapsible, ctx : Ctx) -> Unit {
   self.collapsed = !self.collapsed
+  if self.focused {
+    self.inside(ctx, Focus(!self.collapsed)) |> ignore
+  }
   ctx.emit(Toggled(id=ctx.id, on=!self.collapsed))
   ctx.repaint()
+}
+
+///|
+fn Collapsible::inside(self : Collapsible, ctx : Ctx, msg : Msg) -> Bool {
+  forward(self.contents, ctx, collapsible_inner_size(ctx.size), msg)
 }
 
 ///|

@@ -11,6 +11,7 @@ pub struct Tabs {
   active_style : @style.Style
   bar_style : @style.Style
   bar_highlight : @style.Style
+  focus_style : @style.Style
 } derive(Eq, Debug)
 
 ///|
@@ -21,6 +22,7 @@ pub fn Tabs::new(
   active_style~ : @style.Style = @style.Style::new(),
   bar_style~ : @style.Style = @style.Style::new(dim=true),
   bar_highlight~ : @style.Style = @style.Style::new(reverse=true),
+  focus_style~ : @style.Style = @style.Style::new(bold=true),
 ) -> Tabs {
   let tabs : Tabs = {
     labels: [],
@@ -31,6 +33,7 @@ pub fn Tabs::new(
     active_style,
     bar_style,
     bar_highlight,
+    focus_style,
   }
   tabs.set_labels(labels)
   tabs.activate(
@@ -90,7 +93,9 @@ pub impl Widget for Tabs with fn render_line(self, row, size) {
   if row == 0 {
     let segs : Array[@strip.Seg] = []
     for i in 0..<self.labels.length() {
-      let style = if i == self.active {
+      let style = if i == self.active && self.focused {
+        self.active_style.merge(self.focus_style)
+      } else if i == self.active {
         self.active_style
       } else if self.disabled[i] {
         @style.Style::new(dim=true)

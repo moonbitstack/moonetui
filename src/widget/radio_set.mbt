@@ -172,8 +172,11 @@ pub impl Widget for RadioSet with fn handle(self, ctx, msg) {
       match mouse.kind {
         Down => {
           ctx.emit(TakeFocus(id=ctx.id))
-          self.selected = self.offset + mouse.y
-          self.press(self.selected, ctx)
+          let at = self.offset + mouse.y
+          if at >= 0 && at < self.buttons.length() {
+            self.selected = at
+            self.press(at, ctx)
+          }
           true
         }
         ScrollUp => {

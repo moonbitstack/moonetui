@@ -56,3 +56,15 @@ test "collapsible forwards keys and clicks to its contents when expanded" {
   box.set_collapsed(true)
   assert_eq(press(w, 6, size(10, 8), key(Char(32))), [])
 }
+
+///|
+test "an expanded collapsible lends its focus to its contents" {
+  let list = @widget.ListView::new(["a", "b"])
+  let fold = @widget.Collapsible::new(title="t", contents=list, collapsed=false)
+  let w : &@widget.Widget = fold
+  let blurred = w.render_line(3, size(10, 6))
+  ignore(press(w, 1, size(10, 6), Focus(true)))
+  let focused = w.render_line(3, size(10, 6))
+  assert_eq(focused.text(), blurred.text())
+  assert_eq(focused != blurred, true)
+}

@@ -17,3 +17,54 @@ test "tabbed content renders and switches its active pane" {
   assert_eq(box.active(), 1)
   assert_eq(w.render_line(2, size(10, 1)).text(), "BBB       ")
 }
+
+///|
+fn tabbed_list() -> (@widget.TabbedContent, @widget.ListView) {
+  let list = @widget.ListView::new(["a", "b", "c"])
+  let box = @widget.TabbedContent::new(labels=["one", "two"], panes=[
+    list,
+    @widget.Static::new("BBB"),
+  ])
+  (box, list)
+}
+
+///|
+test "a click in the pane reaches the pane, not the tabs" {
+  let (box, list) = tabbed_list()
+  let w : &@widget.Widget = box
+  let click = @widget.Msg::Mouse({
+    kind: Down,
+    button: 0,
+    x: 6,
+    y: 3,
+    mods: @event.none,
+  })
+  let out = press(w, 5, size(10, 5), click)
+  assert_eq(box.active(), 0)
+  assert_eq(list.index(), 1)
+  assert_eq(out.contains(Selected(id=5, index=1)), true)
+}
+
+///|
+test "keys go to the pane first and switch tabs when it passes" {
+  let (box, list) = tabbed_list()
+  let w : &@widget.Widget = box
+  ignore(press(w, 5, size(10, 5), key(Down)))
+  assert_eq(list.index(), 1)
+  assert_eq(box.active(), 0)
+  let out = press(w, 5, size(10, 5), key(Right))
+  assert_eq(box.active(), 1)
+  assert_eq(out.contains(Selected(id=5, index=1)), true)
+}
+
+///|
+test "focus reaches the active pane and follows a tab switch" {
+  let (box, list) = tabbed_list()
+  let w : &@widget.Widget = box
+  ignore(press(w, 5, size(10, 5), Focus(true)))
+  let focused = w.render_line(2, size(10, 5))
+  ignore(press(w, 5, size(10, 5), Focus(false)))
+  let blurred = w.render_line(2, size(10, 5))
+  assert_eq(focused.segs[0].style != blurred.segs[0].style, true)
+  ignore(list)
+}

@@ -37,3 +37,16 @@ test "space and a click toggle a switch and report it" {
   assert_eq(out, [@widget.Toggled(id=3, on=false), Repaint(id=3)])
   assert_false(sw.value())
 }
+
+///|
+test "a focused switch says so on its track" {
+  let switch = @widget.Switch::new()
+  let w : &@widget.Widget = switch
+  let plain = w.render_line(0, size(4, 1))
+  ignore(press(w, 1, size(4, 1), Focus(true)))
+  let lit = w.render_line(0, size(4, 1))
+  assert_eq(lit.text(), plain.text())
+  assert_eq(lit.segs[1].style != plain.segs[1].style, true)
+  ignore(press(w, 1, size(4, 1), Focus(false)))
+  assert_eq(w.render_line(0, size(4, 1)), plain)
+}

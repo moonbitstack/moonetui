@@ -6,9 +6,11 @@
 /// the left when off and on the right when on.
 pub struct Switch {
   mut value : Bool
+  mut focused : Bool
   on_style : @style.Style
   off_style : @style.Style
   track : @style.Style
+  focus_track : @style.Style
 } derive(Eq, Debug)
 
 ///|
@@ -25,8 +27,11 @@ pub fn Switch::new(
     reverse=true,
   ),
   track~ : @style.Style = @style.Style::new(bg=@style.Colour::rgb(85, 85, 85)),
+  focus_track~ : @style.Style = @style.Style::new(
+    bg=@style.Colour::rgb(130, 130, 130),
+  ),
 ) -> Switch {
-  { value, on_style, off_style, track, }
+  { value, focused: false, on_style, off_style, track, focus_track, }
 }
 
 ///|
@@ -49,7 +54,14 @@ pub fn Switch::toggle(self : Switch) -> Unit {
 pub impl Widget for Switch with fn render_line(self, _row, size) {
   let thumb_style = if self.value { self.on_style } else { self.off_style }
   let thumb = @strip.Strip::blank(2, thumb_style)
-  let rail = @strip.Strip::blank(2, self.track)
+  let rail = @strip.Strip::blank(
+    2,
+    if self.focused {
+      self.focus_track
+    } else {
+      self.track
+    },
+  )
   let bar = if self.value {
     @strip.Strip::join([rail, thumb])
   } else {
@@ -67,6 +79,11 @@ pub impl Widget for Switch with fn hint(self, _size) {
 ///|
 pub impl Widget for Switch with fn handle(self, ctx, msg) {
   match msg {
+    Focus(gained) => {
+      self.focused = gained
+      ctx.repaint()
+      true
+    }
     Key(key) =>
       if key.mods.is_none() && (key.code == Char(32) || key.code == Enter) {
         self.toggle()

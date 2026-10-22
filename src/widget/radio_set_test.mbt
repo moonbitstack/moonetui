@@ -96,3 +96,22 @@ test "a set taller than its box scrolls the cursor into view" {
   assert_eq(w.render_line(1, size(20, 2)).text().length(), 20)
   assert_eq(set.selected_index(), 2)
 }
+
+///|
+test "a click below the last button leaves the set alone" {
+  let set = @widget.RadioSet::new([
+    @widget.RadioButton::new("a"),
+    @widget.RadioButton::new("b"),
+  ])
+  let w : &@widget.Widget = set
+  let below = @widget.Msg::Mouse({
+    kind: Down,
+    button: 0,
+    x: 1,
+    y: 3,
+    mods: @event.none,
+  })
+  assert_eq(press(w, 2, size(10, 4), below), [TakeFocus(id=2)])
+  assert_eq(set.selected_index(), 0)
+  assert_eq(set.pressed_index(), -1)
+}

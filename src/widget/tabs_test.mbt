@@ -61,3 +61,13 @@ test "tabs activate by click and hover by pointer move" {
     [],
   )
 }
+
+///|
+test "a focused tab bar shows its active label in bold" {
+  let tabs = @widget.Tabs::new(labels=["one", "two"])
+  let w : &@widget.Widget = tabs
+  ignore(press(w, 1, size(12, 2), Focus(true)))
+  let row = tabs.render_line(0, size(12, 1))
+  assert_eq(row.segs[1].text, "one")
+  assert_eq(row.segs[1].style.attrs.bold, true)
+}

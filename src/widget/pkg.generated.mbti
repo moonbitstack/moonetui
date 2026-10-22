@@ -758,15 +758,17 @@ pub fn Summary::to_repr(Self) -> @debug.Repr
 
 pub struct Switch {
   mut value : Bool
+  mut focused : Bool
   on_style : @style.Style
   off_style : @style.Style
   track : @style.Style
+  focus_track : @style.Style
 } derive(Eq, @debug.Debug)
 pub fn Switch::equal(Self, Self) -> Bool
 pub fn Switch::focusable(Self) -> Bool
 pub fn Switch::handle(Self, Ctx, Msg) -> Bool
 pub fn Switch::hint(Self, @geom.Size) -> @geom.Size
-pub fn Switch::new(value? : Bool, on_style? : @style.Style, off_style? : @style.Style, track? : @style.Style) -> Self
+pub fn Switch::new(value? : Bool, on_style? : @style.Style, off_style? : @style.Style, track? : @style.Style, focus_track? : @style.Style) -> Self
 pub fn Switch::not_equal(Self, Self) -> Bool
 pub fn Switch::render_line(Self, Int32, @geom.Size) -> @strip.Strip
 pub fn Switch::set_value(Self, Bool) -> Unit
@@ -798,6 +800,7 @@ pub struct Tabs {
   active_style : @style.Style
   bar_style : @style.Style
   bar_highlight : @style.Style
+  focus_style : @style.Style
 } derive(Eq, @debug.Debug)
 pub fn Tabs::activate(Self, Int32) -> Unit
 pub fn Tabs::active(Self) -> Int32
@@ -806,7 +809,7 @@ pub fn Tabs::focusable(Self) -> Bool
 pub fn Tabs::handle(Self, Ctx, Msg) -> Bool
 pub fn Tabs::hint(Self, @geom.Size) -> @geom.Size
 pub fn Tabs::labels(Self) -> Array[String]
-pub fn Tabs::new(labels? : Array[String], active? : Int32, style? : @style.Style, active_style? : @style.Style, bar_style? : @style.Style, bar_highlight? : @style.Style) -> Self
+pub fn Tabs::new(labels? : Array[String], active? : Int32, style? : @style.Style, active_style? : @style.Style, bar_style? : @style.Style, bar_highlight? : @style.Style, focus_style? : @style.Style) -> Self
 pub fn Tabs::not_equal(Self, Self) -> Bool
 pub fn Tabs::render_line(Self, Int32, @geom.Size) -> @strip.Strip
 pub fn Tabs::set_disabled(Self, Int32, Bool) -> Unit

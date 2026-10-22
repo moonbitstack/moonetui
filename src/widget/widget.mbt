@@ -68,6 +68,18 @@ pub(open) trait Widget {
 }
 
 ///|
+/// Hand `msg` to a widget nested in another, at the size it is drawn at, and
+/// pass on whatever it asks for.
+fn forward(child : &Widget, ctx : Ctx, size : @geom.Size, msg : Msg) -> Bool {
+  let inner = Ctx::new(ctx.id, size, focused=ctx.focused)
+  let handled = child.handle(inner, msg)
+  for out in inner.asked() {
+    ctx.emit(out)
+  }
+  handled
+}
+
+///|
 pub(all) struct Border {
   top_left : String
   top : String
