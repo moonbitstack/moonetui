@@ -80,6 +80,19 @@ fn forward(child : &Widget, ctx : Ctx, size : @geom.Size, msg : Msg) -> Bool {
 }
 
 ///|
+/// Text in code-unit order. The core's string order compares lengths first,
+/// which no reader expects of a sorted column or listing.
+fn text_order(a : String, b : String) -> Int32 {
+  let span = if a.length() < b.length() { a.length() } else { b.length() }
+  for at in 0..<span {
+    if a[at] != b[at] {
+      return a[at].to_int() - b[at].to_int()
+    }
+  }
+  a.length() - b.length()
+}
+
+///|
 pub(all) struct Border {
   top_left : String
   top : String

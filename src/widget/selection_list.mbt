@@ -27,6 +27,7 @@ pub struct SelectionList {
   mut hover : Int32
   mut offset : Int32
   mut seen : Int32
+  mut follow : Bool
   mut focused : Bool
   style : @style.Style
   highlight : @style.Style
@@ -53,6 +54,7 @@ pub fn SelectionList::new(
     hover: -1,
     offset: 0,
     seen: 0,
+    follow: true,
     focused: false,
     style,
     highlight,
@@ -303,11 +305,13 @@ pub impl Widget for SelectionList with fn handle(self, ctx, msg) {
         }
         ScrollUp => {
           self.offset = self.offset - 1
+          self.follow = false
           ctx.repaint()
           true
         }
         ScrollDown => {
           self.offset = self.offset + 1
+          self.follow = false
           ctx.repaint()
           true
         }
@@ -325,6 +329,7 @@ pub impl Widget for SelectionList with fn focusable(_self) {
 ///|
 fn SelectionList::first(self : SelectionList) -> Unit {
   self.highlighted = find_selection(self.options, -1, 1)
+  self.follow = true
 }
 
 ///|
@@ -337,6 +342,7 @@ fn SelectionList::move_highlight(
     return
   }
   self.highlighted = index
+  self.follow = true
   ctx.emit(Highlighted(id=ctx.id, index~))
   ctx.repaint()
 }
@@ -368,9 +374,10 @@ fn SelectionList::scroll_to_fit(self : SelectionList, height : Int32) -> Unit {
   let count = self.options.length()
   let max = count - height
   self.offset = clamp(self.offset, 0, if max < 0 { 0 } else { max })
-  if self.highlighted < 0 {
+  if !self.follow || self.highlighted < 0 {
     return
   }
+  self.follow = false
   if self.highlighted < self.offset {
     self.offset = self.highlighted
   } else if height > 0 && self.highlighted >= self.offset + height {

@@ -64,6 +64,7 @@ pub struct Tree {
   mut hover : Int32
   mut offset : Int32
   mut seen : Int32
+  mut follow : Bool
   mut focused : Bool
   icon_collapsed : String
   icon_open : String
@@ -99,6 +100,7 @@ pub fn Tree::new(
     hover: -1,
     offset: 0,
     seen: 0,
+    follow: true,
     focused: false,
     icon_collapsed,
     icon_open,
@@ -712,12 +714,14 @@ pub impl Widget for Tree with fn handle(self, ctx, msg) {
         }
         ScrollUp => {
           self.offset = self.offset - 1
+          self.follow = false
           self.clamp_offset()
           ctx.repaint()
           true
         }
         ScrollDown => {
           self.offset = self.offset + 1
+          self.follow = false
           self.clamp_offset()
           ctx.repaint()
           true
@@ -758,6 +762,7 @@ fn Tree::move_cursor(self : Tree, line : Int32, ctx : Ctx) -> Unit {
     return
   }
   self.cursor = at
+  self.follow = true
   match self.line_at(at) {
     Some(found) => ctx.emit(Highlighted(id=ctx.id, index=found.id))
     None => ()
@@ -936,13 +941,14 @@ fn Tree::scroll_to_fit(self : Tree, height : Int32) -> Unit {
   if self.cursor >= total {
     self.cursor = -1
   }
-  if self.cursor >= 0 {
+  if self.follow && self.cursor >= 0 {
     if self.cursor < self.offset {
       self.offset = self.cursor
     } else if height > 0 && self.cursor >= self.offset + height {
       self.offset = self.cursor - height + 1
     }
   }
+  self.follow = false
   self.clamp_offset()
 }
 

@@ -109,25 +109,19 @@ fn DirectoryTree::load_expanded_from(self : DirectoryTree, id : Int32) -> Unit {
 }
 
 ///|
+/// Folders before files, each in name order with case ignored.
 fn dir_sort(entries : Array[DirEntry]) -> Unit {
-  let count = entries.length()
-  for i in 1..<count {
-    let held = entries[i]
-    let mut at = i
-    while at > 0 && dir_before(held, entries[at - 1]) {
-      entries[at] = entries[at - 1]
-      at = at - 1
+  entries.sort_by((a, b) => {
+    if a.is_dir != b.is_dir {
+      if a.is_dir {
+        -1
+      } else {
+        1
+      }
+    } else {
+      text_order(a.name.to_lower(), b.name.to_lower())
     }
-    entries[at] = held
-  }
-}
-
-///|
-fn dir_before(a : DirEntry, b : DirEntry) -> Bool {
-  if a.is_dir != b.is_dir {
-    return a.is_dir
-  }
-  text_before(a.name.to_lower(), b.name.to_lower())
+  })
 }
 
 ///|

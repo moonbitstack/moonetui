@@ -20,6 +20,7 @@ pub struct OptionList {
   mut hover : Int32
   mut offset : Int32
   mut seen : Int32
+  mut follow : Bool
   mut focused : Bool
   style : @style.Style
   highlight : @style.Style
@@ -45,6 +46,7 @@ pub fn OptionList::new(
     hover: -1,
     offset: 0,
     seen: 0,
+    follow: true,
     focused: false,
     style,
     highlight,
@@ -85,6 +87,7 @@ pub fn OptionList::set_options(
   self.highlighted = -1
   self.hover = -1
   self.offset = 0
+  self.follow = true
   self.first()
 }
 
@@ -257,11 +260,13 @@ pub impl Widget for OptionList with fn handle(self, ctx, msg) {
         }
         ScrollUp => {
           self.offset = self.offset - 1
+          self.follow = false
           ctx.repaint()
           true
         }
         ScrollDown => {
           self.offset = self.offset + 1
+          self.follow = false
           ctx.repaint()
           true
         }
@@ -289,6 +294,7 @@ fn OptionList::move_highlight(
     return
   }
   self.highlighted = index
+  self.follow = true
   if !self.options[index].disabled {
     ctx.emit(Highlighted(id=ctx.id, index~))
   }
@@ -352,23 +358,21 @@ fn OptionList::total_rows(self : OptionList) -> Int32 {
 }
 
 ///|
+/// Bring the highlight into view after it moves; otherwise leave the view
+/// where the wheel put it, only kept within the options.
 fn OptionList::scroll_to_fit(self : OptionList, height : Int32) -> Unit {
   self.seen = height
-  if self.highlighted < 0 {
-    return
-  }
   let count = self.options.length()
-  if count == 0 {
-    self.offset = 0
-    return
-  }
-  let at = clamp(self.highlighted, 0, count - 1)
-  let top = self.line_of(at)
-  let bottom = top + self.height_of(at) - 1
-  if top < self.offset {
-    self.offset = top
-  } else if height > 0 && bottom >= self.offset + height {
-    self.offset = bottom - height + 1
+  if self.follow && self.highlighted >= 0 && count > 0 {
+    let at = clamp(self.highlighted, 0, count - 1)
+    let top = self.line_of(at)
+    let bottom = top + self.height_of(at) - 1
+    if top < self.offset {
+      self.offset = top
+    } else if height > 0 && bottom >= self.offset + height {
+      self.offset = bottom - height + 1
+    }
+    self.follow = false
   }
   let max = self.total_rows() - height
   self.offset = clamp(self.offset, 0, if max < 0 { 0 } else { max })

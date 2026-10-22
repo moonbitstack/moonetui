@@ -78,3 +78,29 @@ test "select picks from clicks and blanks when allowed" {
   let strict = @widget.Select::new(options=[("One", "one")], allow_blank=false)
   assert_eq(strict.value(), Some("one"))
 }
+
+///|
+test "the wheel scrolls an open select past its highlight" {
+  let pick = @widget.Select::new(options=[
+    ("a", "a"),
+    ("b", "b"),
+    ("c", "c"),
+    ("d", "d"),
+    ("e", "e"),
+  ])
+  let w : &@widget.Widget = pick
+  let at = size(10, 3)
+  ignore(press(w, 1, at, key(Enter)))
+  let wheel = @widget.Msg::Mouse({
+    kind: ScrollDown,
+    button: 0,
+    x: 1,
+    y: 1,
+    mods: @event.none,
+  })
+  ignore(press(w, 1, at, wheel))
+  ignore(press(w, 1, at, wheel))
+  assert_eq(rows(w, at).map(r => r.trim().to_owned()), ["Select  ▲", "c", "d"])
+  ignore(press(w, 1, at, key(Down)))
+  assert_eq(rows(w, at).map(r => r.trim().to_owned()), ["Select  ▲", "b", "c"])
+}

@@ -409,6 +409,7 @@ pub struct OptionList {
   mut hover : Int32
   mut offset : Int32
   mut seen : Int32
+  mut follow : Bool
   mut focused : Bool
   style : @style.Style
   highlight : @style.Style
@@ -640,6 +641,7 @@ pub struct Select {
   mut highlighted : Int32
   mut offset : Int32
   mut seen : Int32
+  mut follow : Bool
   mut query : String
   mut focused : Bool
   style : @style.Style
@@ -681,6 +683,7 @@ pub struct SelectionList {
   mut hover : Int32
   mut offset : Int32
   mut seen : Int32
+  mut follow : Bool
   mut focused : Bool
   style : @style.Style
   highlight : @style.Style
@@ -925,6 +928,7 @@ pub struct Tree {
   mut hover : Int32
   mut offset : Int32
   mut seen : Int32
+  mut follow : Bool
   mut focused : Bool
   icon_collapsed : String
   icon_open : String

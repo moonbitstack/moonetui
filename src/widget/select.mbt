@@ -11,6 +11,7 @@ pub struct Select {
   mut highlighted : Int32
   mut offset : Int32
   mut seen : Int32
+  mut follow : Bool
   mut query : String
   mut focused : Bool
   style : @style.Style
@@ -41,6 +42,7 @@ pub fn Select::new(
     highlighted: -1,
     offset: 0,
     seen: 0,
+    follow: true,
     query: "",
     focused: false,
     style,
@@ -263,6 +265,7 @@ pub impl Widget for Select with fn handle(self, ctx, msg) {
         ScrollUp =>
           if self.expanded {
             self.offset = self.offset - 1
+            self.follow = false
             ctx.repaint()
             true
           } else {
@@ -271,6 +274,7 @@ pub impl Widget for Select with fn handle(self, ctx, msg) {
         ScrollDown =>
           if self.expanded {
             self.offset = self.offset + 1
+            self.follow = false
             ctx.repaint()
             true
           } else {
@@ -304,6 +308,7 @@ fn Select::open(self : Select, ctx : Ctx) -> Unit {
   if self.options.length() > 0 && self.highlighted >= self.options.length() {
     self.highlighted = 0
   }
+  self.follow = true
   ctx.repaint()
 }
 
@@ -340,6 +345,7 @@ fn Select::move_highlight(self : Select, index : Int32, ctx : Ctx) -> Unit {
     return
   }
   self.highlighted = next
+  self.follow = true
   ctx.repaint()
 }
 
@@ -371,19 +377,19 @@ fn Select::search(self : Select, ctx : Ctx, code : Int32) -> Unit {
 }
 
 ///|
+/// Bring the highlight into view after it moves; otherwise leave the view
+/// where the wheel put it, only kept within the options.
 fn Select::scroll_to_fit(self : Select, height : Int32) -> Unit {
   self.seen = height
-  let count = self.options.length()
-  let max = count - height
-  self.offset = clamp(self.offset, 0, if max < 0 { 0 } else { max })
-  if self.highlighted < 0 {
-    return
+  if self.follow && self.highlighted >= 0 {
+    if self.highlighted < self.offset {
+      self.offset = self.highlighted
+    } else if height > 0 && self.highlighted >= self.offset + height {
+      self.offset = self.highlighted - height + 1
+    }
+    self.follow = false
   }
-  if self.highlighted < self.offset {
-    self.offset = self.highlighted
-  } else if height > 0 && self.highlighted >= self.offset + height {
-    self.offset = self.highlighted - height + 1
-  }
+  let max = self.options.length() - height
   self.offset = clamp(self.offset, 0, if max < 0 { 0 } else { max })
 }
 

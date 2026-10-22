@@ -207,21 +207,22 @@ pub fn DataTable::set_cell(
 }
 
 ///|
-fn text_before(a : String, b : String) -> Bool {
-  // String `<` in the core compares lengths first; a table wants the
-  // plain code-unit order.
-  let span = if a.length() < b.length() { a.length() } else { b.length() }
-  let mut at = 0
-  while at < span {
-    if a[at] != b[at] {
-      return a[at].to_int() < b[at].to_int()
-    }
-    at = at + 1
+/// Cells that both read as numbers compare as numbers, the rest as text.
+fn cell_order(a : String, b : String) -> Int32 {
+  match (number(a), number(b)) {
+    (Some(x), Some(y)) => x.compare(y)
+    _ => text_order(a, b)
   }
-  a.length() < b.length()
 }
 
 ///|
+fn number(text : String) -> Double? {
+  Some(@string.parse_double(text.trim()) catch { _ => return None })
+}
+
+///|
+/// Sort the rows by column `col`, keeping rows that compare equal in the order
+/// they were in.
 pub fn DataTable::sort(
   self : DataTable,
   col : Int32,
@@ -230,25 +231,21 @@ pub fn DataTable::sort(
   if col < 0 || col >= self.columns.length() {
     return
   }
-  let count = self.rows.length()
-  for i in 1..<count {
-    let held = self.rows[i]
-    let mut at = i
-    let mut go = text_before(held.cells[col], self.rows[at - 1].cells[col])
-    if reverse {
-      go = text_before(self.rows[at - 1].cells[col], held.cells[col])
-    }
-    while at > 0 && go {
-      self.rows[at] = self.rows[at - 1]
-      at = at - 1
-      if at > 0 {
-        go = text_before(held.cells[col], self.rows[at - 1].cells[col])
-        if reverse {
-          go = text_before(self.rows[at - 1].cells[col], held.cells[col])
-        }
+  let keyed = self.rows.mapi((i, row) => (i, row))
+  keyed.sort_by((a, b) => {
+    let order = cell_order(a.1.cells[col], b.1.cells[col])
+    if order != 0 {
+      if reverse {
+        -order
+      } else {
+        order
       }
+    } else {
+      a.0 - b.0
     }
-    self.rows[at] = held
+  })
+  for i, pair in keyed {
+    self.rows[i] = pair.1
   }
   self.hover_row = -1
   self.hover_col = -1

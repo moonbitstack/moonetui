@@ -231,3 +231,23 @@ test "tree keeps the cursor visible while walking past the fold" {
     "▼ root    ", "├── L1    ", "├── L2    ",
   ])
 }
+
+///|
+test "the wheel scrolls a tree past its cursor" {
+  let tree = dune()
+  let w : &@widget.Widget = tree
+  let at = size(20, 2)
+  let wheel = @widget.Msg::Mouse({
+    kind: ScrollDown,
+    button: 0,
+    x: 0,
+    y: 0,
+    mods: @event.none,
+  })
+  let top = rows(w, at)
+  ignore(press(w, 1, at, wheel))
+  ignore(press(w, 1, at, wheel))
+  let scrolled = rows(w, at)
+  assert_eq(scrolled != top, true)
+  assert_eq(scrolled[0].contains("Paul"), true)
+}

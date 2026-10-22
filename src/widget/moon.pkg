@@ -5,6 +5,7 @@
 // as a value the caller reads afterwards. That is what lets a widget be tested
 // without an application, a screen, or a terminal.
 import {
+  "moonbitlang/core/string",
   "moonbitstack/moonetui/event",
   "moonbitstack/moonetui/geom",
   "moonbitstack/moonetui/strip",

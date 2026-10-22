@@ -85,3 +85,29 @@ test "option list releases a disabled highlight" {
   assert_eq(list.highlighted(), -1)
   assert_eq(press(w, 5, size(6, 4), key(Enter)), [])
 }
+
+///|
+test "the wheel scrolls the view past the highlight and keys bring it back" {
+  let list = @widget.OptionList::new(
+    options=choices(["a", "b", "c", "d", "e", "f"]),
+  )
+  let w : &@widget.Widget = list
+  let at = size(4, 2)
+  let wheel = @widget.Msg::Mouse({
+    kind: ScrollDown,
+    button: 0,
+    x: 0,
+    y: 0,
+    mods: @event.none,
+  })
+  assert_eq(rows(w, at), ["a   ", "b   "])
+  ignore(press(w, 1, at, wheel))
+  ignore(press(w, 1, at, wheel))
+  assert_eq(rows(w, at), ["c   ", "d   "])
+  for _ in 0..<9 {
+    ignore(press(w, 1, at, wheel))
+  }
+  assert_eq(rows(w, at), ["e   ", "f   "])
+  ignore(press(w, 1, at, key(Down)))
+  assert_eq(rows(w, at), ["b   ", "c   "])
+}

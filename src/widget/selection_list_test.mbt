@@ -62,3 +62,26 @@ test "selection list clicks toggle under the pointer" {
   ])
   assert_eq(list.selected(), ["a"])
 }
+
+///|
+test "the wheel scrolls a selection list past its highlight" {
+  let list = @widget.SelectionList::new(options=[
+    @widget.Selection::new("a", "a"),
+    @widget.Selection::new("b", "b"),
+    @widget.Selection::new("c", "c"),
+    @widget.Selection::new("d", "d"),
+  ])
+  let w : &@widget.Widget = list
+  let at = size(8, 2)
+  let wheel = @widget.Msg::Mouse({
+    kind: ScrollDown,
+    button: 0,
+    x: 0,
+    y: 0,
+    mods: @event.none,
+  })
+  ignore(rows(w, at))
+  ignore(press(w, 1, at, wheel))
+  ignore(press(w, 1, at, wheel))
+  assert_eq(rows(w, at)[0].contains("c"), true)
+}

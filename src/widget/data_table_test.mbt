@@ -134,3 +134,19 @@ test "data table scrolls to keep the cursor in view" {
     " Name     ", " row 3    ", " row 4    ", " row 5    ",
   ])
 }
+
+///|
+test "data table sorts numbers by value and keeps ties in place" {
+  let table = @widget.DataTable::new()
+  ignore(table.add_column("Qty"))
+  ignore(table.add_column("Tag"))
+  ignore(table.add_row(["10", "x"]))
+  ignore(table.add_row(["9", "y"]))
+  ignore(table.add_row(["9", "z"]))
+  ignore(table.add_row(["-2.5", "w"]))
+  table.sort(0)
+  let w : &@widget.Widget = table
+  assert_eq(rows(w, size(10, 5)).map(r => r.trim().to_owned()), [
+    "Qty   Tag", "-2.5  w", "9     y", "9     z", "10    x",
+  ])
+}
