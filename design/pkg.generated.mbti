@@ -1,0 +1,160 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "moonbitstack/moonetui/design"
+
+import {
+  "moonbitlang/core/debug",
+  "moonbitstack/moonetui/geom",
+  "moonbitstack/moonetui/layout",
+  "moonbitstack/moonetui/strip",
+  "moonbitstack/moonetui/style",
+  "moonbitstack/moonetui/widget",
+}
+
+// Values
+pub let bare : Resolved
+
+pub let empty : Styles
+
+// Errors
+
+// Types and methods
+pub(all) struct Align {
+  h : HAlign
+  v : VAlign
+} derive(Eq, @debug.Debug)
+pub fn Align::equal(Self, Self) -> Bool
+pub fn Align::main_offset(Self, @layout.Dir, Int32) -> Int32
+pub fn Align::new(h? : HAlign, v? : VAlign) -> Self
+pub fn Align::not_equal(Self, Self) -> Bool
+pub fn Align::to_repr(Self) -> @debug.Repr
+
+pub(all) struct Decor {
+  border : EdgeKind
+  style : @style.Style
+  size : @geom.Size
+} derive(Eq, @debug.Debug)
+pub fn Decor::equal(Self, Self) -> Bool
+pub fn Decor::frame_line(Self, @geom.Spacing, Int32, @strip.Strip?) -> @strip.Strip
+pub fn Decor::line(Self, Int32) -> @strip.Strip
+pub fn Decor::not_equal(Self, Self) -> Bool
+pub fn Decor::to_repr(Self) -> @debug.Repr
+
+pub(all) enum Display {
+  Block
+  Hidden
+} derive(Eq, @debug.Debug)
+pub fn Display::equal(Self, Self) -> Bool
+pub fn Display::not_equal(Self, Self) -> Bool
+pub fn Display::to_repr(Self) -> @debug.Repr
+
+pub(all) enum EdgeKind {
+  Off
+  Ascii
+  Thin
+  Round
+  Double
+  Heavy
+} derive(Eq, @debug.Debug)
+pub fn EdgeKind::equal(Self, Self) -> Bool
+pub fn EdgeKind::glyphs(Self) -> @widget.Border
+pub fn EdgeKind::not_equal(Self, Self) -> Bool
+pub fn EdgeKind::to_repr(Self) -> @debug.Repr
+
+pub(all) enum HAlign {
+  Left
+  Center
+  Right
+} derive(Eq, @debug.Debug)
+pub fn HAlign::equal(Self, Self) -> Bool
+pub fn HAlign::not_equal(Self, Self) -> Bool
+pub fn HAlign::to_repr(Self) -> @debug.Repr
+
+pub(all) struct Resolved {
+  hidden : Bool
+  margin : @geom.Spacing
+  padding : @geom.Spacing
+  border : EdgeKind
+  align : Align
+  width : @layout.Extent?
+  height : @layout.Extent?
+  min_width : Int32?
+  max_width : Int32?
+  min_height : Int32?
+  max_height : Int32?
+  text : @style.Style
+} derive(Eq, @debug.Debug)
+pub fn Resolved::box(Self, @layout.Dir, @layout.Box) -> @layout.Box
+pub fn Resolved::content_region(Self, @geom.Region) -> @geom.Region
+pub fn Resolved::equal(Self, Self) -> Bool
+pub fn Resolved::has_chrome(Self) -> Bool
+pub fn Resolved::not_equal(Self, Self) -> Bool
+pub fn Resolved::of(Styles, @style.Style) -> Self
+pub fn Resolved::to_repr(Self) -> @debug.Repr
+
+pub(all) struct Rule {
+  sel : Sel
+  styles : Styles
+} derive(Eq, @debug.Debug)
+pub fn Rule::equal(Self, Self) -> Bool
+pub fn Rule::new(Sel, Styles) -> Self
+pub fn Rule::not_equal(Self, Self) -> Bool
+pub fn Rule::to_repr(Self) -> @debug.Repr
+
+pub(all) struct Sel {
+  name : String
+  id : Int32
+  classes : Array[String]
+  focus : Bool
+} derive(Eq, @debug.Debug)
+pub fn Sel::equal(Self, Self) -> Bool
+pub fn Sel::matches(Self, String, Int32, Array[String], Bool) -> Bool
+pub fn Sel::new(name? : String, id? : Int32, classes? : Array[String], focus? : Bool) -> Self
+pub fn Sel::not_equal(Self, Self) -> Bool
+pub fn Sel::specificity(Self) -> Int32
+pub fn Sel::to_repr(Self) -> @debug.Repr
+
+pub(all) struct Styles {
+  display : Display?
+  width : @layout.Extent?
+  height : @layout.Extent?
+  min_width : Int32?
+  max_width : Int32?
+  min_height : Int32?
+  max_height : Int32?
+  padding : @geom.Spacing?
+  margin : @geom.Spacing?
+  border : EdgeKind?
+  align : Align?
+  text : @style.Style?
+} derive(Eq, @debug.Debug)
+pub fn Styles::equal(Self, Self) -> Bool
+pub fn Styles::is_empty(Self) -> Bool
+pub fn Styles::merge(Self, Self) -> Self
+pub fn Styles::new(display? : Display?, width? : @layout.Extent?, height? : @layout.Extent?, min_width? : Int32?, max_width? : Int32?, min_height? : Int32?, max_height? : Int32?, padding? : @geom.Spacing?, margin? : @geom.Spacing?, border? : EdgeKind?, align? : Align?, text? : @style.Style?) -> Self
+pub fn Styles::not_equal(Self, Self) -> Bool
+pub fn Styles::to_repr(Self) -> @debug.Repr
+
+pub(all) struct Stylesheet {
+  rules : Array[Rule]
+} derive(Eq, @debug.Debug)
+pub fn Stylesheet::add(Self, Sel, Styles) -> Unit
+pub fn Stylesheet::equal(Self, Self) -> Bool
+pub fn Stylesheet::is_empty(Self) -> Bool
+pub fn Stylesheet::list(Self) -> Array[Rule]
+pub fn Stylesheet::new() -> Self
+pub fn Stylesheet::not_equal(Self, Self) -> Bool
+pub fn Stylesheet::pick(Self, String, Int32, Array[String], Bool) -> Styles
+pub fn Stylesheet::to_repr(Self) -> @debug.Repr
+
+pub(all) enum VAlign {
+  Top
+  Middle
+  Bottom
+} derive(Eq, @debug.Debug)
+pub fn VAlign::equal(Self, Self) -> Bool
+pub fn VAlign::not_equal(Self, Self) -> Bool
+pub fn VAlign::to_repr(Self) -> @debug.Repr
+
+// Type aliases
+
+// Traits

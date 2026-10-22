@@ -2,7 +2,9 @@
 package "moonbitstack/moonetui/app"
 
 import {
+  "moonbitlang/core/debug",
   "moonbitstack/moonetui/comp",
+  "moonbitstack/moonetui/design",
   "moonbitstack/moonetui/driver",
   "moonbitstack/moonetui/geom",
   "moonbitstack/moonetui/input",
@@ -13,11 +15,11 @@ import {
 }
 
 // Values
-pub fn column(Int32, Array[Node], box? : @layout.Box, gap? : Int32) -> Node
+pub fn column(Int32, Array[Node], box? : @layout.Box, gap? : Int32, name? : String, classes? : Array[String], styles? : @design.Styles) -> Node
 
-pub fn leaf(Int32, &@widget.Widget, box? : @layout.Box) -> Node
+pub fn leaf(Int32, &@widget.Widget, box? : @layout.Box, name? : String, classes? : Array[String], styles? : @design.Styles) -> Node
 
-pub fn row(Int32, Array[Node], box? : @layout.Box, gap? : Int32) -> Node
+pub fn row(Int32, Array[Node], box? : @layout.Box, gap? : Int32, name? : String, classes? : Array[String], styles? : @design.Styles) -> Node
 
 // Errors
 
@@ -27,8 +29,10 @@ pub struct App[D] {
   root : Node
   parser : @input.Parser
   base : @style.Style
+  sheet : @design.Stylesheet
   frame_ms : Int32
   rects : Map[Int32, @geom.Region]
+  styled : Map[Int32, @design.Resolved]
   inbox : Array[@widget.Out]
   mut size : @geom.Size
   mut focus : Int32
@@ -42,7 +46,7 @@ pub struct App[D] {
 pub fn[D] App::drain(Self[D]) -> Array[@widget.Out]
 pub fn[D] App::focus_next(Self[D], Int32) -> Unit
 pub fn[D] App::focused(Self[D]) -> Int32
-pub fn[D] App::new(D, Node, base? : @style.Style, fps? : Int32) -> Self[D]
+pub fn[D] App::new(D, Node, base? : @style.Style, sheet? : @design.Stylesheet, fps? : Int32) -> Self[D]
 pub fn[D] App::quit(Self[D]) -> Unit
 pub fn[D] App::rect_of(Self[D], Int32) -> @geom.Region
 pub fn[D] App::refresh(Self[D]) -> Unit
@@ -53,15 +57,26 @@ pub fn[D : @driver.Driver] App::step(Self[D]) -> Bool raise
 pub fn[D : @driver.Driver] App::stop(Self[D]) -> Unit raise
 
 pub enum Node {
-  Leaf(id~ : Int32, widget~ : &@widget.Widget, box~ : @layout.Box)
-  Stack(id~ : Int32, dir~ : @layout.Dir, box~ : @layout.Box, gap~ : Int32, kids~ : Array[Node])
+  Leaf(id~ : Int32, widget~ : &@widget.Widget, box~ : @layout.Box, name~ : String, classes~ : Array[String], styles~ : @design.Styles)
+  Stack(id~ : Int32, dir~ : @layout.Dir, box~ : @layout.Box, gap~ : Int32, kids~ : Array[Node], name~ : String, classes~ : Array[String], styles~ : @design.Styles)
 }
 pub fn Node::box(Self) -> @layout.Box
 pub fn Node::find(Self, Int32) -> &@widget.Widget?
 pub fn Node::focus_ring(Self) -> Array[Int32]
-pub fn Node::hint(Self, @geom.Size, @layout.Dir) -> Int32
+pub fn Node::hint(Self, @geom.Size, @layout.Dir, theme? : Theme) -> Int32
 pub fn Node::id(Self) -> Int32
-pub fn Node::place(Self, @geom.Region, @geom.Region, @comp.Scene, Map[Int32, @geom.Region]) -> Unit
+pub fn Node::place(Self, @geom.Region, @geom.Region, @comp.Scene, Map[Int32, @geom.Region], styled? : Map[Int32, @design.Resolved], theme? : Theme, inherited? : @style.Style) -> Unit
+pub fn Node::resolve(Self, Theme, @style.Style) -> @design.Resolved
+
+pub(all) struct Theme {
+  sheet : @design.Stylesheet
+  focus : Int32
+  base : @style.Style
+} derive(Eq, @debug.Debug)
+pub fn Theme::equal(Self, Self) -> Bool
+pub fn Theme::new(sheet? : @design.Stylesheet, focus? : Int32, base? : @style.Style) -> Self
+pub fn Theme::not_equal(Self, Self) -> Bool
+pub fn Theme::to_repr(Self) -> @debug.Repr
 
 // Type aliases
 

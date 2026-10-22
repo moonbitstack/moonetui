@@ -10,6 +10,6 @@ license = "Apache-2.0"
 
 keywords = [ "tui", "terminal", "textual", "widget", "ansi" ]
 
-description = "moonetui — a terminal UI toolkit for MoonBit (after Textual): cell buffer, differential ANSI renderer, incremental key parser, layout, widgets, and pluggable terminal drivers."
+description = "moonetui — a terminal UI toolkit for MoonBit (after Textual): cell buffer, differential ANSI renderer, incremental key parser, layout, a CSS-like design system, widgets, and pluggable terminal drivers."
 
 preferred_target = "wasm-gc"

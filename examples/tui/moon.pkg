@@ -2,6 +2,8 @@
 // `moon run --target native examples/tui`.
 import {
   "moonbitstack/moonetui/app",
+  "moonbitstack/moonetui/design",
+  "moonbitstack/moonetui/geom",
   "moonbitstack/moonetui/driver/native",
   "moonbitstack/moonetui/layout",
   "moonbitstack/moonetui/style",

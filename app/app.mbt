@@ -9,8 +9,10 @@ pub struct App[D] {
   root : Node
   parser : @input.Parser
   base : @style.Style
+  sheet : @design.Stylesheet
   frame_ms : Int32
   rects : Map[Int32, @geom.Region]
+  styled : Map[Int32, @design.Resolved]
   inbox : Array[@widget.Out]
   mut size : @geom.Size
   mut focus : Int32
@@ -34,6 +36,7 @@ pub fn[D] App::new(
   driver : D,
   root : Node,
   base~ : @style.Style = @style.default,
+  sheet~ : @design.Stylesheet = @design.Stylesheet::new(),
   fps~ : Int32 = 60,
 ) -> App[D] {
   {
@@ -41,12 +44,14 @@ pub fn[D] App::new(
     root,
     parser: @input.Parser::new(),
     base,
+    sheet,
     frame_ms: if fps > 0 {
       1000 / fps
     } else {
       16
     },
     rects: Map([]),
+    styled: Map([]),
     inbox: [],
     size: @geom.Size::new(80, 24),
     focus: -1,
@@ -261,7 +266,14 @@ fn[D] App::deliver(self : App[D], id : Int32, msg : @widget.Msg) -> Bool {
     None => false
     Some(widget) => {
       let rect = self.rect_of(id)
-      let ctx = @widget.Ctx::new(id, rect.size(), focused=id == self.focus)
+      // A widget is told the size of its content, not of its chrome: the
+      // border and padding around it are the style's business, and a widget
+      // that thinks it owns them draws underneath them.
+      let content = match self.styled.get(id) {
+        Some(res) => res.content_region(rect).size()
+        None => rect.size()
+      }
+      let ctx = @widget.Ctx::new(id, content, focused=id == self.focus)
       let handled = widget.handle(ctx, msg)
       for out in ctx.asked() {
         self.act(out)
@@ -331,12 +343,26 @@ fn[D : @driver.Driver] App::render(self : App[D]) -> Unit raise {
   let screen = @geom.Region::new(0, 0, self.size.width, self.size.height)
   let scene = @comp.Scene::new(self.size)
   self.rects.clear()
-  self.root.place(screen, screen, scene, self.rects)
+  self.styled.clear()
+  let theme = Theme::new(sheet=self.sheet, focus=self.focus, base=self.base)
+  self.root.place(
+    screen,
+    screen,
+    scene,
+    self.rects,
+    styled=self.styled,
+    theme~,
+    inherited=self.base,
+  )
   let rows = scene.compose(
     fn(id, line) {
-      match self.root.find(id) {
-        Some(widget) => widget.render_line(line, self.rect_of(id).size())
-        None => @strip.Strip::empty()
+      match self.styled.get(id) {
+        Some(res) => self.dress_line(id, line, res)
+        None =>
+          match self.root.find(id) {
+            Some(widget) => widget.render_line(line, self.rect_of(id).size())
+            None => @strip.Strip::empty()
+          }
       }
     },
     self.base,
@@ -352,6 +378,49 @@ fn[D : @driver.Driver] App::render(self : App[D]) -> Unit raise {
   }
   self.prev = rows
   self.dirty = false
+}
+
+///|
+/// One row of a styled node: a container's chrome alone, or a leaf's chrome
+/// with its widget's line inside. The resolved text style is laid under the
+/// widget's own styling, which is how a container's background reaches the
+/// characters a widget never coloured.
+fn[D] App::dress_line(
+  self : App[D],
+  id : Int32,
+  line : Int32,
+  res : @design.Resolved,
+) -> @strip.Strip {
+  let rect = self.rect_of(id)
+  let decor : @design.Decor = {
+    border: res.border,
+    style: res.text,
+    size: rect.size(),
+  }
+  match self.root.find(id) {
+    // A container: only the chrome is this node's to draw; the children are
+    // placed in front of it and cover the content.
+    None => decor.line(line)
+    Some(widget) => {
+      let ring = match res.border {
+        @design.Off => 0
+        _ => 1
+      }
+      let size = rect.size()
+      let inner = @geom.Size::new(
+        at_least_zero(size.width - 2 * ring - res.padding.width()),
+        at_least_zero(size.height - 2 * ring - res.padding.height()),
+      )
+      let content_row = line - ring - res.padding.top
+      let content : @strip.Strip? = if content_row >= 0 &&
+        content_row < inner.height {
+        Some(widget.render_line(content_row, inner).apply(res.text))
+      } else {
+        None
+      }
+      decor.frame_line(res.padding, line, content)
+    }
+  }
 }
 
 ///|

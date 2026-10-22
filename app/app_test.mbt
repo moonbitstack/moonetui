@@ -188,3 +188,190 @@ test "typing into an input edits it through the whole stack" {
   let reported = ui.drain()
   assert_eq(reported[reported.length() - 1], Changed(id=1, value="h"))
 }
+
+///|
+test "an inline border and padding frame the content" {
+  let tree = @app.column(0, [
+    @app.leaf(
+      1,
+      @widget.Static::new("hi"),
+      styles=@design.Styles::new(
+        border=Some(@design.Thin),
+        padding=Some(@geom.Spacing::all(1)),
+      ),
+    ),
+  ])
+  let tty = @driver.Headless::new(@geom.Size::new(8, 5))
+  let ui = @app.App::new(tty, tree)
+  ui.start()
+  assert_eq(ui.screen(), [
+    "┌──────┐", "│      │", "│ hi   │", "│      │", "└──────┘",
+  ])
+}
+
+///|
+test "a class rule outweighs the name rule it beats" {
+  let sheet = @design.Stylesheet::new()
+  sheet.add(
+    @design.Sel::new(name="Panel"),
+    @design.Styles::new(border=Some(@design.Ascii)),
+  )
+  sheet.add(
+    @design.Sel::new(classes=["fancy"]),
+    @design.Styles::new(border=Some(@design.Double)),
+  )
+  let tree = @app.column(0, [
+    @app.leaf(1, @widget.Static::new("x"), name="Panel", classes=["fancy"]),
+  ])
+  let tty = @driver.Headless::new(@geom.Size::new(6, 3))
+  let ui = @app.App::new(tty, tree, sheet~)
+  ui.start()
+  assert_eq(ui.screen(), [
+    "╔════╗", "║x   ║", "╚════╝",
+  ])
+}
+
+///|
+test "inline styles sit on top of the rules" {
+  let sheet = @design.Stylesheet::new()
+  sheet.add(
+    @design.Sel::new(name="Panel"),
+    @design.Styles::new(border=Some(@design.Thin)),
+  )
+  let tree = @app.column(0, [
+    @app.leaf(
+      1,
+      @widget.Static::new("x"),
+      name="Panel",
+      styles=@design.Styles::new(border=Some(@design.Round)),
+    ),
+  ])
+  let tty = @driver.Headless::new(@geom.Size::new(6, 3))
+  let ui = @app.App::new(tty, tree, sheet~)
+  ui.start()
+  assert_eq(ui.screen(), [
+    "╭────╮", "│x   │", "╰────╯",
+  ])
+}
+
+///|
+test "a hidden node and its slot are gone" {
+  let tree = @app.row(0, [
+    @app.leaf(
+      1,
+      @widget.Static::new("a"),
+      styles=@design.Styles::new(display=Some(@design.Hidden)),
+    ),
+    @app.leaf(2, @widget.Static::new("b")),
+  ])
+  let tty = @driver.Headless::new(@geom.Size::new(4, 1))
+  let ui = @app.App::new(tty, tree)
+  ui.start()
+  assert_eq(ui.screen(), ["b   "])
+}
+
+///|
+test "a rule can hide a node it matches" {
+  let sheet = @design.Stylesheet::new()
+  sheet.add(
+    @design.Sel::new(classes=["gone"]),
+    @design.Styles::new(display=Some(@design.Hidden)),
+  )
+  let tree = @app.row(0, [
+    @app.leaf(1, @widget.Static::new("a"), classes=["gone"]),
+    @app.leaf(2, @widget.Static::new("b")),
+  ])
+  let tty = @driver.Headless::new(@geom.Size::new(4, 1))
+  let ui = @app.App::new(tty, tree, sheet~)
+  ui.start()
+  assert_eq(ui.screen(), ["b   "])
+}
+
+///|
+test "margin keeps space the node does not draw in" {
+  let tree = @app.row(0, [
+    @app.leaf(
+      1,
+      @widget.Static::new("ab"),
+      styles=@design.Styles::new(margin=Some(@geom.Spacing::horizontal(1))),
+    ),
+    @app.leaf(2, @widget.Static::new("cd")),
+  ])
+  let tty = @driver.Headless::new(@geom.Size::new(8, 1))
+  let ui = @app.App::new(tty, tree)
+  ui.start()
+  assert_eq(ui.screen(), [" ab cd  "])
+}
+
+///|
+test "a focus rule restyles the widget focus moves onto" {
+  let sheet = @design.Stylesheet::new()
+  sheet.add(
+    @design.Sel::new(focus=true),
+    @design.Styles::new(border=Some(@design.Heavy)),
+  )
+  sheet.add(
+    @design.Sel::new(name="Edge"),
+    @design.Styles::new(border=Some(@design.Thin)),
+  )
+  let tree = @app.row(0, [
+    @app.leaf(
+      1,
+      @widget.Button::new("go"),
+      box=@layout.Box::new(extent=Frac(1)),
+      name="Edge",
+    ),
+    @app.leaf(
+      2,
+      @widget.Button::new("ok"),
+      box=@layout.Box::new(extent=Frac(1)),
+      name="Edge",
+    ),
+  ])
+  let tty = @driver.Headless::new(@geom.Size::new(14, 3), script=[ascii("\t")])
+  let ui = @app.App::new(tty, tree, sheet~)
+  ui.start()
+  // The first button holds focus, so its rule is the heavy one.
+  assert_eq(ui.screen(), [
+    "┏━━━━━┓┌─────┐", "┃ go  ┃│ ok  │", "┗━━━━━┛└─────┘",
+  ])
+  ui.step() |> ignore
+  assert_eq(ui.screen(), [
+    "┌─────┐┏━━━━━┓", "│ go  │┃ ok  ┃", "└─────┘┗━━━━━┛",
+  ])
+}
+
+///|
+test "alignment puts a short block where the style says" {
+  let tree = @app.column(
+    0,
+    [@app.leaf(1, @widget.Button::new("go"))],
+    styles=@design.Styles::new(align=Some(@design.Align::new(v=@design.Middle))),
+  )
+  let tty = @driver.Headless::new(@geom.Size::new(6, 5))
+  let ui = @app.App::new(tty, tree)
+  ui.start()
+  assert_eq(ui.screen(), ["      ", "      ", "  go  ", "      ", "      "])
+}
+
+///|
+test "a container's background is placed behind its children" {
+  let sheet = @design.Stylesheet::new()
+  sheet.add(
+    @design.Sel::new(name="Panel"),
+    @design.Styles::new(text=Some(@style.Style::new(bg=@style.blue))),
+  )
+  let tree = @app.column(
+    0,
+    [@app.leaf(1, @widget.Static::new("hi"))],
+    name="Panel",
+  )
+  let tty = @driver.Headless::new(@geom.Size::new(8, 3))
+  let ui = @app.App::new(tty, tree, sheet~)
+  ui.start()
+  // The panel paints its background wherever the child does not reach, and
+  // the child still draws its own text.
+  assert_eq(ui.screen(), ["hi      ", "        ", "        "])
+  // The blue background was sent to the terminal: the whole screen carries it.
+  assert_eq(tty.output().contains("\u{1b}[44m"), true)
+}

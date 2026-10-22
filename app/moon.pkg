@@ -7,6 +7,7 @@
 // happens.
 import {
   "moonbitstack/moonetui/comp",
+  "moonbitstack/moonetui/design",
   "moonbitstack/moonetui/driver",
   "moonbitstack/moonetui/event",
   "moonbitstack/moonetui/geom",

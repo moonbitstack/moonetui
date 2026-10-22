@@ -313,6 +313,24 @@ pub fn Spacing::height(self : Spacing) -> Int32 {
 }
 
 ///|
+/// The sum of two paddings, edge by edge. This is how a border ring and a
+/// padding stack into the space a container takes from its content.
+pub fn Spacing::add(self : Spacing, other : Spacing) -> Spacing {
+  {
+    top: self.top + other.top,
+    right: self.right + other.right,
+    bottom: self.bottom + other.bottom,
+    left: self.left + other.left,
+  }
+}
+
+///|
+/// True when no edge is padded.
+pub fn Spacing::is_zero(self : Spacing) -> Bool {
+  self.top == 0 && self.right == 0 && self.bottom == 0 && self.left == 0
+}
+
+///|
 /// Push the edges of a region outwards by this padding.
 pub fn Spacing::grow_region(self : Spacing, region : Region) -> Region {
   Region::new(

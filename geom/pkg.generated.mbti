@@ -75,11 +75,13 @@ pub(all) struct Spacing {
   bottom : Int32
   left : Int32
 } derive(Eq, @debug.Debug)
+pub fn Spacing::add(Self, Self) -> Self
 pub fn Spacing::all(Int32) -> Self
 pub fn Spacing::equal(Self, Self) -> Bool
 pub fn Spacing::grow_region(Self, Region) -> Region
 pub fn Spacing::height(Self) -> Int32
 pub fn Spacing::horizontal(Int32) -> Self
+pub fn Spacing::is_zero(Self) -> Bool
 pub fn Spacing::not_equal(Self, Self) -> Bool
 pub fn Spacing::shrink_region(Self, Region) -> Region
 pub fn Spacing::to_repr(Self) -> @debug.Repr
