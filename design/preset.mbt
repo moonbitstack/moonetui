@@ -2,8 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 ///|
-/// A starting point the way Textual's themes are: a base text style and a
-/// stylesheet of sensible rules, both free to be added to or overridden.
+/// A starting point: a base text style and a stylesheet of sensible
+/// rules, both free to be added to or overridden.
 pub(all) struct Preset {
   base : @style.Style
   sheet : Stylesheet

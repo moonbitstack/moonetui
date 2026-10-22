@@ -219,7 +219,7 @@ pub fn GridChild::new(
 ///|
 /// The cell each child lands in, row-major over the first free block that
 /// fits its spans. A `rows` of zero or less grows rows until every child
-/// fits, which is how Textual's grid-size without a row count behaves.
+/// fits, which is how a grid without a row count grows.
 pub fn grid_slots(
   kids : Array[GridChild],
   cols~ : Int32,

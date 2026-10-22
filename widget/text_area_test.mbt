@@ -92,7 +92,7 @@ test "text area smart home toggles between indent and column zero" {
 }
 
 ///|
-test "text area walks words like textual" {
+test "text area walks words" {
   let area = @widget.TextArea::new(text="hello world")
   let w : &@widget.Widget = area
   let at = size(20, 4)

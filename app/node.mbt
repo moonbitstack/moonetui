@@ -323,10 +323,10 @@ pub fn Node::place(
         }
       }
       // Every docked child sits against the full region, so same-edge docks
-      // overlap the way Textual's do; only the tallest per edge is taken from
-      // what the flow children get. Docks go down before the flow and in
-      // reverse child order: the compositor hands a column to the first
-      // placement, and Textual draws the later dock on top of the earlier.
+      // overlap; only the tallest per edge is taken from what the flow
+      // children get. Docks go down before the flow and in reverse child
+      // order: the compositor hands a column to the first placement, and
+      // the later dock is drawn on top of the earlier.
       let mut edge_top = 0
       let mut edge_right = 0
       let mut edge_bottom = 0

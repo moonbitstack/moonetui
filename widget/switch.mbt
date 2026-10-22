@@ -2,9 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 ///|
-/// The switch is Textual's mini horizontal scroll bar: a four-wide strip,
-/// half thumb and half track, the thumb on the left when off and on the
-/// right when on.
+/// The switch: a four-wide strip, half thumb and half track, the thumb on
+/// the left when off and on the right when on.
 pub struct Switch {
   mut value : Bool
   on_style : @style.Style
@@ -36,8 +35,7 @@ pub fn Switch::value(self : Switch) -> Bool {
 }
 
 ///|
-/// Set the value without reporting it, the way Textual's `prevent` does for
-/// programmatic changes.
+/// Set the value without reporting it, for programmatic changes.
 pub fn Switch::set_value(self : Switch, value : Bool) -> Unit {
   self.value = value
 }

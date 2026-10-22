@@ -16,9 +16,9 @@ labels: enhancement
 
 **Prior art**
 
-<!-- Textual is what this library is written after: naming the file or the class
-     there (for example `widgets/_tabs.py`) pins the semantics down and saves a
-     round of guessing. A different toolkit is fine too — say which. -->
+<!-- Naming the toolkit and the component you have in mind (for example
+     "the tab bar of toolkit X") pins the semantics down and saves a round
+     of guessing. If the idea is your own, say that instead. -->
 
 **Where it belongs**
 

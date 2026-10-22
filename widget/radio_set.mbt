@@ -5,7 +5,7 @@
 /// Radio buttons grouped into a set: turning one on turns the others off, the
 /// arrows move a cursor that is separate from which button is pressed, and
 /// pressing the pressed button again changes nothing. A click on a row moves
-/// the cursor there and presses it, the way Textual's `RadioSet` does.
+/// the cursor there and presses it.
 pub struct RadioSet {
   buttons : Array[RadioButton]
   mut selected : Int32
@@ -196,7 +196,7 @@ pub impl Widget for RadioSet with fn focusable(_self) {
 }
 
 ///|
-/// Moving the cursor wraps around at both ends, as Textual's set does.
+/// Moving the cursor wraps around at both ends.
 fn RadioSet::move_cursor(self : RadioSet, step : Int32, ctx : Ctx) -> Unit {
   let count = self.buttons.length()
   if count == 0 {

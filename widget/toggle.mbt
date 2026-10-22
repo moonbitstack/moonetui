@@ -4,7 +4,7 @@
 ///|
 /// The three-glyph button — a side, the state mark, the other side — with the
 /// label beside it, one space on each side, in either order. State is shown
-/// by the mark's style, the way Textual's `toggle--button` does.
+/// by the mark's style.
 fn toggle_line(
   mark : String,
   label : String,
@@ -91,8 +91,7 @@ pub fn Checkbox::value(self : Checkbox) -> Bool {
 }
 
 ///|
-/// Set the value without reporting it, the way Textual's `prevent` does for
-/// programmatic changes.
+/// Set the value without reporting it, for programmatic changes.
 pub fn Checkbox::set_value(self : Checkbox, value : Bool) -> Unit {
   self.value = value
 }

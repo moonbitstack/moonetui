@@ -217,8 +217,8 @@ pub fn[D] App::is_disabled(self : App[D], id : Int32) -> Bool {
 }
 
 ///|
-/// The `on` of Textual's message handlers: every message a widget emits, and
-/// every focus or scroll move the app itself reports, passes here first. A
+/// The app's message hook: every message a widget emits, and every focus
+/// or scroll move the app itself reports, passes here first. A
 /// handler that answers true claims the message and the built-in behaviour
 /// never runs.
 pub fn[D] App::on(self : App[D], handler : (@widget.Out) -> Bool) -> Unit {

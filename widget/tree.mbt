@@ -859,8 +859,8 @@ fn Tree::cursor_parent(self : Tree, ctx : Ctx) -> Unit {
 }
 
 ///|
-/// Move to the next sibling of the cursor node's parent, the way
-/// Textual's shift+right does; a missing target falls to the top.
+/// Move to the next sibling of the cursor node's parent; a missing target
+/// falls to the top.
 fn Tree::cursor_parent_next(self : Tree, ctx : Ctx) -> Unit {
   if self.cursor < 0 {
     return
@@ -879,8 +879,8 @@ fn Tree::cursor_parent_next(self : Tree, ctx : Ctx) -> Unit {
 }
 
 ///|
-/// The next sibling of the cursor node's parent, the target of
-/// Textual's shift+right; a missing target resets the cursor.
+/// The next sibling of the cursor node's parent; a missing target resets
+/// the cursor.
 fn Tree::after_sibling(self : Tree, line : TreeLine) -> Int32? {
   if line.grandparent < 0 {
     return None
