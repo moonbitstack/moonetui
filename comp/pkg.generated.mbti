@@ -19,6 +19,8 @@ pub fn diff(Array[@strip.Strip], Array[@strip.Strip], base? : @style.Style) -> A
 
 pub fn encode(Array[Span], @style.Style) -> String
 
+pub fn encode_stream(Array[Span]) -> String
+
 pub fn full(Array[@strip.Strip]) -> Array[Span]
 
 pub fn line_of(ArrayView[Cell], @style.Style) -> @strip.Strip

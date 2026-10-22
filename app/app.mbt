@@ -4,6 +4,7 @@
 ///|
 pub struct App[D] {
   driver : D
+  plain : Bool
   mut root : Node
   parser : @input.Parser
   base : @style.Style
@@ -41,9 +42,11 @@ pub fn[D] App::new(
   base~ : @style.Style = @style.default,
   sheet~ : @design.Stylesheet = @design.Stylesheet::new(),
   fps~ : Int32 = 60,
+  plain~ : Bool = false,
 ) -> App[D] {
   {
     driver,
+    plain,
     root,
     parser: @input.Parser::new(),
     base,
@@ -79,7 +82,9 @@ pub fn[D] App::new(
 ///|
 pub fn[D : @driver.Driver] App::start(self : App[D]) -> Unit raise {
   self.driver.start()
-  self.driver.write(@driver.enter())
+  if !self.plain {
+    self.driver.write(@driver.enter())
+  }
   self.size = self.driver.size()
   self.running = true
   self.dirty = true
@@ -95,7 +100,9 @@ pub fn[D : @driver.Driver] App::start(self : App[D]) -> Unit raise {
 ///|
 pub fn[D : @driver.Driver] App::stop(self : App[D]) -> Unit raise {
   self.running = false
-  self.driver.write(@driver.leave())
+  if !self.plain {
+    self.driver.write(@driver.leave())
+  }
   self.driver.flush()
   self.driver.stop()
 }
@@ -682,13 +689,17 @@ fn[D : @driver.Driver] compose(
     },
     self.base,
   )
-  let spans = if self.prev.length() != rows.length() {
+  let spans = if self.plain || self.prev.length() != rows.length() {
     @comp.full(rows)
   } else {
     @comp.diff(self.prev, rows, base=self.base)
   }
   if spans.length() > 0 {
-    self.driver.write(@comp.encode(spans, self.base))
+    if self.plain {
+      self.driver.write(@comp.encode_stream(spans))
+    } else {
+      self.driver.write(@comp.encode(spans, self.base))
+    }
     self.driver.flush()
   }
   self.prev = rows

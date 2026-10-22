@@ -41,6 +41,7 @@ pub fn Anim::to_repr(Self) -> @debug.Repr
 
 pub struct App[D] {
   driver : D
+  plain : Bool
   mut root : Node
   parser : @input.Parser
   base : @style.Style
@@ -76,7 +77,7 @@ pub fn[D] App::focus_next(Self[D], Int32) -> Unit
 pub fn[D] App::focused(Self[D]) -> Int32
 pub fn[D] App::hovering(Self[D]) -> Int32
 pub fn[D] App::is_disabled(Self[D], Int32) -> Bool
-pub fn[D] App::new(D, Node, base? : @style.Style, sheet? : @design.Stylesheet, fps? : Int32) -> Self[D]
+pub fn[D] App::new(D, Node, base? : @style.Style, sheet? : @design.Stylesheet, fps? : Int32, plain? : Bool) -> Self[D]
 pub fn[D] App::on(Self[D], (@widget.Out) -> Bool) -> Unit
 pub fn[D] App::pop_screen(Self[D]) -> Unit
 pub fn[D] App::post(Self[D], @widget.Out) -> Unit

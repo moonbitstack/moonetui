@@ -360,3 +360,17 @@ test "a container's background is placed behind its children" {
   assert_eq(ui.screen(), ["hi      ", "        ", "        "])
   assert_eq(tty.output().contains("\u{1b}[44m"), true)
 }
+
+///|
+test "a plain wire takes whole frames with no control sequences" {
+  let label = @widget.Static::new("hi")
+  let tree = @app.column(0, [@app.leaf(1, label)])
+  let tty = @driver.Headless::new(@geom.Size::new(4, 2))
+  let ui = @app.App::new(tty, tree, plain=true)
+  ui.start()
+  let written = tty.output()
+  assert_eq(written, "hi  \r\n    \r\n")
+  assert_eq(written.contains("\u{1b}"), false)
+  assert_eq(ui.screen(), ["hi  ", "    "])
+  ui.stop()
+}

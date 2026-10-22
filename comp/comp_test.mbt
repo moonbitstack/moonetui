@@ -179,3 +179,11 @@ test "cursor and screen control sequences" {
   assert_eq(@comp.show_cursor(false), "\u{1b}[?25l")
   assert_eq(@comp.clear, "\u{1b}[2J\u{1b}[H")
 }
+
+///|
+test "the stream encoder writes whole rows without control sequences" {
+  let rows = [@strip.Strip::of("hi", plain), @strip.Strip::blank(3, plain)]
+  let text = @comp.encode_stream(@comp.full(rows))
+  assert_eq(text, "hi\r\n   \r\n")
+  assert_eq(text.contains("\u{1b}"), false)
+}

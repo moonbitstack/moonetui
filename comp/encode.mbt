@@ -37,3 +37,16 @@ pub fn show_cursor(visible : Bool) -> String {
     "\u{1b}[?25l"
   }
 }
+
+///|
+pub fn encode_stream(spans : Array[Span]) -> String {
+  // For a wire with no control sequences: rows in order, plain text only.
+  let out = StringBuilder()
+  for span in spans {
+    for seg in span.line.segs {
+      out.write_string(seg.text)
+    }
+    out.write_string("\r\n")
+  }
+  out.to_string()
+}
