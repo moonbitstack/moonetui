@@ -71,8 +71,8 @@
 
   <div class="stats">
     <div class="stat"><div class="n">4</div><div class="l">backends · wasm, wasm-gc, js, native</div></div>
-    <div class="stat"><div class="n">258</div><div class="l">tests per backend, all passing</div></div>
-    <div class="stat"><div class="n">28</div><div class="l">widgets, from toggles to trees</div></div>
+    <div class="stat"><div class="n">273</div><div class="l">tests per backend, all passing</div></div>
+    <div class="stat"><div class="n">32</div><div class="l">widgets, from toggles to trees</div></div>
     <div class="stat"><div class="n">0</div><div class="l">dependencies · a single pure core</div></div>
   </div>
 
@@ -204,7 +204,7 @@ w.handle(ctx, @widget.Msg::Key(@event.Key::of(Enter)))
   </div>
 
   <h2>Widgets</h2>
-  <p class="lead">Twenty-eight widgets, each with its own keyboard contract, message shape and rendering. Four more are on the way for the next release.</p>
+  <p class="lead">Thirty-two widgets, each with its own keyboard contract, message shape and rendering.</p>
 
   <h3>Text and display</h3>
   <table>
@@ -256,14 +256,14 @@ w.handle(ctx, @widget.Msg::Key(@event.Key::of(Enter)))
     </tbody>
   </table>
 
-  <h3>Coming in the next release</h3>
+  <h3>Data and notices</h3>
   <table>
-    <thead><tr><th>Widget</th><th>What it will do</th><th>Status</th></tr></thead>
+    <thead><tr><th>Widget</th><th>What it does</th><th>Status</th></tr></thead>
     <tbody>
-      <tr><td><code class="inline">DataTable</code></td><td>Sortable, traversable tabular data.</td><td><span class="pill next">in progress</span></td></tr>
-      <tr><td><code class="inline">Markdown</code></td><td>Rendered Markdown documents.</td><td><span class="pill next">in progress</span></td></tr>
-      <tr><td><code class="inline">Tooltip</code></td><td>Hover hints for the pointer.</td><td><span class="pill next">in progress</span></td></tr>
-      <tr><td><code class="inline">Toast</code></td><td>Transient notifications.</td><td><span class="pill next">in progress</span></td></tr>
+      <tr><td><code class="inline">DataTable</code></td><td>Tabular data: auto or fixed column widths, three cursor shapes, zebra rows, hover, clicks that pick headers, labels and cells, and sorts that keep rows whole.</td><td><span class="pill ok">done</span></td></tr>
+      <tr><td><code class="inline">Markdown</code></td><td>Documents from source: headings, paragraphs, lists, quotes, code fences, rules and pipe tables, with bold, italic, code and link styling inline.</td><td><span class="pill ok">done</span></td></tr>
+      <tr><td><code class="inline">Tooltip</code></td><td>A padded hint that wraps within a maximum width, for status strips and hover help.</td><td><span class="pill ok">done</span></td></tr>
+      <tr><td><code class="inline">Toast</code></td><td>A transient notice with a severity bar — information, warning or error — that expires on its own timer or retires on a click.</td><td><span class="pill ok">done</span></td></tr>
     </tbody>
   </table>
 </section>
@@ -325,7 +325,7 @@ sheet.<span class="fn">add</span>(
 
   <h3>The three terminal worlds</h3>
   <div class="std">
-    <div class="card"><div class="ic">▮</div><h4>Bare serial UART</h4><p>A microcontroller and a wire. No cursor addressing, no colour: the renderer's output degrades to a full ordered repaint — the same cell buffer, written line by line. Bring a Driver that writes bytes; nothing else changes.</p></div>
+    <div class="card"><div class="ic">▮</div><h4>Bare serial UART</h4><p>A microcontroller and a wire. No cursor addressing, no colour: pass <code class="inline">plain=true</code> when the app is built and the renderer sends whole frames instead of diffs — the same cell buffer, written line by line, nothing but text and newlines. Bring a Driver that writes bytes; nothing else changes.</p></div>
     <div class="card"><div class="ic">▤</div><h4>Serial-era terminals</h4><p>Anything speaking the classic control set: cursor movement, erase, and the eight-colour palette. moonetui emits only the ECMA-48 / ISO 6429 subset these terminals understand — SGR (<code class="inline">CSI … m</code>) for style runs, CUP (<code class="inline">CSI H</code>) for addressing — and quantises true colour down to the palette the far end actually has.</p></div>
     <div class="card"><div class="ic">_rgba</div><h4>Modern terminals</h4><p>The full feature set: true colour, box-drawing glyphs, double-width CJK and emoji, bracketed paste, SGR mouse reports, focus events. The differential renderer keeps the wire quiet between frames.</p></div>
   </div>
@@ -349,10 +349,10 @@ sheet.<span class="fn">add</span>(
   <p class="lead">The same suite on four backends — a regression in one world fails loudly everywhere.</p>
 
   <div class="stats">
-    <div class="stat"><div class="n">258</div><div class="l">wasm</div></div>
-    <div class="stat"><div class="n">258</div><div class="l">wasm-gc</div></div>
-    <div class="stat"><div class="n">270</div><div class="l">js</div></div>
-    <div class="stat"><div class="n">258</div><div class="l">native</div></div>
+    <div class="stat"><div class="n">273</div><div class="l">wasm</div></div>
+    <div class="stat"><div class="n">273</div><div class="l">wasm-gc</div></div>
+    <div class="stat"><div class="n">285</div><div class="l">js</div></div>
+    <div class="stat"><div class="n">273</div><div class="l">native</div></div>
   </div>
 
   <h3>Run the suite</h3>

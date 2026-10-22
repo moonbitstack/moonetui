@@ -98,8 +98,9 @@ A node the pointer rests on takes `:hover` styles, a disabled one takes `:disabl
 | Entry & logs | `Input`, `TextArea`, `Log`, `RichLog` |
 | Choices | `Switch`, `Checkbox`, `RadioSet`, `OptionList`, `SelectionList`, `Select` |
 | Navigation & structure | `Button`, `ListView`, `Tabs`, `TabbedContent`, `Collapsible`, `Tree`, `DirectoryTree` |
+| Data & notices | `DataTable`, `Markdown`, `Tooltip`, `Toast` |
 
-Twenty-eight today; `DataTable`, `Markdown`, `Tooltip` and `Toast` are next.
+Thirty-two in all — every widget above ships complete, with its keyboard contract, message shape and tests.
 
 ## Standards
 
@@ -133,7 +134,7 @@ moon test  --target all
 moon fmt && moon info --target all     # the diff must stay clean
 ```
 
-258 tests per backend (270 on js), the same suite on wasm, wasm-gc, js and native, run on Ubuntu, macOS and Windows in CI.
+273 tests per backend (285 on js), the same suite on wasm, wasm-gc, js and native, run on Ubuntu, macOS and Windows in CI.
 
 ## License
 
