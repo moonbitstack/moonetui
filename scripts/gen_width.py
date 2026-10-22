@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Regenerate strip/width_table.mbt from the Unicode character database.
+"""Regenerate src/strip/width_table.mbt from the Unicode character database.
 
 A terminal gives every character a whole number of columns, and which number it
 is comes straight from two UCD files: EastAsianWidth.txt decides what is two
@@ -21,7 +21,7 @@ import urllib.request
 
 ROOT = pathlib.Path(__file__).resolve().parent
 CACHE = ROOT / ".ucd"
-OUT = ROOT.parent / "strip" / "width_table.mbt"
+OUT = ROOT.parent / "src" / "strip" / "width_table.mbt"
 
 FILES = {
     "EastAsianWidth.txt": "https://www.unicode.org/Public/{v}/ucd/EastAsianWidth.txt",

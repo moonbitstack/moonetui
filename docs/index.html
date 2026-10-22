@@ -50,7 +50,7 @@
   <div class="term-window">
     <div class="term-bar">
       <span class="light r"></span><span class="light y"></span><span class="light g"></span>
-      <span class="title">moonetui — examples/tui · 80×24</span>
+      <span class="title">moonetui — src/examples/tui · 80×24</span>
     </div>
     <div class="term-body"><span class="dim">╭──────────────────────────────────────────────────────────────────────────╮</span>
 <span class="dim">│</span> <span class="rev"> ◉ moonetui </span><span class="dim"> · the design system in a terminal window                     </span><span class="dim">│</span>
@@ -118,22 +118,22 @@ moon add moonbitstack/moonetui</pre>
   <h3>Run the examples</h3>
   <p>Small ones to see a piece at a time, one complete application with tabs, timers and a command line, and the same app on three runtimes — plus a gallery of every widget and a bare-wire demo of the plain serial line:</p>
   <pre class="block"><span class="cm"># a complete little application — tabs, timers, a command line</span>
-moon run --target native examples/monitor
+moon run --target native src/examples/monitor
 
 <span class="cm"># a real terminal (Unix or Windows)</span>
-moon run --target native examples/tui
+moon run --target native src/examples/tui
 
 <span class="cm"># under Node</span>
-moon run --target js examples/hello
+moon run --target js src/examples/hello
 
 <span class="cm"># in a browser — open it directly</span>
-start examples/browser/index.html
+start src/examples/browser/index.html
 
 <span class="cm"># every widget, rendered one after another</span>
-moon run --target native examples/gallery
+moon run --target native src/examples/gallery
 
 <span class="cm"># the same app as whole frames of text — a bare serial line</span>
-moon run --target native examples/uart</pre>
+moon run --target native src/examples/uart</pre>
 
   <h3>A first application</h3>
   <p>Widgets are values. They render a line at a time, report what they want through typed messages, and never call back into your code:</p>
@@ -213,8 +213,8 @@ w.handle(ctx, @widget.Msg::Key(@event.Key::of(Enter)))
   </div>
 
   <h2>Widgets</h2>
-  <p class="lead">Thirty-two widgets, each with its own keyboard contract, message shape and rendering. Every snippet below is a live excerpt from <code class="inline">examples/gallery</code>, and every output block is what that example really renders.</p>
-  <pre class="block">moon run --target native examples/gallery</pre>
+  <p class="lead">Thirty-two widgets, each with its own keyboard contract, message shape and rendering. Every snippet below is a live excerpt from <code class="inline">src/examples/gallery</code>, and every output block is what that example really renders.</p>
+  <pre class="block">moon run --target native src/examples/gallery</pre>
   <h3>Text and display</h3>
   <div class="wcard">
     <h4><code class="inline">Static</code></h4>

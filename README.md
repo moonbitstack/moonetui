@@ -39,12 +39,12 @@ moon add moonbitstack/moonetui
 Three runnable examples of the same application:
 
 ```
-moon run --target native examples/monitor  # a complete app: tabs, timers, a command line
-moon run --target native examples/tui      # a styled TUI on a real terminal
-moon run --target js examples/hello        # under Node
-moon run --target native examples/gallery  # every widget, rendered one after another
-moon run --target native examples/uart     # whole frames of text — a bare serial line
-start examples/browser/index.html          # a canvas in a browser
+moon run --target native src/examples/monitor  # a complete app: tabs, timers, a command line
+moon run --target native src/examples/tui      # a styled TUI on a real terminal
+moon run --target js src/examples/hello        # under Node
+moon run --target native src/examples/gallery  # every widget, rendered one after another
+moon run --target native src/examples/uart     # whole frames of text — a bare serial line
+start src/examples/browser/index.html          # a canvas in a browser
 ```
 
 Widgets are values. They render a line at a time and report through typed messages — no callbacks:
