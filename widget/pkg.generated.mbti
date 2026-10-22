@@ -155,6 +155,30 @@ pub fn Digits::value(Self) -> String
 pub fn Digits::width_of(String) -> Int32
 pub impl Widget for Digits
 
+pub struct DirEntry {
+  name : String
+  is_dir : Bool
+} derive(Eq, @debug.Debug)
+pub fn DirEntry::equal(Self, Self) -> Bool
+pub fn DirEntry::new(String, is_dir~ : Bool) -> Self
+pub fn DirEntry::not_equal(Self, Self) -> Bool
+pub fn DirEntry::to_repr(Self) -> @debug.Repr
+
+pub struct DirectoryTree {
+  tree : Tree
+  loader : (String) -> Array[DirEntry]
+}
+pub fn DirectoryTree::focusable(Self) -> Bool
+pub fn DirectoryTree::handle(Self, Ctx, Msg) -> Bool
+pub fn DirectoryTree::hint(Self, @geom.Size) -> @geom.Size
+pub fn DirectoryTree::new(path~ : String, loader~ : (String) -> Array[DirEntry], style? : @style.Style, guide_style? : @style.Style, cursor_style? : @style.Style, hover_style? : @style.Style) -> Self
+pub fn DirectoryTree::path(Self) -> String
+pub fn DirectoryTree::reload(Self) -> Unit
+pub fn DirectoryTree::render_line(Self, Int32, @geom.Size) -> @strip.Strip
+pub fn DirectoryTree::set_path(Self, String) -> Unit
+pub fn DirectoryTree::tree(Self) -> Tree
+pub impl Widget for DirectoryTree
+
 pub struct Footer {
   mut bindings : Array[(String, String)]
   style : @style.Style
@@ -724,6 +748,78 @@ pub fn TextArea::selected_text(Self) -> String
 pub fn TextArea::text(Self) -> String
 pub fn TextArea::undo(Self) -> Bool
 pub impl Widget for TextArea
+
+pub struct Tree {
+  nodes : Array[TreeNode]
+  mut show_root : Bool
+  mut show_guides : Bool
+  mut guide_depth : Int32
+  mut auto_expand : Bool
+  mut cursor : Int32
+  mut hover : Int32
+  mut offset : Int32
+  mut seen : Int32
+  mut focused : Bool
+  icon_collapsed : String
+  icon_open : String
+  icon_leaf : String
+  dim_hidden : Bool
+  style : @style.Style
+  guide_style : @style.Style
+  cursor_style : @style.Style
+  hover_style : @style.Style
+} derive(Eq, @debug.Debug)
+pub fn Tree::add(Self, Int32, String, data? : String, expand? : Bool, allow_expand? : Bool) -> Int32
+pub fn Tree::add_leaf(Self, Int32, String, data? : String) -> Int32
+pub fn Tree::allow_expand(Self, Int32) -> Bool
+pub fn Tree::children(Self, Int32) -> Array[Int32]
+pub fn Tree::clear(Self) -> Unit
+pub fn Tree::collapse(Self, Int32) -> Unit
+pub fn Tree::collapse_all(Self, Int32) -> Unit
+pub fn Tree::cursor_line(Self) -> Int32
+pub fn Tree::cursor_node(Self) -> Int32
+pub fn Tree::data(Self, Int32) -> String
+pub fn Tree::equal(Self, Self) -> Bool
+pub fn Tree::expand(Self, Int32) -> Unit
+pub fn Tree::expand_all(Self, Int32) -> Unit
+pub fn Tree::focusable(Self) -> Bool
+pub fn Tree::handle(Self, Ctx, Msg) -> Bool
+pub fn Tree::hint(Self, @geom.Size) -> @geom.Size
+pub fn Tree::is_expanded(Self, Int32) -> Bool
+pub fn Tree::label(Self, Int32) -> String
+pub fn Tree::line_count(Self) -> Int32
+pub fn Tree::new(root_label~ : String, root_data? : String, show_root? : Bool, icon_collapsed? : String, icon_open? : String, icon_leaf? : String, dim_hidden? : Bool, style? : @style.Style, guide_style? : @style.Style, cursor_style? : @style.Style, hover_style? : @style.Style) -> Self
+pub fn Tree::node(Self, Int32) -> TreeNode
+pub fn Tree::not_equal(Self, Self) -> Bool
+pub fn Tree::remove_children(Self, Int32) -> Unit
+pub fn Tree::render_line(Self, Int32, @geom.Size) -> @strip.Strip
+pub fn Tree::reset(Self, String, data? : String) -> Unit
+pub fn Tree::root_id(Self) -> Int32
+pub fn Tree::set_allow_expand(Self, Int32, Bool) -> Unit
+pub fn Tree::set_auto_expand(Self, Bool) -> Unit
+pub fn Tree::set_data(Self, Int32, String) -> Unit
+pub fn Tree::set_guide_depth(Self, Int32) -> Unit
+pub fn Tree::set_label(Self, Int32, String) -> Unit
+pub fn Tree::show_guides(Self, Bool) -> Unit
+pub fn Tree::show_root(Self, Bool) -> Unit
+pub fn Tree::to_repr(Self) -> @debug.Repr
+pub impl Widget for Tree
+
+pub struct TreeNode {
+  mut label : String
+  mut data : String
+  mut expanded : Bool
+  mut allow_expand : Bool
+  mut loaded : Bool
+  children : Array[Int32]
+  parent : Int32
+} derive(Eq, @debug.Debug)
+pub fn TreeNode::equal(Self, Self) -> Bool
+pub fn TreeNode::is_expanded(Self) -> Bool
+pub fn TreeNode::label(Self) -> String
+pub fn TreeNode::new(label~ : String, data? : String, expand? : Bool, allow_expand? : Bool, parent? : Int32) -> Self
+pub fn TreeNode::not_equal(Self, Self) -> Bool
+pub fn TreeNode::to_repr(Self) -> @debug.Repr
 
 // Type aliases
 
