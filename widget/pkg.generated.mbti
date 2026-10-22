@@ -127,6 +127,16 @@ pub fn Collapsible::set_title(Self, String) -> Unit
 pub fn Collapsible::title(Self) -> String
 pub impl Widget for Collapsible
 
+pub(all) struct Column {
+  label : String
+  width : Int32
+  align : Align
+} derive(Eq, @debug.Debug)
+pub fn Column::equal(Self, Self) -> Bool
+pub fn Column::new(String, width? : Int32, align? : Align) -> Self
+pub fn Column::not_equal(Self, Self) -> Bool
+pub fn Column::to_repr(Self) -> @debug.Repr
+
 pub struct Ctx {
   id : Int32
   size : @geom.Size
@@ -137,6 +147,66 @@ pub fn Ctx::asked(Self) -> Array[Out]
 pub fn Ctx::emit(Self, Out) -> Unit
 pub fn Ctx::new(Int32, @geom.Size, focused? : Bool) -> Self
 pub fn Ctx::repaint(Self) -> Unit
+
+pub(all) enum CursorType {
+  Cell
+  Row
+  Column
+  None
+} derive(Eq, @debug.Debug)
+pub fn CursorType::equal(Self, Self) -> Bool
+pub fn CursorType::not_equal(Self, Self) -> Bool
+pub fn CursorType::to_repr(Self) -> @debug.Repr
+
+pub struct DataTable {
+  mut columns : Array[Column]
+  mut rows : Array[Row]
+  mut cursor_row : Int32
+  mut cursor_col : Int32
+  cursor_type : CursorType
+  show_cursor : Bool
+  zebra : Bool
+  show_header : Bool
+  show_row_labels : Bool
+  cell_padding : Int32
+  mut hover_row : Int32
+  mut hover_col : Int32
+  mut offset_x : Int32
+  mut offset_y : Int32
+  mut seen : Int32
+  mut focused : Bool
+  header_style : @style.Style
+  cursor_style : @style.Style
+  hover_style : @style.Style
+  odd_style : @style.Style
+  even_style : @style.Style
+  label_style : @style.Style
+  style : @style.Style
+} derive(Eq, @debug.Debug)
+pub fn DataTable::add_column(Self, String, width? : Int32, align? : Align) -> Int32
+pub fn DataTable::add_row(Self, Array[String], label? : String) -> Int32
+pub fn DataTable::cell(Self, Int32, Int32) -> String
+pub fn DataTable::clear(Self) -> Unit
+pub fn DataTable::clear_rows(Self) -> Unit
+pub fn DataTable::column_count(Self) -> Int32
+pub fn DataTable::column_width(Self, Int32) -> Int32
+pub fn DataTable::content_width(Self) -> Int32
+pub fn DataTable::cursor_col(Self) -> Int32
+pub fn DataTable::cursor_row(Self) -> Int32
+pub fn DataTable::equal(Self, Self) -> Bool
+pub fn DataTable::focusable(Self) -> Bool
+pub fn DataTable::handle(Self, Ctx, Msg) -> Bool
+pub fn DataTable::hint(Self, @geom.Size) -> @geom.Size
+pub fn DataTable::line_count(Self) -> Int32
+pub fn DataTable::move_cursor(Self, row~ : Int32, col~ : Int32) -> Unit
+pub fn DataTable::new(show_header? : Bool, show_row_labels? : Bool, zebra? : Bool, cursor_type? : CursorType, cell_padding? : Int32, header_style? : @style.Style, cursor_style? : @style.Style, hover_style? : @style.Style, odd_style? : @style.Style, even_style? : @style.Style, label_style? : @style.Style, style? : @style.Style) -> Self
+pub fn DataTable::not_equal(Self, Self) -> Bool
+pub fn DataTable::render_line(Self, Int32, @geom.Size) -> @strip.Strip
+pub fn DataTable::row_count(Self) -> Int32
+pub fn DataTable::set_cell(Self, Int32, Int32, String) -> Unit
+pub fn DataTable::sort(Self, Int32, reverse? : Bool) -> Unit
+pub fn DataTable::to_repr(Self) -> @debug.Repr
+pub impl Widget for DataTable
 
 pub struct Digits {
   mut value : String
@@ -295,6 +365,31 @@ pub fn Log::write_line(Self, String, scroll_end? : Bool?) -> Unit
 pub fn Log::write_lines(Self, Array[String], scroll_end? : Bool?) -> Unit
 pub impl Widget for Log
 
+pub struct Markdown {
+  mut source : String
+  mut laid : Array[@strip.Strip]
+  mut laid_width : Int32
+  mut dirty : Bool
+  mut offset_y : Int32
+  mut seen : Int32
+  style : @style.Style
+  heading_style : @style.Style
+  code_style : @style.Style
+  quote_style : @style.Style
+  rule_style : @style.Style
+} derive(Eq, @debug.Debug)
+pub fn Markdown::equal(Self, Self) -> Bool
+pub fn Markdown::focusable(Self) -> Bool
+pub fn Markdown::handle(Self, Ctx, Msg) -> Bool
+pub fn Markdown::hint(Self, @geom.Size) -> @geom.Size
+pub fn Markdown::new(String, style? : @style.Style, heading_style? : @style.Style, code_style? : @style.Style, quote_style? : @style.Style, rule_style? : @style.Style) -> Self
+pub fn Markdown::not_equal(Self, Self) -> Bool
+pub fn Markdown::render_line(Self, Int32, @geom.Size) -> @strip.Strip
+pub fn Markdown::text(Self) -> String
+pub fn Markdown::to_repr(Self) -> @debug.Repr
+pub fn Markdown::update(Self, String) -> Unit
+pub impl Widget for Markdown
+
 pub(all) enum Msg {
   Key(@event.Key)
   Mouse(@event.Mouse)
@@ -351,6 +446,10 @@ pub(all) enum Out {
   Toggled(id~ : Int32, on~ : Bool)
   Highlighted(id~ : Int32, index~ : Int32)
   ToggledAt(id~ : Int32, index~ : Int32, on~ : Bool)
+  CellHighlighted(id~ : Int32, row~ : Int32, col~ : Int32)
+  CellSelected(id~ : Int32, row~ : Int32, col~ : Int32)
+  HeaderSelected(id~ : Int32, col~ : Int32)
+  Dismissed(id~ : Int32)
   Quit
 } derive(Eq, @debug.Debug)
 pub fn Out::equal(Self, Self) -> Bool
@@ -480,6 +579,15 @@ pub fn RichLog::set_wrap(Self, Bool) -> Unit
 pub fn RichLog::to_repr(Self) -> @debug.Repr
 pub fn RichLog::write(Self, String, style? : @style.Style, width? : Int32?, scroll_end? : Bool?) -> Unit
 pub impl Widget for RichLog
+
+pub(all) struct Row {
+  label : String
+  cells : Array[String]
+} derive(Eq, @debug.Debug)
+pub fn Row::equal(Self, Self) -> Bool
+pub fn Row::new(Array[String], label? : String) -> Self
+pub fn Row::not_equal(Self, Self) -> Bool
+pub fn Row::to_repr(Self) -> @debug.Repr
 
 pub struct Rule {
   dir : RuleDir
@@ -748,6 +856,59 @@ pub fn TextArea::selected_text(Self) -> String
 pub fn TextArea::text(Self) -> String
 pub fn TextArea::undo(Self) -> Bool
 pub impl Widget for TextArea
+
+pub struct Toast {
+  title : String
+  mut message : String
+  level : ToastLevel
+  duration : Int32
+  mut elapsed : Int32
+  style : @style.Style
+  title_style : @style.Style
+  bar_info : @style.Style
+  bar_warning : @style.Style
+  bar_error : @style.Style
+} derive(Eq, @debug.Debug)
+pub fn Toast::bar_style(Self) -> @style.Style
+pub fn Toast::equal(Self, Self) -> Bool
+pub fn Toast::expired(Self) -> Bool
+pub fn Toast::focusable(Self) -> Bool
+pub fn Toast::handle(Self, Ctx, Msg) -> Bool
+pub fn Toast::hint(Self, @geom.Size) -> @geom.Size
+pub fn Toast::new(String, title? : String, level? : ToastLevel, duration? : Int32, style? : @style.Style, title_style? : @style.Style) -> Self
+pub fn Toast::not_equal(Self, Self) -> Bool
+pub fn Toast::render_line(Self, Int32, @geom.Size) -> @strip.Strip
+pub fn Toast::set_message(Self, String) -> Unit
+pub fn Toast::to_repr(Self) -> @debug.Repr
+pub impl Widget for Toast
+
+pub(all) enum ToastLevel {
+  Information
+  Warning
+  Error
+} derive(Eq, @debug.Debug)
+pub fn ToastLevel::equal(Self, Self) -> Bool
+pub fn ToastLevel::not_equal(Self, Self) -> Bool
+pub fn ToastLevel::to_repr(Self) -> @debug.Repr
+
+pub struct Tooltip {
+  mut content : String
+  mut style : @style.Style
+  max_width : Int32
+  padding : Int32
+} derive(Eq, @debug.Debug)
+pub fn Tooltip::equal(Self, Self) -> Bool
+pub fn Tooltip::focusable(Self) -> Bool
+pub fn Tooltip::handle(Self, Ctx, Msg) -> Bool
+pub fn Tooltip::hint(Self, @geom.Size) -> @geom.Size
+pub fn Tooltip::new(String, style? : @style.Style, max_width? : Int32, padding? : Int32) -> Self
+pub fn Tooltip::not_equal(Self, Self) -> Bool
+pub fn Tooltip::render_line(Self, Int32, @geom.Size) -> @strip.Strip
+pub fn Tooltip::set_content(Self, String) -> Unit
+pub fn Tooltip::set_style(Self, @style.Style) -> Unit
+pub fn Tooltip::to_repr(Self) -> @debug.Repr
+pub fn Tooltip::wrapped(Self, Int32) -> Array[String]
+pub impl Widget for Tooltip
 
 pub struct Tree {
   nodes : Array[TreeNode]

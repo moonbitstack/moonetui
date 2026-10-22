@@ -127,7 +127,7 @@ fn dir_before(a : DirEntry, b : DirEntry) -> Bool {
   if a.is_dir != b.is_dir {
     return a.is_dir
   }
-  a.name.to_lower() < b.name.to_lower()
+  text_before(a.name.to_lower(), b.name.to_lower())
 }
 
 ///|

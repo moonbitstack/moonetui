@@ -24,6 +24,10 @@ pub(all) enum Out {
   Toggled(id~ : Int32, on~ : Bool)
   Highlighted(id~ : Int32, index~ : Int32)
   ToggledAt(id~ : Int32, index~ : Int32, on~ : Bool)
+  CellHighlighted(id~ : Int32, row~ : Int32, col~ : Int32)
+  CellSelected(id~ : Int32, row~ : Int32, col~ : Int32)
+  HeaderSelected(id~ : Int32, col~ : Int32)
+  Dismissed(id~ : Int32)
   Quit
 } derive(Eq, Debug)
 
