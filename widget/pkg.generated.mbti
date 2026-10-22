@@ -164,7 +164,12 @@ pub(all) enum Out {
   TakeFocus(id~ : Int32)
   Pressed(id~ : Int32)
   Changed(id~ : Int32, value~ : String)
+  Submitted(id~ : Int32, value~ : String)
   Selected(id~ : Int32, index~ : Int32)
+  Scrolled(id~ : Int32, x~ : Int32, y~ : Int32)
+  Focused(id~ : Int32)
+  Blurred(id~ : Int32)
+  Toggled(id~ : Int32, on~ : Bool)
   Quit
 } derive(Eq, @debug.Debug)
 pub fn Out::equal(Self, Self) -> Bool

@@ -79,6 +79,16 @@ pub fn HAlign::equal(Self, Self) -> Bool
 pub fn HAlign::not_equal(Self, Self) -> Bool
 pub fn HAlign::to_repr(Self) -> @debug.Repr
 
+pub(all) struct Preset {
+  base : @style.Style
+  sheet : Stylesheet
+} derive(Eq, @debug.Debug)
+pub fn Preset::dark() -> Self
+pub fn Preset::equal(Self, Self) -> Bool
+pub fn Preset::light() -> Self
+pub fn Preset::not_equal(Self, Self) -> Bool
+pub fn Preset::to_repr(Self) -> @debug.Repr
+
 pub(all) struct Resolved {
   hidden : Bool
   margin : @geom.Spacing
@@ -88,6 +98,10 @@ pub(all) struct Resolved {
   dock : Edge?
   column_span : Int32?
   row_span : Int32?
+  offset_x : Int32
+  offset_y : Int32
+  transition : Int32
+  scrollbar : @style.Style?
   width : @layout.Extent?
   height : @layout.Extent?
   min_width : Int32?
@@ -118,10 +132,12 @@ pub(all) struct Sel {
   id : Int32
   classes : Array[String]
   focus : Bool
+  hover : Bool
+  disabled : Bool
 } derive(Eq, @debug.Debug)
 pub fn Sel::equal(Self, Self) -> Bool
-pub fn Sel::matches(Self, String, Int32, Array[String], Bool) -> Bool
-pub fn Sel::new(name? : String, id? : Int32, classes? : Array[String], focus? : Bool) -> Self
+pub fn Sel::matches(Self, String, Int32, Array[String], Bool, Bool, Bool) -> Bool
+pub fn Sel::new(name? : String, id? : Int32, classes? : Array[String], focus? : Bool, hover? : Bool, disabled? : Bool) -> Self
 pub fn Sel::not_equal(Self, Self) -> Bool
 pub fn Sel::specificity(Self) -> Int32
 pub fn Sel::to_repr(Self) -> @debug.Repr
@@ -141,12 +157,16 @@ pub(all) struct Styles {
   dock : Edge?
   column_span : Int32?
   row_span : Int32?
+  offset_x : Int32?
+  offset_y : Int32?
+  transition : Int32?
+  scrollbar : @style.Style?
   text : @style.Style?
 } derive(Eq, @debug.Debug)
 pub fn Styles::equal(Self, Self) -> Bool
 pub fn Styles::is_empty(Self) -> Bool
 pub fn Styles::merge(Self, Self) -> Self
-pub fn Styles::new(display? : Display?, width? : @layout.Extent?, height? : @layout.Extent?, min_width? : Int32?, max_width? : Int32?, min_height? : Int32?, max_height? : Int32?, padding? : @geom.Spacing?, margin? : @geom.Spacing?, border? : EdgeKind?, align? : Align?, dock? : Edge?, column_span? : Int32?, row_span? : Int32?, text? : @style.Style?) -> Self
+pub fn Styles::new(display? : Display?, width? : @layout.Extent?, height? : @layout.Extent?, min_width? : Int32?, max_width? : Int32?, min_height? : Int32?, max_height? : Int32?, padding? : @geom.Spacing?, margin? : @geom.Spacing?, border? : EdgeKind?, align? : Align?, dock? : Edge?, column_span? : Int32?, row_span? : Int32?, offset_x? : Int32?, offset_y? : Int32?, transition? : Int32?, scrollbar? : @style.Style?, text? : @style.Style?) -> Self
 pub fn Styles::not_equal(Self, Self) -> Bool
 pub fn Styles::to_repr(Self) -> @debug.Repr
 
@@ -159,7 +179,7 @@ pub fn Stylesheet::is_empty(Self) -> Bool
 pub fn Stylesheet::list(Self) -> Array[Rule]
 pub fn Stylesheet::new() -> Self
 pub fn Stylesheet::not_equal(Self, Self) -> Bool
-pub fn Stylesheet::pick(Self, String, Int32, Array[String], Bool) -> Styles
+pub fn Stylesheet::pick(Self, String, Int32, Array[String], Bool, hovered? : Bool, disabled? : Bool) -> Styles
 pub fn Stylesheet::to_repr(Self) -> @debug.Repr
 
 pub(all) enum VAlign {

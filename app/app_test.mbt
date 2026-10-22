@@ -83,7 +83,7 @@ test "what a widget reports reaches the host" {
   let tty = @driver.Headless::new(@geom.Size::new(8, 1), script=[ascii("\r")])
   let ui = @app.App::new(tty, tree)
   ui.start()
-  assert_eq(ui.drain(), [])
+  assert_eq(ui.drain(), [Focused(id=1)])
   ui.step() |> ignore
   assert_eq(ui.drain(), [Pressed(id=1)])
   assert_eq(ui.drain(), [])
@@ -102,9 +102,10 @@ test "a click goes to the widget under the pointer" {
   ])
   let ui = @app.App::new(tty, tree)
   ui.start()
+  ui.drain() |> ignore
   ui.step() |> ignore
   assert_eq(ui.focused(), 2)
-  assert_eq(ui.drain(), [Pressed(id=2)])
+  assert_eq(ui.drain(), [Blurred(id=1), Focused(id=2), Pressed(id=2)])
 }
 
 ///|

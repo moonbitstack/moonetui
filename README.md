@@ -25,14 +25,14 @@ Cell buffer, differential ANSI renderer, incremental key parser, layout, a CSS-l
 | `@comp` | The compositor: placements to composed rows, consecutive screens to the spans that changed, spans to escape sequences | done |
 | `@driver` | The seam to a terminal — write, poll, size, raw mode, clock — plus the capability sequences and a headless terminal for tests | done |
 | `@layout` | Placing boxes along an axis: fixed cells, percentages, automatic sizes and fractional shares, with integer division that loses no column; and the grid: equal columns, content-driven rows, spans and gutters | done |
-| `@design` | The style system: rules over name, id, class and `:focus` selectors, stacked by specificity and cascade; border, padding, margin, alignment, display, dock, grid spans, and the text style a node inherits from its container | done |
+| `@design` | The style system: rules over name, id, class and the `:focus`, `:hover` and `:disabled` selectors, stacked by specificity and cascade; border, padding, margin, alignment, display, dock, grid spans, offsets, transitions, scroll-bar styles, and the text style a node inherits from its container | done |
 | `@widget` | The widget contract and eight widgets: static text, label, button, input, list, progress bar, header, footer | done |
-| `@app` | The widget tree, the focus ring, scrolling containers, edge docks, grids, and the frame loop: poll, parse, dispatch, lay out, compose, diff, write | done |
+| `@app` | The widget tree, the focus ring, scrolling containers, edge docks, grids, stacked screens, timers, and the frame loop: poll, parse, dispatch, lay out, compose, diff, write | done |
 | `@driver/node` | Node's terminal: raw mode, a queue the data handler fills, and a frame pump | done |
 | `@driver/web` | A terminal drawn on a canvas: the grid, the escape sequences it understands, key encoding, and in-band resize | done |
 | `@driver/native` | A real terminal through the C library: termios on Unix, virtual terminal mode on Windows | done |
 
-All of 0.1.0 is here, the style system with it, scroll containers, edge docks, and the grid. A pane sizes its child to the child's own content, shows a window of it, draws bars that track the window, and moves by wheel, by the arrow, page, home and end keys, and to whatever just took focus. A docked child sits against an edge of its container, over the flow that gives up the space; the grid gives its children equal columns, content-driven rows, spans and gutters. What is deliberately not: the thirty-odd widgets beyond the eight below.
+All of 0.1.0 is here, the style system with it, scroll containers, edge docks, and the grid. A pane sizes its child to the child's own content, shows a window of it, draws bars that track the window, and moves by wheel, by the arrow, page, home and end keys, and to whatever just took focus. A docked child sits against an edge of its container, over the flow that gives up the space; the grid gives its children equal columns, content-driven rows, spans and gutters. A node the pointer rests on takes `:hover` styles, a disabled one takes `:disabled` and neither focus nor input; an offset moves a node without telling the layout; a transition glides it to wherever the next layout puts it. Widgets speak in typed messages — pressed, changed, submitted, selected, scrolled, focused, blurred, toggled — which a handler can claim before the app acts on them, and screens stack while timers fire on the driver's clock. What is deliberately not: the thirty-odd widgets beyond the eight below.
 
 ## Design
 
@@ -61,7 +61,7 @@ moon check --target all --deny-warn
 moon test --target all
 ```
 
-180 tests; the browser grid's own tests run on the js backend, the rest on all four.
+194 tests; the browser grid's own tests run on the js backend, the rest on all four.
 
 ## License
 

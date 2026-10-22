@@ -48,6 +48,8 @@ pub enum Node {
 pub(all) struct Theme {
   sheet : @design.Stylesheet
   focus : Int32
+  hover : Int32
+  disabled : Array[Int32]
   base : @style.Style
 } derive(Eq, Debug)
 
@@ -61,9 +63,11 @@ pub extend Theme with Eq::{not_equal, equal}
 pub fn Theme::new(
   sheet~ : @design.Stylesheet = @design.Stylesheet::new(),
   focus~ : Int32 = -1,
+  hover~ : Int32 = -1,
+  disabled~ : Array[Int32] = [],
   base~ : @style.Style = @style.default,
 ) -> Theme {
-  { sheet, focus, base, }
+  { sheet, focus, hover, disabled, base, }
 }
 
 ///|
@@ -165,7 +169,14 @@ pub fn Node::resolve(
     Grid(name~, id~, classes~, styles~, ..) => (name, id, classes, styles)
     Scroll(name~, id~, classes~, styles~, ..) => (name, id, classes, styles)
   }
-  let rules = theme.sheet.pick(name, id, classes, theme.focus == id)
+  let rules = theme.sheet.pick(
+    name,
+    id,
+    classes,
+    theme.focus == id,
+    hovered=theme.hover == id,
+    disabled=theme.disabled.contains(id),
+  )
   @design.Resolved::of(rules.merge(styles), inherited)
 }
 
@@ -269,12 +280,26 @@ pub fn Node::place(
   inherited~ : @style.Style = @style.default,
   views~ : Map[Int32, View] = Map([]),
   bare~ : Map[Int32, @geom.Region] = Map([]),
+  offsets~ : Map[Int32, @geom.Offset] = Map([]),
 ) -> Unit {
   let res = self.resolve(theme, inherited)
   if res.hidden {
     return
   }
   let framed = res.margin.shrink_region(area)
+  // A style offset, and any an animation is still working off, move the
+  // node without telling the layout: siblings keep the space it left.
+  let slide : @geom.Offset = { x: res.offset_x, y: res.offset_y, }
+  let framed = match offsets.get(self.id()) {
+    Some(extra) =>
+      framed.translate({ x: slide.x + extra.x, y: slide.y + extra.y, })
+    None =>
+      if slide.x != 0 || slide.y != 0 {
+        framed.translate(slide)
+      } else {
+        framed
+      }
+  }
   let visible = framed.intersection(clip)
   rects[self.id()] = visible
   bare[self.id()] = framed
@@ -359,6 +384,7 @@ pub fn Node::place(
           inherited=res.text,
           views~,
           bare~,
+          offsets~,
         )
         i = i - 1
       }
@@ -397,6 +423,7 @@ pub fn Node::place(
           inherited=res.text,
           views~,
           bare~,
+          offsets~,
         )
       }
       // Placed after the children so the chrome lands behind them: the first
@@ -439,6 +466,7 @@ pub fn Node::place(
           inherited=res.text,
           views~,
           bare~,
+          offsets~,
         )
       }
       // Placed after the children so the chrome lands behind them: the first
@@ -486,8 +514,13 @@ pub fn Node::place(
         inherited=res.text,
         views~,
         bare~,
+        offsets~,
       )
-      views[id] = { state, bar, vbar, hbar, }
+      let bar_style = match res.scrollbar {
+        Some(style) => style
+        None => bar
+      }
+      views[id] = { state, bar: bar_style, vbar, hbar, }
       styled[id] = res
       if res.has_chrome() || vbar || hbar {
         scene.place(id, framed, clip)

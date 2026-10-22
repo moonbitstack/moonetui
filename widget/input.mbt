@@ -173,6 +173,7 @@ fn Input::key(self : Input, ctx : Ctx, key : @event.Key) -> Bool {
     }
     Enter => {
       ctx.emit(Changed(id=ctx.id, value=self.text))
+      ctx.emit(Submitted(id=ctx.id, value=self.text))
       false
     }
     _ => false

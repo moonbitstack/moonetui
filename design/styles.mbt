@@ -167,6 +167,10 @@ pub(all) struct Styles {
   dock : Edge?
   column_span : Int32?
   row_span : Int32?
+  offset_x : Int32?
+  offset_y : Int32?
+  transition : Int32?
+  scrollbar : @style.Style?
   text : @style.Style?
 } derive(Eq, Debug)
 
@@ -192,6 +196,10 @@ pub let empty : Styles = {
   dock: None,
   column_span: None,
   row_span: None,
+  offset_x: None,
+  offset_y: None,
+  transition: None,
+  scrollbar: None,
   text: None,
 }
 
@@ -211,6 +219,10 @@ pub fn Styles::new(
   dock~ : Edge? = None,
   column_span~ : Int32? = None,
   row_span~ : Int32? = None,
+  offset_x~ : Int32? = None,
+  offset_y~ : Int32? = None,
+  transition~ : Int32? = None,
+  scrollbar~ : @style.Style? = None,
   text~ : @style.Style? = None,
 ) -> Styles {
   {
@@ -228,6 +240,10 @@ pub fn Styles::new(
     dock,
     column_span,
     row_span,
+    offset_x,
+    offset_y,
+    transition,
+    scrollbar,
     text,
   }
 }
@@ -254,6 +270,15 @@ pub fn Styles::merge(self : Styles, other : Styles) -> Styles {
     dock: pick(other.dock, self.dock),
     column_span: pick(other.column_span, self.column_span),
     row_span: pick(other.row_span, self.row_span),
+    offset_x: pick(other.offset_x, self.offset_x),
+    offset_y: pick(other.offset_y, self.offset_y),
+    transition: pick(other.transition, self.transition),
+    scrollbar: match (self.scrollbar, other.scrollbar) {
+      (Some(lower), Some(upper)) => Some(lower.merge(upper))
+      (_, Some(upper)) => Some(upper)
+      (Some(lower), None) => Some(lower)
+      (None, None) => None
+    },
     text: match (self.text, other.text) {
       (Some(lower), Some(upper)) => Some(lower.merge(upper))
       (_, Some(upper)) => Some(upper)
@@ -281,6 +306,10 @@ pub(all) struct Resolved {
   dock : Edge?
   column_span : Int32?
   row_span : Int32?
+  offset_x : Int32
+  offset_y : Int32
+  transition : Int32
+  scrollbar : @style.Style?
   width : @layout.Extent?
   height : @layout.Extent?
   min_width : Int32?
@@ -306,6 +335,10 @@ pub let bare : Resolved = {
   dock: None,
   column_span: None,
   row_span: None,
+  offset_x: 0,
+  offset_y: 0,
+  transition: 0,
+  scrollbar: None,
   width: None,
   height: None,
   min_width: None,
@@ -345,6 +378,19 @@ pub fn Resolved::of(styles : Styles, inherited : @style.Style) -> Resolved {
     dock: styles.dock,
     column_span: styles.column_span,
     row_span: styles.row_span,
+    offset_x: match styles.offset_x {
+      Some(value) => value
+      None => 0
+    },
+    offset_y: match styles.offset_y {
+      Some(value) => value
+      None => 0
+    },
+    transition: match styles.transition {
+      Some(ms) => if ms < 0 { 0 } else { ms }
+      None => 0
+    },
+    scrollbar: styles.scrollbar,
     width: styles.width,
     height: styles.height,
     min_width: styles.min_width,

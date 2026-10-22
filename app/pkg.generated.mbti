@@ -28,20 +28,38 @@ pub fn scroll(Int32, Node, box? : @layout.Box, state? : ScrollState, bar? : @sty
 // Errors
 
 // Types and methods
+pub(all) struct Anim {
+  from : @geom.Region
+  to : @geom.Region
+  start : Int32
+  ms : Int32
+} derive(Eq, @debug.Debug)
+pub fn Anim::at(Self, Int32) -> @geom.Region
+pub fn Anim::equal(Self, Self) -> Bool
+pub fn Anim::not_equal(Self, Self) -> Bool
+pub fn Anim::to_repr(Self) -> @debug.Repr
+
 pub struct App[D] {
   driver : D
-  root : Node
+  mut root : Node
   parser : @input.Parser
   base : @style.Style
   sheet : @design.Stylesheet
   frame_ms : Int32
-  rects : Map[Int32, @geom.Region]
-  bare : Map[Int32, @geom.Region]
-  views : Map[Int32, View]
-  styled : Map[Int32, @design.Resolved]
+  mut rects : Map[Int32, @geom.Region]
+  mut bare : Map[Int32, @geom.Region]
+  mut views : Map[Int32, View]
+  mut styled : Map[Int32, @design.Resolved]
   inbox : Array[@widget.Out]
+  handlers : Array[(@widget.Out) -> Bool]
+  timers : Array[Timer]
+  screens : Array[Screen]
+  mut anims : Map[Int32, Anim]
+  mut prev_bare : Map[Int32, @geom.Region]
   mut size : @geom.Size
   mut focus : Int32
+  mut hover : Int32
+  off : Array[Int32]
   mut prev : Array[@strip.Strip]
   mut dirty : Bool
   mut running : Bool
@@ -49,18 +67,30 @@ pub struct App[D] {
   mut pending_resize : @geom.Size?
   mut resize_at : Int32
 }
+pub fn[D : @driver.Driver] App::after(Self[D], Int32, () -> Unit) -> Unit
+pub fn[D] App::disable(Self[D], Int32) -> Unit
 pub fn[D] App::drain(Self[D]) -> Array[@widget.Out]
+pub fn[D] App::enable(Self[D], Int32) -> Unit
+pub fn[D : @driver.Driver] App::every(Self[D], Int32, () -> Unit) -> Unit
 pub fn[D] App::focus_next(Self[D], Int32) -> Unit
 pub fn[D] App::focused(Self[D]) -> Int32
+pub fn[D] App::hovering(Self[D]) -> Int32
+pub fn[D] App::is_disabled(Self[D], Int32) -> Bool
 pub fn[D] App::new(D, Node, base? : @style.Style, sheet? : @design.Stylesheet, fps? : Int32) -> Self[D]
+pub fn[D] App::on(Self[D], (@widget.Out) -> Bool) -> Unit
+pub fn[D] App::pop_screen(Self[D]) -> Unit
+pub fn[D] App::post(Self[D], @widget.Out) -> Unit
+pub fn[D] App::push_screen(Self[D], Node) -> Unit
 pub fn[D] App::quit(Self[D]) -> Unit
 pub fn[D] App::rect_of(Self[D], Int32) -> @geom.Region
 pub fn[D] App::refresh(Self[D]) -> Unit
 pub fn[D : @driver.Driver] App::run(Self[D]) -> Unit raise
 pub fn[D] App::screen(Self[D]) -> Array[String]
+pub fn[D] App::screen_depth(Self[D]) -> Int32
 pub fn[D : @driver.Driver] App::start(Self[D]) -> Unit raise
 pub fn[D : @driver.Driver] App::step(Self[D]) -> Bool raise
 pub fn[D : @driver.Driver] App::stop(Self[D]) -> Unit raise
+pub fn[D] App::swap_root(Self[D], Node) -> Unit
 
 pub enum Node {
   Leaf(id~ : Int32, widget~ : &@widget.Widget, box~ : @layout.Box, name~ : String, classes~ : Array[String], styles~ : @design.Styles)
@@ -74,9 +104,14 @@ pub fn Node::find(Self, Int32) -> &@widget.Widget?
 pub fn Node::focus_ring(Self) -> Array[Int32]
 pub fn Node::hint(Self, @geom.Size, @layout.Dir, theme? : Theme) -> Int32
 pub fn Node::id(Self) -> Int32
-pub fn Node::place(Self, @geom.Region, @geom.Region, @comp.Scene, Map[Int32, @geom.Region], styled? : Map[Int32, @design.Resolved], theme? : Theme, inherited? : @style.Style, views? : Map[Int32, View], bare? : Map[Int32, @geom.Region]) -> Unit
+pub fn Node::place(Self, @geom.Region, @geom.Region, @comp.Scene, Map[Int32, @geom.Region], styled? : Map[Int32, @design.Resolved], theme? : Theme, inherited? : @style.Style, views? : Map[Int32, View], bare? : Map[Int32, @geom.Region], offsets? : Map[Int32, @geom.Offset]) -> Unit
 pub fn Node::resolve(Self, Theme, @style.Style) -> @design.Resolved
 pub fn Node::scroll_around(Self, Int32) -> (Int32, ScrollState)?
+
+pub(all) struct Screen {
+  root : Node
+  focus : Int32
+}
 
 pub(all) struct ScrollState {
   mut x : Int32
@@ -98,12 +133,22 @@ pub fn ScrollState::to_repr(Self) -> @debug.Repr
 pub(all) struct Theme {
   sheet : @design.Stylesheet
   focus : Int32
+  hover : Int32
+  disabled : Array[Int32]
   base : @style.Style
 } derive(Eq, @debug.Debug)
 pub fn Theme::equal(Self, Self) -> Bool
-pub fn Theme::new(sheet? : @design.Stylesheet, focus? : Int32, base? : @style.Style) -> Self
+pub fn Theme::new(sheet? : @design.Stylesheet, focus? : Int32, hover? : Int32, disabled? : Array[Int32], base? : @style.Style) -> Self
 pub fn Theme::not_equal(Self, Self) -> Bool
 pub fn Theme::to_repr(Self) -> @debug.Repr
+
+pub(all) struct Timer {
+  ms : Int32
+  at : Int32
+  repeat : Bool
+  fire : () -> Unit
+} derive(@debug.Debug)
+pub fn Timer::to_repr(Self) -> @debug.Repr
 
 pub(all) struct View {
   state : ScrollState

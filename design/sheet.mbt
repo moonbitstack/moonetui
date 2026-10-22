@@ -7,6 +7,8 @@ pub(all) struct Sel {
   id : Int32
   classes : Array[String]
   focus : Bool
+  hover : Bool
+  disabled : Bool
 } derive(Eq, Debug)
 
 ///|
@@ -21,8 +23,10 @@ pub fn Sel::new(
   id~ : Int32 = -1,
   classes~ : Array[String] = [],
   focus~ : Bool = false,
+  hover~ : Bool = false,
+  disabled~ : Bool = false,
 ) -> Sel {
-  { name, id, classes, focus, }
+  { name, id, classes, focus, hover, disabled, }
 }
 
 ///|
@@ -32,6 +36,8 @@ pub fn Sel::matches(
   id : Int32,
   classes : Array[String],
   focused : Bool,
+  hovered : Bool,
+  disabled : Bool,
 ) -> Bool {
   if self.name.length() > 0 && self.name != name {
     return false
@@ -40,6 +46,12 @@ pub fn Sel::matches(
     return false
   }
   if self.focus && !focused {
+    return false
+  }
+  if self.hover && !hovered {
+    return false
+  }
+  if self.disabled && !disabled {
     return false
   }
   for wanted in self.classes {
@@ -60,7 +72,17 @@ pub fn Sel::matches(
 ///|
 pub fn Sel::specificity(self : Sel) -> Int32 {
   let id = if self.id >= 0 { 100 } else { 0 }
-  let class = self.classes.length() * 10 + (if self.focus { 10 } else { 0 })
+  let mut state = 0
+  if self.focus {
+    state = state + 10
+  }
+  if self.hover {
+    state = state + 10
+  }
+  if self.disabled {
+    state = state + 10
+  }
+  let class = self.classes.length() * 10 + state
   let named = if self.name.length() > 0 { 1 } else { 0 }
   id + class + named
 }
@@ -120,11 +142,13 @@ pub fn Stylesheet::pick(
   id : Int32,
   classes : Array[String],
   focused : Bool,
+  hovered~ : Bool = false,
+  disabled~ : Bool = false,
 ) -> Styles {
   let matching : Array[(Int32, Int32, Styles)] = []
   for i in 0..<self.rules.length() {
     let rule = self.rules[i]
-    if !rule.sel.matches(name, id, classes, focused) {
+    if !rule.sel.matches(name, id, classes, focused, hovered, disabled) {
       continue
     }
     let spec = rule.sel.specificity()

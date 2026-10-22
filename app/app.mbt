@@ -4,18 +4,25 @@
 ///|
 pub struct App[D] {
   driver : D
-  root : Node
+  mut root : Node
   parser : @input.Parser
   base : @style.Style
   sheet : @design.Stylesheet
   frame_ms : Int32
-  rects : Map[Int32, @geom.Region]
-  bare : Map[Int32, @geom.Region]
-  views : Map[Int32, View]
-  styled : Map[Int32, @design.Resolved]
+  mut rects : Map[Int32, @geom.Region]
+  mut bare : Map[Int32, @geom.Region]
+  mut views : Map[Int32, View]
+  mut styled : Map[Int32, @design.Resolved]
   inbox : Array[@widget.Out]
+  handlers : Array[(@widget.Out) -> Bool]
+  timers : Array[Timer]
+  screens : Array[Screen]
+  mut anims : Map[Int32, Anim]
+  mut prev_bare : Map[Int32, @geom.Region]
   mut size : @geom.Size
   mut focus : Int32
+  mut hover : Int32
+  off : Array[Int32]
   mut prev : Array[@strip.Strip]
   mut dirty : Bool
   mut running : Bool
@@ -51,8 +58,15 @@ pub fn[D] App::new(
     views: Map([]),
     styled: Map([]),
     inbox: [],
+    handlers: [],
+    timers: [],
+    screens: [],
+    anims: Map([]),
+    prev_bare: Map([]),
     size: @geom.Size::new(80, 24),
     focus: -1,
+    hover: -1,
+    off: [],
     prev: [],
     dirty: true,
     running: false,
@@ -102,6 +116,7 @@ pub fn[D : @driver.Driver] App::step(self : App[D]) -> Bool raise {
     self.dispatch(ev)
   }
   let now = self.driver.now()
+  self.fire_timers(now)
   match self.pending_resize {
     Some(size) =>
       if now - self.resize_at >= RESIZE_SETTLE_MS {
@@ -155,18 +170,152 @@ pub fn[D] App::focused(self : App[D]) -> Int32 {
 }
 
 ///|
+pub fn[D] App::hovering(self : App[D]) -> Int32 {
+  self.hover
+}
+
+///|
+/// A disabled node takes no input, holds no focus, and can be restyled by the
+/// `:disabled` pseudo-class.
+pub fn[D] App::disable(self : App[D], id : Int32) -> Unit {
+  if !self.off.contains(id) {
+    self.off.push(id)
+    if self.focus == id {
+      self.focus_next(1)
+    }
+    self.dirty = true
+  }
+}
+
+///|
+pub fn[D] App::enable(self : App[D], id : Int32) -> Unit {
+  let kept : Array[Int32] = []
+  for own in self.off {
+    if own != id {
+      kept.push(own)
+    }
+  }
+  if kept.length() != self.off.length() {
+    self.off.clear()
+    for own in kept {
+      self.off.push(own)
+    }
+    self.dirty = true
+  }
+}
+
+///|
+pub fn[D] App::is_disabled(self : App[D], id : Int32) -> Bool {
+  self.off.contains(id)
+}
+
+///|
+/// The `on` of Textual's message handlers: every message a widget emits, and
+/// every focus or scroll move the app itself reports, passes here first. A
+/// handler that answers true claims the message and the built-in behaviour
+/// never runs.
+pub fn[D] App::on(self : App[D], handler : (@widget.Out) -> Bool) -> Unit {
+  self.handlers.push(handler)
+}
+
+///|
+/// Put a message in the stream the app drains from, as if a widget had sent
+/// it.
+pub fn[D] App::post(self : App[D], out : @widget.Out) -> Unit {
+  self.inbox.push(out)
+}
+
+///|
+/// Run `fire` every `ms` milliseconds of the driver's clock, until the app
+/// stops.
+pub fn[D : @driver.Driver] App::every(
+  self : App[D],
+  ms : Int32,
+  fire : () -> Unit,
+) -> Unit {
+  if ms <= 0 {
+    return
+  }
+  self.timers.push({ ms, at: self.driver.now() + ms, repeat: true, fire, })
+}
+
+///|
+pub fn[D : @driver.Driver] App::after(
+  self : App[D],
+  ms : Int32,
+  fire : () -> Unit,
+) -> Unit {
+  if ms <= 0 {
+    return
+  }
+  self.timers.push({ ms, at: self.driver.now() + ms, repeat: false, fire, })
+}
+
+///|
+/// Swap the tree the app is showing, keeping the focus where it was. The
+/// frame loop redraws on the next step.
+pub fn[D] App::swap_root(self : App[D], root : Node) -> Unit {
+  self.root = root
+  self.dirty = true
+}
+
+///|
+/// Cover the screen with a new tree: the one showing, and where its focus
+/// sits, is pushed down and comes back when popped.
+pub fn[D] App::push_screen(self : App[D], root : Node) -> Unit {
+  self.screens.push({ root: self.root, focus: self.focus, })
+  self.root = root
+  self.focus = -1
+  self.prev = []
+  self.prev_bare = Map([])
+  self.anims = Map([])
+  let ring = root.focus_ring()
+  if ring.length() > 0 {
+    self.give_focus(ring[0])
+  }
+  self.dirty = true
+}
+
+///|
+pub fn[D] App::pop_screen(self : App[D]) -> Unit {
+  match self.screens.pop() {
+    Some(screen) => {
+      self.root = screen.root
+      self.focus = -1
+      self.prev = []
+      self.prev_bare = Map([])
+      self.anims = Map([])
+      self.give_focus(screen.focus)
+      self.dirty = true
+    }
+    None => ()
+  }
+}
+
+///|
+pub fn[D] App::screen_depth(self : App[D]) -> Int32 {
+  self.screens.length() + 1
+}
+
+///|
 pub fn[D] App::focus_next(self : App[D], step : Int32) -> Unit {
   let ring = self.root.focus_ring()
-  if ring.length() == 0 {
+  let open : Array[Int32] = []
+  for id in ring {
+    if !self.off.contains(id) {
+      open.push(id)
+    }
+  }
+  if open.length() == 0 {
     return
   }
   let mut at = -1
-  for i in 0..<ring.length() {
-    if ring[i] == self.focus {
+  for i in 0..<open.length() {
+    if open[i] == self.focus {
       at = i
     }
   }
-  let count = ring.length()
+  let count = open.length()
   let next = if at < 0 {
     if step > 0 {
       0
@@ -176,7 +325,7 @@ pub fn[D] App::focus_next(self : App[D], step : Int32) -> Unit {
   } else {
     ((at + step) % count + count) % count
   }
-  self.give_focus(ring[next])
+  self.give_focus(open[next])
 }
 
 ///|
@@ -224,7 +373,8 @@ fn[D : @driver.Driver] App::dispatch(self : App[D], ev : @event.Event) -> Unit {
       }
     }
     Paste(text) => self.deliver(self.focus, Paste(text)) |> ignore
-    Mouse(mouse) =>
+    Mouse(mouse) => {
+      self.track_hover(mouse.x, mouse.y)
       match mouse.kind {
         ScrollUp | ScrollDown | ScrollLeft | ScrollRight => self.wheel(mouse)
         _ =>
@@ -240,6 +390,7 @@ fn[D : @driver.Driver] App::dispatch(self : App[D], ev : @event.Event) -> Unit {
             None => ()
           }
       }
+    }
     Resize(width, height) => {
       self.pending_resize = Some(@geom.Size::new(width, height))
       self.resize_at = self.driver.now()
@@ -250,8 +401,28 @@ fn[D : @driver.Driver] App::dispatch(self : App[D], ev : @event.Event) -> Unit {
 }
 
 ///|
+/// The node the pointer rests on, smallest first so a child wins over the
+/// container that holds it. A move restyles the tree, so it marks a frame.
+fn[D] App::track_hover(self : App[D], x : Int32, y : Int32) -> Unit {
+  let mut found = -1
+  let mut smallest = 0
+  for id, rect in self.rects {
+    if rect.contains(x, y) {
+      if found < 0 || rect.area() < smallest {
+        found = id
+        smallest = rect.area()
+      }
+    }
+  }
+  if found != self.hover {
+    self.hover = found
+    self.dirty = true
+  }
+}
+
+///|
 fn[D] App::deliver(self : App[D], id : Int32, msg : @widget.Msg) -> Bool {
-  if id < 0 {
+  if id < 0 || self.off.contains(id) {
     return false
   }
   match self.root.find(id) {
@@ -274,6 +445,11 @@ fn[D] App::deliver(self : App[D], id : Int32, msg : @widget.Msg) -> Bool {
 
 ///|
 fn[D] App::act(self : App[D], out : @widget.Out) -> Unit {
+  for handler in self.handlers {
+    if handler(out) {
+      return
+    }
+  }
   match out {
     Repaint(..) => self.dirty = true
     TakeFocus(id~) => self.give_focus(id)
@@ -284,15 +460,17 @@ fn[D] App::act(self : App[D], out : @widget.Out) -> Unit {
 
 ///|
 fn[D] App::give_focus(self : App[D], id : Int32) -> Unit {
-  if id == self.focus {
+  if id == self.focus || self.off.contains(id) {
     return
   }
   let old = self.focus
   self.focus = id
   if old >= 0 {
     self.deliver(old, Focus(false)) |> ignore
+    self.inbox.push(Blurred(id=old))
   }
   self.deliver(id, Focus(true)) |> ignore
+  self.inbox.push(Focused(id~))
   self.ensure_visible(id)
   self.dirty = true
 }
@@ -324,6 +502,29 @@ fn[D] App::at(self : App[D], x : Int32, y : Int32) -> (Int32, @geom.Region)? {
 }
 
 ///|
+fn[D] App::fire_timers(self : App[D], now : Int32) -> Unit {
+  if self.timers.length() == 0 {
+    return
+  }
+  let keep : Array[Timer] = []
+  for timer in self.timers {
+    if now >= timer.at {
+      let fire = timer.fire
+      fire()
+      if timer.repeat {
+        keep.push({ ..timer, at: timer.at + timer.ms, })
+      }
+    } else {
+      keep.push(timer)
+    }
+  }
+  self.timers.clear()
+  for timer in keep {
+    self.timers.push(timer)
+  }
+}
+
+///|
 fn[D : @driver.Driver] App::render(self : App[D]) -> Unit raise {
   let screen = @geom.Region::new(0, 0, self.size.width, self.size.height)
   let scene = @comp.Scene::new(self.size)
@@ -331,7 +532,13 @@ fn[D : @driver.Driver] App::render(self : App[D]) -> Unit raise {
   self.bare.clear()
   self.views.clear()
   self.styled.clear()
-  let theme = Theme::new(sheet=self.sheet, focus=self.focus, base=self.base)
+  let theme = Theme::new(
+    sheet=self.sheet,
+    focus=self.focus,
+    hover=self.hover,
+    disabled=self.off,
+    base=self.base,
+  )
   self.root.place(
     screen,
     screen,
@@ -343,6 +550,118 @@ fn[D : @driver.Driver] App::render(self : App[D]) -> Unit raise {
     views=self.views,
     bare=self.bare,
   )
+  let now = self.driver.now()
+  let targets : Map[Int32, @geom.Region] = Map([])
+  for id, rect in self.bare {
+    targets[id] = rect
+  }
+  self.update_anims(targets, now)
+  if self.anims.length() > 0 {
+    // A node that asked for a transition is shown gliding to its new place:
+    // place once more, moved back by how far the glide still has to go.
+    let offsets : Map[Int32, @geom.Offset] = Map([])
+    for id, anim in self.anims {
+      let shown = anim.at(now)
+      offsets[id] = { x: shown.x - anim.to.x, y: shown.y - anim.to.y, }
+    }
+    let moved = @comp.Scene::new(self.size)
+    let rects : Map[Int32, @geom.Region] = Map([])
+    let bare : Map[Int32, @geom.Region] = Map([])
+    let views : Map[Int32, View] = Map([])
+    let styled : Map[Int32, @design.Resolved] = Map([])
+    self.root.place(
+      screen,
+      screen,
+      moved,
+      rects,
+      styled~,
+      theme~,
+      inherited=self.base,
+      views~,
+      bare~,
+      offsets~,
+    )
+    self.rects = rects
+    self.bare = bare
+    self.views = views
+    self.styled = styled
+    compose(moved, self)
+    self.dirty = true
+  } else {
+    compose(scene, self)
+  }
+  self.prev_bare = targets
+  self.dirty = self.anims.length() > 0
+}
+
+///|
+/// Start, retarget, finish or drop the glides. A node joins when it carries a
+/// transition and its place moved since the last frame; one already moving
+/// picks the new target up from wherever it shows right now.
+fn[D] App::update_anims(
+  self : App[D],
+  targets : Map[Int32, @geom.Region],
+  now : Int32,
+) -> Unit {
+  let live : Map[Int32, Anim] = Map([])
+  for id, rect in targets {
+    let res = match self.styled.get(id) {
+      Some(res) => res
+      None => continue
+    }
+    if res.transition <= 0 {
+      match self.anims.get(id) {
+        Some(running) =>
+          if now - running.start < running.ms {
+            live[id] = running
+          }
+        None => ()
+      }
+      continue
+    }
+    match self.anims.get(id) {
+      Some(running) => {
+        if now - running.start >= running.ms &&
+          running.to.x == rect.x &&
+          running.to.y == rect.y {
+          continue
+        }
+        if running.to.x == rect.x &&
+          running.to.y == rect.y &&
+          running.ms == res.transition {
+          live[id] = running
+        } else {
+          live[id] = {
+            from: running.at(now),
+            to: rect,
+            start: now,
+            ms: res.transition,
+          }
+        }
+      }
+      None =>
+        match self.prev_bare.get(id) {
+          Some(prev) =>
+            if prev.x != rect.x || prev.y != rect.y {
+              live[id] = {
+                from: prev,
+                to: rect,
+                start: now,
+                ms: res.transition,
+              }
+            }
+          None => ()
+        }
+    }
+  }
+  self.anims = live
+}
+
+///|
+fn[D : @driver.Driver] compose(
+  scene : @comp.Scene,
+  self : App[D],
+) -> Unit raise {
   let rows = scene.compose(
     fn(id, line) {
       match self.views.get(id) {
@@ -375,7 +694,6 @@ fn[D : @driver.Driver] App::render(self : App[D]) -> Unit raise {
     self.driver.flush()
   }
   self.prev = rows
-  self.dirty = false
 }
 
 ///|
@@ -441,6 +759,7 @@ fn[D] App::scroll_key(self : App[D], key : @event.Key) -> Bool {
   }
   if moved {
     self.dirty = true
+    self.inbox.push(Scrolled(id=host, x=state.x, y=state.y))
   }
   moved
 }
@@ -470,6 +789,9 @@ fn[D] App::wheel(self : App[D], mouse : @event.Mouse) -> Unit {
   let mut host = -1
   let mut smallest = 0
   for id, _ in self.views {
+    if self.off.contains(id) {
+      continue
+    }
     let rect = self.rect_of(id)
     if !rect.contains(mouse.x, mouse.y) {
       continue
@@ -483,7 +805,11 @@ fn[D] App::wheel(self : App[D], mouse : @event.Mouse) -> Unit {
     return
   }
   match self.views.get(host) {
-    Some(view) => if view.state.scroll_by(dx~, dy~) { self.dirty = true }
+    Some(view) =>
+      if view.state.scroll_by(dx~, dy~) {
+        self.dirty = true
+        self.inbox.push(Scrolled(id=host, x=view.state.x, y=view.state.y))
+      }
     None => ()
   }
 }
