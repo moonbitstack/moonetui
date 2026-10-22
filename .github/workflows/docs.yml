@@ -35,6 +35,8 @@ jobs:
 
       - name: configure pages
         uses: actions/configure-pages@v5
+        with:
+          enablement: true
 
       - name: upload the site
         uses: actions/upload-pages-artifact@v3
