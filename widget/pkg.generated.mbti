@@ -92,6 +92,16 @@ pub fn Checkbox::toggle(Self) -> Unit
 pub fn Checkbox::value(Self) -> Bool
 pub impl Widget for Checkbox
 
+pub(all) struct Choice {
+  prompt : String
+  mut disabled : Bool
+  divider : Bool
+} derive(Eq, @debug.Debug)
+pub fn Choice::equal(Self, Self) -> Bool
+pub fn Choice::new(String, disabled? : Bool) -> Self
+pub fn Choice::not_equal(Self, Self) -> Bool
+pub fn Choice::to_repr(Self) -> @debug.Repr
+
 pub struct Ctx {
   id : Int32
   size : @geom.Size
@@ -247,6 +257,38 @@ pub fn Msg::equal(Self, Self) -> Bool
 pub fn Msg::not_equal(Self, Self) -> Bool
 pub fn Msg::to_repr(Self) -> @debug.Repr
 
+pub struct OptionList {
+  mut options : Array[Choice]
+  mut highlighted : Int32
+  mut hover : Int32
+  mut offset : Int32
+  mut seen : Int32
+  mut focused : Bool
+  style : @style.Style
+  highlight : @style.Style
+  blurred_highlight : @style.Style
+  disabled_style : @style.Style
+  hover_style : @style.Style
+  separator_style : @style.Style
+} derive(Eq, @debug.Debug)
+pub fn OptionList::add_option(Self, Choice) -> Unit
+pub fn OptionList::add_separator(Self) -> Unit
+pub fn OptionList::clear_options(Self) -> Unit
+pub fn OptionList::equal(Self, Self) -> Bool
+pub fn OptionList::focusable(Self) -> Bool
+pub fn OptionList::handle(Self, Ctx, Msg) -> Bool
+pub fn OptionList::highlighted(Self) -> Int32
+pub fn OptionList::hint(Self, @geom.Size) -> @geom.Size
+pub fn OptionList::new(options? : Array[Choice], style? : @style.Style, highlight? : @style.Style, blurred_highlight? : @style.Style, disabled_style? : @style.Style, hover_style? : @style.Style, separator_style? : @style.Style) -> Self
+pub fn OptionList::not_equal(Self, Self) -> Bool
+pub fn OptionList::option_count(Self) -> Int32
+pub fn OptionList::options(Self) -> Array[Choice]
+pub fn OptionList::render_line(Self, Int32, @geom.Size) -> @strip.Strip
+pub fn OptionList::set_disabled(Self, Int32, Bool) -> Unit
+pub fn OptionList::set_options(Self, Array[Choice]) -> Unit
+pub fn OptionList::to_repr(Self) -> @debug.Repr
+pub impl Widget for OptionList
+
 pub(all) enum Out {
   Repaint(id~ : Int32)
   TakeFocus(id~ : Int32)
@@ -258,6 +300,8 @@ pub(all) enum Out {
   Focused(id~ : Int32)
   Blurred(id~ : Int32)
   Toggled(id~ : Int32, on~ : Bool)
+  Highlighted(id~ : Int32, index~ : Int32)
+  ToggledAt(id~ : Int32, index~ : Int32, on~ : Bool)
   Quit
 } derive(Eq, @debug.Debug)
 pub fn Out::equal(Self, Self) -> Bool
@@ -427,6 +471,84 @@ pub(all) enum RuleKind {
 pub fn RuleKind::equal(Self, Self) -> Bool
 pub fn RuleKind::not_equal(Self, Self) -> Bool
 pub fn RuleKind::to_repr(Self) -> @debug.Repr
+
+pub struct Select {
+  options : Array[(String, String)]
+  prompt : String
+  allow_blank : Bool
+  mut chosen : Int32
+  mut expanded : Bool
+  mut highlighted : Int32
+  mut offset : Int32
+  mut seen : Int32
+  mut query : String
+  mut focused : Bool
+  style : @style.Style
+  dim_style : @style.Style
+  arrow_style : @style.Style
+  highlight : @style.Style
+  blurred_highlight : @style.Style
+} derive(Eq, @debug.Debug)
+pub fn Select::clear(Self) -> Unit
+pub fn Select::equal(Self, Self) -> Bool
+pub fn Select::expanded(Self) -> Bool
+pub fn Select::focusable(Self) -> Bool
+pub fn Select::handle(Self, Ctx, Msg) -> Bool
+pub fn Select::hint(Self, @geom.Size) -> @geom.Size
+pub fn Select::is_blank(Self) -> Bool
+pub fn Select::new(options? : Array[(String, String)], prompt? : String, allow_blank? : Bool, value? : String?, style? : @style.Style, dim_style? : @style.Style, arrow_style? : @style.Style, highlight? : @style.Style, blurred_highlight? : @style.Style) -> Self
+pub fn Select::not_equal(Self, Self) -> Bool
+pub fn Select::render_line(Self, Int32, @geom.Size) -> @strip.Strip
+pub fn Select::set_value(Self, String) -> Unit
+pub fn Select::to_repr(Self) -> @debug.Repr
+pub fn Select::value(Self) -> String?
+pub impl Widget for Select
+
+pub(all) struct Selection {
+  prompt : String
+  value : String
+  initial : Bool
+  disabled : Bool
+} derive(Eq, @debug.Debug)
+pub fn Selection::equal(Self, Self) -> Bool
+pub fn Selection::new(String, String, initial_state? : Bool, disabled? : Bool) -> Self
+pub fn Selection::not_equal(Self, Self) -> Bool
+pub fn Selection::to_repr(Self) -> @debug.Repr
+
+pub struct SelectionList {
+  mut options : Array[Selection]
+  mut states : Array[Bool]
+  mut highlighted : Int32
+  mut hover : Int32
+  mut offset : Int32
+  mut seen : Int32
+  mut focused : Bool
+  style : @style.Style
+  highlight : @style.Style
+  blurred_highlight : @style.Style
+  disabled_style : @style.Style
+  selected_style : @style.Style
+  unselected_style : @style.Style
+} derive(Eq, @debug.Debug)
+pub fn SelectionList::deselect_all(Self) -> Unit
+pub fn SelectionList::equal(Self, Self) -> Bool
+pub fn SelectionList::focusable(Self) -> Bool
+pub fn SelectionList::handle(Self, Ctx, Msg) -> Bool
+pub fn SelectionList::highlighted(Self) -> Int32
+pub fn SelectionList::hint(Self, @geom.Size) -> @geom.Size
+pub fn SelectionList::is_selected(Self, Int32) -> Bool
+pub fn SelectionList::new(options? : Array[Selection], style? : @style.Style, highlight? : @style.Style, blurred_highlight? : @style.Style, disabled_style? : @style.Style, selected_style? : @style.Style, unselected_style? : @style.Style) -> Self
+pub fn SelectionList::not_equal(Self, Self) -> Bool
+pub fn SelectionList::options(Self) -> Array[Selection]
+pub fn SelectionList::render_line(Self, Int32, @geom.Size) -> @strip.Strip
+pub fn SelectionList::select_all(Self) -> Unit
+pub fn SelectionList::selected(Self) -> Array[String]
+pub fn SelectionList::set_options(Self, Array[Selection]) -> Unit
+pub fn SelectionList::set_selected(Self, Int32, Bool) -> Unit
+pub fn SelectionList::to_repr(Self) -> @debug.Repr
+pub fn SelectionList::toggle(Self, Int32) -> Unit
+pub fn SelectionList::toggle_all(Self) -> Unit
+pub impl Widget for SelectionList
 
 type Snap
 

@@ -22,6 +22,8 @@ pub(all) enum Out {
   Focused(id~ : Int32)
   Blurred(id~ : Int32)
   Toggled(id~ : Int32, on~ : Bool)
+  Highlighted(id~ : Int32, index~ : Int32)
+  ToggledAt(id~ : Int32, index~ : Int32, on~ : Bool)
   Quit
 } derive(Eq, Debug)
 
