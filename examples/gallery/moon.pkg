@@ -1,0 +1,15 @@
+// Copyright 2026 Leo Cheng
+// SPDX-License-Identifier: Apache-2.0
+
+// Every widget in the inventory, rendered at a fixed size. Run it with
+// `moon run --target native examples/gallery`.
+import {
+  "moonbitstack/moonetui/event",
+  "moonbitstack/moonetui/geom",
+  "moonbitstack/moonetui/style",
+  "moonbitstack/moonetui/widget",
+}
+
+supported_targets = "native"
+
+pkgtype(kind: "executable")
