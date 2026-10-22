@@ -173,6 +173,36 @@ pub fn ListView::select(Self, Int32) -> Unit
 pub fn ListView::set(Self, Array[String]) -> Unit
 pub impl Widget for ListView
 
+pub struct Log {
+  mut lines : Array[String]
+  mut width : Int32
+  max_lines : Int32?
+  mut auto_scroll : Bool
+  mut stick : Bool
+  mut seen : Int32
+  mut offset_x : Int32
+  mut offset_y : Int32
+  mut focused : Bool
+  style : @style.Style
+} derive(Eq, @debug.Debug)
+pub fn Log::clear(Self) -> Unit
+pub fn Log::equal(Self, Self) -> Bool
+pub fn Log::focusable(Self) -> Bool
+pub fn Log::handle(Self, Ctx, Msg) -> Bool
+pub fn Log::hint(Self, @geom.Size) -> @geom.Size
+pub fn Log::line_count(Self) -> Int32
+pub fn Log::lines(Self) -> Array[String]
+pub fn Log::new(max_lines? : Int32?, auto_scroll? : Bool, style? : @style.Style) -> Self
+pub fn Log::not_equal(Self, Self) -> Bool
+pub fn Log::offset(Self) -> (Int32, Int32)
+pub fn Log::render_line(Self, Int32, @geom.Size) -> @strip.Strip
+pub fn Log::set_auto_scroll(Self, Bool) -> Unit
+pub fn Log::to_repr(Self) -> @debug.Repr
+pub fn Log::write(Self, String, scroll_end? : Bool?) -> Unit
+pub fn Log::write_line(Self, String, scroll_end? : Bool?) -> Unit
+pub fn Log::write_lines(Self, Array[String], scroll_end? : Bool?) -> Unit
+pub impl Widget for Log
+
 pub(all) enum Msg {
   Key(@event.Key)
   Mouse(@event.Mouse)
@@ -267,6 +297,39 @@ pub fn RadioSet::set_selected(Self, Int32) -> Unit
 pub fn RadioSet::to_repr(Self) -> @debug.Repr
 pub impl Widget for RadioSet
 
+pub struct RichLog {
+  mut lines : Array[@strip.Strip]
+  mut width : Int32
+  max_lines : Int32?
+  min_width : Int32
+  mut wrap : Bool
+  mut auto_scroll : Bool
+  mut stick : Bool
+  mut seen : Int32
+  mut offset_x : Int32
+  mut offset_y : Int32
+  mut focused : Bool
+  style : @style.Style
+} derive(Eq, @debug.Debug)
+pub fn RichLog::clear(Self) -> Unit
+pub fn RichLog::equal(Self, Self) -> Bool
+pub fn RichLog::focusable(Self) -> Bool
+pub fn RichLog::handle(Self, Ctx, Msg) -> Bool
+pub fn RichLog::hint(Self, @geom.Size) -> @geom.Size
+pub fn RichLog::line_count(Self) -> Int32
+pub fn RichLog::lines(Self) -> Array[@strip.Strip]
+pub fn RichLog::new(max_lines? : Int32?, min_width? : Int32, wrap? : Bool, auto_scroll? : Bool, style? : @style.Style) -> Self
+pub fn RichLog::not_equal(Self, Self) -> Bool
+pub fn RichLog::offset(Self) -> (Int32, Int32)
+pub fn RichLog::render_line(Self, Int32, @geom.Size) -> @strip.Strip
+pub fn RichLog::set_auto_scroll(Self, Bool) -> Unit
+pub fn RichLog::set_wrap(Self, Bool) -> Unit
+pub fn RichLog::to_repr(Self) -> @debug.Repr
+pub fn RichLog::write(Self, String, style? : @style.Style, width? : Int32?, scroll_end? : Bool?) -> Unit
+pub impl Widget for RichLog
+
+type Snap
+
 pub struct Static {
   mut lines : Array[String]
   mut style : @style.Style
@@ -300,6 +363,51 @@ pub fn Switch::to_repr(Self) -> @debug.Repr
 pub fn Switch::toggle(Self) -> Unit
 pub fn Switch::value(Self) -> Bool
 pub impl Widget for Switch
+
+pub struct TextArea {
+  mut lines : Array[String]
+  mut row : Int32
+  mut col : Int32
+  mut anchor_row : Int32
+  mut anchor_col : Int32
+  mut selecting : Bool
+  mut dragging : Bool
+  mut offset_x : Int32
+  mut offset_y : Int32
+  mut seen_w : Int32
+  mut seen_h : Int32
+  mut focused : Bool
+  indent_width : Int32
+  tab_indents : Bool
+  show_line_numbers : Bool
+  mut clipboard : String
+  mut undo : Array[Snap]
+  mut redo : Array[Snap]
+  mut run : Bool
+  style : @style.Style
+  cursor_style : @style.Style
+  selection_style : @style.Style
+  gutter_style : @style.Style
+  gutter_focus_style : @style.Style
+}
+pub fn TextArea::clear_selection(Self) -> Unit
+pub fn TextArea::cursor(Self) -> (Int32, Int32)
+pub fn TextArea::focusable(Self) -> Bool
+pub fn TextArea::handle(Self, Ctx, Msg) -> Bool
+pub fn TextArea::has_selection(Self) -> Bool
+pub fn TextArea::hint(Self, @geom.Size) -> @geom.Size
+pub fn TextArea::insert(Self, String) -> Unit
+pub fn TextArea::line_count(Self) -> Int32
+pub fn TextArea::load_text(Self, String) -> Unit
+pub fn TextArea::new(text? : String, indent_width? : Int32, tab_indents? : Bool, show_line_numbers? : Bool, style? : @style.Style, cursor_style? : @style.Style, selection_style? : @style.Style, gutter_style? : @style.Style, gutter_focus_style? : @style.Style) -> Self
+pub fn TextArea::offset(Self) -> (Int32, Int32)
+pub fn TextArea::redo(Self) -> Bool
+pub fn TextArea::render_line(Self, Int32, @geom.Size) -> @strip.Strip
+pub fn TextArea::select_all(Self) -> Unit
+pub fn TextArea::selected_text(Self) -> String
+pub fn TextArea::text(Self) -> String
+pub fn TextArea::undo(Self) -> Bool
+pub impl Widget for TextArea
 
 // Type aliases
 
