@@ -147,7 +147,11 @@ pub impl Widget for ListView with fn handle(self, ctx, msg) {
       match mouse.kind {
         Down => {
           ctx.emit(TakeFocus(id=ctx.id))
-          self.move_to(self.offset + mouse.y, ctx)
+          let item = self.offset + mouse.y
+          if item >= 0 && item < self.items.length() {
+            self.move_to(item, ctx)
+            ctx.emit(Selected(id=ctx.id, index=item))
+          }
           true
         }
         ScrollUp => {
@@ -194,6 +198,7 @@ fn ListView::move_to(self : ListView, index : Int32, ctx : Ctx) -> Unit {
   }
   self.index = next
   self.scroll_to_fit(ctx.size.height)
+  ctx.emit(Highlighted(id=ctx.id, index=next))
   ctx.repaint()
 }
 

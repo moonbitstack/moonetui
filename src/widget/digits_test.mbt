@@ -29,3 +29,10 @@ test "digits goes bold and passes strangers through" {
   ])
   assert_eq(rows(m, size(20, 3))[0], "╶╮  ╭─╴             ")
 }
+
+///|
+test "the bracket glyphs are three columns like the rest" {
+  let w : &@widget.Widget = @widget.Digits::new(value="()")
+  let rows = Array::makei(3, row => w.render_line(row, size(6, 3)).text())
+  assert_eq(rows, ["╭╴ ╶╮ ", "│   │ ", "╰╴ ╶╯ "])
+}

@@ -249,6 +249,9 @@ pub impl Widget for TextArea with fn render_line(self, row, size) {
       ])
     }
   }
+  if gutter == 0 {
+    return body
+  }
   let number = "\{y + 1}"
   let pad = gutter - 1 - number.length()
   let gstyle = if y == self.row && self.focused {
@@ -627,7 +630,7 @@ fn TextArea::backspace(self : TextArea) -> Unit {
   }
   let line = self.lines[self.row]
   if self.col > 0 {
-    let start = prev_byte(line, self.col)
+    let start = prev_char(line, self.col)
     self.lines[self.row] = line[0:start].to_owned() + line[self.col:].to_owned()
     self.col = start
     return
@@ -648,7 +651,7 @@ fn TextArea::delete_right(self : TextArea) -> Unit {
   }
   let line = self.lines[self.row]
   if self.col < line.length() {
-    let after = next_byte(line, self.col)
+    let after = next_char(line, self.col)
     self.lines[self.row] = line[0:self.col].to_owned() + line[after:].to_owned()
     return
   }
@@ -817,7 +820,7 @@ fn TextArea::move_to(
 fn TextArea::cursor_left(self : TextArea, select : Bool) -> Unit {
   if self.col > 0 {
     let line = self.lines[self.row]
-    self.move_to(self.row, prev_byte(line, self.col), select~)
+    self.move_to(self.row, prev_char(line, self.col), select~)
     return
   }
   if self.row > 0 {
@@ -829,7 +832,7 @@ fn TextArea::cursor_left(self : TextArea, select : Bool) -> Unit {
 fn TextArea::cursor_right(self : TextArea, select : Bool) -> Unit {
   let line = self.lines[self.row]
   if self.col < line.length() {
-    self.move_to(self.row, next_byte(line, self.col), select~)
+    self.move_to(self.row, next_char(line, self.col), select~)
     return
   }
   if self.row < self.lines.length() - 1 {
@@ -873,73 +876,19 @@ fn TextArea::cursor_end(self : TextArea, select : Bool) -> Unit {
 
 ///|
 fn TextArea::word_left(self : TextArea) -> (Int32, Int32) {
-  if self.col == 0 {
-    if self.row > 0 {
-      return (self.row - 1, self.lines[self.row - 1].length())
-    }
-    return (self.row, 0)
+  if self.col == 0 && self.row > 0 {
+    return (self.row - 1, self.lines[self.row - 1].length())
   }
-  let line = self.lines[self.row]
-  let mut end = self.col
-  while end > 0 {
-    let at = prev_byte(line, end)
-    let (code, _) = @strip.code_at(line, at)
-    if code != 32 && code != 9 {
-      break
-    }
-    end = at
-  }
-  if end == 0 {
-    return (self.row, 0)
-  }
-  let mut cut = 0
-  let mut i = 0
-  let mut prev_class = false
-  let mut started = false
-  while i < end {
-    let (code, used) = @strip.code_at(line, i)
-    let cls = word_char(code)
-    if started && cls != prev_class {
-      cut = i
-    }
-    prev_class = cls
-    started = true
-    i = i + used
-  }
-  (self.row, cut)
+  (self.row, word_start(self.lines[self.row], self.col))
 }
 
 ///|
 fn TextArea::word_right(self : TextArea) -> (Int32, Int32) {
   let line = self.lines[self.row]
-  if self.col >= line.length() {
-    if self.row < self.lines.length() - 1 {
-      return (self.row + 1, 0)
-    }
-    return (self.row, self.col)
+  if self.col >= line.length() && self.row < self.lines.length() - 1 {
+    return (self.row + 1, 0)
   }
-  let mut i = self.col
-  while i < line.length() {
-    let (code, used) = @strip.code_at(line, i)
-    if code != 32 && code != 9 {
-      break
-    }
-    i = i + used
-  }
-  if i >= line.length() {
-    return (self.row, i)
-  }
-  let (first, used) = @strip.code_at(line, i)
-  let cls = word_char(first)
-  i = i + used
-  while i < line.length() {
-    let (code, used) = @strip.code_at(line, i)
-    if word_char(code) != cls {
-      break
-    }
-    i = i + used
-  }
-  (self.row, i)
+  (self.row, word_end(line, self.col))
 }
 
 ///|
@@ -978,16 +927,11 @@ fn TextArea::scroll_to_fit(self : TextArea, size : @geom.Size) -> Unit {
     self.offset_x = 0
     return
   }
-  let line = self.lines[self.row]
-  let at = @strip.cells_before(line, self.col)
+  let at = @strip.cells_before(self.lines[self.row], self.col)
   if at < self.offset_x {
     self.offset_x = at
-  }
-  while @strip.cells_before(line, self.col) -
-        @strip.cells_before(line, self.offset_x) >=
-        w {
-    let (_, used) = @strip.code_at(line, self.offset_x)
-    self.offset_x = self.offset_x + used
+  } else if at - self.offset_x >= w {
+    self.offset_x = at - w + 1
   }
   let mut widest = 0
   for row in self.lines {
@@ -996,41 +940,9 @@ fn TextArea::scroll_to_fit(self : TextArea, size : @geom.Size) -> Unit {
       widest = cells
     }
   }
-  let max_x = if widest - w < 0 { 0 } else { widest - w }
+  // One column past the widest line, for the caret to sit after its end.
+  let max_x = if widest + 1 - w < 0 { 0 } else { widest + 1 - w }
   self.offset_x = clamp(self.offset_x, 0, max_x)
-}
-
-///|
-fn word_char(code : Int32) -> Bool {
-  (code >= 0x30 && code <= 0x39) ||
-  (code >= 0x41 && code <= 0x5A) ||
-  (code >= 0x61 && code <= 0x7A) ||
-  code == 0x5F ||
-  code >= 0x80
-}
-
-///|
-fn prev_byte(text : String, index : Int32) -> Int32 {
-  if index <= 0 {
-    return 0
-  }
-  let mut i = 0
-  let mut last = 0
-  while i < index {
-    let (_, used) = @strip.code_at(text, i)
-    last = i
-    i = i + used
-  }
-  last
-}
-
-///|
-fn next_byte(text : String, index : Int32) -> Int32 {
-  if index >= text.length() {
-    return text.length()
-  }
-  let (_, used) = @strip.code_at(text, index)
-  index + used
 }
 
 ///|

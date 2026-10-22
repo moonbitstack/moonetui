@@ -282,6 +282,8 @@ pub struct Input {
   mut offset : Int32
   mut focused : Bool
   placeholder : String
+  password : Bool
+  max_length : Int32
   style : @style.Style
   placeholder_style : @style.Style
   cursor_style : @style.Style
@@ -292,7 +294,7 @@ pub fn Input::focusable(Self) -> Bool
 pub fn Input::handle(Self, Ctx, Msg) -> Bool
 pub fn Input::hint(Self, @geom.Size) -> @geom.Size
 pub fn Input::insert(Self, String) -> Unit
-pub fn Input::new(placeholder? : String, style? : @style.Style, placeholder_style? : @style.Style, cursor_style? : @style.Style) -> Self
+pub fn Input::new(placeholder? : String, password? : Bool, max_length? : Int32, style? : @style.Style, placeholder_style? : @style.Style, cursor_style? : @style.Style) -> Self
 pub fn Input::render_line(Self, Int32, @geom.Size) -> @strip.Strip
 pub fn Input::set(Self, String) -> Unit
 pub fn Input::text(Self) -> String

@@ -50,3 +50,37 @@ test "clicking a row takes focus and highlights it" {
   assert_eq(asked[0], TakeFocus(id=6))
   assert_eq(list.index(), 2)
 }
+
+///|
+test "a list reports where its highlight moves" {
+  let list = @widget.ListView::new(["a", "b", "c"])
+  let w : &@widget.Widget = list
+  let at = size(4, 3)
+  assert_eq(press(w, 2, at, key(Down)), [
+    Highlighted(id=2, index=1),
+    Repaint(id=2),
+  ])
+  assert_eq(press(w, 2, at, key(Up)), [
+    Highlighted(id=2, index=0),
+    Repaint(id=2),
+  ])
+  assert_eq(press(w, 2, at, key(Up)), [])
+}
+
+///|
+test "a click selects the row under it and nothing below the last" {
+  let list = @widget.ListView::new(["a", "b"])
+  let w : &@widget.Widget = list
+  let at = size(4, 4)
+  let click = (y : Int32) => {
+    @widget.Msg::Mouse({ kind: Down, button: 0, x: 0, y, mods: @event.none, })
+  }
+  assert_eq(press(w, 3, at, click(1)), [
+    TakeFocus(id=3),
+    Highlighted(id=3, index=1),
+    Repaint(id=3),
+    Selected(id=3, index=1),
+  ])
+  assert_eq(press(w, 3, at, click(3)), [TakeFocus(id=3)])
+  assert_eq(list.index(), 1)
+}

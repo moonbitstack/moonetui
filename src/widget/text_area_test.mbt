@@ -244,3 +244,16 @@ test "text area keeps the caret on screen" {
   assert_eq(area.cursor(), (3, 0))
   assert_eq(rows(w, size(6, 2)), [" 4 d  ", " 5 e  "])
 }
+
+///|
+test "text area scrolls sideways by columns, wide characters included" {
+  let area = @widget.TextArea::new(
+    text="中文中文中文",
+    show_line_numbers=false,
+  )
+  let w : &@widget.Widget = area
+  let at = size(6, 1)
+  ignore(area_press(w, 1, at, key(End)))
+  assert_eq(@strip.str_cells(w.render_line(0, at).text()), 6)
+  assert_eq(area.offset(), (7, 0))
+}

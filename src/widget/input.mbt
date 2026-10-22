@@ -2,20 +2,32 @@
 // SPDX-License-Identifier: Apache-2.0
 
 ///|
+/// A single-line text field.
+///
+/// The keys are Textual's: the arrows and Home and End move, Control with an
+/// arrow moves by words, Control-A and Control-E go to either end, Backspace
+/// and Delete take a character, Control-W and Control-F a word, Control-U and
+/// Control-K everything on that side of the cursor, and Enter submits.
 pub struct Input {
   mut text : String
   mut cursor : Int32
   mut offset : Int32
   mut focused : Bool
   placeholder : String
+  password : Bool
+  max_length : Int32
   style : @style.Style
   placeholder_style : @style.Style
   cursor_style : @style.Style
 }
 
 ///|
+/// An empty field. `password` shows a dot for every character; `max_length`
+/// caps how many characters it takes, and zero means no cap.
 pub fn Input::new(
   placeholder~ : String = "",
+  password~ : Bool = false,
+  max_length~ : Int32 = 0,
   style~ : @style.Style = @style.Style::new(),
   placeholder_style~ : @style.Style = @style.Style::new(dim=true),
   cursor_style~ : @style.Style = @style.Style::new(reverse=true),
@@ -26,6 +38,8 @@ pub fn Input::new(
     offset: 0,
     focused: false,
     placeholder,
+    password,
+    max_length,
     style,
     placeholder_style,
     cursor_style,
@@ -38,6 +52,7 @@ pub fn Input::text(self : Input) -> String {
 }
 
 ///|
+/// Replace the text and put the cursor after it.
 pub fn Input::set(self : Input, text : String) -> Unit {
   self.text = text
   self.cursor = text.length()
@@ -50,10 +65,12 @@ pub fn Input::cursor(self : Input) -> Int32 {
 }
 
 ///|
+/// The column the cursor shows in, once the field is `width` wide.
 pub fn Input::cursor_column(self : Input, width : Int32) -> Int32 {
   self.scroll_to_fit(width)
-  @strip.cells_before(self.text, self.cursor) -
-  @strip.cells_before(self.text, self.offset)
+  let shown = self.shown()
+  @strip.cells_before(shown, self.shown_index(self.cursor)) -
+  @strip.cells_before(shown, self.shown_index(self.offset))
 }
 
 ///|
@@ -70,9 +87,12 @@ pub impl Widget for Input with fn render_line(self, row, size) {
     )
   }
   self.scroll_to_fit(size.width)
-  let visible = self.text[self.offset:].to_owned()
-  let shown = clip_to(visible, size.width)
-  let body = @strip.Strip::of(shown, self.style).pad_to(size.width, self.style)
+  let shown = self.shown()
+  let visible = shown[self.shown_index(self.offset):].to_owned()
+  let body = @strip.Strip::of(clip_to(visible, size.width), self.style).pad_to(
+    size.width,
+    self.style,
+  )
   if !self.focused {
     return body
   }
@@ -101,9 +121,11 @@ pub impl Widget for Input with fn handle(self, ctx, msg) {
       true
     }
     Paste(text) => {
-      self.insert(text)
-      ctx.emit(Changed(id=ctx.id, value=self.text))
-      ctx.repaint()
+      let first = match text.find("\n") {
+        Some(at) => text[:at].to_owned()
+        None => text
+      }
+      self.edit(ctx, () => self.insert(first.trim_end(chars="\r").to_owned()))
       true
     }
     Key(key) => self.key(ctx, key)
@@ -118,98 +140,117 @@ pub impl Widget for Input with fn focusable(_self) {
 
 ///|
 fn Input::key(self : Input, ctx : Ctx, key : @event.Key) -> Bool {
-  if key.mods.ctrl || key.mods.alt {
+  let { ctrl, alt, .. } = key.mods
+  if alt {
     return false
   }
-  match key.code {
-    Char(code) => {
-      self.insert(text_of(code))
-      ctx.emit(Changed(id=ctx.id, value=self.text))
-      ctx.repaint()
-      true
-    }
-    Backspace => {
-      if self.cursor == 0 {
-        return true
-      }
-      let start = self.prev(self.cursor)
-      self.text = self.text[0:start].to_owned() +
-        self.text[self.cursor:].to_owned()
-      self.cursor = start
-      ctx.emit(Changed(id=ctx.id, value=self.text))
-      ctx.repaint()
-      true
-    }
-    Delete => {
-      if self.cursor >= self.text.length() {
-        return true
-      }
-      let after = self.next(self.cursor)
-      self.text = self.text[0:self.cursor].to_owned() +
-        self.text[after:].to_owned()
-      ctx.emit(Changed(id=ctx.id, value=self.text))
-      ctx.repaint()
-      true
-    }
-    Left => {
-      self.cursor = self.prev(self.cursor)
-      ctx.repaint()
-      true
-    }
-    Right => {
-      self.cursor = self.next(self.cursor)
-      ctx.repaint()
-      true
-    }
-    Home => {
-      self.cursor = 0
-      ctx.repaint()
-      true
-    }
-    End => {
-      self.cursor = self.text.length()
-      ctx.repaint()
-      true
-    }
-    Enter => {
+  match (key.code, ctrl) {
+    (Char(code), false) => self.edit(ctx, () => self.insert(text_of(code)))
+    (Left, false) => self.move_to(ctx, prev_char(self.text, self.cursor))
+    (Right, false) => self.move_to(ctx, next_char(self.text, self.cursor))
+    (Left, true) => self.move_to(ctx, word_start(self.text, self.cursor))
+    (Right, true) => self.move_to(ctx, word_end(self.text, self.cursor))
+    (Home, _) | (Char(0x61), true) => self.move_to(ctx, 0)
+    (End, _) | (Char(0x65), true) => self.move_to(ctx, self.text.length())
+    (Backspace, false) =>
+      self.edit(ctx, () => {
+        self.cut(prev_char(self.text, self.cursor), self.cursor)
+      })
+    (Backspace, true) | (Char(0x77), true) =>
+      self.edit(ctx, () => {
+        self.cut(word_start(self.text, self.cursor), self.cursor)
+      })
+    (Char(0x75), true) => self.edit(ctx, () => self.cut(0, self.cursor))
+    (Delete, false) | (Char(0x64), true) =>
+      self.edit(ctx, () => {
+        self.cut(self.cursor, next_char(self.text, self.cursor))
+      })
+    (Delete, true) | (Char(0x66), true) =>
+      self.edit(ctx, () => {
+        self.cut(self.cursor, word_end(self.text, self.cursor))
+      })
+    (Char(0x6B), true) =>
+      self.edit(ctx, () => self.cut(self.cursor, self.text.length()))
+    (Enter, false) => {
       ctx.emit(Changed(id=ctx.id, value=self.text))
       ctx.emit(Submitted(id=ctx.id, value=self.text))
-      false
+      return false
     }
-    _ => false
+    _ => return false
   }
+  true
 }
 
 ///|
+/// Run an edit, and report the text only if the edit changed it.
+fn Input::edit(self : Input, ctx : Ctx, change : () -> Unit) -> Unit {
+  let before = self.text
+  change()
+  if self.text != before {
+    ctx.emit(Changed(id=ctx.id, value=self.text))
+  }
+  ctx.repaint()
+}
+
+///|
+fn Input::move_to(self : Input, ctx : Ctx, index : Int32) -> Unit {
+  self.cursor = index
+  ctx.repaint()
+}
+
+///|
+fn Input::cut(self : Input, from : Int32, until : Int32) -> Unit {
+  if until <= from {
+    return
+  }
+  self.text = self.text[0:from].to_owned() + self.text[until:].to_owned()
+  self.cursor = from
+}
+
+///|
+/// Insert `text` at the cursor, as much of it as `max_length` leaves room for.
 pub fn Input::insert(self : Input, text : String) -> Unit {
+  let room = if self.max_length > 0 {
+    self.max_length - chars(self.text)
+  } else {
+    chars(text)
+  }
+  if room <= 0 {
+    return
+  }
+  let mut end = 0
+  let mut taken = 0
+  while end < text.length() && taken < room {
+    end = next_char(text, end)
+    taken += 1
+  }
   self.text = self.text[0:self.cursor].to_owned() +
-    text +
+    text[:end].to_owned() +
     self.text[self.cursor:].to_owned()
-  self.cursor = self.cursor + text.length()
+  self.cursor = self.cursor + end
 }
 
 ///|
-fn Input::prev(self : Input, index : Int32) -> Int32 {
-  if index <= 0 {
-    return 0
+/// The text as it is drawn: itself, or a dot for every character.
+fn Input::shown(self : Input) -> String {
+  if !self.password {
+    return self.text
   }
-  let mut i = 0
-  let mut last = 0
-  while i < index {
-    let (_, used) = @strip.code_at(self.text, i)
-    last = i
-    i = i + used
+  let out = StringBuilder()
+  for _ in 0..<chars(self.text) {
+    out.write_string("•")
   }
-  last
+  out.to_string()
 }
 
 ///|
-fn Input::next(self : Input, index : Int32) -> Int32 {
-  if index >= self.text.length() {
-    return self.text.length()
+/// Where `index` in the text falls in what is drawn.
+fn Input::shown_index(self : Input, index : Int32) -> Int32 {
+  if self.password {
+    chars(self.text[:index].to_owned())
+  } else {
+    index
   }
-  let (_, used) = @strip.code_at(self.text, index)
-  index + used
 }
 
 ///|
@@ -222,22 +263,32 @@ fn Input::scroll_to_fit(self : Input, width : Int32) -> Unit {
     self.offset = self.cursor
     return
   }
-  while @strip.cells_before(self.text, self.cursor) -
-        @strip.cells_before(self.text, self.offset) >=
-        width {
-    let (_, used) = @strip.code_at(self.text, self.offset)
-    self.offset = self.offset + used
+  let shown = self.shown()
+  let column = (index : Int32) => {
+    @strip.cells_before(shown, self.shown_index(index))
+  }
+  while column(self.cursor) - column(self.offset) >= width {
+    self.offset = next_char(self.text, self.offset)
   }
 }
 
 ///|
-fn text_of(code : Int32) -> String {
-  let out = StringBuilder()
-  match code.to_char() {
-    Some(c) => out.write_char(c)
-    None => ()
+fn chars(text : String) -> Int32 {
+  let mut count = 0
+  let mut at = 0
+  while at < text.length() {
+    at = next_char(text, at)
+    count += 1
   }
-  out.to_string()
+  count
+}
+
+///|
+fn text_of(code : Int32) -> String {
+  match code.to_char() {
+    Some(c) => c.to_string()
+    None => ""
+  }
 }
 
 ///|

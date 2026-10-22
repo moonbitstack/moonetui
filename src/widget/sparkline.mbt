@@ -56,7 +56,6 @@ pub impl Widget for Sparkline with fn render_line(self, row, size) {
   if self.data.length() == 1 {
     return bar_row(w, "█", self.max_colour, self.style)
   }
-  let bars = "▁▂▃▄▅▆▇█"
   let segments = 8 * h - 1
   let mut minimum = self.data[0]
   let mut maximum = self.data[0]
@@ -93,16 +92,7 @@ pub impl Widget for Sparkline with fn render_line(self, row, size) {
         ),
       )
     } else {
-      let at = index % 8
-      let mut bar = ""
-      let mut bi = 0
-      while bi <= at {
-        let (_, used) = @strip.code_at(bars, bi)
-        if bi == at {
-          bar = bars[bi:bi + used].to_owned()
-        }
-        bi = bi + used
-      }
+      let bar = bars[index % 8]
       @strip.Seg::new(
         bar,
         @style.Style::new(
@@ -129,6 +119,11 @@ pub impl Widget for Sparkline with fn handle(_self, _ctx, _msg) {
 pub impl Widget for Sparkline with fn focusable(_self) {
   false
 }
+
+///|
+let bars : Array[String] = [
+  "▁", "▂", "▃", "▄", "▅", "▆", "▇", "█",
+]
 
 ///|
 fn ratio_hundred(ratio : Double) -> Int32 {
