@@ -1,0 +1,37 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "moonbitstack/moonetui/vt"
+
+import {
+  "moonbitlang/core/debug",
+  "moonbitstack/moonetui/style",
+}
+
+// Values
+
+// Errors
+
+// Types and methods
+pub(all) struct Cell {
+  text : String
+  style : @style.Style
+} derive(Eq, @debug.Debug)
+pub fn Cell::equal(Self, Self) -> Bool
+pub fn Cell::not_equal(Self, Self) -> Bool
+pub fn Cell::to_repr(Self) -> @debug.Repr
+
+type Grid
+pub fn Grid::at(Self, Int32, Int32) -> Cell
+pub fn Grid::cursor(Self) -> (Int32, Int32)
+pub fn Grid::dirty_all(Self) -> Unit
+pub fn Grid::height(Self) -> Int32
+pub fn Grid::mode(Self, Int32) -> Bool
+pub fn Grid::new(Int32, Int32) -> Self
+pub fn Grid::resize(Self, Int32, Int32) -> Unit
+pub fn Grid::rows(Self) -> Array[String]
+pub fn Grid::take_dirty(Self) -> Array[(Int32, Int32)]
+pub fn Grid::width(Self) -> Int32
+pub fn Grid::write(Self, String) -> Unit
+
+// Type aliases
+
+// Traits

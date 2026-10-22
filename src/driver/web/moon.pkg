@@ -9,6 +9,7 @@ import {
   "moonbitstack/moonetui/geom",
   "moonbitstack/moonetui/strip",
   "moonbitstack/moonetui/style",
+  "moonbitstack/moonetui/vt",
 }
 
 supported_targets = "js"
