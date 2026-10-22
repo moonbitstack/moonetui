@@ -553,6 +553,19 @@ pub fn Node::find(self : Node, id : Int32) -> &@widget.Widget? {
 }
 
 ///|
+/// Visit every widget in the tree with its node id.
+fn Node::each_leaf(self : Node, f : (Int32, &@widget.Widget) -> Unit) -> Unit {
+  match self {
+    Leaf(id~, widget~, ..) => f(id, widget)
+    Stack(kids~, ..) | Grid(kids~, ..) =>
+      for kid in kids {
+        kid.each_leaf(f)
+      }
+    Scroll(kid~, ..) => kid.each_leaf(f)
+  }
+}
+
+///|
 pub fn Node::focus_ring(
   self : Node,
   theme~ : Theme = Theme::new(),

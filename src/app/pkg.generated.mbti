@@ -72,6 +72,7 @@ pub struct App[D] {
   mut pending_resize : @geom.Size?
   mut resize_at : Int32
   mut measured : @geom.Size
+  mut ticked : Int32
 }
 pub fn[D : @driver.Driver] App::after(Self[D], Int32, () -> Unit) -> Unit
 pub fn[D] App::disable(Self[D], Int32) -> Unit

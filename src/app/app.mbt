@@ -32,6 +32,7 @@ pub struct App[D] {
   mut pending_resize : @geom.Size?
   mut resize_at : Int32
   mut measured : @geom.Size
+  mut ticked : Int32
 }
 
 ///|
@@ -81,6 +82,7 @@ pub fn[D] App::new(
     pending_resize: None,
     resize_at: 0,
     measured: @geom.Size::new(80, 24),
+    ticked: 0,
   }
 }
 
@@ -98,6 +100,7 @@ pub fn[D : @driver.Driver] App::start(self : App[D]) -> Unit raise {
   self.focus_next(1)
   self.render()
   self.last_frame = self.driver.now()
+  self.ticked = self.last_frame
 }
 
 ///|
@@ -127,6 +130,14 @@ pub fn[D : @driver.Driver] App::step(self : App[D]) -> Bool raise {
   }
   let now = self.driver.now()
   self.fire_timers(now)
+  let since = now - self.ticked
+  if since >= self.frame_ms || since < 0 {
+    self.ticked = now
+    let ms = if since < 0 { self.frame_ms } else { since }
+    self.root.each_leaf((id, widget) => {
+      ignore(self.deliver_to(id, widget, Tick(ms)))
+    })
+  }
   // Few terminals report a resize in-band, so the size is measured as well; a
   // change in the measurement counts the same as a report.
   let measured = self.driver.size()
@@ -442,20 +453,31 @@ fn[D] App::deliver(self : App[D], id : Int32, msg : @widget.Msg) -> Bool {
   }
   match self.root.find(id) {
     None => false
-    Some(widget) => {
-      let rect = self.rect_of(id)
-      let content = match self.styled.get(id) {
-        Some(res) => res.content_region(rect).size()
-        None => rect.size()
-      }
-      let ctx = @widget.Ctx::new(id, content, focused=id == self.focus)
-      let handled = widget.handle(ctx, msg)
-      for out in ctx.asked() {
-        self.act(out)
-      }
-      handled
-    }
+    Some(widget) => self.deliver_to(id, widget, msg)
   }
+}
+
+///|
+fn[D] App::deliver_to(
+  self : App[D],
+  id : Int32,
+  widget : &@widget.Widget,
+  msg : @widget.Msg,
+) -> Bool {
+  if self.off.contains(id) {
+    return false
+  }
+  let rect = self.rect_of(id)
+  let content = match self.styled.get(id) {
+    Some(res) => res.content_region(rect).size()
+    None => rect.size()
+  }
+  let ctx = @widget.Ctx::new(id, content, focused=id == self.focus)
+  let handled = widget.handle(ctx, msg)
+  for out in ctx.asked() {
+    self.act(out)
+  }
+  handled
 }
 
 ///|

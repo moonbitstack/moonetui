@@ -174,6 +174,21 @@ test "the quit key can be another key, or none" {
 }
 
 ///|
+test "widgets hear the time pass once a frame" {
+  let spinner = @widget.LoadingIndicator::new()
+  let toast = @widget.Toast::new("saved", duration=60)
+  let tree = @app.column(0, [@app.leaf(1, spinner), @app.leaf(2, toast)])
+  let tty = @driver.Headless::new(@geom.Size::new(20, 4), tick=16)
+  let ui = @app.App::new(tty, tree)
+  ui.start()
+  for _ in 0..<6 {
+    ui.step() |> ignore
+  }
+  assert_eq(spinner.frame() > 0, true)
+  assert_eq(ui.drain().contains(Dismissed(id=2)), true)
+}
+
+///|
 test "a resize settles before the screen is rebuilt" {
   let list = @widget.ListView::new(["a", "b", "c", "d"])
   let tree = @app.column(0, [@app.leaf(1, list)])
