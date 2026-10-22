@@ -49,7 +49,7 @@ pub struct App[D] {
   mut root : Node
   parser : @input.Parser
   base : @style.Style
-  sheet : @design.Stylesheet
+  mut sheet : @design.Stylesheet
   frame_ms : Int32
   mut rects : Map[Int32, @geom.Region]
   mut bare : Map[Int32, @geom.Region]
@@ -94,6 +94,7 @@ pub fn[D] App::refresh(Self[D]) -> Unit
 pub fn[D : @driver.Driver] App::run(Self[D]) -> Unit raise
 pub fn[D] App::screen(Self[D]) -> Array[String]
 pub fn[D] App::screen_depth(Self[D]) -> Int32
+pub fn[D] App::set_sheet(Self[D], @design.Stylesheet) -> Unit
 pub fn[D : @driver.Driver] App::start(Self[D]) -> Unit raise
 pub fn[D : @driver.Driver] App::step(Self[D]) -> Bool raise
 pub fn[D : @driver.Driver] App::stop(Self[D]) -> Unit raise

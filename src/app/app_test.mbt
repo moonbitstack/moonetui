@@ -458,3 +458,19 @@ test "a plain wire takes whole frames with no control sequences" {
   assert_eq(ui.screen(), ["hi  ", "    "])
   ui.stop()
 }
+
+///|
+test "a new stylesheet restyles the tree on the next frame" {
+  let tree = @app.column(0, [
+    @app.leaf(1, @widget.Static::new("x"), name="Panel"),
+  ])
+  let tty = @driver.Headless::new(@geom.Size::new(4, 3))
+  let ui = @app.App::new(tty, tree)
+  ui.start()
+  assert_eq(ui.screen()[0], "x   ")
+  let sheet = @design.Stylesheet::new()
+  sheet.add(@design.Sel::new(name="Panel"), @design.Styles::new(border=Thin))
+  ui.set_sheet(sheet)
+  ui.step() |> ignore
+  assert_eq(ui.screen()[0], "┌──┐")
+}

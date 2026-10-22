@@ -1,15 +1,15 @@
-// The same application as `examples/hello`, drawn in a browser instead of a
-// terminal. The library does not change: only the driver does.
+// The gallery and every demo, drawn on canvases in a page. The documentation
+// site loads this module; `index.html` beside it is the gallery on its own.
 import {
+  "moonbitlang/core/debug",
   "moonbitstack/moonetui/app",
   "moonbitstack/moonetui/driver/web",
-  "moonbitstack/moonetui/layout",
-  "moonbitstack/moonetui/style",
+  "moonbitstack/moonetui/examples/showcase",
   "moonbitstack/moonetui/widget",
 }
 
 supported_targets = "js"
 
 options(
-  link: { "js": { "exports": [ "start" ], "format": "esm" } },
+  link: { "js": { "exports": [ "start", "mount" ], "format": "esm" } },
 )

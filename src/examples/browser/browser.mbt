@@ -2,43 +2,64 @@
 // SPDX-License-Identifier: Apache-2.0
 
 ///|
-pub fn start() -> Unit {
-  let head = @widget.Header::new("moonetui in a browser", note="tab to move")
-  let list = @widget.ListView::new([
-    "alpha", "beta", "gamma", "delta", "epsilon", "中文也对齐",
-  ])
-  let field = @widget.Input::new(placeholder="type here")
-  let bar = @widget.Progress::new(total=100)
-  let foot = @widget.Footer::new([
-    ("tab", "next"),
-    ("up down", "move"),
-    ("enter", "choose"),
-  ])
-  bar.set(35)
-  let tree = @app.column(0, [
-    @app.leaf(1, head, box=@layout.Box::new(extent=Cells(1))),
-    @app.leaf(2, list, box=@layout.Box::new(extent=Frac(1))),
-    @app.leaf(3, field, box=@layout.Box::new(extent=Cells(1))),
-    @app.leaf(4, bar, box=@layout.Box::new(extent=Cells(1))),
-    @app.leaf(5, foot, box=@layout.Box::new(extent=Cells(1))),
-  ])
-  let tty = @web.WebTty::new(canvas="moonetui", font_px=16)
-  let ui = @app.App::new(tty, tree, base=@style.Style::new())
+/// The whole gallery on the canvas whose id is `canvas`.
+pub fn start(canvas : String) -> Unit {
+  let gallery = @showcase.Gallery::new()
+  let ui = @app.App::new(
+    @web.WebTty::new(canvas~, font_px=14, fg=fore, bg=back),
+    gallery.tree(),
+    sheet=gallery.sheet(),
+  )
+  gallery.attach(ui)
+  run(ui, canvas, out => gallery.react(ui, out))
+}
+
+///|
+/// One demo, by name, on the canvas whose id is `canvas`. What its widgets
+/// report goes to the page's `moonetuiReport(canvas, text)`, if it has one.
+pub fn mount(canvas : String, name : String) -> Unit {
+  guard @showcase.find(name) is Some(demo) else { return }
+  let tty = @web.WebTty::new(canvas~, font_px=14, fg=fore, bg=back)
+  let ui = @app.App::new(tty, demo.tree, sheet=demo.sheet)
+  for id in demo.disabled {
+    ui.disable(id)
+  }
+  run(ui, canvas, _ => ())
+}
+
+///|
+fn run(
+  ui : @app.App[@web.WebTty],
+  canvas : String,
+  react : (@widget.Out) -> Unit,
+) -> Unit {
   ui.start() catch {
-    _ => ()
+    _ => return
   }
   @web.pump(() => {
     let alive = ui.step() catch { _ => false }
-    for report in ui.drain() {
-      match report {
-        Selected(index~, ..) => {
-          field.set(list.items()[index])
-          bar.advance(10)
-          ui.refresh()
-        }
-        _ => ()
+    for out in ui.drain() {
+      match out {
+        Focused(..) | Blurred(..) | Repaint(..) => ()
+        _ => report(canvas, @debug.to_string(out))
       }
+      react(out)
     }
     alive
   })
 }
+
+///|
+extern "js" fn report(canvas : String, text : String) -> Unit =
+  #| (canvas, text) => {
+  #|   if (typeof globalThis.moonetuiReport === "function") {
+  #|     globalThis.moonetuiReport(canvas, text);
+  #|   }
+  #| }
+
+///|
+/// The documentation site's terminal colours, so a canvas sits in its page.
+let fore : String = "#c9d4e8"
+
+///|
+let back : String = "#0a0e16"

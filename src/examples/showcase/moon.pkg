@@ -1,0 +1,18 @@
+// Every widget and every part of the design system as a small live
+// application. The gallery runs them in a terminal, the documentation runs the
+// same ones in its pages, and the code shown beside each is the code here.
+import {
+  "moonbitlang/core/cmp",
+  "moonbitstack/moonetui/app",
+  "moonbitstack/moonetui/design",
+  "moonbitstack/moonetui/geom",
+  "moonbitstack/moonetui/layout",
+  "moonbitstack/moonetui/strip",
+  "moonbitstack/moonetui/style",
+  "moonbitstack/moonetui/widget",
+}
+
+import {
+  "moonbitstack/moonetui/driver",
+  "moonbitstack/moonetui/vt",
+} for "test"

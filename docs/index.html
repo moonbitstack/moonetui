@@ -14,7 +14,7 @@
 <aside class="side">
   <a class="brand" href="#/">
     <span class="mark">m▚</span>
-    <span><b>moonetui</b><small>v0.1.1 · MoonBit</small></span>
+    <span><b>moonetui</b><small>v0.2.0 · MoonBit</small></span>
   </a>
   <nav>
     <a href="#/" class="active"><span class="k">⌂</span>Home</a>
@@ -38,7 +38,7 @@
 <!-- ============================= HOME ============================= -->
 <section class="page" id="page-home">
   <div class="hero">
-    <div class="eyebrow"><span class="dot"></span>0.1.1 · four backends · 32 widgets</div>
+    <div class="eyebrow"><span class="dot"></span>0.2.0 · four backends · 32 widgets</div>
     <h1>Interfaces for the terminal,<br><span class="grad">down to the serial line.</span></h1>
     <p class="tag">moonetui is a terminal UI toolkit for <a href="https://www.moonbitlang.com/">MoonBit</a> — a synchronous, portable core with a cell buffer, a differential ANSI renderer, a CSS-like design system, and widgets that run the same on wasm, on Node, in the browser — and on a plain UART.</p>
     <div class="cta">
@@ -50,28 +50,15 @@
   <div class="term-window">
     <div class="term-bar">
       <span class="light r"></span><span class="light y"></span><span class="light g"></span>
-      <span class="title">moonetui — src/examples/tui · 80×24</span>
+      <span class="title">moonetui — src/examples/gallery, running in this page</span>
     </div>
-    <div class="term-body"><span class="dim">╭──────────────────────────────────────────────────────────────────────────╮</span>
-<span class="dim">│</span> <span class="rev"> ◉ moonetui </span><span class="dim"> · the design system in a terminal window                     </span><span class="dim">│</span>
-<span class="dim">│</span> <span class="blue"> ◆ Inbox </span> <span class="dim"> ◆ Reports </span> <span class="dim"> ◆ Settings                            </span><span class="dim"> │</span>
-<span class="dim">│</span> <span class="blue">━━━━━━</span><span class="dim">──────────────────────────────────────────────────────────────────│</span>
-<span class="dim">│</span> <span class="dim"> </span> ▼ <span class="b">Today</span>      <span class="dim">│</span> <span class="cyan">requests per minute</span>                    <span class="dim">│</span>
-<span class="dim">│</span> <span class="dim"> </span> ├── <span class="green">deploy passed</span>  <span class="dim">│</span>  <span class="cyan">▅▆█</span>  <span class="dim">▂▄▆</span>  <span class="cyan">▆█▇</span>  <span class="dim">▁▃▅</span>  <span class="cyan">▇██</span>          <span class="dim">│</span>
-<span class="dim">│</span> <span class="dim"> </span> ├── <span class="green">tests passed</span>   <span class="dim">│</span>  <span class="green">▁▂▃▄▅▆▇█ </span><span class="dim">248 · 249 · 249 · 250 · 256</span>     <span class="dim">│</span>
-<span class="dim">│</span> <span class="dim"> </span> └── <span class="gold">docs deployed</span>  <span class="dim">│</span>                                        <span class="dim">│</span>
-<span class="dim">│</span> <span class="dim"> </span> ▶ <span class="b">This week</span>    <span class="dim">│</span> <span class="purple">[✓] clean build</span>  <span class="dim">[ ] audit</span>          <span class="dim">│</span>
-<span class="dim">│</span>                    <span class="dim">│</span> <span class="purple">[✓] all targets</span>  <span class="dim">[ ] sign</span>           <span class="dim">│</span>
-<span class="dim">│</span>  <span class="pink">◐</span> 42% <span class="cyan">▰▰▰▰▰▰▰▱▱▱▱▱</span>  <span class="dim">│</span> <span class="purple">( ) beta</span>   <span class="purple">(●)</span> <span class="b">stable</span>            <span class="dim">│</span>
-<span class="dim">│</span>──────────────────────────────────────────────────────────────────────────<span class="dim">│</span>
-<span class="dim">│</span> <span class="dim">tab focus</span>   <span class="dim">enter select</span>   <span class="dim">space toggle</span>   <span class="dim">q quit</span>              <span class="dim">│</span>
-<span class="dim">╰──────────────────────────────────────────────────────────────────────────╯</span>
-<span class="dim">$</span> <span id="typed"></span><span class="cursor"></span></div>
+    <div class="term-live"><canvas id="gallery-home" tabindex="0"></canvas></div>
+    <div class="term-hint">Click the terminal, then <b>up</b> and <b>down</b> choose a demo and <b>tab</b> moves into it. It is the same code as <code class="inline">moon run --target native src/examples/gallery</code>.</div>
   </div>
 
   <div class="stats">
     <div class="stat"><div class="n">4</div><div class="l">backends · wasm, wasm-gc, js, native</div></div>
-    <div class="stat"><div class="n">273</div><div class="l">tests per backend, all passing</div></div>
+    <div class="stat"><div class="n" data-count="tests">339</div><div class="l">tests per backend, all passing</div></div>
     <div class="stat"><div class="n">32</div><div class="l">widgets, from toggles to trees</div></div>
     <div class="stat"><div class="n">0</div><div class="l">dependencies · a single pure core</div></div>
   </div>
@@ -104,7 +91,7 @@
 <section class="page" id="page-started">
   <div class="topbar">
     <div class="crumbs">docs / <b class="crumb-here">started</b></div>
-    <div class="acts"><button class="ghost-btn" class="theme-toggle">◐ theme</button></div>
+    <div class="acts"><button class="ghost-btn theme-toggle">◐ theme</button></div>
   </div>
 
   <h2>Getting started</h2>
@@ -116,23 +103,25 @@
 moon add moonbitstack/moonetui</pre>
 
   <h3>Run the examples</h3>
-  <p>Small ones to see a piece at a time, one complete application with tabs, timers and a command line, and the same app on three runtimes — plus a gallery of every widget and a bare-wire demo of the plain serial line:</p>
-  <pre class="block"><span class="cm"># a complete little application — tabs, timers, a command line</span>
+  <p>Every widget and style live in one terminal, a complete application, and the same toolkit on Node, in a browser and on a bare serial line:</p>
+  <pre class="block"><span class="cm"># every widget and every style, live; up and down choose, tab moves in</span>
+moon run --target native src/examples/gallery
+
+<span class="cm"># a complete little application: tabs, timers, a command line</span>
 moon run --target native src/examples/monitor
 
-<span class="cm"># a real terminal (Unix or Windows)</span>
+<span class="cm"># a styled application in a real terminal, Unix or Windows</span>
 moon run --target native src/examples/tui
 
 <span class="cm"># under Node</span>
 moon run --target js src/examples/hello
 
-<span class="cm"># in a browser — open it directly</span>
-start src/examples/browser/index.html
+<span class="cm"># the gallery in a browser: build, serve the repository, open the page</span>
+moon build --target js
+python -m http.server
+<span class="cm"># then http://localhost:8000/src/examples/browser/index.html</span>
 
-<span class="cm"># every widget, rendered one after another</span>
-moon run --target native src/examples/gallery
-
-<span class="cm"># the same app as whole frames of text — a bare serial line</span>
+<span class="cm"># whole frames of plain text, as a bare serial line receives them</span>
 moon run --target native src/examples/uart</pre>
 
   <h3>A first application</h3>
@@ -157,17 +146,17 @@ w.handle(ctx, @widget.Msg::Key(@event.Key::of(Enter)))
 <section class="page" id="page-architecture">
   <div class="topbar">
     <div class="crumbs">docs / <b class="crumb-here">architecture</b></div>
-    <div class="acts"><button class="ghost-btn" class="theme-toggle">◐ theme</button></div>
+    <div class="acts"><button class="ghost-btn theme-toggle">◐ theme</button></div>
   </div>
 
   <h2>Architecture</h2>
-  <p class="lead">Eleven packages, one direction of flow, four points of contact with the platform.</p>
+  <p class="lead">Twelve packages, one direction of flow, four points of contact with the platform.</p>
 
   <h3>The frame, step by step</h3>
   <p>The core is <strong>synchronous</strong>. <code class="inline">wasm-gc</code> has no async, and the core must run there — so the main loop is a <code class="inline">step()</code> the host drives: a blocking poll on native, <code class="inline">setInterval</code> under Node, <code class="inline">requestAnimationFrame</code> in a browser.</p>
   <pre class="block">poll <span class="fn">→</span> parse <span class="fn">→</span> dispatch <span class="fn">→</span> lay out <span class="fn">→</span> compose <span class="fn">→</span> diff <span class="fn">→</span> write</pre>
   <ul>
-    <li><strong>poll</strong> — the driver reports what arrived, bytes or ticks.</li>
+    <li><strong>poll</strong> — the driver reports what arrived; the app measures the terminal and sends every widget the time that passed.</li>
     <li><strong>parse</strong> — <code class="inline">@input</code> turns the byte stream into events: CSI and SS3 sequences, modifiers, SGR mouse, bracketed paste, UTF-8 split across reads.</li>
     <li><strong>dispatch</strong> — the app walks the focus ring and hands each event to a widget; widgets answer with typed messages.</li>
     <li><strong>lay out</strong> — <code class="inline">@layout</code> and the design system place boxes along an axis or on the grid.</li>
@@ -187,6 +176,7 @@ w.handle(ctx, @widget.Msg::Key(@event.Key::of(Enter)))
       <tr><td><code class="inline">@input</code></td><td>The incremental terminal byte parser.</td></tr>
       <tr><td><code class="inline">@comp</code></td><td>The compositor: placements to rows, rows to diffs, diffs to escape sequences.</td></tr>
       <tr><td><code class="inline">@driver</code></td><td>The seam to a terminal, plus a headless terminal for tests.</td></tr>
+      <tr><td><code class="inline">@vt</code></td><td>A virtual terminal: the screen an escape stream draws, read by the browser driver, by tests and by screenshots.</td></tr>
       <tr><td><code class="inline">@layout</code></td><td>Axis placement and the grid — spans, gutters, integer division that loses no column.</td></tr>
       <tr><td><code class="inline">@design</code></td><td>The style system: rules, specificity, cascade, inheritance, chrome.</td></tr>
       <tr><td><code class="inline">@widget</code></td><td>The widget contract and the widget inventory.</td></tr>
@@ -209,381 +199,745 @@ w.handle(ctx, @widget.Msg::Key(@event.Key::of(Enter)))
 <section class="page" id="page-widgets">
   <div class="topbar">
     <div class="crumbs">docs / <b class="crumb-here">widgets</b></div>
-    <div class="acts"><button class="ghost-btn" class="theme-toggle">◐ theme</button></div>
+    <div class="acts"><button class="ghost-btn theme-toggle">◐ theme</button></div>
   </div>
 
   <h2>Widgets</h2>
-  <p class="lead">Thirty-two widgets, each with its own keyboard contract, message shape and rendering. Every snippet below is a live excerpt from <code class="inline">src/examples/gallery</code>, and every output block is what that example really renders.</p>
+  <p class="lead">Thirty-two widgets, each with its own keyboard contract, message shape and rendering. Every card runs its demo from <code class="inline">src/examples/showcase</code> right here: click one and use the keys, and the line under it shows what the widget reports. The code under that is the demo's own source.</p>
   <pre class="block">moon run --target native src/examples/gallery</pre>
+<!-- generated:widgets -->
   <h3>Text and display</h3>
-  <div class="wcard">
+  <div class="wcard" id="demo-static">
     <h4><code class="inline">Static</code></h4>
-    <p class="wdesc">Text clipped at a character boundary — left, centre or right; <code class="inline">label()</code> gives it a style in one call.</p>
-    <div class="wcols">
-      <pre class="block wcode">@widget.Static::new(&quot;Hello, moonetui&quot;, align=@widget.Align::Centre)</pre>
-      <div class="term-body wout">       Hello, moonetui</div>
-    </div>
+    <p class="wdesc">Text clipped at a character boundary, aligned left, centre or right.</p>
+    <div class="wlive"><canvas id="live-static" data-demo="Static" tabindex="0" style="height: 72px"></canvas></div>
+    <div class="wmsg" data-for="live-static"></div>
+    <pre class="block wcode"><span class="kw">pub</span> <span class="kw">fn</span> static_text() -&gt; Demo {
+  <span class="kw">let</span> left = <span class="fn">@widget.</span>Static::new(<span class="st">&quot;Text sits on the left by default.&quot;</span>)
+  <span class="kw">let</span> centre = <span class="fn">@widget.</span>Static::new(<span class="st">&quot;Or in the centre,&quot;</span>, align=Centre)
+  <span class="kw">let</span> right = <span class="fn">@widget.</span>Static::new(<span class="st">&quot;or on the right.&quot;</span>, align=Right)
+  <span class="kw">let</span> tinted = <span class="fn">@widget.</span>label(
+    <span class="st">&quot;label() styles it in one call.&quot;</span>,
+    style=<span class="fn">@style.</span>Style::new(fg=<span class="fn">@style.</span>cyan, bold=<span class="kw">true</span>),
+  )
+  Demo::new(
+    <span class="st">&quot;Static&quot;</span>,
+    <span class="fn">@app.</span>column(0, [
+      <span class="fn">@app.</span>leaf(1, left, box=line(1)),
+      <span class="fn">@app.</span>leaf(2, centre, box=line(1)),
+      <span class="fn">@app.</span>leaf(3, right, box=line(1)),
+      <span class="fn">@app.</span>leaf(4, tinted, box=line(1)),
+    ]),
+    group=Text,
+    note=<span class="st">&quot;Text clipped at a character boundary, aligned left, centre or right.&quot;</span>,
+    rows=4,
+  )
+}
+
+<span class="kw">fn</span> line(n : Int32) -&gt; <span class="fn">@layout.</span>Box {
+  <span class="fn">@layout.</span>Box::new(extent=Cells(n))
+}</pre>
   </div>
-  <div class="wcard">
+  <div class="wcard" id="demo-header">
     <h4><code class="inline">Header</code></h4>
-    <p class="wdesc">The title bar: the title in the centre, a note at the right edge — reverse video by default.</p>
-    <div class="wcols">
-      <pre class="block wcode">@widget.Header::new(&quot;moonetui&quot;, note=&quot;ctrl-c to quit&quot;)</pre>
-      <div class="term-body wout"><span class="rev">                   moonetui                   ctrl-c to quit</span></div>
-    </div>
+    <p class="wdesc">The title bar: the title in the centre, a note at the right edge.</p>
+    <div class="wlive"><canvas id="live-header" data-demo="Header" tabindex="0" style="height: 18px"></canvas></div>
+    <div class="wmsg" data-for="live-header"></div>
+    <pre class="block wcode"><span class="kw">pub</span> <span class="kw">fn</span> header() -&gt; Demo {
+  <span class="kw">let</span> bar = <span class="fn">@widget.</span>Header::new(<span class="st">&quot;moonetui&quot;</span>, note=<span class="st">&quot;ctrl-c to quit&quot;</span>)
+  Demo::new(
+    <span class="st">&quot;Header&quot;</span>,
+    <span class="fn">@app.</span>column(0, [<span class="fn">@app.</span>leaf(1, bar, box=line(1))]),
+    group=Text,
+    note=<span class="st">&quot;The title bar: the title in the centre, a note at the right edge.&quot;</span>,
+    rows=1,
+  )
+}
+
+<span class="kw">fn</span> line(n : Int32) -&gt; <span class="fn">@layout.</span>Box {
+  <span class="fn">@layout.</span>Box::new(extent=Cells(n))
+}</pre>
   </div>
-  <div class="wcard">
+  <div class="wcard" id="demo-footer">
     <h4><code class="inline">Footer</code></h4>
-    <p class="wdesc">The bound key hints along the bottom edge, from the pairs you pass in.</p>
-    <div class="wcols">
-      <pre class="block wcode">@widget.Footer::new([(&quot;tab&quot;, &quot;next&quot;), (&quot;enter&quot;, &quot;choose&quot;), (&quot;q&quot;, &quot;quit&quot;)])</pre>
-      <div class="term-body wout"> <span class="b">tab</span> next  <span class="b">enter</span> choose  <span class="b">q</span> quit</div>
-    </div>
+    <p class="wdesc">Key hints along the bottom edge, as many as the width holds.</p>
+    <div class="wlive"><canvas id="live-footer" data-demo="Footer" tabindex="0" style="height: 18px"></canvas></div>
+    <div class="wmsg" data-for="live-footer"></div>
+    <pre class="block wcode"><span class="kw">pub</span> <span class="kw">fn</span> footer() -&gt; Demo {
+  <span class="kw">let</span> bar = <span class="fn">@widget.</span>Footer::new([
+    (<span class="st">&quot;tab&quot;</span>, <span class="st">&quot;next&quot;</span>),
+    (<span class="st">&quot;enter&quot;</span>, <span class="st">&quot;choose&quot;</span>),
+    (<span class="st">&quot;esc&quot;</span>, <span class="st">&quot;back&quot;</span>),
+    (<span class="st">&quot;q&quot;</span>, <span class="st">&quot;quit&quot;</span>),
+  ])
+  Demo::new(
+    <span class="st">&quot;Footer&quot;</span>,
+    <span class="fn">@app.</span>column(0, [<span class="fn">@app.</span>leaf(1, bar, box=line(1))]),
+    group=Text,
+    note=<span class="st">&quot;Key hints along the bottom edge, as many as the width holds.&quot;</span>,
+    rows=1,
+  )
+}
+
+<span class="kw">fn</span> line(n : Int32) -&gt; <span class="fn">@layout.</span>Box {
+  <span class="fn">@layout.</span>Box::new(extent=Cells(n))
+}</pre>
   </div>
-  <div class="wcard">
+  <div class="wcard" id="demo-rule">
     <h4><code class="inline">Rule</code></h4>
-    <p class="wdesc">A horizontal or vertical rule in nine styles — ascii, blank, dashed, double, heavy, hidden, solid, thick.</p>
-    <div class="wcols">
-      <pre class="block wcode">@widget.Rule::horizontal(kind=@widget.RuleKind::Heavy)</pre>
-      <div class="term-body wout">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</div>
-    </div>
+    <p class="wdesc">A horizontal or vertical rule in any of nine styles.</p>
+    <div class="wlive"><canvas id="live-rule" data-demo="Rule" tabindex="0" style="height: 108px"></canvas></div>
+    <div class="wmsg" data-for="live-rule"></div>
+    <pre class="block wcode"><span class="kw">pub</span> <span class="kw">fn</span> rule() -&gt; Demo {
+  <span class="kw">let</span> kinds : Array[(String, <span class="fn">@widget.</span>RuleKind)] = [
+    (<span class="st">&quot;solid&quot;</span>, Solid),
+    (<span class="st">&quot;heavy&quot;</span>, Heavy),
+    (<span class="st">&quot;double&quot;</span>, Double),
+    (<span class="st">&quot;dashed&quot;</span>, Dashed),
+    (<span class="st">&quot;thick&quot;</span>, Thick),
+    (<span class="st">&quot;ascii&quot;</span>, Ascii),
+  ]
+  <span class="kw">let</span> rows = kinds.mapi((i, kind) =&gt; {
+    <span class="fn">@app.</span>row(
+      i * 10,
+      [
+        <span class="fn">@app.</span>leaf(i * 10 + 1, <span class="fn">@widget.</span>Static::new(kind.0), box=line(8)),
+        <span class="fn">@app.</span>leaf(
+          i * 10 + 2,
+          <span class="fn">@widget.</span>Rule::horizontal(kind=kind.1),
+          box=<span class="fn">@layout.</span>Box::new(extent=Frac(1)),
+        ),
+      ],
+      box=line(1),
+    )
+  })
+  Demo::new(
+    <span class="st">&quot;Rule&quot;</span>,
+    <span class="fn">@app.</span>column(100, rows),
+    group=Text,
+    note=<span class="st">&quot;A horizontal or vertical rule in any of nine styles.&quot;</span>,
+    rows=6,
+  )
+}
+
+<span class="kw">fn</span> line(n : Int32) -&gt; <span class="fn">@layout.</span>Box {
+  <span class="fn">@layout.</span>Box::new(extent=Cells(n))
+}</pre>
   </div>
-  <div class="wcard">
+  <div class="wcard" id="demo-digits">
     <h4><code class="inline">Digits</code></h4>
-    <p class="wdesc">Big 3-row digit glyphs, plain or bold, for clocks and counters — any character passes through.</p>
-    <div class="wcols">
-      <pre class="block wcode">@widget.Digits::new(value=&quot;12:34&quot;)</pre>
-      <div class="term-body wout">╶╮ ╶─╮   ╶─╮╷ ╷
- │ ┌─┘ :  ─┤╰─┤
-╶┴╴╰─╴   ╶─╯  ╵</div>
-    </div>
+    <p class="wdesc">Three-row glyphs for clocks and counters, plain or bold.</p>
+    <div class="wlive"><canvas id="live-digits" data-demo="Digits" tabindex="0" style="height: 54px"></canvas></div>
+    <div class="wmsg" data-for="live-digits"></div>
+    <pre class="block wcode"><span class="kw">pub</span> <span class="kw">fn</span> digits() -&gt; Demo {
+  <span class="kw">let</span> clock = <span class="fn">@widget.</span>Digits::new(value=<span class="st">&quot;12:34&quot;</span>)
+  <span class="kw">let</span> price = <span class="fn">@widget.</span>Digits::new(
+    value=<span class="st">&quot;€9.99&quot;</span>,
+    style=<span class="fn">@style.</span>Style::new(fg=<span class="fn">@style.</span>yellow, bold=<span class="kw">true</span>),
+  )
+  Demo::new(
+    <span class="st">&quot;Digits&quot;</span>,
+    <span class="fn">@app.</span>row(
+      0,
+      [<span class="fn">@app.</span>leaf(1, clock, box=line(17)), <span class="fn">@app.</span>leaf(2, price)],
+      box=line(3),
+    ),
+    group=Text,
+    note=<span class="st">&quot;Three-row glyphs for clocks and counters, plain or bold.&quot;</span>,
+    rows=3,
+  )
+}
+
+<span class="kw">fn</span> line(n : Int32) -&gt; <span class="fn">@layout.</span>Box {
+  <span class="fn">@layout.</span>Box::new(extent=Cells(n))
+}</pre>
   </div>
-  <div class="wcard">
+  <div class="wcard" id="demo-sparkline">
     <h4><code class="inline">Sparkline</code></h4>
-    <p class="wdesc">An eight-level block bar chart with bucketing and five summary functions — maximum, minimum, mean, median, latest. Low readings lean green, high ones red.</p>
-    <div class="wcols">
-      <pre class="block wcode">@widget.Sparkline::new(data=[3.0, 5.0, 2.0, 8.0, 6.0, 4.0, 7.0])</pre>
-      <div class="term-body wout"><span class="green">▂▂▂▂▂</span><span class="gold">▄▄▄▄</span><span class="green">▁▁▁▁</span><span class="pink">█████</span><span class="gold">▅▅▅▅▃▃▃▃</span><span class="pink">▆▆▆▆</span></div>
-    </div>
+    <p class="wdesc">An eight-level bar chart that buckets its data to fit the width.</p>
+    <div class="wlive"><canvas id="live-sparkline" data-demo="Sparkline" tabindex="0" style="height: 72px"></canvas></div>
+    <div class="wmsg" data-for="live-sparkline"></div>
+    <pre class="block wcode"><span class="kw">pub</span> <span class="kw">fn</span> sparkline() -&gt; Demo {
+  <span class="kw">let</span> load = <span class="fn">@widget.</span>Sparkline::new(data=[
+    3.0, 5.0, 2.0, 8.0, 6.0, 4.0, 7.0, 9.0, 5.0, 3.0, 6.0, 8.0, 4.0, 2.0, 5.0, 7.0,
+  ])
+  <span class="kw">let</span> tall = <span class="fn">@widget.</span>Sparkline::new(
+    data=[1.0, 2.0, 4.0, 7.0, 9.0, 7.0, 4.0, 2.0, 1.0, 2.0, 4.0, 7.0],
+    summary=Mean,
+  )
+  Demo::new(
+    <span class="st">&quot;Sparkline&quot;</span>,
+    <span class="fn">@app.</span>column(0, [
+      <span class="fn">@app.</span>leaf(1, load, box=line(1)),
+      <span class="fn">@app.</span>leaf(2, tall, box=line(3)),
+    ]),
+    group=Text,
+    note=<span class="st">&quot;An eight-level bar chart that buckets its data to fit the width.&quot;</span>,
+    rows=4,
+  )
+}
+
+<span class="kw">fn</span> line(n : Int32) -&gt; <span class="fn">@layout.</span>Box {
+  <span class="fn">@layout.</span>Box::new(extent=Cells(n))
+}</pre>
   </div>
-  <div class="wcard">
+  <div class="wcard" id="demo-progress">
     <h4><code class="inline">Progress</code></h4>
-    <p class="wdesc">A determinate bar against a total — or an indeterminate one that drifts on its own.</p>
-    <div class="wcols">
-      <pre class="block wcode">let bar = @widget.Progress::new(total=100)
-bar.set(62)</pre>
-      <div class="term-body wout">████████████████<span class="dim">           62%</span></div>
-    </div>
+    <p class="wdesc">A bar against a total, filled in eighths of a column.</p>
+    <div class="wlive"><canvas id="live-progress" data-demo="Progress" tabindex="0" style="height: 36px"></canvas></div>
+    <div class="wmsg" data-for="live-progress"></div>
+    <pre class="block wcode"><span class="kw">pub</span> <span class="kw">fn</span> progress() -&gt; Demo {
+  <span class="kw">let</span> done = <span class="fn">@widget.</span>Progress::new(total=100)
+  done.set(62)
+  <span class="kw">let</span> fine = <span class="fn">@widget.</span>Progress::new(total=1000)
+  fine.set(333)
+  Demo::new(
+    <span class="st">&quot;Progress&quot;</span>,
+    <span class="fn">@app.</span>column(0, [
+      <span class="fn">@app.</span>leaf(1, done, box=line(1)),
+      <span class="fn">@app.</span>leaf(2, fine, box=line(1)),
+    ]),
+    group=Text,
+    note=<span class="st">&quot;A bar against a total, filled in eighths of a column.&quot;</span>,
+    rows=2,
+  )
+}
+
+<span class="kw">fn</span> line(n : Int32) -&gt; <span class="fn">@layout.</span>Box {
+  <span class="fn">@layout.</span>Box::new(extent=Cells(n))
+}</pre>
   </div>
-  <div class="wcard">
+  <div class="wcard" id="demo-loadingindicator">
     <h4><code class="inline">LoadingIndicator</code></h4>
-    <p class="wdesc">The five-dot pulse that says "working"; the dots breathe on the tick.</p>
-    <div class="wcols">
-      <pre class="block wcode">@widget.LoadingIndicator::new()</pre>
-      <div class="term-body wout"> ● ● ● ● ●</div>
-    </div>
+    <p class="wdesc">Five dots that pulse on every frame, for work with no end in sight.</p>
+    <div class="wlive"><canvas id="live-loadingindicator" data-demo="LoadingIndicator" tabindex="0" style="height: 54px"></canvas></div>
+    <div class="wmsg" data-for="live-loadingindicator"></div>
+    <pre class="block wcode"><span class="kw">pub</span> <span class="kw">fn</span> loading_indicator() -&gt; Demo {
+  Demo::new(
+    <span class="st">&quot;LoadingIndicator&quot;</span>,
+    <span class="fn">@app.</span>column(0, [<span class="fn">@app.</span>leaf(1, <span class="fn">@widget.</span>LoadingIndicator::new())]),
+    group=Text,
+    note=<span class="st">&quot;Five dots that pulse on every frame, for work with no end in sight.&quot;</span>,
+    rows=3,
+  )
+}</pre>
   </div>
-  <div class="wcard">
+  <div class="wcard" id="demo-placeholder">
     <h4><code class="inline">Placeholder</code></h4>
-    <p class="wdesc">Three lorem variants in a twelve-colour palette — click to cycle, for mockups.</p>
-    <div class="wcols">
-      <pre class="block wcode">@widget.Placeholder::new(label=&quot;Widget slot&quot;)</pre>
-      <div class="term-body wout">       Widget slot</div>
-    </div>
+    <p class="wdesc">A coloured stand-in for a widget not written yet; a click cycles what it shows.</p>
+    <div class="wlive"><canvas id="live-placeholder" data-demo="Placeholder" tabindex="0" style="height: 72px"></canvas></div>
+    <div class="wmsg" data-for="live-placeholder"></div>
+    <pre class="block wcode"><span class="kw">pub</span> <span class="kw">fn</span> placeholder() -&gt; Demo {
+  Demo::new(
+    <span class="st">&quot;Placeholder&quot;</span>,
+    <span class="fn">@app.</span>row(0, [
+      <span class="fn">@app.</span>leaf(
+        1,
+        <span class="fn">@widget.</span>Placeholder::new(label=<span class="st">&quot;Sidebar&quot;</span>),
+        box=<span class="fn">@layout.</span>Box::new(extent=Frac(1)),
+      ),
+      <span class="fn">@app.</span>leaf(
+        2,
+        <span class="fn">@widget.</span>Placeholder::new(label=<span class="st">&quot;Content&quot;</span>, colour=3),
+        box=<span class="fn">@layout.</span>Box::new(extent=Frac(2)),
+      ),
+    ]),
+    group=Text,
+    note=<span class="st">&quot;A coloured stand-in for a widget not written yet; a click cycles what it shows.&quot;</span>,
+    rows=4,
+  )
+}</pre>
   </div>
-  <h3>Text entry and logs</h3>
-  <div class="wcard">
+  <h3>Entry and logs</h3>
+  <div class="wcard" id="demo-input">
     <h4><code class="inline">Input</code></h4>
-    <p class="wdesc">Single-line entry: cursor by grapheme, history, word operations, selection, bracketed paste.</p>
-    <div class="wcols">
-      <pre class="block wcode">let field = @widget.Input::new(placeholder=&quot;type here&quot;)
-field.set(&quot;hello&quot;)</pre>
-      <div class="term-body wout">hello</div>
-    </div>
+    <p class="wdesc">A single-line field with Textual&#x27;s keys; a password field shows dots.</p>
+    <div class="wlive"><canvas id="live-input" data-demo="Input" tabindex="0" style="height: 54px"></canvas></div>
+    <div class="wmsg" data-for="live-input"></div>
+    <pre class="block wcode"><span class="kw">pub</span> <span class="kw">fn</span> input() -&gt; Demo {
+  <span class="kw">let</span> name = <span class="fn">@widget.</span>Input::new(placeholder=<span class="st">&quot;your name&quot;</span>)
+  <span class="kw">let</span> secret = <span class="fn">@widget.</span>Input::new(placeholder=<span class="st">&quot;password&quot;</span>, password=<span class="kw">true</span>)
+  <span class="kw">let</span> code = <span class="fn">@widget.</span>Input::new(placeholder=<span class="st">&quot;four digits&quot;</span>, max_length=4)
+  Demo::new(
+    <span class="st">&quot;Input&quot;</span>,
+    <span class="fn">@app.</span>column(0, [
+      <span class="fn">@app.</span>leaf(1, name, box=line(1)),
+      <span class="fn">@app.</span>leaf(2, secret, box=line(1)),
+      <span class="fn">@app.</span>leaf(3, code, box=line(1)),
+    ]),
+    group=Entry,
+    note=<span class="st">&quot;A single-line field with Textual&#x27;s keys; a password field shows dots.&quot;</span>,
+    rows=3,
+  )
+}
+
+<span class="kw">fn</span> line(n : Int32) -&gt; <span class="fn">@layout.</span>Box {
+  <span class="fn">@layout.</span>Box::new(extent=Cells(n))
+}</pre>
   </div>
-  <div class="wcard">
+  <div class="wcard" id="demo-textarea">
     <h4><code class="inline">TextArea</code></h4>
-    <p class="wdesc">Multi-line editing — smart home, word movement, undo runs, a line-number gutter, selection and clipboard operations.</p>
-    <div class="wcols">
-      <pre class="block wcode">let area = @widget.TextArea::new(show_line_numbers=true)
-area.load_text(&quot;line one\nline two\nline three&quot;)</pre>
-      <div class="term-body wout"> 1 line one
- 2 line two
- 3 line three</div>
-    </div>
+    <p class="wdesc">A multi-line editor with selection, undo, word moves and a line gutter.</p>
+    <div class="wlive"><canvas id="live-textarea" data-demo="TextArea" tabindex="0" style="height: 90px"></canvas></div>
+    <div class="wmsg" data-for="live-textarea"></div>
+    <pre class="block wcode"><span class="kw">pub</span> <span class="kw">fn</span> text_area() -&gt; Demo {
+  <span class="kw">let</span> area = <span class="fn">@widget.</span>TextArea::new(text=<span class="st">&quot;fn main {\n  println(\&quot;hello\&quot;)\n}\n&quot;</span>)
+  Demo::new(
+    <span class="st">&quot;TextArea&quot;</span>,
+    <span class="fn">@app.</span>column(0, [<span class="fn">@app.</span>leaf(1, area)]),
+    group=Entry,
+    note=<span class="st">&quot;A multi-line editor with selection, undo, word moves and a line gutter.&quot;</span>,
+    rows=5,
+  )
+}</pre>
   </div>
-  <div class="wcard">
+  <div class="wcard" id="demo-log">
     <h4><code class="inline">Log</code></h4>
-    <p class="wdesc">A plain capture log: line tail-following, tab expansion, pruning, and scrolling that stays glued to the end.</p>
-    <div class="wcols">
-      <pre class="block wcode">let log = @widget.Log::new()
-log.write_lines([&quot;boot ok&quot;, &quot;loading modules&quot;, &quot;ready&quot;])</pre>
-      <div class="term-body wout">boot ok
-loading modules
-ready</div>
-    </div>
+    <p class="wdesc">Lines that follow the tail until the reader scrolls away from it.</p>
+    <div class="wlive"><canvas id="live-log" data-demo="Log" tabindex="0" style="height: 72px"></canvas></div>
+    <div class="wmsg" data-for="live-log"></div>
+    <pre class="block wcode"><span class="kw">pub</span> <span class="kw">fn</span> log() -&gt; Demo {
+  <span class="kw">let</span> lines = <span class="fn">@widget.</span>Log::new()
+  lines.write_lines([
+    <span class="st">&quot;boot ok&quot;</span>, <span class="st">&quot;loading modules&quot;</span>, <span class="st">&quot;listening on 12000&quot;</span>, <span class="st">&quot;ready&quot;</span>,
+  ])
+  Demo::new(
+    <span class="st">&quot;Log&quot;</span>,
+    <span class="fn">@app.</span>column(0, [<span class="fn">@app.</span>leaf(1, lines)]),
+    group=Entry,
+    note=<span class="st">&quot;Lines that follow the tail until the reader scrolls away from it.&quot;</span>,
+    rows=4,
+  )
+}</pre>
   </div>
-  <div class="wcard">
+  <div class="wcard" id="demo-richlog">
     <h4><code class="inline">RichLog</code></h4>
-    <p class="wdesc">Styled strips with min-width, at-width and greedy word wrap.</p>
-    <div class="wcols">
-      <pre class="block wcode">let rich = @widget.RichLog::new()
-rich.write(&quot;deploy passed&quot;, style=@style.Style::new(fg=@style.green))
-rich.write(&quot;2 warnings&quot;, style=@style.Style::new(fg=@style.yellow))
-rich.write(&quot;done&quot;)</pre>
-      <div class="term-body wout"><span class="green">deploy passed</span>
-<span class="gold">2 warnings</span>
-done</div>
-    </div>
+    <p class="wdesc">A log of styled lines that can wrap to the width.</p>
+    <div class="wlive"><canvas id="live-richlog" data-demo="RichLog" tabindex="0" style="height: 72px"></canvas></div>
+    <div class="wmsg" data-for="live-richlog"></div>
+    <pre class="block wcode"><span class="kw">pub</span> <span class="kw">fn</span> rich_log() -&gt; Demo {
+  <span class="kw">let</span> lines = <span class="fn">@widget.</span>RichLog::new(wrap=<span class="kw">true</span>)
+  lines.write(<span class="st">&quot;deploy passed&quot;</span>, style=<span class="fn">@style.</span>Style::new(fg=<span class="fn">@style.</span>green))
+  lines.write(<span class="st">&quot;2 warnings&quot;</span>, style=<span class="fn">@style.</span>Style::new(fg=<span class="fn">@style.</span>yellow))
+  lines.write(<span class="st">&quot;one failure&quot;</span>, style=<span class="fn">@style.</span>Style::new(fg=<span class="fn">@style.</span>red, bold=<span class="kw">true</span>))
+  lines.write(<span class="st">&quot;done&quot;</span>)
+  Demo::new(
+    <span class="st">&quot;RichLog&quot;</span>,
+    <span class="fn">@app.</span>column(0, [<span class="fn">@app.</span>leaf(1, lines)]),
+    group=Entry,
+    note=<span class="st">&quot;A log of styled lines that can wrap to the width.&quot;</span>,
+    rows=4,
+  )
+}</pre>
   </div>
   <h3>Choices</h3>
-  <div class="wcard">
+  <div class="wcard" id="demo-switch">
     <h4><code class="inline">Switch</code></h4>
-    <p class="wdesc">A four-wide strip: half thumb, half track — the thumb sits left when off, right when on. State is colour, so the plain wire carries it for free… as nothing at all.</p>
-    <div class="wcols">
-      <pre class="block wcode">@widget.Switch::new(value=true)</pre>
-      <div class="term-body wout"><span class="rev-d">  </span><span class="rev-g">  </span></div>
-    </div>
+    <p class="wdesc">An on-off thumb that slides to the side of its value.</p>
+    <div class="wlive"><canvas id="live-switch" data-demo="Switch" tabindex="0" style="height: 18px"></canvas></div>
+    <div class="wmsg" data-for="live-switch"></div>
+    <pre class="block wcode"><span class="kw">pub</span> <span class="kw">fn</span> switch() -&gt; Demo {
+  Demo::new(
+    <span class="st">&quot;Switch&quot;</span>,
+    <span class="fn">@app.</span>row(0, [
+      <span class="fn">@app.</span>leaf(1, <span class="fn">@widget.</span>Switch::new(), box=line(6)),
+      <span class="fn">@app.</span>leaf(2, <span class="fn">@widget.</span>Switch::new(value=<span class="kw">true</span>), box=line(6)),
+    ]),
+    group=Choice,
+    note=<span class="st">&quot;An on-off thumb that slides to the side of its value.&quot;</span>,
+    rows=1,
+  )
+}
+
+<span class="kw">fn</span> line(n : Int32) -&gt; <span class="fn">@layout.</span>Box {
+  <span class="fn">@layout.</span>Box::new(extent=Cells(n))
+}</pre>
   </div>
-  <div class="wcard">
+  <div class="wcard" id="demo-checkbox">
     <h4><code class="inline">Checkbox</code></h4>
-    <p class="wdesc">The three-glyph toggle — side, mark, side — with the label beside it in either order; the mark's colour is the state.</p>
-    <div class="wcols">
-      <pre class="block wcode">@widget.Checkbox::new(&quot;Enable extras&quot;, value=true)</pre>
-      <div class="term-body wout"><span class="green">▐X▌</span> Enable extras</div>
-    </div>
+    <p class="wdesc">A labelled box that Space, Enter or a click turns on and off.</p>
+    <div class="wlive"><canvas id="live-checkbox" data-demo="Checkbox" tabindex="0" style="height: 36px"></canvas></div>
+    <div class="wmsg" data-for="live-checkbox"></div>
+    <pre class="block wcode"><span class="kw">pub</span> <span class="kw">fn</span> checkbox() -&gt; Demo {
+  Demo::new(
+    <span class="st">&quot;Checkbox&quot;</span>,
+    <span class="fn">@app.</span>column(0, [
+      <span class="fn">@app.</span>leaf(
+        1,
+        <span class="fn">@widget.</span>Checkbox::new(<span class="st">&quot;Enable extras&quot;</span>, value=<span class="kw">true</span>),
+        box=line(1),
+      ),
+      <span class="fn">@app.</span>leaf(2, <span class="fn">@widget.</span>Checkbox::new(<span class="st">&quot;Send reports&quot;</span>), box=line(1)),
+    ]),
+    group=Choice,
+    note=<span class="st">&quot;A labelled box that Space, Enter or a click turns on and off.&quot;</span>,
+    rows=2,
+  )
+}
+
+<span class="kw">fn</span> line(n : Int32) -&gt; <span class="fn">@layout.</span>Box {
+  <span class="fn">@layout.</span>Box::new(extent=Cells(n))
+}</pre>
   </div>
-  <div class="wcard">
+  <div class="wcard" id="demo-radioset">
     <h4><code class="inline">RadioSet</code></h4>
-    <p class="wdesc">Radio buttons as a set: turning one on turns the others off; the cursor and the pressed button are separate, and a click moves both.</p>
-    <div class="wcols">
-      <pre class="block wcode">@widget.RadioSet::new([
-  @widget.RadioButton::new(&quot;Fast&quot;),
-  @widget.RadioButton::new(&quot;Balanced&quot;, value=true),
-  @widget.RadioButton::new(&quot;Quiet&quot;),
-])</pre>
-      <div class="term-body wout"><span class="dim">▐●▌</span> Fast
-<span class="green">▐●▌</span> Balanced
-<span class="dim">▐●▌</span> Quiet</div>
-    </div>
+    <p class="wdesc">Radio buttons where pressing one releases the rest.</p>
+    <div class="wlive"><canvas id="live-radioset" data-demo="RadioSet" tabindex="0" style="height: 54px"></canvas></div>
+    <div class="wmsg" data-for="live-radioset"></div>
+    <pre class="block wcode"><span class="kw">pub</span> <span class="kw">fn</span> radio_set() -&gt; Demo {
+  <span class="kw">let</span> set = <span class="fn">@widget.</span>RadioSet::new([
+    <span class="fn">@widget.</span>RadioButton::new(<span class="st">&quot;Fast&quot;</span>),
+    <span class="fn">@widget.</span>RadioButton::new(<span class="st">&quot;Balanced&quot;</span>, value=<span class="kw">true</span>),
+    <span class="fn">@widget.</span>RadioButton::new(<span class="st">&quot;Quiet&quot;</span>),
+  ])
+  Demo::new(
+    <span class="st">&quot;RadioSet&quot;</span>,
+    <span class="fn">@app.</span>column(0, [<span class="fn">@app.</span>leaf(1, set)]),
+    group=Choice,
+    note=<span class="st">&quot;Radio buttons where pressing one releases the rest.&quot;</span>,
+    rows=3,
+  )
+}</pre>
   </div>
-  <div class="wcard">
+  <div class="wcard" id="demo-optionlist">
     <h4><code class="inline">OptionList</code></h4>
-    <p class="wdesc">Prompts with separators and disabled entries; the highlight never rests on a disabled one.</p>
-    <div class="wcols">
-      <pre class="block wcode">let list = @widget.OptionList::new(options=[
-  @widget.Choice::new(&quot;Alpha&quot;),
-  @widget.Choice::new(&quot;Beta&quot;),
-  @widget.Choice::new(&quot;Retired&quot;, disabled=true),
-])
-list.add_separator()
-list.add_option(@widget.Choice::new(&quot;Omega&quot;))</pre>
-      <div class="term-body wout">Alpha
-Beta
-<span class="dim">Retired</span>
-<span class="dim">────────────────────────</span>
-Omega</div>
-    </div>
+    <p class="wdesc">Prompts with separators; the highlight never rests on a disabled one.</p>
+    <div class="wlive"><canvas id="live-optionlist" data-demo="OptionList" tabindex="0" style="height: 90px"></canvas></div>
+    <div class="wmsg" data-for="live-optionlist"></div>
+    <pre class="block wcode"><span class="kw">pub</span> <span class="kw">fn</span> option_list() -&gt; Demo {
+  <span class="kw">let</span> list = <span class="fn">@widget.</span>OptionList::new(options=[
+    <span class="fn">@widget.</span>Choice::new(<span class="st">&quot;Alpha&quot;</span>),
+    <span class="fn">@widget.</span>Choice::new(<span class="st">&quot;Beta&quot;</span>),
+    <span class="fn">@widget.</span>Choice::new(<span class="st">&quot;Retired&quot;</span>, disabled=<span class="kw">true</span>),
+  ])
+  list.add_separator()
+  list.add_option(<span class="fn">@widget.</span>Choice::new(<span class="st">&quot;Omega&quot;</span>))
+  Demo::new(
+    <span class="st">&quot;OptionList&quot;</span>,
+    <span class="fn">@app.</span>column(0, [<span class="fn">@app.</span>leaf(1, list)]),
+    group=Choice,
+    note=<span class="st">&quot;Prompts with separators; the highlight never rests on a disabled one.&quot;</span>,
+    rows=5,
+  )
+}</pre>
   </div>
-  <div class="wcard">
+  <div class="wcard" id="demo-selectionlist">
     <h4><code class="inline">SelectionList</code></h4>
-    <p class="wdesc">Checkbox-style multi-select with the three-glyph mark and the <code class="inline">ToggledAt</code> message.</p>
-    <div class="wcols">
-      <pre class="block wcode">@widget.SelectionList::new(options=[
-  @widget.Selection::new(&quot;Clean build&quot;, &quot;clean&quot;, initial_state=true),
-  @widget.Selection::new(&quot;All targets&quot;, &quot;targets&quot;, initial_state=true),
-  @widget.Selection::new(&quot;Sign the tag&quot;, &quot;sign&quot;),
-])</pre>
-      <div class="term-body wout"><span class="dim">▐X▌</span> Clean build
-<span class="dim">▐X▌</span> All targets
-<span class="dim">▐X▌</span> Sign the tag</div>
-    </div>
+    <p class="wdesc">A list where every entry is a checkbox of its own.</p>
+    <div class="wlive"><canvas id="live-selectionlist" data-demo="SelectionList" tabindex="0" style="height: 54px"></canvas></div>
+    <div class="wmsg" data-for="live-selectionlist"></div>
+    <pre class="block wcode"><span class="kw">pub</span> <span class="kw">fn</span> selection_list() -&gt; Demo {
+  <span class="kw">let</span> list = <span class="fn">@widget.</span>SelectionList::new(options=[
+    <span class="fn">@widget.</span>Selection::new(<span class="st">&quot;Clean build&quot;</span>, <span class="st">&quot;clean&quot;</span>, initial_state=<span class="kw">true</span>),
+    <span class="fn">@widget.</span>Selection::new(<span class="st">&quot;All targets&quot;</span>, <span class="st">&quot;targets&quot;</span>, initial_state=<span class="kw">true</span>),
+    <span class="fn">@widget.</span>Selection::new(<span class="st">&quot;Sign the tag&quot;</span>, <span class="st">&quot;sign&quot;</span>),
+  ])
+  Demo::new(
+    <span class="st">&quot;SelectionList&quot;</span>,
+    <span class="fn">@app.</span>column(0, [<span class="fn">@app.</span>leaf(1, list)]),
+    group=Choice,
+    note=<span class="st">&quot;A list where every entry is a checkbox of its own.&quot;</span>,
+    rows=3,
+  )
+}</pre>
   </div>
-  <div class="wcard">
+  <div class="wcard" id="demo-select">
     <h4><code class="inline">Select</code></h4>
-    <p class="wdesc">A collapsed prompt that expands in flow — substring search narrows the options, Escape folds it away.</p>
-    <div class="wcols">
-      <pre class="block wcode">let pick = @widget.Select::new(
-  options=[(&quot;alpha&quot;, &quot;Alpha&quot;), (&quot;beta&quot;, &quot;Beta&quot;), (&quot;gamma&quot;, &quot;Gamma&quot;)],
-  prompt=&quot;Pick&quot;,
-)</pre>
-      <div class="term-body wout"> Pick              ▲
- alpha
- beta
- gamma</div>
-    </div>
+    <p class="wdesc">A prompt that opens in place; typing narrows it, Escape folds it away.</p>
+    <div class="wlive"><canvas id="live-select" data-demo="Select" tabindex="0" style="height: 90px"></canvas></div>
+    <div class="wmsg" data-for="live-select"></div>
+    <pre class="block wcode"><span class="kw">pub</span> <span class="kw">fn</span> select() -&gt; Demo {
+  <span class="kw">let</span> pick = <span class="fn">@widget.</span>Select::new(
+    options=[(<span class="st">&quot;Alpha&quot;</span>, <span class="st">&quot;a&quot;</span>), (<span class="st">&quot;Beta&quot;</span>, <span class="st">&quot;b&quot;</span>), (<span class="st">&quot;Gamma&quot;</span>, <span class="st">&quot;g&quot;</span>), (<span class="st">&quot;Delta&quot;</span>, <span class="st">&quot;d&quot;</span>)],
+    prompt=<span class="st">&quot;Pick a letter&quot;</span>,
+  )
+  Demo::new(
+    <span class="st">&quot;Select&quot;</span>,
+    <span class="fn">@app.</span>column(0, [<span class="fn">@app.</span>leaf(1, pick)]),
+    group=Choice,
+    note=<span class="st">&quot;A prompt that opens in place; typing narrows it, Escape folds it away.&quot;</span>,
+    rows=5,
+  )
+}</pre>
   </div>
   <h3>Navigation and structure</h3>
-  <div class="wcard">
+  <div class="wcard" id="demo-button">
     <h4><code class="inline">Button</code></h4>
-    <p class="wdesc">Enter or space presses; a disabled button takes neither focus nor input. Focused, the label turns reverse video.</p>
-    <div class="wcols">
-      <pre class="block wcode">@widget.Button::new(&quot; Press me &quot;)
-// focused: Enter answers Pressed(id=...)</pre>
-      <div class="term-body wout">  <span class="rev"> Press me</span></div>
-    </div>
-  </div>
-  <div class="wcard">
-    <h4><code class="inline">ListView</code></h4>
-    <p class="wdesc">A vertical list with a moving highlight and mouse picking.</p>
-    <div class="wcols">
-      <pre class="block wcode">let list = @widget.ListView::new([&quot;alpha&quot;, &quot;beta&quot;, &quot;gamma&quot;, &quot;delta&quot;, &quot;epsilon&quot;])
-list.select(1)</pre>
-      <div class="term-body wout">alpha
-<span class="rev">beta                </span>
-gamma
-delta</div>
-    </div>
-  </div>
-  <div class="wcard">
-    <h4><code class="inline">Tabs</code></h4>
-    <p class="wdesc">Labels with a highlighted underline that skips disabled tabs.</p>
-    <div class="wcols">
-      <pre class="block wcode">@widget.Tabs::new(labels=[&quot;Inbox&quot;, &quot;Reports&quot;, &quot;Settings&quot;])</pre>
-      <div class="term-body wout"> Inbox  <span class="dim">Reports</span>  <span class="dim">Settings</span>
-<span class="rev">━━━━━━━</span><span class="dim">━━━━━━━━━━━━━━━━━━━━━━━</span></div>
-    </div>
-  </div>
-  <div class="wcard">
-    <h4><code class="inline">TabbedContent</code></h4>
-    <p class="wdesc">Tabs and their panes together: the bar above, the active pane beneath.</p>
-    <div class="wcols">
-      <pre class="block wcode">@widget.TabbedContent::new(
-  labels=[&quot;Overview&quot;, &quot;Logs&quot;],
-  panes=[@widget.Static::new(&quot;3 unread, 1 flagged&quot;),
-         @widget.Static::new(&quot;last run: 42 seconds&quot;)],
-)</pre>
-      <div class="term-body wout"> Overview  <span class="dim">Logs</span>
-<span class="rev">━━━━━━━━━━</span><span class="dim">━━━━━━━━━━━━━━━━━━━━━━━━</span>
-3 unread, 1 flagged</div>
-    </div>
-  </div>
-  <div class="wcard">
-    <h4><code class="inline">Collapsible</code></h4>
-    <p class="wdesc">A fold with the triangle marker; keys and clicks pass through to the contents when open.</p>
-    <div class="wcols">
-      <pre class="block wcode">let fold = @widget.Collapsible::new(
-  title=&quot;Details&quot;,
-  contents=@widget.Static::new(&quot;All checks passed.&quot;),
-)
-fold.set_collapsed(false)</pre>
-      <div class="term-body wout">──────────────────────────────
- ▼ Details
+    <p class="wdesc">Enter, Space or a click presses it; a disabled one takes neither focus nor input.</p>
+    <div class="wlive"><canvas id="live-button" data-demo="Button" tabindex="0" style="height: 18px"></canvas></div>
+    <div class="wmsg" data-for="live-button"></div>
+    <pre class="block wcode"><span class="kw">pub</span> <span class="kw">fn</span> button() -&gt; Demo {
+  <span class="kw">let</span> save = <span class="fn">@widget.</span>Button::new(<span class="st">&quot; Save &quot;</span>)
+  <span class="kw">let</span> cancel = <span class="fn">@widget.</span>Button::new(<span class="st">&quot; Cancel &quot;</span>)
+  <span class="kw">let</span> later = <span class="fn">@widget.</span>Button::new(<span class="st">&quot; Later &quot;</span>)
+  later.disable(<span class="kw">true</span>)
+  Demo::new(
+    <span class="st">&quot;Button&quot;</span>,
+    <span class="fn">@app.</span>row(
+      0,
+      [
+        <span class="fn">@app.</span>leaf(1, save, box=line(10)),
+        <span class="fn">@app.</span>leaf(2, cancel, box=line(12)),
+        <span class="fn">@app.</span>leaf(3, later, box=line(11)),
+      ],
+      gap=2,
+    ),
+    group=Navigation,
+    note=<span class="st">&quot;Enter, Space or a click presses it; a disabled one takes neither focus nor input.&quot;</span>,
+    rows=1,
+  )
+}
 
-   All checks passed.</div>
-    </div>
+<span class="kw">fn</span> line(n : Int32) -&gt; <span class="fn">@layout.</span>Box {
+  <span class="fn">@layout.</span>Box::new(extent=Cells(n))
+}</pre>
   </div>
-  <div class="wcard">
+  <div class="wcard" id="demo-listview">
+    <h4><code class="inline">ListView</code></h4>
+    <p class="wdesc">A vertical list with a moving highlight; wide characters keep their columns.</p>
+    <div class="wlive"><canvas id="live-listview" data-demo="ListView" tabindex="0" style="height: 72px"></canvas></div>
+    <div class="wmsg" data-for="live-listview"></div>
+    <pre class="block wcode"><span class="kw">pub</span> <span class="kw">fn</span> list_view() -&gt; Demo {
+  <span class="kw">let</span> list = <span class="fn">@widget.</span>ListView::new([
+    <span class="st">&quot;alpha&quot;</span>, <span class="st">&quot;beta&quot;</span>, <span class="st">&quot;gamma&quot;</span>, <span class="st">&quot;delta&quot;</span>, <span class="st">&quot;epsilon&quot;</span>, <span class="st">&quot;中文也对齐&quot;</span>,
+  ])
+  Demo::new(
+    <span class="st">&quot;ListView&quot;</span>,
+    <span class="fn">@app.</span>column(0, [<span class="fn">@app.</span>leaf(1, list)]),
+    group=Navigation,
+    note=<span class="st">&quot;A vertical list with a moving highlight; wide characters keep their columns.&quot;</span>,
+    rows=4,
+  )
+}</pre>
+  </div>
+  <div class="wcard" id="demo-tabs">
+    <h4><code class="inline">Tabs</code></h4>
+    <p class="wdesc">A row of tabs with an underline under the active one; the arrows move it.</p>
+    <div class="wlive"><canvas id="live-tabs" data-demo="Tabs" tabindex="0" style="height: 36px"></canvas></div>
+    <div class="wmsg" data-for="live-tabs"></div>
+    <pre class="block wcode"><span class="kw">pub</span> <span class="kw">fn</span> tabs() -&gt; Demo {
+  Demo::new(
+    <span class="st">&quot;Tabs&quot;</span>,
+    <span class="fn">@app.</span>column(0, [
+      <span class="fn">@app.</span>leaf(1, <span class="fn">@widget.</span>Tabs::new(labels=[<span class="st">&quot;Inbox&quot;</span>, <span class="st">&quot;Reports&quot;</span>, <span class="st">&quot;Settings&quot;</span>])),
+    ]),
+    group=Navigation,
+    note=<span class="st">&quot;A row of tabs with an underline under the active one; the arrows move it.&quot;</span>,
+    rows=2,
+  )
+}</pre>
+  </div>
+  <div class="wcard" id="demo-tabbedcontent">
+    <h4><code class="inline">TabbedContent</code></h4>
+    <p class="wdesc">Tabs over panes: keys go to the pane first and switch tabs when it passes.</p>
+    <div class="wlive"><canvas id="live-tabbedcontent" data-demo="TabbedContent" tabindex="0" style="height: 90px"></canvas></div>
+    <div class="wmsg" data-for="live-tabbedcontent"></div>
+    <pre class="block wcode"><span class="kw">pub</span> <span class="kw">fn</span> tabbed_content() -&gt; Demo {
+  <span class="kw">let</span> jobs = <span class="fn">@widget.</span>ListView::new([<span class="st">&quot;build&quot;</span>, <span class="st">&quot;test&quot;</span>, <span class="st">&quot;deploy&quot;</span>])
+  <span class="kw">let</span> notes = <span class="fn">@widget.</span>Static::new(<span class="st">&quot;last run: 42 seconds ago\nall green&quot;</span>)
+  <span class="kw">let</span> panes : Array[&amp;<span class="fn">@widget.</span>Widget] = [jobs, notes]
+  Demo::new(
+    <span class="st">&quot;TabbedContent&quot;</span>,
+    <span class="fn">@app.</span>column(0, [
+      <span class="fn">@app.</span>leaf(1, <span class="fn">@widget.</span>TabbedContent::new(labels=[<span class="st">&quot;Jobs&quot;</span>, <span class="st">&quot;Notes&quot;</span>], panes~)),
+    ]),
+    group=Navigation,
+    note=<span class="st">&quot;Tabs over panes: keys go to the pane first and switch tabs when it passes.&quot;</span>,
+    rows=5,
+  )
+}</pre>
+  </div>
+  <div class="wcard" id="demo-collapsible">
+    <h4><code class="inline">Collapsible</code></h4>
+    <p class="wdesc">A titled section that Enter or a click folds and unfolds.</p>
+    <div class="wlive"><canvas id="live-collapsible" data-demo="Collapsible" tabindex="0" style="height: 108px"></canvas></div>
+    <div class="wmsg" data-for="live-collapsible"></div>
+    <pre class="block wcode"><span class="kw">pub</span> <span class="kw">fn</span> collapsible() -&gt; Demo {
+  <span class="kw">let</span> body : &amp;<span class="fn">@widget.</span>Widget = <span class="fn">@widget.</span>Static::new(
+    <span class="st">&quot;Four backends, all passing.\nNo warnings.&quot;</span>,
+  )
+  Demo::new(
+    <span class="st">&quot;Collapsible&quot;</span>,
+    <span class="fn">@app.</span>column(0, [
+      <span class="fn">@app.</span>leaf(
+        1,
+        <span class="fn">@widget.</span>Collapsible::new(
+          title=<span class="st">&quot;Details&quot;</span>,
+          contents=body,
+          collapsed=<span class="kw">false</span>,
+        ),
+      ),
+    ]),
+    group=Navigation,
+    note=<span class="st">&quot;A titled section that Enter or a click folds and unfolds.&quot;</span>,
+    rows=6,
+  )
+}</pre>
+  </div>
+  <div class="wcard" id="demo-tree">
     <h4><code class="inline">Tree</code></h4>
-    <p class="wdesc">Guides, icons, the full shift-arrow family walk, and shift-space batch toggling.</p>
-    <div class="wcols">
-      <pre class="block wcode">let tree = @widget.Tree::new(root_label=&quot;Dune&quot;)
-tree.expand(tree.root_id())
-let arrakis = tree.add(tree.root_id(), &quot;Arrakis&quot;, expand=true)
-ignore(tree.add(tree.root_id(), &quot;Caladan&quot;))
-ignore(tree.add_leaf(arrakis, &quot;Arrakeen&quot;))
-ignore(tree.add_leaf(arrakis, &quot;Carthag&quot;))</pre>
-      <div class="term-body wout"><span class="dim"></span>▼ Dune
-<span class="dim">├── </span>▼ Arrakis
-<span class="dim">│   ├── </span>Arrakeen
-<span class="dim">│   └── </span>Carthag
-<span class="dim">└── </span>▶ Caladan</div>
-    </div>
+    <p class="wdesc">Nodes with guides; Enter selects, Space folds, Shift and an arrow walk the family.</p>
+    <div class="wlive"><canvas id="live-tree" data-demo="Tree" tabindex="0" style="height: 108px"></canvas></div>
+    <div class="wmsg" data-for="live-tree"></div>
+    <pre class="block wcode"><span class="kw">pub</span> <span class="kw">fn</span> tree() -&gt; Demo {
+  <span class="kw">let</span> tree = <span class="fn">@widget.</span>Tree::new(root_label=<span class="st">&quot;Dune&quot;</span>)
+  <span class="kw">let</span> root = tree.root_id()
+  <span class="kw">let</span> arrakis = tree.add(root, <span class="st">&quot;Arrakis&quot;</span>, expand=<span class="kw">true</span>)
+  ignore(tree.add_leaf(arrakis, <span class="st">&quot;Arrakeen&quot;</span>))
+  ignore(tree.add_leaf(arrakis, <span class="st">&quot;Carthag&quot;</span>))
+  <span class="kw">let</span> caladan = tree.add(root, <span class="st">&quot;Caladan&quot;</span>)
+  ignore(tree.add_leaf(caladan, <span class="st">&quot;Castle Caladan&quot;</span>))
+  tree.expand(root)
+  Demo::new(
+    <span class="st">&quot;Tree&quot;</span>,
+    <span class="fn">@app.</span>column(0, [<span class="fn">@app.</span>leaf(1, tree)]),
+    group=Navigation,
+    note=<span class="st">&quot;Nodes with guides; Enter selects, Space folds, Shift and an arrow walk the family.&quot;</span>,
+    rows=6,
+  )
+}</pre>
   </div>
-  <div class="wcard">
+  <div class="wcard" id="demo-directorytree">
     <h4><code class="inline">DirectoryTree</code></h4>
-    <p class="wdesc">A tree over a directory listing — folders first, expanded lazily through a loader you inject, so any platform can feed it.</p>
-    <div class="wcols">
-      <pre class="block wcode">@widget.DirectoryTree::new(path=&quot;.&quot;, loader=read_dir)</pre>
-      <div class="term-body wout">📂 .
-├── 📁 src
-├── 📁 tests
-├── 📄 moon.pkg
-└── 📄 README.md</div>
-    </div>
+    <p class="wdesc">A tree over a file system that reads each folder when it opens.</p>
+    <div class="wlive"><canvas id="live-directorytree" data-demo="DirectoryTree" tabindex="0" style="height: 108px"></canvas></div>
+    <div class="wmsg" data-for="live-directorytree"></div>
+    <pre class="block wcode"><span class="kw">pub</span> <span class="kw">fn</span> directory_tree() -&gt; Demo {
+  <span class="kw">let</span> disk = <span class="fn">@widget.</span>DirectoryTree::new(path=<span class="st">&quot;.&quot;</span>, loader=path =&gt; {
+    <span class="kw">if</span> path == <span class="st">&quot;.&quot;</span> {
+      [
+        <span class="fn">@widget.</span>DirEntry::new(<span class="st">&quot;src&quot;</span>, is_dir=<span class="kw">true</span>),
+        <span class="fn">@widget.</span>DirEntry::new(<span class="st">&quot;docs&quot;</span>, is_dir=<span class="kw">true</span>),
+        <span class="fn">@widget.</span>DirEntry::new(<span class="st">&quot;moon.mod&quot;</span>, is_dir=<span class="kw">false</span>),
+        <span class="fn">@widget.</span>DirEntry::new(<span class="st">&quot;README.md&quot;</span>, is_dir=<span class="kw">false</span>),
+      ]
+    } <span class="kw">else</span> {
+      [
+        <span class="fn">@widget.</span>DirEntry::new(<span class="st">&quot;main.mbt&quot;</span>, is_dir=<span class="kw">false</span>),
+        <span class="fn">@widget.</span>DirEntry::new(<span class="st">&quot;moon.pkg&quot;</span>, is_dir=<span class="kw">false</span>),
+      ]
+    }
+  })
+  Demo::new(
+    <span class="st">&quot;DirectoryTree&quot;</span>,
+    <span class="fn">@app.</span>column(0, [<span class="fn">@app.</span>leaf(1, disk)]),
+    group=Navigation,
+    note=<span class="st">&quot;A tree over a file system that reads each folder when it opens.&quot;</span>,
+    rows=6,
+  )
+}</pre>
   </div>
   <h3>Data and notices</h3>
-  <div class="wcard">
+  <div class="wcard" id="demo-datatable">
     <h4><code class="inline">DataTable</code></h4>
-    <p class="wdesc">Tabular data: auto or fixed column widths, three cursor shapes, zebra rows, hover, clicks that pick headers, labels and cells, and sorts that keep rows whole.</p>
-    <div class="wcols">
-      <pre class="block wcode">let table = @widget.DataTable::new(zebra=true)
-ignore(table.add_column(&quot;Name&quot;, width=12))
-ignore(table.add_column(&quot;Size&quot;, width=6, align=@widget.Align::Right))
-ignore(table.add_column(&quot;Kind&quot;))
-ignore(table.add_row([&quot;moon.pkg&quot;, &quot;184&quot;, &quot;package&quot;]))
-ignore(table.add_row([&quot;main.mbt&quot;, &quot;4096&quot;, &quot;source&quot;]))
-ignore(table.add_row([&quot;README.md&quot;, &quot;2211&quot;, &quot;text&quot;]))</pre>
-      <div class="term-body wout"><span class="b"> Name            Size  Kind</span>
- moon.pkg         184  package
- main.mbt        4096  source
- README.md       2211  text</div>
-    </div>
+    <p class="wdesc">Columns, a cell cursor, sorting by any column, and stripes if asked.</p>
+    <div class="wlive"><canvas id="live-datatable" data-demo="DataTable" tabindex="0" style="height: 90px"></canvas></div>
+    <div class="wmsg" data-for="live-datatable"></div>
+    <pre class="block wcode"><span class="kw">pub</span> <span class="kw">fn</span> data_table() -&gt; Demo {
+  <span class="kw">let</span> table = <span class="fn">@widget.</span>DataTable::new(zebra=<span class="kw">true</span>)
+  ignore(table.add_column(<span class="st">&quot;Target&quot;</span>, width=10))
+  ignore(table.add_column(<span class="st">&quot;Tests&quot;</span>, width=6, align=Right))
+  ignore(table.add_column(<span class="st">&quot;Status&quot;</span>))
+  ignore(table.add_row([<span class="st">&quot;wasm&quot;</span>, <span class="st">&quot;336&quot;</span>, <span class="st">&quot;pass&quot;</span>]))
+  ignore(table.add_row([<span class="st">&quot;wasm-gc&quot;</span>, <span class="st">&quot;336&quot;</span>, <span class="st">&quot;pass&quot;</span>]))
+  ignore(table.add_row([<span class="st">&quot;js&quot;</span>, <span class="st">&quot;336&quot;</span>, <span class="st">&quot;pass&quot;</span>]))
+  ignore(table.add_row([<span class="st">&quot;native&quot;</span>, <span class="st">&quot;336&quot;</span>, <span class="st">&quot;pass&quot;</span>]))
+  Demo::new(
+    <span class="st">&quot;DataTable&quot;</span>,
+    <span class="fn">@app.</span>column(0, [<span class="fn">@app.</span>leaf(1, table)]),
+    group=Data,
+    note=<span class="st">&quot;Columns, a cell cursor, sorting by any column, and stripes if asked.&quot;</span>,
+    rows=5,
+  )
+}</pre>
   </div>
-  <div class="wcard">
+  <div class="wcard" id="demo-markdown">
     <h4><code class="inline">Markdown</code></h4>
-    <p class="wdesc">Documents from source: headings, paragraphs, lists, quotes, code fences, rules and pipe tables — bold, italic, code and link styling inline.</p>
-    <div class="wcols">
-      <pre class="block wcode">@widget.Markdown::new(
-  &quot;# Deploy report\n\nAll four backends pass.\n\n- wasm ok\n- native ok\n\n| target | tests |\n|:-|:-:|\n| wasm | 273 |\n&quot;,
-)</pre>
-      <div class="term-body wout"><span class="b">Deploy report</span>
-
-All four backends pass.
-
-• wasm ok
-• native ok
-
- target │ tests
-────────┼───────
- wasm   │  273</div>
-    </div>
+    <p class="wdesc">Headings, emphasis, lists, quotes, code and tables, wrapped to the width.</p>
+    <div class="wlive"><canvas id="live-markdown" data-demo="Markdown" tabindex="0" style="height: 162px"></canvas></div>
+    <div class="wmsg" data-for="live-markdown"></div>
+    <pre class="block wcode"><span class="kw">pub</span> <span class="kw">fn</span> markdown() -&gt; Demo {
+  <span class="kw">let</span> doc = <span class="fn">@widget.</span>Markdown::new(
+    <span class="st">&quot;# Deploy report\n\nAll **four** backends pass, with `--deny-warn`.\n\n- wasm and wasm-gc\n- js and native\n\n&gt; Shipped on a Thursday.&quot;</span>,
+  )
+  Demo::new(
+    <span class="st">&quot;Markdown&quot;</span>,
+    <span class="fn">@app.</span>column(0, [<span class="fn">@app.</span>leaf(1, doc)]),
+    group=Data,
+    note=<span class="st">&quot;Headings, emphasis, lists, quotes, code and tables, wrapped to the width.&quot;</span>,
+    rows=9,
+  )
+}</pre>
   </div>
-  <div class="wcard">
+  <div class="wcard" id="demo-tooltip">
     <h4><code class="inline">Tooltip</code></h4>
-    <p class="wdesc">A padded hint that wraps within a maximum width, for status strips and hover help; it swallows keys and clicks.</p>
-    <div class="wcols">
-      <pre class="block wcode">@widget.Tooltip::new(&quot;The build passed on all four backends.&quot;)</pre>
-      <div class="term-body wout">  The build passed on all four</div>
-    </div>
+    <p class="wdesc">A padded box of wrapped text, for a hint beside what it explains.</p>
+    <div class="wlive"><canvas id="live-tooltip" data-demo="Tooltip" tabindex="0" style="height: 72px"></canvas></div>
+    <div class="wmsg" data-for="live-tooltip"></div>
+    <pre class="block wcode"><span class="kw">pub</span> <span class="kw">fn</span> tooltip() -&gt; Demo {
+  <span class="kw">let</span> tip = <span class="fn">@widget.</span>Tooltip::new(
+    <span class="st">&quot;Builds every target and runs the whole suite on each.&quot;</span>,
+    max_width=34,
+    style=<span class="fn">@style.</span>Style::new(bg=<span class="fn">@style.</span>Colour::rgb(60, 60, 80)),
+  )
+  Demo::new(
+    <span class="st">&quot;Tooltip&quot;</span>,
+    <span class="fn">@app.</span>column(0, [<span class="fn">@app.</span>leaf(1, tip)]),
+    group=Data,
+    note=<span class="st">&quot;A padded box of wrapped text, for a hint beside what it explains.&quot;</span>,
+    rows=4,
+  )
+}</pre>
   </div>
-  <div class="wcard">
+  <div class="wcard" id="demo-toast">
     <h4><code class="inline">Toast</code></h4>
-    <p class="wdesc">A transient notice with a severity bar — information, warning or error — that expires on its own timer or retires on a click.</p>
-    <div class="wcols">
-      <pre class="block wcode">@widget.Toast::new(
-  &quot;Everything is nominal.&quot;,
-  title=&quot;Deployed&quot;,
-  level=@widget.ToastLevel::Information,
-  duration=6,
-)</pre>
-      <div class="term-body wout"><span class="green">▌</span> <span class="b">Deployed</span>
-<span class="green">▌</span> Everything is nominal.</div>
-    </div>
+    <p class="wdesc">A notice with a coloured bar for its level; it expires on its own or on a click.</p>
+    <div class="wlive"><canvas id="live-toast" data-demo="Toast" tabindex="0" style="height: 72px"></canvas></div>
+    <div class="wmsg" data-for="live-toast"></div>
+    <pre class="block wcode"><span class="kw">pub</span> <span class="kw">fn</span> toast() -&gt; Demo {
+  <span class="kw">let</span> done = <span class="fn">@widget.</span>Toast::new(
+    <span class="st">&quot;All four backends pass.&quot;</span>,
+    title=<span class="st">&quot;Deployed&quot;</span>,
+    duration=0,
+  )
+  <span class="kw">let</span> warn = <span class="fn">@widget.</span>Toast::new(
+    <span class="st">&quot;Two tests were skipped.&quot;</span>,
+    title=<span class="st">&quot;Heads up&quot;</span>,
+    level=Warning,
+    duration=0,
+  )
+  Demo::new(
+    <span class="st">&quot;Toast&quot;</span>,
+    <span class="fn">@app.</span>column(0, [<span class="fn">@app.</span>leaf(1, done), <span class="fn">@app.</span>leaf(2, warn)]),
+    group=Data,
+    note=<span class="st">&quot;A notice with a coloured bar for its level; it expires on its own or on a click.&quot;</span>,
+    rows=4,
+  )
+}</pre>
   </div>
+<!-- /generated:widgets -->
 </section>
 
 <!-- ============================= DESIGN ============================= -->
 <section class="page" id="page-design">
   <div class="topbar">
     <div class="crumbs">docs / <b class="crumb-here">design</b></div>
-    <div class="acts"><button class="ghost-btn" class="theme-toggle">◐ theme</button></div>
+    <div class="acts"><button class="ghost-btn theme-toggle">◐ theme</button></div>
   </div>
 
   <h2>Design system</h2>
   <p class="lead">The CSS model you already know — selectors, specificity, cascade, inheritance — applied to the terminal.</p>
 
   <h3>Rules and cascade</h3>
-  <p>Give a node a name, an id and classes; write rules against them. Rules stack by specificity — id 100, class 10, name 1 — then by position, and a node inherits the text style of its container:</p>
-  <pre class="block"><span class="kw">let</span> sheet = @design.Stylesheet::<span class="fn">new</span>()
-
-sheet.<span class="fn">add</span>(
-  @design.Sel::new(name=<span class="st">"Header"</span>),
-  @design.Styles::new(text=Some(@style.Style::new(bold=<span class="kw">true</span>, fg=@style.cyan))),
+  <p>Give a node a name, an id and classes; write rules against them. Rules stack by specificity — ids, then classes and pseudo-classes, then names, compared in that order as CSS does — then by position, and a node inherits the text style of its container:</p>
+  <pre class="block"><span class="kw">let</span> sheet = <span class="fn">@design.</span>Stylesheet::new()
+sheet.add(
+  <span class="fn">@design.</span>Sel::new(name=<span class="st">"Header"</span>),
+  <span class="fn">@design.</span>Styles::new(text=<span class="fn">@style.</span>Style::new(bold=<span class="kw">true</span>, fg=<span class="fn">@style.</span>cyan)),
 )
-sheet.<span class="fn">add</span>(
-  @design.Sel::new(classes=[<span class="st">"framed"</span>], focus=<span class="kw">true</span>),
-  @design.Styles::new(border=Some(@design.Heavy)),
+sheet.add(
+  <span class="fn">@design.</span>Sel::new(classes=[<span class="st">"framed"</span>], focus=<span class="kw">true</span>),
+  <span class="fn">@design.</span>Styles::new(border=Heavy),
 )</pre>
   <ul>
     <li><strong>Selectors</strong> — name, id, class, and the <code class="inline">:focus</code>, <code class="inline">:hover</code> and <code class="inline">:disabled</code> pseudo-classes.</li>
@@ -595,13 +949,292 @@ sheet.<span class="fn">add</span>(
 
   <h3>Scroll containers and docks</h3>
   <p>A pane sizes its child to the child's own content, shows a window of it, draws bars that track the window, and moves by wheel, by the arrow, page, home and end keys, and to whatever just took focus. A docked child sits against an edge of its container, over the flow that gives up the space.</p>
+
+<!-- generated:style -->
+  <h3>Seen live</h3>
+  <div class="wcard" id="demo-borders">
+    <h4><code class="inline">Borders</code></h4>
+    <p class="wdesc">Five kinds of frame, drawn by the design system around any node.</p>
+    <div class="wlive"><canvas id="live-borders" data-demo="Borders" tabindex="0" style="height: 54px"></canvas></div>
+    <div class="wmsg" data-for="live-borders"></div>
+    <pre class="block wcode"><span class="kw">pub</span> <span class="kw">fn</span> borders() -&gt; Demo {
+  <span class="kw">let</span> kinds : Array[(String, <span class="fn">@design.</span>EdgeKind)] = [
+    (<span class="st">&quot;thin&quot;</span>, Thin),
+    (<span class="st">&quot;round&quot;</span>, Round),
+    (<span class="st">&quot;heavy&quot;</span>, Heavy),
+    (<span class="st">&quot;double&quot;</span>, Double),
+    (<span class="st">&quot;ascii&quot;</span>, Ascii),
+  ]
+  <span class="kw">let</span> boxes = kinds.mapi((i, kind) =&gt; {
+    <span class="fn">@app.</span>leaf(
+      i + 1,
+      <span class="fn">@widget.</span>Static::new(kind.0, align=Centre),
+      box=<span class="fn">@layout.</span>Box::new(extent=Frac(1)),
+      styles=<span class="fn">@design.</span>Styles::new(border=kind.1),
+    )
+  })
+  Demo::new(
+    <span class="st">&quot;Borders&quot;</span>,
+    <span class="fn">@app.</span>row(0, boxes, gap=1, box=line(3)),
+    group=Style,
+    note=<span class="st">&quot;Five kinds of frame, drawn by the design system around any node.&quot;</span>,
+    rows=3,
+  )
+}
+
+<span class="kw">fn</span> line(n : Int32) -&gt; <span class="fn">@layout.</span>Box {
+  <span class="fn">@layout.</span>Box::new(extent=Cells(n))
+}</pre>
+  </div>
+  <div class="wcard" id="demo-colours">
+    <h4><code class="inline">Colours</code></h4>
+    <p class="wdesc">The sixteen named colours, the 256-colour cube, and a true-colour sweep cut down to 256 and to 16.</p>
+    <div class="wlive"><canvas id="live-colours" data-demo="Colours" tabindex="0" style="height: 90px"></canvas></div>
+    <div class="wmsg" data-for="live-colours"></div>
+    <pre class="block wcode"><span class="kw">pub</span> <span class="kw">fn</span> colours() -&gt; Demo {
+  Demo::new(
+    <span class="st">&quot;Colours&quot;</span>,
+    <span class="fn">@app.</span>column(0, [<span class="fn">@app.</span>leaf(1, Swatches::{ })]),
+    group=Style,
+    note=<span class="st">&quot;The sixteen named colours, the 256-colour cube, and a true-colour sweep cut down to 256 and to 16.&quot;</span>,
+    rows=5,
+  )
+}
+
+<span class="cm">/// A widget of its own: each row a strip of coloured cells after a label.</span>
+priv <span class="kw">struct</span> Swatches {}
+
+<span class="kw">impl</span> <span class="fn">@widget.</span>Widget <span class="kw">for</span> Swatches <span class="kw">with</span> <span class="kw">fn</span> render_line(_self, row, size) {
+  <span class="kw">let</span> label = [<span class="st">&quot;16&quot;</span>, <span class="st">&quot;256&quot;</span>, <span class="st">&quot;24-bit&quot;</span>, <span class="st">&quot;→ 256&quot;</span>, <span class="st">&quot;→ 16&quot;</span>]
+  <span class="kw">if</span> row &lt; 0 || row &gt;= label.length() {
+    <span class="kw">return</span> <span class="fn">@strip.</span>Strip::blank(size.width, <span class="fn">@style.</span>default)
+  }
+  <span class="kw">let</span> lead = <span class="fn">@strip.</span>Strip::of(label[row], <span class="fn">@style.</span>Style::new(dim=<span class="kw">true</span>)).pad_to(
+    8, <span class="fn">@style.</span>default,
+  )
+  <span class="kw">let</span> span = <span class="fn">@cmp.</span>maximum(size.width - 8, 0)
+  <span class="kw">let</span> cells = Array::makei(span, x =&gt; {
+    <span class="kw">let</span> colour : <span class="fn">@style.</span>Colour = <span class="kw">match</span> row {
+      0 =&gt; Ansi(x * 16 / <span class="fn">@cmp.</span>maximum(span, 1))
+      1 =&gt; Ansi256(16 + x * 216 / <span class="fn">@cmp.</span>maximum(span, 1))
+      _ =&gt; {
+        <span class="kw">let</span> swept = sweep(x, span)
+        <span class="kw">match</span> row {
+          3 =&gt; swept.to_ansi256()
+          4 =&gt; swept.to_ansi16()
+          _ =&gt; swept
+        }
+      }
+    }
+    <span class="fn">@strip.</span>Seg::new(<span class="st">&quot; &quot;</span>, <span class="fn">@style.</span>Style::new(bg=colour))
+  })
+  <span class="fn">@strip.</span>Strip::join([lead, <span class="fn">@strip.</span>Strip::from_segs(cells)])
+}
+
+<span class="kw">impl</span> <span class="fn">@widget.</span>Widget <span class="kw">for</span> Swatches <span class="kw">with</span> <span class="kw">fn</span> hint(_self, size) {
+  <span class="fn">@geom.</span>Size::new(size.width, 5)
+}
+
+<span class="kw">impl</span> <span class="fn">@widget.</span>Widget <span class="kw">for</span> Swatches <span class="kw">with</span> <span class="kw">fn</span> handle(_self, _ctx, _msg) {
+  <span class="kw">false</span>
+}
+
+<span class="kw">impl</span> <span class="fn">@widget.</span>Widget <span class="kw">for</span> Swatches <span class="kw">with</span> <span class="kw">fn</span> focusable(_self) {
+  <span class="kw">false</span>
+}
+
+<span class="cm">/// The hue at column `x` of `span`, fully saturated.</span>
+<span class="kw">fn</span> sweep(x : Int32, span : Int32) -&gt; <span class="fn">@style.</span>Colour {
+  <span class="kw">let</span> h = x.to_double() * 6.0 / <span class="fn">@cmp.</span>maximum(span, 1).to_double()
+  <span class="kw">let</span> f = h - h.floor()
+  <span class="kw">let</span> up = (f * 255.0).to_int()
+  <span class="kw">let</span> down = 255 - up
+  <span class="kw">match</span> h.to_int() {
+    0 =&gt; <span class="fn">@style.</span>Colour::rgb(255, up, 0)
+    1 =&gt; <span class="fn">@style.</span>Colour::rgb(down, 255, 0)
+    2 =&gt; <span class="fn">@style.</span>Colour::rgb(0, 255, up)
+    3 =&gt; <span class="fn">@style.</span>Colour::rgb(0, down, 255)
+    4 =&gt; <span class="fn">@style.</span>Colour::rgb(up, 0, 255)
+    _ =&gt; <span class="fn">@style.</span>Colour::rgb(255, 0, down)
+  }
+}</pre>
+  </div>
+  <div class="wcard" id="demo-text-styles">
+    <h4><code class="inline">Text styles</code></h4>
+    <p class="wdesc">The SGR attributes every terminal knows, set on any style.</p>
+    <div class="wlive"><canvas id="live-text-styles" data-demo="Text styles" tabindex="0" style="height: 18px"></canvas></div>
+    <div class="wmsg" data-for="live-text-styles"></div>
+    <pre class="block wcode"><span class="kw">pub</span> <span class="kw">fn</span> text_styles() -&gt; Demo {
+  <span class="kw">let</span> styles : Array[(String, <span class="fn">@style.</span>Style)] = [
+    (<span class="st">&quot;bold&quot;</span>, <span class="fn">@style.</span>Style::new(bold=<span class="kw">true</span>)),
+    (<span class="st">&quot;dim&quot;</span>, <span class="fn">@style.</span>Style::new(dim=<span class="kw">true</span>)),
+    (<span class="st">&quot;italic&quot;</span>, <span class="fn">@style.</span>Style::new(italic=<span class="kw">true</span>)),
+    (<span class="st">&quot;underline&quot;</span>, <span class="fn">@style.</span>Style::new(underline=<span class="kw">true</span>)),
+    (<span class="st">&quot;strike&quot;</span>, <span class="fn">@style.</span>Style::new(strike=<span class="kw">true</span>)),
+    (<span class="st">&quot;reverse&quot;</span>, <span class="fn">@style.</span>Style::new(reverse=<span class="kw">true</span>)),
+  ]
+  <span class="kw">let</span> words = styles.mapi((i, pair) =&gt; {
+    <span class="fn">@app.</span>leaf(
+      i + 1,
+      <span class="fn">@widget.</span>label(pair.0, style=pair.1),
+      box=line(pair.0.length()),
+    )
+  })
+  Demo::new(
+    <span class="st">&quot;Text styles&quot;</span>,
+    <span class="fn">@app.</span>row(0, words, gap=3, box=line(1)),
+    group=Style,
+    note=<span class="st">&quot;The SGR attributes every terminal knows, set on any style.&quot;</span>,
+    rows=1,
+  )
+}
+
+<span class="kw">fn</span> line(n : Int32) -&gt; <span class="fn">@layout.</span>Box {
+  <span class="fn">@layout.</span>Box::new(extent=Cells(n))
+}</pre>
+  </div>
+  <div class="wcard" id="demo-docks-and-fractions">
+    <h4><code class="inline">Docks and fractions</code></h4>
+    <p class="wdesc">Edge docks take their side first; the flow divides what is left in cells and shares.</p>
+    <div class="wlive"><canvas id="live-docks-and-fractions" data-demo="Docks and fractions" tabindex="0" style="height: 126px"></canvas></div>
+    <div class="wmsg" data-for="live-docks-and-fractions"></div>
+    <pre class="block wcode"><span class="kw">pub</span> <span class="kw">fn</span> docks() -&gt; Demo {
+  <span class="kw">let</span> sheet = <span class="fn">@design.</span>Stylesheet::new()
+  sheet.add(
+    <span class="fn">@design.</span>Sel::new(classes=[<span class="st">&quot;pane&quot;</span>]),
+    <span class="fn">@design.</span>Styles::new(border=Round),
+  )
+  sheet.add(<span class="fn">@design.</span>Sel::new(name=<span class="st">&quot;Header&quot;</span>), <span class="fn">@design.</span>Styles::new(dock=Top))
+  sheet.add(<span class="fn">@design.</span>Sel::new(name=<span class="st">&quot;Footer&quot;</span>), <span class="fn">@design.</span>Styles::new(dock=Bottom))
+  <span class="kw">let</span> pane = (id : Int32, text : String, extent : <span class="fn">@layout.</span>Extent) =&gt; {
+    <span class="fn">@app.</span>leaf(
+      id,
+      <span class="fn">@widget.</span>Static::new(text, align=Centre),
+      box=<span class="fn">@layout.</span>Box::new(extent~),
+      classes=[<span class="st">&quot;pane&quot;</span>],
+    )
+  }
+  Demo::new(
+    <span class="st">&quot;Docks and fractions&quot;</span>,
+    <span class="fn">@app.</span>column(0, [
+      <span class="fn">@app.</span>leaf(1, <span class="fn">@widget.</span>Header::new(<span class="st">&quot;docked to the top&quot;</span>), name=<span class="st">&quot;Header&quot;</span>),
+      <span class="fn">@app.</span>row(2, [
+        pane(3, <span class="st">&quot;12 columns&quot;</span>, Cells(12)),
+        pane(4, <span class="st">&quot;two shares&quot;</span>, Frac(2)),
+        pane(5, <span class="st">&quot;one share&quot;</span>, Frac(1)),
+      ]),
+      <span class="fn">@app.</span>leaf(6, <span class="fn">@widget.</span>Footer::new([(<span class="st">&quot;dock&quot;</span>, <span class="st">&quot;bottom&quot;</span>)]), name=<span class="st">&quot;Footer&quot;</span>),
+    ]),
+    group=Style,
+    note=<span class="st">&quot;Edge docks take their side first; the flow divides what is left in cells and shares.&quot;</span>,
+    rows=7,
+    sheet~,
+  )
+}</pre>
+  </div>
+  <div class="wcard" id="demo-grid">
+    <h4><code class="inline">Grid</code></h4>
+    <p class="wdesc">A grid of columns and rows, with spans and a gutter that loses no column.</p>
+    <div class="wlive"><canvas id="live-grid" data-demo="Grid" tabindex="0" style="height: 108px"></canvas></div>
+    <div class="wmsg" data-for="live-grid"></div>
+    <pre class="block wcode"><span class="kw">pub</span> <span class="kw">fn</span> grid() -&gt; Demo {
+  <span class="kw">let</span> sheet = <span class="fn">@design.</span>Stylesheet::new()
+  sheet.add(
+    <span class="fn">@design.</span>Sel::new(classes=[<span class="st">&quot;cell&quot;</span>]),
+    <span class="fn">@design.</span>Styles::new(border=Thin),
+  )
+  <span class="kw">let</span> cell = (id : Int32, text : String) =&gt; {
+    <span class="fn">@app.</span>leaf(id, <span class="fn">@widget.</span>Static::new(text, align=Centre), classes=[<span class="st">&quot;cell&quot;</span>])
+  }
+  Demo::new(
+    <span class="st">&quot;Grid&quot;</span>,
+    <span class="fn">@app.</span>grid(
+      0,
+      [
+        <span class="fn">@app.</span>leaf(
+          1,
+          <span class="fn">@widget.</span>Static::new(<span class="st">&quot;two columns&quot;</span>, align=Centre),
+          classes=[<span class="st">&quot;cell&quot;</span>],
+          styles=<span class="fn">@design.</span>Styles::new(column_span=2),
+        ),
+        <span class="fn">@app.</span>leaf(
+          2,
+          <span class="fn">@widget.</span>Static::new(<span class="st">&quot;two rows&quot;</span>, align=Centre),
+          classes=[<span class="st">&quot;cell&quot;</span>],
+          styles=<span class="fn">@design.</span>Styles::new(row_span=2),
+        ),
+        cell(3, <span class="st">&quot;one&quot;</span>),
+        cell(4, <span class="st">&quot;one&quot;</span>),
+      ],
+      cols=3,
+      gutter=1,
+    ),
+    group=Style,
+    note=<span class="st">&quot;A grid of columns and rows, with spans and a gutter that loses no column.&quot;</span>,
+    rows=6,
+    sheet~,
+  )
+}</pre>
+  </div>
+  <div class="wcard" id="demo-states">
+    <h4><code class="inline">States</code></h4>
+    <p class="wdesc">Rules for :focus, :hover and :disabled stack over the plain rule by weight.</p>
+    <div class="wlive"><canvas id="live-states" data-demo="States" tabindex="0" style="height: 54px"></canvas></div>
+    <div class="wmsg" data-for="live-states"></div>
+    <pre class="block wcode"><span class="kw">pub</span> <span class="kw">fn</span> states() -&gt; Demo {
+  <span class="kw">let</span> sheet = <span class="fn">@design.</span>Stylesheet::new()
+  sheet.add(
+    <span class="fn">@design.</span>Sel::new(classes=[<span class="st">&quot;key&quot;</span>]),
+    <span class="fn">@design.</span>Styles::new(border=Round),
+  )
+  sheet.add(
+    <span class="fn">@design.</span>Sel::new(classes=[<span class="st">&quot;key&quot;</span>], hover=<span class="kw">true</span>),
+    <span class="fn">@design.</span>Styles::new(text=<span class="fn">@style.</span>Style::new(fg=<span class="fn">@style.</span>cyan)),
+  )
+  sheet.add(
+    <span class="fn">@design.</span>Sel::new(classes=[<span class="st">&quot;key&quot;</span>], focus=<span class="kw">true</span>),
+    <span class="fn">@design.</span>Styles::new(border=Heavy, text=<span class="fn">@style.</span>Style::new(bold=<span class="kw">true</span>)),
+  )
+  sheet.add(
+    <span class="fn">@design.</span>Sel::new(classes=[<span class="st">&quot;key&quot;</span>], disabled=<span class="kw">true</span>),
+    <span class="fn">@design.</span>Styles::new(text=<span class="fn">@style.</span>Style::new(dim=<span class="kw">true</span>)),
+  )
+  <span class="kw">let</span> key = (id : Int32, text : String) =&gt; {
+    <span class="fn">@app.</span>leaf(
+      id,
+      <span class="fn">@widget.</span>Button::new(text, focus_style=<span class="fn">@style.</span>default),
+      box=line(14),
+      classes=[<span class="st">&quot;key&quot;</span>],
+    )
+  }
+  Demo::new(
+    <span class="st">&quot;States&quot;</span>,
+    <span class="fn">@app.</span>row(
+      0,
+      [key(1, <span class="st">&quot;focus me&quot;</span>), key(2, <span class="st">&quot;hover me&quot;</span>), key(3, <span class="st">&quot;disabled&quot;</span>)],
+      gap=1,
+      box=line(3),
+    ),
+    group=Style,
+    note=<span class="st">&quot;Rules for :focus, :hover and :disabled stack over the plain rule by weight.&quot;</span>,
+    rows=3,
+    sheet~,
+    disabled=[3],
+  )
+}
+
+<span class="kw">fn</span> line(n : Int32) -&gt; <span class="fn">@layout.</span>Box {
+  <span class="fn">@layout.</span>Box::new(extent=Cells(n))
+}</pre>
+  </div>
+<!-- /generated:style -->
 </section>
 
 <!-- ============================= DRIVERS ============================= -->
 <section class="page" id="page-drivers">
   <div class="topbar">
     <div class="crumbs">docs / <b class="crumb-here">drivers</b></div>
-    <div class="acts"><button class="ghost-btn" class="theme-toggle">◐ theme</button></div>
+    <div class="acts"><button class="ghost-btn theme-toggle">◐ theme</button></div>
   </div>
 
   <h2>Drivers &amp; terminals</h2>
@@ -637,17 +1270,17 @@ sheet.<span class="fn">add</span>(
 <section class="page" id="page-testing">
   <div class="topbar">
     <div class="crumbs">docs / <b class="crumb-here">testing</b></div>
-    <div class="acts"><button class="ghost-btn" class="theme-toggle">◐ theme</button></div>
+    <div class="acts"><button class="ghost-btn theme-toggle">◐ theme</button></div>
   </div>
 
   <h2>Testing</h2>
   <p class="lead">The same suite on four backends — a regression in one world fails loudly everywhere.</p>
 
   <div class="stats">
-    <div class="stat"><div class="n">273</div><div class="l">wasm</div></div>
-    <div class="stat"><div class="n">273</div><div class="l">wasm-gc</div></div>
-    <div class="stat"><div class="n">285</div><div class="l">js</div></div>
-    <div class="stat"><div class="n">273</div><div class="l">native</div></div>
+    <div class="stat"><div class="n" data-count="tests">339</div><div class="l">wasm</div></div>
+    <div class="stat"><div class="n" data-count="tests">339</div><div class="l">wasm-gc</div></div>
+    <div class="stat"><div class="n" data-count="tests">339</div><div class="l">js</div></div>
+    <div class="stat"><div class="n" data-count="tests">339</div><div class="l">native</div></div>
   </div>
 
   <h3>Run the suite</h3>
@@ -659,10 +1292,12 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
   <h3>What the suite covers</h3>
   <ul>
     <li><strong>Geometry and strips</strong> — rectangle algebra, clipping at character boundaries, Unicode width.</li>
-    <li><strong>The parser</strong> — CSI and SS3 sequences, modifiers, mouse, paste, split UTF-8, against a headless terminal.</li>
+    <li><strong>The parser</strong> — CSI and SS3 sequences, modifiers, mouse, paste, split UTF-8, and sequences it should pass over whole.</li>
+    <li><strong>The virtual terminal</strong> — cursor movement, erasing, private modes, string sequences and scrolling, so output can be checked cell by cell.</li>
     <li><strong>The compositor</strong> — rows from placements, diffs from consecutive frames, spans to escape sequences.</li>
     <li><strong>Layout and design</strong> — axis and grid placement, the cascade, inheritance, chrome behind children.</li>
     <li><strong>Every widget</strong> — each one's keyboard contract, message shape and rendered rows asserted against expected text.</li>
+    <li><strong>Every demo</strong> — each one in the gallery starts in a headless application and draws, so the examples on this site cannot rot.</li>
   </ul>
   <p>CI runs the whole gate on Ubuntu, macOS and Windows on every pull request and every push to <code class="inline">master</code>, and a tag publishes the module to mooncakes.</p>
 </section>

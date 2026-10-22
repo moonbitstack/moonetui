@@ -2,18 +2,14 @@
 // SPDX-License-Identifier: Apache-2.0
 
 ///|
-/// The page-side half of one terminal: its canvas, measurements, queued input
-/// and listeners. Each `WebTty` owns one, so a page can hold as many terminals
-/// as it has canvases.
+/// One canvas's state on the page, one per `WebTty`, so a page can hold many
+/// terminals.
 #external
 priv type Host
 
 ///|
-/// A terminal drawn on a canvas.
-///
-/// Keys, pastes and the mouse are taken from the canvas only while it has focus,
-/// so the rest of the page keeps its own keyboard. The mouse is reported when the
-/// application turns reporting on, in the form it asked for.
+/// A terminal drawn on a canvas. Input comes from the canvas only while it has
+/// focus, so the rest of the page keeps its keyboard.
 struct WebTty {
   host : Host
   grid : @vt.Grid
@@ -103,9 +99,8 @@ pub impl @driver.Driver for WebTty with fn now(_self) {
 }
 
 ///|
-/// Follow the canvas: a new cell count resizes the grid and tells the
-/// application in-band; a canvas that was cleared without changing size, as a
-/// change of pixel ratio does, is painted again from the grid.
+/// A new cell count resizes the grid and is reported in-band; a canvas cleared
+/// at the same size, as a new pixel ratio does, is repainted.
 fn WebTty::check_size(self : WebTty) -> Unit {
   let cols = js_cols(self.host)
   let rows = js_rows(self.host)
@@ -156,8 +151,8 @@ fn WebTty::paint(self : WebTty) -> Unit {
 }
 
 ///|
-/// A colour as CSS, or the empty string for the terminal's own default, which
-/// the page side resolves against its `fg` or `bg`.
+/// A colour as CSS; empty for the default, which the page fills with `fg` or
+/// `bg`.
 fn css(colour : @style.Colour) -> String {
   match colour.to_rgb() {
     None => ""

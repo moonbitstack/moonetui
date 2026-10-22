@@ -79,17 +79,47 @@
   });
   show(location.hash);
 
-  // A quiet typing effect for the hero prompt line.
-  var typed = document.getElementById("typed");
-  if (typed) {
-    var text = "moon run --target native examples/tui";
-    var at = 0;
-    var timer = setInterval(function () {
-      at += 1;
-      typed.textContent = text.slice(0, at);
-      if (at >= text.length) {
-        clearInterval(timer);
-      }
-    }, 55);
+  // The toolkit itself, compiled to JavaScript, draws on each canvas once it
+  // comes into view; a page that is never opened never loads it.
+  var toolkit = null;
+  function load() {
+    if (!toolkit) {
+      toolkit = import("./moonetui.js");
+    }
+    return toolkit;
+  }
+
+  globalThis.moonetuiReport = function (canvas, text) {
+    var line = document.querySelector('.wmsg[data-for="' + canvas + '"]');
+    if (line) {
+      line.textContent = text;
+    }
+  };
+
+  var canvases = document.querySelectorAll("canvas[data-demo], #gallery-home");
+  if ("IntersectionObserver" in window) {
+    var watch = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (!entry.isIntersecting) {
+          return;
+        }
+        var el = entry.target;
+        watch.unobserve(el);
+        load()
+          .then(function (m) {
+            if (el.dataset.demo) {
+              m.mount(el.id, el.dataset.demo);
+            } else {
+              m.start(el.id);
+            }
+          })
+          .catch(function () {
+            el.parentElement.classList.add("offline");
+          });
+      });
+    });
+    canvases.forEach(function (c) {
+      watch.observe(c);
+    });
   }
 })();

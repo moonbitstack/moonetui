@@ -50,3 +50,9 @@ jobs:
           moon fmt
           moon info --target all
           git diff --exit-code
+
+      - name: the documentation's demo cards match the showcase
+        if: ${{ matrix.os == 'ubuntu-latest' }}
+        run: |
+          python3 scripts/gen_docs.py
+          git diff --exit-code docs/index.html

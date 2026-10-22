@@ -13,6 +13,7 @@ fn toggle_line(
   on_style : @style.Style,
   off_style : @style.Style,
   label_style : @style.Style,
+  fill : @style.Style,
   width : Int32,
 ) -> @strip.Strip {
   let style = if on { on_style } else { off_style }
@@ -27,7 +28,7 @@ fn toggle_line(
   } else {
     @strip.Strip::join([padded, button])
   }
-  body.pad_to(width, label_style)
+  body.pad_to(width, fill)
 }
 
 ///|
@@ -113,6 +114,7 @@ fn Checkbox::line(self : Checkbox, width : Int32) -> @strip.Strip {
     self.on_style,
     self.off_style,
     label,
+    self.label_style,
     width,
   )
 }
@@ -235,6 +237,7 @@ fn RadioButton::line(self : RadioButton, width : Int32) -> @strip.Strip {
     self.on_style,
     self.off_style,
     label,
+    self.label_style,
     width,
   )
 }

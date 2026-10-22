@@ -1,8 +1,7 @@
 name: Docs
 
-# Publishes the documentation site to GitHub Pages whenever it changes on
-# master. The site under docs/ is a static page with no build step, so the
-# workflow only uploads it and asks Pages to serve the artifact.
+# Publishes the documentation site to GitHub Pages. The page runs every demo
+# live, so the toolkit is built to JavaScript here and shipped beside it.
 
 on:
   push:
@@ -10,6 +9,8 @@ on:
       - master
     paths:
       - "docs/**"
+      - "src/**"
+      - "scripts/gen_docs.py"
       - ".github/workflows/docs.yml"
   workflow_dispatch:
 
@@ -32,6 +33,18 @@ jobs:
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
+
+      - name: install moon
+        run: |
+          curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash
+          echo "$HOME/.moon/bin" >> $GITHUB_PATH
+
+      - name: build the toolkit for the page
+        run: |
+          moon update
+          moon build --target js --release
+          python3 scripts/gen_docs.py
+          cp _build/js/release/build/examples/browser/browser.js docs/assets/moonetui.js
 
       - name: configure pages
         uses: actions/configure-pages@v5

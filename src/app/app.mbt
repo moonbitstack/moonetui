@@ -9,7 +9,7 @@ pub struct App[D] {
   mut root : Node
   parser : @input.Parser
   base : @style.Style
-  sheet : @design.Stylesheet
+  mut sheet : @design.Stylesheet
   frame_ms : Int32
   mut rects : Map[Int32, @geom.Region]
   mut bare : Map[Int32, @geom.Region]
@@ -138,8 +138,7 @@ pub fn[D : @driver.Driver] App::step(self : App[D]) -> Bool raise {
       ignore(self.deliver_to(id, widget, Tick(ms)))
     })
   }
-  // Few terminals report a resize in-band, so the size is measured as well; a
-  // change in the measurement counts the same as a report.
+  // Few terminals report a resize in-band, so the size is measured as well.
   let measured = self.driver.size()
   if measured != self.measured {
     self.measured = measured
@@ -278,6 +277,13 @@ pub fn[D : @driver.Driver] App::after(
     return
   }
   self.timers.push({ ms, at: self.driver.now() + ms, repeat: false, fire, })
+}
+
+///|
+/// Restyle the whole tree with another stylesheet, as a theme switch does.
+pub fn[D] App::set_sheet(self : App[D], sheet : @design.Stylesheet) -> Unit {
+  self.sheet = sheet
+  self.dirty = true
 }
 
 ///|

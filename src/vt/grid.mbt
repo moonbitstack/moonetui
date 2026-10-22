@@ -8,14 +8,9 @@ pub(all) struct Cell {
 } derive(Eq, Debug)
 
 ///|
-/// The screen an escape stream draws: cells, the cursor, the style in force and
-/// the private modes the stream has set.
-///
-/// It reads the ECMA-48 subset a full-screen application writes — cursor
-/// addressing and movement, erasing, SGR, private modes — and skips string
-/// sequences (OSC, DCS, APC, PM, SOS) whole, so a title or a hyperlink never
-/// lands on the screen as text. A sequence cut off at the end of a write is kept
-/// and finished by the next one.
+/// The screen an escape stream draws. It reads the ECMA-48 subset a full-screen
+/// application writes and skips string sequences (OSC, DCS, APC, PM, SOS) whole;
+/// a sequence cut off at the end of a write is finished by the next.
 struct Grid {
   mut width : Int32
   mut height : Int32

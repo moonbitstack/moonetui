@@ -1,0 +1,130 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "moonbitstack/moonetui/examples/showcase"
+
+import {
+  "moonbitlang/core/debug",
+  "moonbitstack/moonetui/app",
+  "moonbitstack/moonetui/design",
+  "moonbitstack/moonetui/widget",
+}
+
+// Values
+pub fn borders() -> Demo
+
+pub fn button() -> Demo
+
+pub fn checkbox() -> Demo
+
+pub fn collapsible() -> Demo
+
+pub fn colours() -> Demo
+
+pub fn data_table() -> Demo
+
+pub fn demos() -> Array[Demo]
+
+pub fn digits() -> Demo
+
+pub fn directory_tree() -> Demo
+
+pub fn docks() -> Demo
+
+pub fn find(String) -> Demo?
+
+pub fn footer() -> Demo
+
+pub fn grid() -> Demo
+
+pub fn header() -> Demo
+
+pub fn input() -> Demo
+
+pub fn list_view() -> Demo
+
+pub fn loading_indicator() -> Demo
+
+pub fn log() -> Demo
+
+pub fn markdown() -> Demo
+
+pub let menu_id : Int32
+
+pub fn option_list() -> Demo
+
+pub fn placeholder() -> Demo
+
+pub fn progress() -> Demo
+
+pub fn radio_set() -> Demo
+
+pub fn rich_log() -> Demo
+
+pub fn rule() -> Demo
+
+pub fn select() -> Demo
+
+pub fn selection_list() -> Demo
+
+pub fn sparkline() -> Demo
+
+pub fn states() -> Demo
+
+pub fn static_text() -> Demo
+
+pub fn switch() -> Demo
+
+pub fn tabbed_content() -> Demo
+
+pub fn tabs() -> Demo
+
+pub fn text_area() -> Demo
+
+pub fn text_styles() -> Demo
+
+pub fn toast() -> Demo
+
+pub fn tooltip() -> Demo
+
+pub fn tree() -> Demo
+
+// Errors
+
+// Types and methods
+pub struct Demo {
+  name : String
+  group : Group
+  note : String
+  rows : Int32
+  tree : @app.Node
+  sheet : @design.Stylesheet
+  disabled : Array[Int32]
+}
+pub fn Demo::new(String, @app.Node, group~ : Group, note~ : String, rows~ : Int32, sheet? : @design.Stylesheet, disabled? : Array[Int32]) -> Self
+
+pub struct Gallery {
+  menu : @widget.OptionList
+  demos : Array[Demo]
+  mut at : Int32
+}
+pub fn[D] Gallery::attach(Self, @app.App[D]) -> Unit
+pub fn Gallery::new() -> Self
+pub fn[D] Gallery::react(Self, @app.App[D], @widget.Out) -> Unit
+pub fn Gallery::sheet(Self) -> @design.Stylesheet
+pub fn Gallery::tree(Self) -> @app.Node
+
+pub(all) enum Group {
+  Text
+  Entry
+  Choice
+  Navigation
+  Data
+  Style
+} derive(Eq, @debug.Debug)
+pub fn Group::equal(Self, Self) -> Bool
+pub fn Group::not_equal(Self, Self) -> Bool
+pub fn Group::title(Self) -> String
+pub fn Group::to_repr(Self) -> @debug.Repr
+
+// Type aliases
+
+// Traits

@@ -1,6 +1,6 @@
 name = "moonbitstack/moonetui"
 
-version = "0.1.1"
+version = "0.2.0"
 
 readme = "README.md"
 
@@ -10,7 +10,7 @@ license = "Apache-2.0"
 
 keywords = [ "tui", "terminal", "widget", "ansi" ]
 
-description = "moonetui — a terminal UI toolkit for MoonBit: cell buffer, differential ANSI renderer, incremental key parser, layout, a CSS-like design system, widgets, and pluggable terminal drivers."
+description = "A terminal UI toolkit for MoonBit: cell buffer, differential ANSI renderer, incremental key parser, layout, a CSS-like design system, thirty-two widgets, and drivers for terminals, Node, browsers and serial lines."
 
 preferred_target = "wasm-gc"
 

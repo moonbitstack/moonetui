@@ -542,26 +542,61 @@ tr:hover td { background: rgba(122, 162, 247, 0.04); }
 
 .wcard .wdesc { color: var(--ink-dim); font-size: 13.5px; margin: 0 0 14px; }
 
-.wcols {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 14px;
-  align-items: stretch;
+.wlive {
+  background: var(--code-bg);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 12px 14px;
+  transition: border-color 0.2s ease;
 }
 
-.wcols pre.block { margin: 0; overflow-x: auto; }
+.wlive:focus-within { border-color: var(--accent); }
 
-.wout {
+.wlive canvas,
+.term-live canvas {
+  display: block;
+  width: 100%;
+  outline: none;
+  cursor: default;
+}
+
+.wmsg {
+  font-family: "Cascadia Code", "JetBrains Mono", ui-monospace, monospace;
+  font-size: 12.5px;
+  color: var(--ink-faint);
+  margin: 8px 2px 14px;
+  min-height: 1.6em;
+}
+
+.wcard pre.wcode {
   margin: 0;
   overflow-x: auto;
-  font-size: 12.5px;
+  font-size: 13px;
   line-height: 1.6;
 }
 
-.term-body .rev-d { background: #565f89; color: #0d1117; }
-.term-body .rev-g { background: #9ece6a; color: #0d1117; font-weight: 700; }
+.offline::after {
+  content: "Build the JavaScript first: moon build --target js --release";
+  display: block;
+  color: var(--ink-faint);
+  font-size: 12.5px;
+}
+
+/* ---------- live terminal on the home page ---------- */
+
+.term-live { padding: 14px 16px 8px; }
+
+.term-live canvas { height: 486px; }
+
+.term-hint {
+  padding: 4px 20px 18px;
+  font-size: 13.5px;
+  color: var(--ink-dim);
+}
+
+.term-hint b { color: var(--ink); }
 
 @media (max-width: 900px) {
-  .wcols { grid-template-columns: 1fr; }
-  .wout { font-size: 11.5px; }
+  .term-live canvas { height: 396px; }
 }
+

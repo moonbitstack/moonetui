@@ -3,3 +3,4 @@
 !.moonignore
 _build/
 target/
+docs/assets/moonetui.js
