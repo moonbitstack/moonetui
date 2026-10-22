@@ -23,3 +23,12 @@ test "a bar clamps rather than overflowing" {
   bar.set_total(0)
   assert_eq(bar.percent(), 0)
 }
+
+///|
+test "a bar over a large total neither overflows nor goes negative" {
+  let bar = @widget.Progress::new(total=2_000_000_000)
+  bar.set(1_000_000_000)
+  assert_eq(bar.percent(), 50)
+  let w : &@widget.Widget = bar
+  assert_eq(w.render_line(0, size(14, 1)).text(), "█████      50%")
+}

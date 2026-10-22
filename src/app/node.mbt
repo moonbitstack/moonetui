@@ -224,7 +224,8 @@ pub fn Node::hint(
             }
           }
         }
-        widest + chrome
+        let cols = if cols < 1 { 1 } else { cols }
+        widest * cols + gutter * (cols - 1) + chrome
       }
     }
     Stack(dir=own_dir, gap~, kids~, ..) => {
@@ -515,10 +516,7 @@ pub fn Node::place(
         bare~,
         offsets~,
       )
-      let bar_style = match res.scrollbar {
-        Some(style) => style
-        None => bar
-      }
+      let bar_style = res.scrollbar.unwrap_or(bar)
       views[id] = { state, bar: bar_style, vbar, hbar, }
       styled[id] = res
       if res.has_chrome() || vbar || hbar {
@@ -555,27 +553,34 @@ pub fn Node::find(self : Node, id : Int32) -> &@widget.Widget? {
 }
 
 ///|
-pub fn Node::focus_ring(self : Node) -> Array[Int32] {
+pub fn Node::focus_ring(
+  self : Node,
+  theme~ : Theme = Theme::new(),
+) -> Array[Int32] {
   let out : Array[Int32] = []
-  self.collect_focusable(out)
+  self.collect_focusable(out, theme)
   out
 }
 
 ///|
-fn Node::collect_focusable(self : Node, out : Array[Int32]) -> Unit {
+/// A node hidden by its styles takes its whole subtree out of the ring.
+fn Node::collect_focusable(
+  self : Node,
+  out : Array[Int32],
+  theme : Theme,
+) -> Unit {
+  if self.resolve(theme, @style.default).hidden {
+    return
+  }
   match self {
     Leaf(id~, widget~, ..) => if widget.focusable() { out.push(id) }
-    Stack(kids~, ..) =>
+    Stack(kids~, ..) | Grid(kids~, ..) =>
       for kid in kids {
-        kid.collect_focusable(out)
-      }
-    Grid(kids~, ..) =>
-      for kid in kids {
-        kid.collect_focusable(out)
+        kid.collect_focusable(out, theme)
       }
     Scroll(id~, kid~, ..) => {
       out.push(id)
-      kid.collect_focusable(out)
+      kid.collect_focusable(out, theme)
     }
   }
 }

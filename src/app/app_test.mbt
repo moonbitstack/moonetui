@@ -77,6 +77,40 @@ test "tab moves focus round the ring" {
 }
 
 ///|
+test "focus starts on the first widget that is not disabled" {
+  let tree = @app.column(0, [
+    @app.leaf(1, @widget.Button::new("one")),
+    @app.leaf(2, @widget.Button::new("two")),
+  ])
+  let tty = @driver.Headless::new(@geom.Size::new(8, 2))
+  let ui = @app.App::new(tty, tree)
+  ui.disable(1)
+  ui.start()
+  assert_eq(ui.focused(), 2)
+  ui.push_screen(tree)
+  assert_eq(ui.focused(), 2)
+}
+
+///|
+test "tab passes over a node a rule hides" {
+  let sheet = @design.Stylesheet::new()
+  sheet.add(
+    @design.Sel::new(classes=["gone"]),
+    @design.Styles::new(display=Hidden),
+  )
+  let tree = @app.column(0, [
+    @app.leaf(1, @widget.Button::new("one")),
+    @app.leaf(2, @widget.Button::new("two"), classes=["gone"]),
+    @app.leaf(3, @widget.Button::new("three")),
+  ])
+  let tty = @driver.Headless::new(@geom.Size::new(8, 3), script=[bytes([0x09])])
+  let ui = @app.App::new(tty, tree, sheet~)
+  ui.start()
+  ui.step() |> ignore
+  assert_eq(ui.focused(), 3)
+}
+
+///|
 test "what a widget reports reaches the host" {
   let button = @widget.Button::new("go")
   let tree = @app.column(0, [@app.leaf(1, button)])
@@ -118,6 +152,28 @@ test "control-c quits" {
 }
 
 ///|
+test "the quit key can be another key, or none" {
+  let ctrl : @event.Mods = { ctrl: true, alt: false, shift: false, }
+  let tree = @app.column(0, [@app.leaf(1, @widget.Static::new("x"))])
+  let tty = @driver.Headless::new(@geom.Size::new(4, 1), script=[
+    bytes([3]),
+    bytes([0x11]),
+  ])
+  let ui = @app.App::new(
+    tty,
+    tree,
+    quit=Some(@event.Key::with_mods(Char(113), ctrl)),
+  )
+  ui.start()
+  assert_eq(ui.step(), true)
+  assert_eq(ui.step(), false)
+  let tty = @driver.Headless::new(@geom.Size::new(4, 1), script=[bytes([3])])
+  let ui = @app.App::new(tty, tree, quit=None)
+  ui.start()
+  assert_eq(ui.step(), true)
+}
+
+///|
 test "a resize settles before the screen is rebuilt" {
   let list = @widget.ListView::new(["a", "b", "c", "d"])
   let tree = @app.column(0, [@app.leaf(1, list)])
@@ -131,6 +187,19 @@ test "a resize settles before the screen is rebuilt" {
   ui.step() |> ignore
   assert_eq(ui.screen().length(), 4)
   assert_eq(ui.screen()[3], "d     ")
+}
+
+///|
+test "a terminal that reports no resize is measured instead" {
+  let list = @widget.ListView::new(["a", "b", "c", "d"])
+  let tree = @app.column(0, [@app.leaf(1, list)])
+  let tty = @driver.Headless::new(@geom.Size::new(6, 2))
+  let ui = @app.App::new(tty, tree)
+  ui.start()
+  tty.set_size(@geom.Size::new(6, 4))
+  ui.step() |> ignore
+  ui.step() |> ignore
+  assert_eq(ui.screen().length(), 4)
 }
 
 ///|

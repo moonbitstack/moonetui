@@ -48,7 +48,7 @@ pub fn Progress::set_total(self : Progress, total : Int32) -> Unit {
 
 ///|
 pub fn Progress::percent(self : Progress) -> Int32 {
-  self.value * 100 / self.total
+  (self.value.to_int64() * 100L / self.total.to_int64()).to_int()
 }
 
 ///|
@@ -86,7 +86,10 @@ pub impl Widget for Progress with fn focusable(_self) {
 
 ///|
 fn Progress::bar(self : Progress, width : Int32) -> @strip.Strip {
-  let eighths = width * 8 * self.value / self.total
+  let eighths = (width.to_int64() *
+  8L *
+  self.value.to_int64() /
+  self.total.to_int64()).to_int()
   let full = eighths / 8
   let part = eighths % 8
   let out = StringBuilder()

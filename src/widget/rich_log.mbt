@@ -62,10 +62,7 @@ pub fn RichLog::write(
   let was_end = self.at_end()
   let pieces = plain_lines(text)
   if pieces.length() == 0 {
-    let at = match width {
-      Some(w) => w
-      None => self.min_width
-    }
+    let at = width.unwrap_or(self.min_width)
     self.append(@strip.Strip::blank(at, style), at)
   } else {
     let natural = widest_of(pieces)

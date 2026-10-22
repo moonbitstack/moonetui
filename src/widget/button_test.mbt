@@ -44,3 +44,13 @@ test "a disabled button neither takes focus nor presses" {
   assert_eq(press(w, 1, size(6, 1), key(Enter)), [])
   assert_eq(b.is_disabled(), true)
 }
+
+///|
+test "disabling a focused button drops its focus look" {
+  let b = @widget.Button::new("go")
+  let w : &@widget.Widget = b
+  w.handle(@widget.Ctx::new(1, size(6, 1)), Focus(true)) |> ignore
+  assert_eq(b.has_focus(), true)
+  b.disable(true)
+  assert_eq(b.has_focus(), false)
+}

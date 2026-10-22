@@ -26,3 +26,11 @@ test "rebuilding a range substitutes a space for a halved character" {
   assert_eq(@comp.line_of(columns[1:4], plain).text(), " 文")
   assert_eq(@comp.line_of(columns[0:3], plain).text(), "中 ")
 }
+
+///|
+test "control characters never reach the terminal" {
+  let columns = @comp.cells(
+    @strip.Strip::of("a\u{1b}[2Jb\r\tc\u{7f}\u{9b}d", plain),
+  )
+  assert_eq(columns.map(c => c.text), ["a", "[", "2", "J", "b", "c", "d"])
+}

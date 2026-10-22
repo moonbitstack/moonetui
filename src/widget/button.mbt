@@ -32,6 +32,9 @@ pub fn Button::text(self : Button) -> String {
 ///|
 pub fn Button::disable(self : Button, disabled : Bool) -> Unit {
   self.disabled = disabled
+  if disabled {
+    self.focused = false
+  }
 }
 
 ///|

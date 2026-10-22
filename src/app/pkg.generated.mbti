@@ -6,6 +6,7 @@ import {
   "moonbitstack/moonetui/comp",
   "moonbitstack/moonetui/design",
   "moonbitstack/moonetui/driver",
+  "moonbitstack/moonetui/event",
   "moonbitstack/moonetui/geom",
   "moonbitstack/moonetui/input",
   "moonbitstack/moonetui/layout",
@@ -16,6 +17,8 @@ import {
 
 // Values
 pub fn column(Int32, Array[Node], box? : @layout.Box, gap? : Int32, name? : String, classes? : Array[String], styles? : @design.Styles) -> Node
+
+pub let ctrl_c : @event.Key
 
 pub fn grid(Int32, Array[Node], cols~ : Int32, rows? : Int32, gutter? : Int32, box? : @layout.Box, name? : String, classes? : Array[String], styles? : @design.Styles) -> Node
 
@@ -42,6 +45,7 @@ pub fn Anim::to_repr(Self) -> @debug.Repr
 pub struct App[D] {
   driver : D
   plain : Bool
+  quit : @event.Key?
   mut root : Node
   parser : @input.Parser
   base : @style.Style
@@ -67,6 +71,7 @@ pub struct App[D] {
   mut last_frame : Int32
   mut pending_resize : @geom.Size?
   mut resize_at : Int32
+  mut measured : @geom.Size
 }
 pub fn[D : @driver.Driver] App::after(Self[D], Int32, () -> Unit) -> Unit
 pub fn[D] App::disable(Self[D], Int32) -> Unit
@@ -77,7 +82,7 @@ pub fn[D] App::focus_next(Self[D], Int32) -> Unit
 pub fn[D] App::focused(Self[D]) -> Int32
 pub fn[D] App::hovering(Self[D]) -> Int32
 pub fn[D] App::is_disabled(Self[D], Int32) -> Bool
-pub fn[D] App::new(D, Node, base? : @style.Style, sheet? : @design.Stylesheet, fps? : Int32, plain? : Bool) -> Self[D]
+pub fn[D] App::new(D, Node, base? : @style.Style, sheet? : @design.Stylesheet, fps? : Int32, plain? : Bool, quit? : @event.Key?) -> Self[D]
 pub fn[D] App::on(Self[D], (@widget.Out) -> Bool) -> Unit
 pub fn[D] App::pop_screen(Self[D]) -> Unit
 pub fn[D] App::post(Self[D], @widget.Out) -> Unit
@@ -102,7 +107,7 @@ pub enum Node {
 pub fn Node::box(Self) -> @layout.Box
 pub fn Node::contains_id(Self, Int32) -> Bool
 pub fn Node::find(Self, Int32) -> &@widget.Widget?
-pub fn Node::focus_ring(Self) -> Array[Int32]
+pub fn Node::focus_ring(Self, theme? : Theme) -> Array[Int32]
 pub fn Node::hint(Self, @geom.Size, @layout.Dir, theme? : Theme) -> Int32
 pub fn Node::id(Self) -> Int32
 pub fn Node::place(Self, @geom.Region, @geom.Region, @comp.Scene, Map[Int32, @geom.Region], styled? : Map[Int32, @design.Resolved], theme? : Theme, inherited? : @style.Style, views? : Map[Int32, View], bare? : Map[Int32, @geom.Region], offsets? : Map[Int32, @geom.Offset]) -> Unit

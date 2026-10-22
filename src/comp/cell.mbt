@@ -21,6 +21,12 @@ pub fn cells(line : @strip.Strip) -> Array[Cell] {
     let mut i = 0
     while i < text.length() {
       let (code, used) = @strip.code_at(text, i)
+      // A control character would move the cursor or start a sequence on the
+      // terminal itself, so it is dropped here rather than written.
+      if code < 0x20 || (code >= 0x7F && code < 0xA0) {
+        i = i + used
+        continue
+      }
       let width = @strip.cell_width(code)
       if width == 0 {
         if out.length() > 0 {

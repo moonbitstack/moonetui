@@ -5,6 +5,7 @@
 pub struct App[D] {
   driver : D
   plain : Bool
+  quit : @event.Key?
   mut root : Node
   parser : @input.Parser
   base : @style.Style
@@ -30,6 +31,7 @@ pub struct App[D] {
   mut last_frame : Int32
   mut pending_resize : @geom.Size?
   mut resize_at : Int32
+  mut measured : @geom.Size
 }
 
 ///|
@@ -43,10 +45,12 @@ pub fn[D] App::new(
   sheet~ : @design.Stylesheet = @design.Stylesheet::new(),
   fps~ : Int32 = 60,
   plain~ : Bool = false,
+  quit~ : @event.Key? = Some(ctrl_c),
 ) -> App[D] {
   {
     driver,
     plain,
+    quit,
     root,
     parser: @input.Parser::new(),
     base,
@@ -76,6 +80,7 @@ pub fn[D] App::new(
     last_frame: 0,
     pending_resize: None,
     resize_at: 0,
+    measured: @geom.Size::new(80, 24),
   }
 }
 
@@ -86,13 +91,11 @@ pub fn[D : @driver.Driver] App::start(self : App[D]) -> Unit raise {
     self.driver.write(@driver.enter())
   }
   self.size = self.driver.size()
+  self.measured = self.size
   self.running = true
   self.dirty = true
   self.prev = []
-  let ring = self.root.focus_ring()
-  if ring.length() > 0 {
-    self.give_focus(ring[0])
-  }
+  self.focus_next(1)
   self.render()
   self.last_frame = self.driver.now()
 }
@@ -124,6 +127,14 @@ pub fn[D : @driver.Driver] App::step(self : App[D]) -> Bool raise {
   }
   let now = self.driver.now()
   self.fire_timers(now)
+  // Few terminals report a resize in-band, so the size is measured as well; a
+  // change in the measurement counts the same as a report.
+  let measured = self.driver.size()
+  if measured != self.measured {
+    self.measured = measured
+    self.pending_resize = Some(measured)
+    self.resize_at = now
+  }
   match self.pending_resize {
     Some(size) =>
       if now - self.resize_at >= RESIZE_SETTLE_MS {
@@ -276,10 +287,7 @@ pub fn[D] App::push_screen(self : App[D], root : Node) -> Unit {
   self.prev = []
   self.prev_bare = Map([])
   self.anims = Map([])
-  let ring = root.focus_ring()
-  if ring.length() > 0 {
-    self.give_focus(ring[0])
-  }
+  self.focus_next(1)
   self.dirty = true
 }
 
@@ -306,7 +314,7 @@ pub fn[D] App::screen_depth(self : App[D]) -> Int32 {
 
 ///|
 pub fn[D] App::focus_next(self : App[D], step : Int32) -> Unit {
-  let ring = self.root.focus_ring()
+  let ring = self.root.focus_ring(theme=self.theme())
   let open : Array[Int32] = []
   for id in ring {
     if !self.off.contains(id) {
@@ -366,7 +374,7 @@ pub fn[D] App::screen(self : App[D]) -> Array[String] {
 fn[D : @driver.Driver] App::dispatch(self : App[D], ev : @event.Event) -> Unit {
   match ev {
     Key(key) => {
-      if quits(key) {
+      if self.quit == Some(key) {
         self.running = false
         return
       }
@@ -530,6 +538,18 @@ fn[D] App::fire_timers(self : App[D], now : Int32) -> Unit {
 }
 
 ///|
+/// The rules and states that styles are resolved against right now.
+fn[D] App::theme(self : App[D]) -> Theme {
+  Theme::new(
+    sheet=self.sheet,
+    focus=self.focus,
+    hover=self.hover,
+    disabled=self.off,
+    base=self.base,
+  )
+}
+
+///|
 fn[D : @driver.Driver] App::render(self : App[D]) -> Unit raise {
   let screen = @geom.Region::new(0, 0, self.size.width, self.size.height)
   let scene = @comp.Scene::new(self.size)
@@ -537,13 +557,7 @@ fn[D : @driver.Driver] App::render(self : App[D]) -> Unit raise {
   self.bare.clear()
   self.views.clear()
   self.styled.clear()
-  let theme = Theme::new(
-    sheet=self.sheet,
-    focus=self.focus,
-    hover=self.hover,
-    disabled=self.off,
-    base=self.base,
-  )
+  let theme = self.theme()
   self.root.place(
     screen,
     screen,
@@ -743,8 +757,11 @@ fn[D] App::dress_line(
 }
 
 ///|
-fn quits(key : @event.Key) -> Bool {
-  key.mods.ctrl && key.code == Char(99)
+/// The quit key most terminal programs answer to. An application whose text
+/// fields want it for copying passes another, or `None` and quits itself.
+pub let ctrl_c : @event.Key = {
+  code: Char(99),
+  mods: { ctrl: true, alt: false, shift: false, },
 }
 
 ///|

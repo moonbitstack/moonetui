@@ -359,33 +359,15 @@ pub fn Resolved::of(styles : Styles, inherited : @style.Style) -> Resolved {
       Some(Hidden) => true
       _ => false
     },
-    margin: match styles.margin {
-      Some(margin) => margin
-      None => bare.margin
-    },
-    padding: match styles.padding {
-      Some(padding) => padding
-      None => bare.padding
-    },
-    border: match styles.border {
-      Some(border) => border
-      None => bare.border
-    },
-    align: match styles.align {
-      Some(align) => align
-      None => bare.align
-    },
+    margin: styles.margin.unwrap_or(bare.margin),
+    padding: styles.padding.unwrap_or(bare.padding),
+    border: styles.border.unwrap_or(bare.border),
+    align: styles.align.unwrap_or(bare.align),
     dock: styles.dock,
     column_span: styles.column_span,
     row_span: styles.row_span,
-    offset_x: match styles.offset_x {
-      Some(value) => value
-      None => 0
-    },
-    offset_y: match styles.offset_y {
-      Some(value) => value
-      None => 0
-    },
+    offset_x: styles.offset_x.unwrap_or(0),
+    offset_y: styles.offset_y.unwrap_or(0),
     transition: match styles.transition {
       Some(ms) => if ms < 0 { 0 } else { ms }
       None => 0
@@ -408,40 +390,16 @@ pub fn Resolved::box(
   base : @layout.Box,
 ) -> @layout.Box {
   let main = match dir {
-    Vertical =>
-      match self.height {
-        Some(height) => height
-        None => base.extent
-      }
-    Horizontal =>
-      match self.width {
-        Some(width) => width
-        None => base.extent
-      }
+    Vertical => self.height.unwrap_or(base.extent)
+    Horizontal => self.width.unwrap_or(base.extent)
   }
   let min = match dir {
-    Vertical =>
-      match self.min_height {
-        Some(min) => min
-        None => base.min
-      }
-    Horizontal =>
-      match self.min_width {
-        Some(min) => min
-        None => base.min
-      }
+    Vertical => self.min_height.unwrap_or(base.min)
+    Horizontal => self.min_width.unwrap_or(base.min)
   }
   let max = match dir {
-    Vertical =>
-      match self.max_height {
-        Some(max) => max
-        None => base.max
-      }
-    Horizontal =>
-      match self.max_width {
-        Some(max) => max
-        None => base.max
-      }
+    Vertical => self.max_height.unwrap_or(base.max)
+    Horizontal => self.max_width.unwrap_or(base.max)
   }
   { ..base, extent: main, min, max, }
 }

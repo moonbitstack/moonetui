@@ -149,3 +149,17 @@ test "a gutter keeps gaps between the cells" {
   ui.start()
   assert_eq(ui.screen(), ["aaa bbb"])
 }
+
+///|
+test "a grid is as wide as its columns and gutters" {
+  let grid = @app.grid(
+    0,
+    [
+      @app.leaf(1, @widget.Static::new("abcd")),
+      @app.leaf(2, @widget.Static::new("ab")),
+    ],
+    cols=2,
+    gutter=1,
+  )
+  assert_eq(grid.hint(@geom.Size::new(40, 10), Horizontal), 9)
+}

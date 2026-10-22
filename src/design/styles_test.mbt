@@ -21,10 +21,7 @@ test "merge layers a set text style field by field" {
   )
   let upper = @design.Styles::new(text=@style.Style::new(bg=@style.green))
   let merged = lower.merge(upper)
-  let text = match merged.text {
-    Some(text) => text
-    None => @style.default
-  }
+  let text = merged.text.unwrap_or(@style.default)
   assert_eq(text.fg, @style.white)
   assert_eq(text.bg, @style.green)
 }
