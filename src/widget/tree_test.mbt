@@ -251,3 +251,120 @@ test "the wheel scrolls a tree past its cursor" {
   assert_eq(scrolled != top, true)
   assert_eq(scrolled[0].contains("Paul"), true)
 }
+
+///|
+fn forest(count : Int32) -> @widget.Tree {
+  let tree = @widget.Tree::new(root_label="root")
+  for i in 0..<count {
+    ignore(tree.add_leaf(tree.root_id(), "n\{i}"))
+  }
+  tree.expand(tree.root_id())
+  tree
+}
+
+///|
+test "tree nodes are read and written by id" {
+  let tree = dune()
+  let chars = tree.children(tree.root_id())[0]
+  assert_eq(tree.node(chars).label(), "Characters")
+  assert_eq(tree.node(chars).is_expanded(), true)
+  tree.set_label(chars, "People")
+  tree.set_data(chars, "p")
+  assert_eq((tree.label(chars), tree.data(chars)), ("People", "p"))
+  assert_eq(tree.children(chars).length(), 3)
+  tree.collapse_all(tree.root_id())
+  assert_eq(
+    (tree.is_expanded(tree.root_id()), tree.is_expanded(chars)),
+    (false, false),
+  )
+  tree.expand_all(tree.root_id())
+  assert_eq(tree.line_count(), 5)
+  assert_eq(tree.allow_expand(chars), true)
+  tree.set_allow_expand(chars, false)
+  assert_eq(tree.allow_expand(chars), false)
+  tree.remove_children(chars)
+  assert_eq(tree.line_count(), 2)
+}
+
+///|
+test "tree clears to its root, and resets the root's label" {
+  let tree = dune()
+  tree.reset("Arrakis", data="a")
+  assert_eq(tree.line_count(), 1)
+  assert_eq(
+    (tree.label(tree.root_id()), tree.data(tree.root_id())),
+    ("Arrakis", "a"),
+  )
+  assert_eq(tree.add_leaf(tree.root_id(), "x"), 1)
+  assert_eq(tree.cursor_node(), -1)
+}
+
+///|
+test "tree guides follow their switch and depth" {
+  let tree = dune()
+  let w : &@widget.Widget = tree
+  let at = size(20, 5)
+  let guided = rows(w, at)
+  tree.show_guides(false)
+  assert_eq(rows(w, at) != guided, true)
+  tree.show_guides(true)
+  tree.set_guide_depth(8)
+  let indent = (line : String) => line.length() - line.trim_start().length()
+  assert_eq(indent(rows(w, at)[2]) > indent(guided[2]), true)
+}
+
+///|
+test "tree pages, and Home and End go to the ends" {
+  let tree = forest(20)
+  let w : &@widget.Widget = tree
+  let at = size(12, 5)
+  ignore(rows(w, at))
+  // No cursor yet: a page down starts at the top, a page up at the bottom.
+  ignore(press(w, 1, at, key(PageDown)))
+  assert_eq(tree.cursor_line(), 0)
+  ignore(press(w, 1, at, key(PageDown)))
+  assert_eq(tree.cursor_line(), 4)
+  ignore(press(w, 1, at, key(End)))
+  assert_eq(tree.cursor_line(), 20)
+  ignore(press(w, 1, at, key(PageUp)))
+  assert_eq(tree.cursor_line(), 16)
+  ignore(press(w, 1, at, key(Home)))
+  assert_eq(tree.cursor_line(), 0)
+  let fresh = forest(3)
+  let f : &@widget.Widget = fresh
+  ignore(rows(f, at))
+  ignore(press(f, 1, at, key(PageUp)))
+  assert_eq(fresh.cursor_line(), 3)
+}
+
+///|
+test "tree leaves modified keys and plain sideways keys to others" {
+  let w : &@widget.Widget = dune()
+  let at = size(20, 5)
+  let codes : Array[@event.KeyCode] = [PageUp, PageDown, Home, End, Enter]
+  for code in codes {
+    assert_eq(feed(w, at, shift_key(code)), (false, []))
+  }
+  let ctrl = @event.Mods::of_param(5)
+  assert_eq(feed(w, at, Key(@event.Key::with_mods(Down, ctrl))), (false, []))
+  assert_eq(feed(w, at, key(Left)), (false, []))
+  assert_eq(feed(w, at, key(Right)), (false, []))
+  assert_eq(feed(w, at, key(Escape)), (false, []))
+  assert_eq(feed(w, at, Paste("x")), (false, []))
+}
+
+///|
+test "tree hovers by the pointer and scrolls up with the wheel" {
+  let tree = forest(20)
+  let w : &@widget.Widget = tree
+  let at = size(12, 5)
+  ignore(rows(w, at))
+  assert_eq(feed(w, at, mouse(Move, 3, 2)), (true, [Repaint(id=1)]))
+  assert_eq(feed(w, at, mouse(Move, 3, 2)), (true, []))
+  for _ in 0..<3 {
+    ignore(feed(w, at, mouse(ScrollDown, 0, 0)))
+  }
+  ignore(feed(w, at, mouse(ScrollUp, 0, 0)))
+  assert_eq(rows(w, at)[0].trim(), "├── n1")
+  assert_eq(feed(w, at, mouse(Up, 0, 0)), (false, []))
+}

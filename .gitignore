@@ -1,6 +1,6 @@
 .*
 !.git*
 !.moonignore
-_build/
+_*
 target/
 docs/assets/moonetui.js

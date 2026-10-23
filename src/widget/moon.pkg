@@ -1,9 +1,5 @@
-// Widgets: things that render lines and react to messages.
-//
-// A widget never reaches outside itself. It draws into a line, and whatever it
-// wants the application to do — take focus, repaint, report a press — it says
-// as a value the caller reads afterwards. That is what lets a widget be tested
-// without an application, a screen, or a terminal.
+// Widgets render lines and say what they want as values, so they test without
+// an application.
 import {
   "moonbitlang/core/cmp",
   "moonbitlang/core/string",

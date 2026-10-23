@@ -106,7 +106,7 @@ fn md_split_row(line : String) -> Array[String] {
     at = at + 1
   }
   cells.push(md_trim(body[start:].to_owned()))
-  cells
+  cells.map(c => c.replace_all(old="\\|", new="|"))
 }
 
 ///|
@@ -390,8 +390,7 @@ fn md_index_of(text : String, needle : String, from : Int32) -> Int32 {
 
 ///|
 fn md_link_scan(text : String, from : Int32) -> (Int32, Int32)? {
-  // Returns (index of "](", index of matching ")") so the caller can render
-  // the text between and skip past the target.
+  // (where `](` starts, where the matching `)` is)
   let open = md_index_of(text, "](", from)
   if open < 0 {
     return None
@@ -410,6 +409,14 @@ fn md_inline(text : String, base : @style.Style) -> Array[@strip.Seg] {
   let mut italic = false
   let mut code = false
   let mut run_start = 0
+  let word = (i : Int32) => {
+    guard i >= 0 && i < text.length() else { return false }
+    let c = text[i].to_int()
+    (c >= 48 && c <= 57) || (c >= 65 && c <= 90) || (c >= 97 && c <= 122)
+  }
+
+  let blank = (i : Int32) => i < 0 || i >= text.length() || text[i] == ' '
+
   let total = text.length()
   let mut at = 0
   fn md_style() -> @style.Style {
@@ -439,43 +446,63 @@ fn md_inline(text : String, base : @style.Style) -> Array[@strip.Seg] {
       run_start = at
       continue
     }
+    // Backtick runs pair by length; the inside is literal.
     if ch == '`' {
-      cut(at)
-      code = !code
-      at = at + 1
-      run_start = at
+      let run = md_run(text, at, '`')
+      match md_closing_run(text, at + run, run) {
+        Some(close) => {
+          cut(at)
+          let inner = text[at + run:close].to_owned()
+          let inner = if inner.length() > 1 &&
+            inner[0] == ' ' &&
+            inner[inner.length() - 1] == ' ' {
+            inner[1:inner.length() - 1].to_owned()
+          } else {
+            inner
+          }
+          code = true
+          segs.push(@strip.Seg::new(inner, md_style()))
+          code = false
+          at = close + run
+          run_start = at
+        }
+        None => at = at + run
+      }
       continue
     }
     if ch == '*' && at + 1 < total && text[at + 1] == '*' {
-      cut(at)
-      bold = !bold
-      at = at + 2
-      run_start = at
+      if (!bold && !blank(at + 2)) || (bold && !blank(at - 1)) {
+        cut(at)
+        bold = !bold
+        at = at + 2
+        run_start = at
+      } else {
+        at = at + 2
+      }
       continue
     }
     if ch == '*' {
-      cut(at)
-      italic = !italic
-      at = at + 1
-      run_start = at
+      if (!italic && !blank(at + 1)) || (italic && !blank(at - 1)) {
+        cut(at)
+        italic = !italic
+        at = at + 1
+        run_start = at
+      } else {
+        at = at + 1
+      }
       continue
     }
-    if ch == '_' &&
-      (
-        (at > 0 && text[at - 1] != ' ') ||
-        (at + 1 < total && text[at + 1] == ' ')
-      ) {
-      // An underscore inside a word or before a space is plain text.
-      if at > 0 && text[at - 1] != ' ' {
-        at = at + 1
-        continue
-      }
-    }
     if ch == '_' {
-      cut(at)
-      italic = !italic
-      at = at + 1
-      run_start = at
+      let opens = !italic && !blank(at + 1) && !word(at - 1)
+      let closes = italic && !blank(at - 1) && !word(at + 1)
+      if opens || closes {
+        cut(at)
+        italic = !italic
+        at = at + 1
+        run_start = at
+      } else {
+        at = at + 1
+      }
       continue
     }
     if ch == '[' {
@@ -973,3 +1000,30 @@ pub impl Widget for Markdown with fn handle(self, ctx, msg) {
 
 ///|
 pub extend Markdown with Widget::{focusable, handle, hint, render_line}
+
+///|
+fn md_run(text : String, at : Int32, ch : Char) -> Int32 {
+  let mut n = 0
+  while at + n < text.length() && text[at + n].to_int() == ch.to_int() {
+    n = n + 1
+  }
+  n
+}
+
+///|
+/// Where a run of exactly `len` backticks starts at or after `from`.
+fn md_closing_run(text : String, from : Int32, len : Int32) -> Int32? {
+  let mut at = from
+  while at < text.length() {
+    if text[at] == '`' {
+      let run = md_run(text, at, '`')
+      if run == len {
+        return Some(at)
+      }
+      at = at + run
+    } else {
+      at = at + 1
+    }
+  }
+  None
+}

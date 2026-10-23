@@ -315,7 +315,12 @@ fn OptionList::page(self : OptionList, direction : Int32) -> Int32 {
   let step = if self.seen > 1 { self.seen - 1 } else { 1 }
   let target = self.highlighted() + direction * step
   let clamped = clamp(target, 0, count - 1)
-  find_next_enabled_no_wrap(self.options, clamped, direction)
+  let ahead = find_next_enabled_no_wrap(self.options, clamped, direction)
+  if ahead >= 0 {
+    ahead
+  } else {
+    find_next_enabled_no_wrap(self.options, clamped, -direction)
+  }
 }
 
 ///|

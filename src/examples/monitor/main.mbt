@@ -136,7 +136,6 @@ fn main raise {
       _ => false
     }
   })
-  // A second of life: the clock turns, the latency jitters, the bars move.
   ui.every(1000, () => {
     tick = tick + 1
     clock.update(

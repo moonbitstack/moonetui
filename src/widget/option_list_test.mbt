@@ -111,3 +111,69 @@ test "the wheel scrolls the view past the highlight and keys bring it back" {
   ignore(press(w, 1, at, key(Down)))
   assert_eq(rows(w, at), ["b   ", "c   "])
 }
+
+///|
+test "option list pages to the nearest enabled option when the far end is disabled" {
+  let list = @widget.OptionList::new(
+    options=Array::makei(8, i => @widget.Choice::new("o\{i}", disabled=i == 7)),
+  )
+  let w : &@widget.Widget = list
+  let at = size(8, 4)
+  ignore(rows(w, at))
+  for _ in 0..<4 {
+    ignore(press(w, 1, at, key(Down)))
+  }
+  assert_eq(list.highlighted(), 4)
+  // Three rows on is the disabled last option.
+  ignore(press(w, 1, at, key(PageDown)))
+  assert_eq(list.highlighted(), 6)
+}
+
+///|
+fn long_options(count : Int32) -> @widget.OptionList {
+  @widget.OptionList::new(
+    options=Array::makei(count, i => @widget.Choice::new("c\{i}")),
+  )
+}
+
+///|
+test "option list options are added, separated, cleared and counted" {
+  let list = @widget.OptionList::new()
+  assert_eq(list.highlighted(), -1)
+  list.add_option(@widget.Choice::new("a"))
+  list.add_separator()
+  list.add_option(@widget.Choice::new("b"))
+  // A separator marks the option before it rather than being one.
+  assert_eq(list.option_count(), 2)
+  assert_eq(list.options()[0].divider, true)
+  assert_eq(list.highlighted(), 0)
+  let w : &@widget.Widget = list
+  assert_eq(rows(w, size(6, 4)).map(r => r.trim_end().to_owned()), [
+    "a", "──────", "b", "",
+  ])
+  list.clear_options()
+  assert_eq((list.option_count(), list.highlighted()), (0, -1))
+}
+
+///|
+test "option list pages up, hovers, scrolls up, and leaves other input alone" {
+  let list = long_options(10)
+  let w : &@widget.Widget = list
+  let at = size(6, 4)
+  ignore(rows(w, at))
+  ignore(press(w, 1, at, key(End)))
+  ignore(rows(w, at))
+  ignore(press(w, 1, at, key(PageUp)))
+  ignore(rows(w, at))
+  assert_eq(list.highlighted(), 6)
+  assert_eq(feed(w, at, mouse(Move, 0, 1)), (true, [Repaint(id=1)]))
+  assert_eq(feed(w, at, mouse(Move, 0, 1)), (true, []))
+  ignore(feed(w, at, mouse(ScrollUp, 0, 0)))
+  ignore(feed(w, at, mouse(ScrollUp, 0, 0)))
+  assert_eq(rows(w, at)[0].trim(), "c4")
+  let ctrl = @event.Mods::of_param(5)
+  assert_eq(feed(w, at, Key(@event.Key::with_mods(Down, ctrl))), (false, []))
+  assert_eq(feed(w, at, key(Escape)), (false, []))
+  assert_eq(feed(w, at, mouse(Up, 0, 0)), (false, []))
+  assert_eq(feed(w, at, Paste("x")), (false, []))
+}

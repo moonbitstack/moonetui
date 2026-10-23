@@ -1,8 +1,4 @@
-// A virtual terminal: the screen that the escape stream moonetui writes would
-// draw on a real one.
-//
-// The browser driver paints it, and a test or a screenshot reads it, so what an
-// application looks like can be checked without a terminal on any target.
+// The screen an escape stream draws, for the browser driver, tests and screenshots.
 import {
   "moonbitlang/core/cmp",
   "moonbitstack/moonetui/strip",

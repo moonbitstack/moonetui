@@ -31,3 +31,34 @@ test "rule draws a line in every style" {
   assert_eq(rows(double, size(2, 1)), ["║ "])
   assert_eq(vertical.focusable(), false)
 }
+
+///|
+test "every rule kind draws its own character, both ways" {
+  let kinds : Array[(@widget.RuleKind, String, String)] = [
+    (Ascii, "-", "|"),
+    (Blank, " ", " "),
+    (Dashed, "╍", "╏"),
+    (Double, "═", "║"),
+    (Heavy, "━", "┃"),
+    (Hidden, " ", " "),
+    (None, " ", " "),
+    (Solid, "─", "│"),
+    (Thick, "█", "█"),
+  ]
+  for k in kinds {
+    let across : &@widget.Widget = @widget.Rule::horizontal(kind=k.0)
+    assert_eq(rows(across, size(3, 1)), [k.1 + k.1 + k.1])
+    let down : &@widget.Widget = @widget.Rule::vertical(kind=k.0)
+    assert_eq(rows(down, size(1, 2)), [k.2, k.2])
+  }
+}
+
+///|
+test "a rule changes kind, takes no input, and draws nothing in no room" {
+  let rule = @widget.Rule::horizontal()
+  rule.set_kind(Double)
+  let w : &@widget.Widget = rule
+  assert_eq(rows(w, size(2, 1)), ["══"])
+  assert_eq(rows(w, size(0, 1)), [""])
+  assert_eq(feed(w, size(2, 1), key(Enter)), (false, []))
+}

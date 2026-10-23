@@ -84,3 +84,62 @@ test "a click selects the row under it and nothing below the last" {
   assert_eq(press(w, 3, at, click(3)), [TakeFocus(id=3)])
   assert_eq(list.index(), 1)
 }
+
+///|
+fn many(count : Int32) -> @widget.ListView {
+  @widget.ListView::new(Array::makei(count, i => "i\{i}"))
+}
+
+///|
+test "list view pages by the rows it shows" {
+  let list = many(20)
+  let w : &@widget.Widget = list
+  let at = size(6, 5)
+  assert_eq(press(w, 1, at, key(PageDown)), [
+    Highlighted(id=1, index=4),
+    Repaint(id=1),
+  ])
+  ignore(press(w, 1, at, key(PageDown)))
+  ignore(press(w, 1, at, key(PageUp)))
+  assert_eq(list.index(), 4)
+  let row : &@widget.Widget = many(3)
+  ignore(press(row, 1, size(6, 1), key(PageDown)))
+  assert_eq(row.render_line(0, size(6, 1)).text(), "i1    ")
+}
+
+///|
+test "the wheel scrolls a list view without moving its highlight" {
+  let list = many(20)
+  let w : &@widget.Widget = list
+  let at = size(6, 4)
+  ignore(rows(w, at))
+  assert_eq(press(w, 1, at, mouse(ScrollDown, 0, 0)), [Repaint(id=1)])
+  ignore(press(w, 1, at, mouse(ScrollDown, 0, 0)))
+  assert_eq(rows(w, at)[0].trim(), "i2")
+  assert_eq(list.index(), 0)
+  ignore(press(w, 1, at, mouse(ScrollUp, 0, 0)))
+  assert_eq(list.offset(), 1)
+  ignore(press(w, 1, at, mouse(ScrollDown, 0, 0)))
+  ignore(press(w, 1, at, mouse(ScrollDown, 0, 0)))
+  ignore(press(w, 1, at, key(Down)))
+  ignore(rows(w, at))
+  assert_eq((list.index(), list.offset()), (1, 1))
+}
+
+///|
+test "list view items are replaced by call, and the highlight kept in range" {
+  let list = many(5)
+  list.select(4)
+  list.set(["a", "b"])
+  assert_eq(list.items(), ["a", "b"])
+  assert_eq(list.index(), 1)
+  list.set([])
+  assert_eq(list.index(), -1)
+  let w : &@widget.Widget = many(2)
+  let ctrl = @event.Mods::of_param(5)
+  assert_eq(
+    feed(w, size(4, 2), Key(@event.Key::with_mods(Down, ctrl))),
+    (false, []),
+  )
+  assert_eq(feed(w, size(4, 2), mouse(Move, 0, 0)), (false, []))
+}

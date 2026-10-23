@@ -1,7 +1,4 @@
-# What `moon publish` must leave out of the package. `.gitignore` keeps `!.git*`
-# so that .gitignore/.github/.gitattributes stay tracked, but that same negation
-# would otherwise pull the whole `.git` directory — object database included —
-# into the published tarball.
+# `.gitignore` keeps `!.git*`, which would otherwise pull `.git` into the package.
 .git/
 _build/
 target/

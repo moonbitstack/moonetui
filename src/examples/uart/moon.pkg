@@ -1,10 +1,5 @@
-// Copyright 2026 Leo Cheng
-// SPDX-License-Identifier: Apache-2.0
-
-// The bare-wire demo: the same widget tree, but every frame leaves as whole
-// rows of text — no cursor addressing, no styles, only the characters and
-// newlines a plain serial line can carry. Run it with
-// `moon run --target native examples/uart`.
+// Whole rows of plain text, as a bare serial line takes them:
+// `moon run --target native src/examples/uart`.
 import {
   "moonbitstack/moonetui/app",
   "moonbitstack/moonetui/driver",

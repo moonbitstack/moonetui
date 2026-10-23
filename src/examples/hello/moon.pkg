@@ -1,6 +1,5 @@
-// A runnable terminal application: a header, a list you can move around with
-// the arrow keys, a text field, and a footer. Run it with
-// `moon run --target js examples/hello`.
+// A header, a list, a field and a footer under Node:
+// `moon run --target js src/examples/hello`.
 import {
   "moonbitstack/moonetui/app",
   "moonbitstack/moonetui/driver/node",

@@ -51,6 +51,12 @@ pub fn Parser::idle(self : Parser, out : Array[@event.Event]) -> Unit {
     out.push(Key(@event.Key::of(Escape)))
     self.consume(1)
   }
+  // Input stopped inside a multi-byte character: it will not be finished.
+  while !self.pasting && self.pending() > 0 && self.at(0) >= 0x80 {
+    out.push(Key(@event.Key::of(Char(0xFFFD))))
+    self.consume(1)
+    self.drain(out)
+  }
 }
 
 ///|
@@ -448,7 +454,9 @@ fn decode(buf : Array[Int32], at : Int32, end : Int32) -> (Int32, Int32)? {
   if first < 0x80 {
     return Some((first, 1))
   }
-  let size = if first >= 0xF0 {
+  let size = if first >= 0xF8 {
+    return Some((0xFFFD, 1))
+  } else if first >= 0xF0 {
     4
   } else if first >= 0xE0 {
     3
@@ -456,6 +464,12 @@ fn decode(buf : Array[Int32], at : Int32, end : Int32) -> (Int32, Int32)? {
     2
   } else {
     return Some((0xFFFD, 1))
+  }
+  // A byte that cannot continue the sequence settles it now, whatever follows.
+  for i in 1..<size {
+    if at + i < end && (buf[at + i] < 0x80 || buf[at + i] >= 0xC0) {
+      return Some((0xFFFD, 1))
+    }
   }
   if at + size > end {
     return None

@@ -257,3 +257,206 @@ test "text area scrolls sideways by columns, wide characters included" {
   assert_eq(@strip.str_cells(w.render_line(0, at).text()), 6)
   assert_eq(area.offset(), (7, 0))
 }
+
+///|
+test "text area pastes lines, whatever ends them, and reports the change" {
+  let area = @widget.TextArea::new(text="ab")
+  let w : &@widget.Widget = area
+  let at = size(20, 6)
+  ignore(press(w, 1, at, key(End)))
+  let out = press(w, 1, at, Paste("1\r\n2\r3\n4"))
+  assert_eq(area.text(), "ab1\n2\n3\n4")
+  assert_eq(out, [Changed(id=1, value="ab1\n2\n3\n4"), Repaint(id=1)])
+  // One paste is one undo.
+  ignore(area.undo())
+  assert_eq(area.text(), "ab")
+}
+
+///|
+test "text area deletes forward, joining lines at an end" {
+  let area = @widget.TextArea::new(text="ab\ncd")
+  let w : &@widget.Widget = area
+  let at = size(20, 4)
+  ignore(area_press(w, 1, at, key(Delete)))
+  assert_eq(area.text(), "b\ncd")
+  ignore(area_press(w, 1, at, key(End)))
+  ignore(area_press(w, 1, at, key(Delete)))
+  assert_eq(area.text(), "bcd")
+  ignore(area_press(w, 1, at, key(End)))
+  ignore(area_press(w, 1, at, key(Delete)))
+  assert_eq(area.text(), "bcd")
+  ignore(area_press(w, 1, at, area_key(0x61, ctrl=true)))
+  ignore(area_press(w, 1, at, area_key(0x64, ctrl=true)))
+  assert_eq(area.text(), "cd")
+}
+
+///|
+test "text area alt deletes whole words either side" {
+  let area = @widget.TextArea::new(text="one two three")
+  let w : &@widget.Widget = area
+  let at = size(20, 3)
+  for _ in 0..<4 {
+    ignore(area_press(w, 1, at, key(Right)))
+  }
+  ignore(area_press(w, 1, at, mod_key(Delete, alt=true)))
+  assert_eq(area.text(), "one  three")
+  ignore(area_press(w, 1, at, mod_key(Backspace, alt=true)))
+  assert_eq(area.text(), " three")
+  assert_eq(area_press(w, 1, at, mod_key(Left, alt=true)), false)
+}
+
+///|
+test "text area moves up and pages by the rows it shows" {
+  let area = @widget.TextArea::new(
+    text=Array::makei(10, i => "l\{i}").join("\n"),
+  )
+  let w : &@widget.Widget = area
+  let at = size(10, 4)
+  ignore(rows(w, at))
+  ignore(area_press(w, 1, at, key(PageDown)))
+  assert_eq(area.cursor(), (3, 0))
+  ignore(area_press(w, 1, at, key(PageDown)))
+  ignore(area_press(w, 1, at, key(PageDown)))
+  ignore(area_press(w, 1, at, key(PageDown)))
+  assert_eq(area.cursor(), (9, 0))
+  ignore(area_press(w, 1, at, key(Up)))
+  assert_eq(area.cursor(), (8, 0))
+  ignore(area_press(w, 1, at, key(PageUp)))
+  assert_eq(area.cursor(), (5, 0))
+  ignore(area_press(w, 1, at, mod_key(PageUp, shift=true)))
+  assert_eq(area.selected_text(), "l2\nl3\nl4\n")
+}
+
+///|
+test "text area selects a line with F6 and everything with F7" {
+  let area = @widget.TextArea::new(text="ab\ncd")
+  let w : &@widget.Widget = area
+  let at = size(10, 3)
+  ignore(area_press(w, 1, at, key(F(6))))
+  assert_eq(area.selected_text(), "ab")
+  ignore(area_press(w, 1, at, key(F(7))))
+  assert_eq(area.selected_text(), "ab\ncd")
+  area.clear_selection()
+  assert_eq(area.has_selection(), false)
+}
+
+///|
+test "text area control keys edit by line and word" {
+  let area = @widget.TextArea::new(text="alpha beta gamma\nnext")
+  let w : &@widget.Widget = area
+  let at = size(24, 3)
+  ignore(area_press(w, 1, at, area_key(0x65, ctrl=true)))
+  assert_eq(area.cursor(), (0, 16))
+  ignore(area_press(w, 1, at, area_key(0x77, ctrl=true)))
+  assert_eq(area.text(), "alpha beta \nnext")
+  ignore(area_press(w, 1, at, mod_key(Backspace, ctrl=true)))
+  assert_eq(area.text(), "alpha \nnext")
+  ignore(area_press(w, 1, at, area_key(0x75, ctrl=true)))
+  assert_eq(area.text(), "\nnext")
+  ignore(area_press(w, 1, at, key(Down)))
+  ignore(area_press(w, 1, at, area_key(0x6B, ctrl=true, shift=true)))
+  assert_eq(area.text(), "")
+}
+
+///|
+test "text area copies, and cut and paste need something to work on" {
+  let area = @widget.TextArea::new(text="abc")
+  let w : &@widget.Widget = area
+  let at = size(10, 3)
+  assert_eq(area_press(w, 1, at, area_key(0x63, ctrl=true)), false)
+  assert_eq(area_press(w, 1, at, area_key(0x78, ctrl=true)), false)
+  assert_eq(area_press(w, 1, at, area_key(0x76, ctrl=true)), false)
+  ignore(area_press(w, 1, at, mod_key(Right, shift=true)))
+  ignore(area_press(w, 1, at, area_key(0x63, ctrl=true)))
+  ignore(area_press(w, 1, at, key(End)))
+  ignore(area_press(w, 1, at, area_key(0x76, ctrl=true)))
+  assert_eq(area.text(), "abca")
+  let fresh : &@widget.Widget = @widget.TextArea::new()
+  assert_eq(feed(fresh, at, area_key(0x79, ctrl=true)), (true, []))
+  assert_eq(feed(fresh, at, area_key(0x7A, ctrl=true)), (true, []))
+  assert_eq(feed(fresh, at, area_key(0x71, ctrl=true)), (false, []))
+}
+
+///|
+test "text area keeps only so many undo steps" {
+  let area = @widget.TextArea::new(history=2)
+  let w : &@widget.Widget = area
+  let at = size(10, 3)
+  for code in [0x61, 0x62, 0x63] {
+    ignore(area_press(w, 1, at, area_key(code)))
+    ignore(area_press(w, 1, at, key(Left)))
+    ignore(area_press(w, 1, at, key(Right)))
+  }
+  assert_eq(area.text(), "abc")
+  assert_eq(area.undo(), true)
+  assert_eq(area.undo(), true)
+  assert_eq(area.undo(), false)
+  assert_eq(area.text(), "a")
+  assert_eq(area.redo(), true)
+  assert_eq(area.text(), "ab")
+}
+
+///|
+test "text area inserts by call and reads a selection across lines" {
+  let area = @widget.TextArea::new(text="ab\ncd\nef")
+  area.insert("X")
+  assert_eq(area.text(), "Xab\ncd\nef")
+  area.select_all()
+  assert_eq(area.selected_text(), "Xab\ncd\nef")
+  let w : &@widget.Widget = area
+  let at = size(10, 3)
+  let plain = @widget.TextArea::new(text="Xab\ncd\nef")
+  let p : &@widget.Widget = plain
+  assert_eq(rows(w, at), rows(p, at))
+  assert_eq(w.render_line(1, at) != p.render_line(1, at), true)
+}
+
+///|
+test "text area mouse: other buttons, stray releases and moves are not its business" {
+  let area = @widget.TextArea::new(
+    text=Array::makei(10, i => "l\{i}").join("\n"),
+  )
+  let w : &@widget.Widget = area
+  let at = size(10, 3)
+  let right = @widget.Msg::Mouse({
+    kind: Down,
+    button: 2,
+    x: 0,
+    y: 0,
+    mods: @event.none,
+  })
+  assert_eq(feed(w, at, right), (false, []))
+  assert_eq(feed(w, at, mouse(Up, 0, 0)), (false, []))
+  assert_eq(feed(w, at, mouse(Move, 0, 0)), (false, []))
+  ignore(rows(w, at))
+  ignore(feed(w, at, mouse(ScrollDown, 0, 0)))
+  ignore(feed(w, at, mouse(ScrollDown, 0, 0)))
+  assert_eq(area.offset(), (0, 2))
+  ignore(feed(w, at, mouse(ScrollUp, 0, 0)))
+  ignore(rows(w, at))
+  assert_eq(area.offset(), (0, 1))
+  assert_eq(feed(w, at, Tick(16)), (false, []))
+}
+
+///|
+test "text area: the wheel moves the view off the caret until the caret moves" {
+  let area = @widget.TextArea::new(
+    text=Array::makei(10, i => "l\{i}").join("\n"),
+  )
+  let w : &@widget.Widget = area
+  let at = size(10, 3)
+  ignore(rows(w, at))
+  ignore(feed(w, at, mouse(ScrollDown, 0, 0)))
+  ignore(feed(w, at, mouse(ScrollDown, 0, 0)))
+  ignore(rows(w, at))
+  assert_eq(area.offset(), (0, 2))
+  assert_eq(area.cursor(), (0, 0))
+  for _ in 0..<20 {
+    ignore(feed(w, at, mouse(ScrollDown, 0, 0)))
+  }
+  ignore(rows(w, at))
+  assert_eq(area.offset(), (0, 7))
+  ignore(area_press(w, 1, at, key(Right)))
+  ignore(rows(w, at))
+  assert_eq(area.offset(), (0, 0))
+}

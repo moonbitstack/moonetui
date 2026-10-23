@@ -71,3 +71,42 @@ test "a radio button turns on and stays on" {
   assert_eq(out.length(), 1)
   assert_true(radio.value())
 }
+
+///|
+test "a checkbox changes label and value by call, and draws one line" {
+  let box = @widget.Checkbox::new("old")
+  box.set_label("new")
+  assert_eq(box.label(), "new")
+  box.set_value(true)
+  assert_eq(box.value(), true)
+  let w : &@widget.Widget = box
+  assert_eq(rows(w, size(10, 2)), ["▐X▌ new   ", "          "])
+}
+
+///|
+test "a checkbox ignores other keys, other mouse events and pastes" {
+  let w : &@widget.Widget = @widget.Checkbox::new("a")
+  let at = size(8, 1)
+  assert_eq(feed(w, at, key(Char(97))), (false, []))
+  assert_eq(feed(w, at, mouse(Move, 0, 0)), (false, []))
+  assert_eq(feed(w, at, Paste(" ")), (false, []))
+}
+
+///|
+test "a radio button changes label by call, takes focus, and turns on from a click" {
+  let radio = @widget.RadioButton::new("old")
+  radio.set_label("new")
+  assert_eq(radio.label(), "new")
+  let w : &@widget.Widget = radio
+  let at = size(10, 2)
+  assert_eq(rows(w, at)[1], "          ")
+  let blurred = w.render_line(0, at)
+  assert_eq(feed(w, at, Focus(true)), (true, [Repaint(id=1)]))
+  assert_eq(w.render_line(0, at) != blurred, true)
+  assert_eq(feed(w, at, mouse(Down, 0, 0)).1.contains(TakeFocus(id=1)), true)
+  assert_eq(radio.value(), true)
+  assert_eq(feed(w, at, mouse(Move, 0, 0)), (false, []))
+  assert_eq(feed(w, at, key(Char(97))), (false, []))
+  assert_eq(feed(w, at, Paste("x")), (false, []))
+  assert_eq(w.focusable(), true)
+}

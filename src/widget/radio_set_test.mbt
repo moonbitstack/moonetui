@@ -115,3 +115,46 @@ test "a click below the last button leaves the set alone" {
   assert_eq(set.selected_index(), 0)
   assert_eq(set.pressed_index(), -1)
 }
+
+///|
+fn stations(count : Int32) -> @widget.RadioSet {
+  @widget.RadioSet::new(
+    Array::makei(count, i => @widget.RadioButton::new("s\{i}")),
+  )
+}
+
+///|
+test "the wheel scrolls a radio set without moving its cursor" {
+  let set = stations(10)
+  let w : &@widget.Widget = set
+  let at = size(10, 3)
+  ignore(rows(w, at))
+  assert_eq(press(w, 1, at, mouse(ScrollDown, 0, 0)), [Repaint(id=1)])
+  ignore(press(w, 1, at, mouse(ScrollDown, 0, 0)))
+  assert_eq(rows(w, at)[0].contains("s2"), true)
+  assert_eq(set.selected_index(), 0)
+  ignore(press(w, 1, at, mouse(ScrollUp, 0, 0)))
+  assert_eq(rows(w, at)[0].contains("s1"), true)
+  ignore(press(w, 1, at, key(Down)))
+  assert_eq(rows(w, at)[0].contains("s1"), true)
+  ignore(press(w, 1, at, key(Up)))
+  ignore(press(w, 1, at, key(Up)))
+  assert_eq(set.selected_index(), 9)
+  assert_eq(rows(w, at)[2].contains("s9"), true)
+}
+
+///|
+test "a radio set ignores out-of-range calls, modified keys and other input" {
+  let set = stations(2)
+  set.set_selected(5)
+  set.set_pressed(-1)
+  assert_eq((set.selected_index(), set.pressed_index()), (0, -1))
+  let w : &@widget.Widget = set
+  let at = size(8, 2)
+  let ctrl = @event.Mods::of_param(5)
+  assert_eq(feed(w, at, Key(@event.Key::with_mods(Down, ctrl))), (false, []))
+  assert_eq(feed(w, at, key(Escape)), (false, []))
+  assert_eq(feed(w, at, mouse(Move, 0, 0)), (false, []))
+  assert_eq(feed(w, at, Paste("x")), (false, []))
+  assert_eq(@widget.RadioSet::new([]).selected_index(), -1)
+}

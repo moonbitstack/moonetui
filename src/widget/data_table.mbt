@@ -715,11 +715,8 @@ pub impl Widget for DataTable with fn handle(self, ctx, msg) {
   match msg {
     Focus(on) => {
       self.focused = on
-      if on {
-        ctx.emit(TakeFocus(id=ctx.id))
-      }
       ctx.repaint()
-      false
+      true
     }
     Key(k) =>
       match k.code {
@@ -830,6 +827,7 @@ pub impl Widget for DataTable with fn handle(self, ctx, msg) {
           true
         }
         Down => {
+          ctx.emit(TakeFocus(id=ctx.id))
           let row = self.row_at(m.y)
           let col = self.col_at(m.x)
           if row == -1 && self.show_header && col >= 0 {

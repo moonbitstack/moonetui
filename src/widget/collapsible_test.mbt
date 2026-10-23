@@ -68,3 +68,24 @@ test "an expanded collapsible lends its focus to its contents" {
   assert_eq(focused.text(), blurred.text())
   assert_eq(focused != blurred, true)
 }
+
+///|
+test "collapsible retitles, hovers its title, and lends the wheel to its contents" {
+  let list = @widget.ListView::new(Array::makei(10, i => "r\{i}"))
+  let box = @widget.Collapsible::new(title="Old", contents=list)
+  box.set_title("New")
+  assert_eq(box.title(), "New")
+  box.set_collapsed(false)
+  let w : &@widget.Widget = box
+  let at = size(10, 6)
+  ignore(rows(w, at))
+  assert_eq(feed(w, at, mouse(Move, 2, 1)), (true, [Repaint(id=1)]))
+  assert_eq(feed(w, at, mouse(Move, 2, 1)), (true, []))
+  ignore(feed(w, at, mouse(ScrollDown, 2, 3)))
+  assert_eq(rows(w, at)[3].trim(), "r1")
+  assert_eq(feed(w, at, mouse(Move, 2, 4)).0, false)
+  box.set_collapsed(true)
+  assert_eq(feed(w, at, mouse(ScrollDown, 2, 3)), (false, []))
+  assert_eq(feed(w, at, mouse(Up, 2, 1)), (false, []))
+  assert_eq(feed(w, at, Tick(16)), (false, []))
+}

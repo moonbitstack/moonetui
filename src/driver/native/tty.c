@@ -1,9 +1,7 @@
 // Copyright 2026 Leo Cheng
 // SPDX-License-Identifier: Apache-2.0
 //
-// The five things a terminal UI cannot do without the operating system: switch
-// raw mode, write, read what has arrived, ask for the size, and read a clock.
-// Everything else in moonetui is pure MoonBit.
+// What a terminal UI needs from the system: raw mode, write, read, size, clock.
 
 #include <stdint.h>
 #include <string.h>
@@ -36,12 +34,9 @@ int32_t moonetui_tty_raw(int32_t on) {
       saved_out_cp = GetConsoleOutputCP();
       saved = 1;
     }
-    // Virtual terminal input makes the console send the same escape sequences a
-    // Unix terminal does, which is what lets one parser serve both. Mouse and
-    // window records stay out of the buffer: the mouse arrives as escape
-    // sequences once the application asks for it, the size is polled, and a
-    // record that is not a character would wake the wait below for nothing.
-    // Quick edit would turn a click into a text selection.
+    // Virtual terminal input lets one parser serve both platforms. Mouse and window
+    // records stay out: they would wake the wait below for nothing, and quick edit
+    // would turn a click into a selection.
     DWORD in_mode = saved_in_mode;
     in_mode &= ~(ENABLE_LINE_INPUT | ENABLE_ECHO_INPUT | ENABLE_PROCESSED_INPUT |
                  ENABLE_MOUSE_INPUT | ENABLE_WINDOW_INPUT | ENABLE_QUICK_EDIT_MODE);
@@ -51,8 +46,7 @@ int32_t moonetui_tty_raw(int32_t on) {
     if (!SetConsoleMode(in, in_mode) || !SetConsoleMode(out, out_mode)) {
       return -1;
     }
-    // The parser reads UTF-8 and the renderer writes it, whatever code page the
-    // console was opened with.
+    // UTF-8 both ways, whatever code page the console opened with.
     SetConsoleCP(CP_UTF8);
     SetConsoleOutputCP(CP_UTF8);
     return 0;
@@ -66,9 +60,8 @@ int32_t moonetui_tty_raw(int32_t on) {
   return 0;
 }
 
-// Whether a read would return at once. ReadFile waits for a character, but the
-// handle is signalled by any record, a modifier pressed alone among them; those
-// are dropped here so the wait does not wake for them again.
+// Whether a read would return at once. Non-character records signal the handle
+// too, so they are dropped here.
 static int characters_waiting(HANDLE in) {
   INPUT_RECORD records[64];
   DWORD count = 0;
@@ -155,8 +148,7 @@ int32_t moonetui_tty_raw(int32_t on) {
       saved = 1;
     }
     struct termios raw = saved_termios;
-    // Characters arrive as they are typed, without echo, and without the
-    // terminal turning any of them into signals or flow control.
+    // Raw: no echo, no line buffering, no signals or flow control.
     raw.c_lflag &= ~(ECHO | ICANON | IEXTEN | ISIG);
     raw.c_iflag &= ~(IXON | IXOFF | ICRNL | INLCR | IGNCR | BRKINT | ISTRIP);
     raw.c_oflag &= ~(OPOST);

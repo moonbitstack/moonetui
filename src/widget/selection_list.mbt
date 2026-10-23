@@ -259,19 +259,11 @@ pub impl Widget for SelectionList with fn handle(self, ctx, msg) {
           true
         }
         PageUp => {
-          let step = if self.seen > 1 { self.seen - 1 } else { 1 }
-          self.move_highlight(
-            find_selection(self.options, self.highlighted - step, 1),
-            ctx,
-          )
+          self.move_highlight(self.page(-1), ctx)
           true
         }
         PageDown => {
-          let step = if self.seen > 1 { self.seen - 1 } else { 1 }
-          self.move_highlight(
-            find_selection(self.options, self.highlighted + step, -1),
-            ctx,
-          )
+          self.move_highlight(self.page(1), ctx)
           true
         }
         Enter | Char(32) => {
@@ -427,3 +419,26 @@ pub extend SelectionList with Eq::{not_equal, equal}
 
 ///|
 pub extend SelectionList with Widget::{focusable, handle, hint, render_line}
+
+///|
+/// The enabled option a page away in `direction`, else the nearest one short of
+/// it. A page never wraps round the list.
+fn SelectionList::page(self : SelectionList, direction : Int32) -> Int32 {
+  let count = self.options.length()
+  guard count > 0 else { return -1 }
+  let step = if self.seen > 1 { self.seen - 1 } else { 1 }
+  let target = clamp(self.highlighted + direction * step, 0, count - 1)
+  for probe = target; probe >= 0 && probe < count; probe = probe + direction {
+    if !self.options[probe].disabled {
+      return probe
+    }
+  }
+  for probe = target - direction
+      probe >= 0 && probe < count
+      probe = probe - direction {
+    if !self.options[probe].disabled {
+      return probe
+    }
+  }
+  -1
+}

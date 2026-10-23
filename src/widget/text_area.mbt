@@ -29,6 +29,9 @@ pub struct TextArea {
   mut undo : Array[Snap]
   mut redo : Array[Snap]
   mut run : Bool
+  // Off while the wheel has moved the view away from the caret.
+  mut follow : Bool
+  history : Int32
   style : @style.Style
   cursor_style : @style.Style
   selection_style : @style.Style
@@ -47,6 +50,7 @@ pub fn TextArea::new(
   selection_style~ : @style.Style = @style.Style::new(reverse=true),
   gutter_style~ : @style.Style = @style.Style::new(dim=true),
   gutter_focus_style~ : @style.Style = @style.Style::new(),
+  history~ : Int32 = 50,
 ) -> TextArea {
   let area : TextArea = {
     lines: [],
@@ -68,6 +72,8 @@ pub fn TextArea::new(
     undo: [],
     redo: [],
     run: false,
+    follow: true,
+    history,
     style,
     cursor_style,
     selection_style,
@@ -92,6 +98,7 @@ pub fn TextArea::text(self : TextArea) -> String {
 
 ///|
 pub fn TextArea::load_text(self : TextArea, text : String) -> Unit {
+  self.follow = true
   let lines : Array[String] = []
   for piece in split_ending(text) {
     lines.push(piece.0)
@@ -151,6 +158,7 @@ pub fn TextArea::selected_text(self : TextArea) -> String {
 
 ///|
 pub fn TextArea::select_all(self : TextArea) -> Unit {
+  self.follow = true
   if self.lines.length() == 0 {
     return
   }
@@ -169,12 +177,14 @@ pub fn TextArea::clear_selection(self : TextArea) -> Unit {
 
 ///|
 pub fn TextArea::insert(self : TextArea, text : String) -> Unit {
+  self.follow = true
   self.checkpoint()
   self.insert_text(text)
 }
 
 ///|
 pub fn TextArea::undo(self : TextArea) -> Bool {
+  self.follow = true
   self.run = false
   if self.undo.length() == 0 {
     return false
@@ -189,6 +199,7 @@ pub fn TextArea::undo(self : TextArea) -> Bool {
 
 ///|
 pub fn TextArea::redo(self : TextArea) -> Bool {
+  self.follow = true
   self.run = false
   if self.redo.length() == 0 {
     return false
@@ -291,6 +302,7 @@ pub impl Widget for TextArea with fn handle(self, ctx, msg) {
     }
     Paste(text) => {
       self.checkpoint()
+      self.follow = true
       self.insert_text(text)
       ctx.emit(Changed(id=ctx.id, value=self.text()))
       ctx.repaint()
@@ -489,6 +501,7 @@ fn TextArea::mouse(self : TextArea, ctx : Ctx, mouse : @event.Mouse) -> Bool {
         self.row = row
         self.col = col
         self.selecting = false
+        self.follow = true
         ctx.repaint()
         true
       } else {
@@ -516,11 +529,13 @@ fn TextArea::mouse(self : TextArea, ctx : Ctx, mouse : @event.Mouse) -> Bool {
       }
     ScrollUp => {
       self.offset_y = self.offset_y - 1
+      self.follow = false
       ctx.repaint()
       true
     }
     ScrollDown => {
       self.offset_y = self.offset_y + 1
+      self.follow = false
       ctx.repaint()
       true
     }
@@ -531,6 +546,7 @@ fn TextArea::mouse(self : TextArea, ctx : Ctx, mouse : @event.Mouse) -> Bool {
 ///|
 fn TextArea::edit(self : TextArea, ctx : Ctx, op : () -> Unit) -> Bool {
   self.checkpoint()
+  self.follow = true
   op()
   ctx.emit(Changed(id=ctx.id, value=self.text()))
   ctx.repaint()
@@ -540,6 +556,7 @@ fn TextArea::edit(self : TextArea, ctx : Ctx, op : () -> Unit) -> Bool {
 ///|
 fn TextArea::step(self : TextArea, ctx : Ctx) -> Unit {
   self.run = false
+  self.follow = true
   ctx.repaint()
 }
 
@@ -563,7 +580,7 @@ fn TextArea::checkpoint(self : TextArea) -> Unit {
   }
   self.run = true
   self.undo.push(self.snap())
-  if self.undo.length() > 50 {
+  if self.undo.length() > self.history {
     let kept : Array[Snap] = []
     let count = self.undo.length()
     for i in 1..<count {
@@ -911,10 +928,10 @@ fn TextArea::scroll_to_fit(self : TextArea, size : @geom.Size) -> Unit {
   let w = size.width - self.gutter_width()
   self.seen_w = w
   self.seen_h = h
-  if self.row < self.offset_y {
+  if self.follow && self.row < self.offset_y {
     self.offset_y = self.row
   }
-  if h > 0 && self.row >= self.offset_y + h {
+  if self.follow && h > 0 && self.row >= self.offset_y + h {
     self.offset_y = self.row - h + 1
   }
   let max_y = if self.lines.length() - h < 0 {
@@ -928,7 +945,9 @@ fn TextArea::scroll_to_fit(self : TextArea, size : @geom.Size) -> Unit {
     return
   }
   let at = @strip.cells_before(self.lines[self.row], self.col)
-  if at < self.offset_x {
+  if !self.follow {
+    ()
+  } else if at < self.offset_x {
     self.offset_x = at
   } else if at - self.offset_x >= w {
     self.offset_x = at - w + 1
@@ -961,6 +980,7 @@ fn line_pieces(text : String) -> Array[String] {
   let mut i = 0
   while i < text.length() {
     let (code, used) = @strip.code_at(text, i)
+    // A lone CR breaks a line too: terminals paste newlines as CR.
     if code == 13 && i + used < text.length() {
       let (next, _) = @strip.code_at(text, i + used)
       if next == 10 {
@@ -968,7 +988,7 @@ fn line_pieces(text : String) -> Array[String] {
         continue
       }
     }
-    if code == 10 {
+    if code == 10 || code == 13 {
       out.push(cur.to_string())
       cur = StringBuilder()
     } else {

@@ -323,11 +323,8 @@ pub fn Node::place(
           None => flow.push((kid, kid_res))
         }
       }
-      // Every docked child sits against the full region, so same-edge docks
-      // overlap; only the tallest per edge is taken from what the flow
-      // children get. Docks go down before the flow and in reverse child
-      // order: the compositor hands a column to the first placement, and
-      // the later dock is drawn on top of the earlier.
+      // Same-edge docks overlap and only the tallest takes space. Docks go first and
+      // in reverse, since the first placement on a column wins it.
       let mut edge_top = 0
       let mut edge_right = 0
       let mut edge_bottom = 0
@@ -426,8 +423,7 @@ pub fn Node::place(
           offsets~,
         )
       }
-      // Placed after the children so the chrome lands behind them: the first
-      // placement covering a column wins it.
+      // After the children, so the chrome lands behind them.
       if res.has_chrome() {
         scene.place(id, framed, clip)
         styled[id] = res
@@ -469,8 +465,7 @@ pub fn Node::place(
           offsets~,
         )
       }
-      // Placed after the children so the chrome lands behind them: the first
-      // placement covering a column wins it.
+      // After the children, so the chrome lands behind them.
       if res.has_chrome() {
         scene.place(id, framed, clip)
         styled[id] = res

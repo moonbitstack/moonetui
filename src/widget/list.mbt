@@ -6,6 +6,8 @@ pub struct ListView {
   mut items : Array[String]
   mut index : Int32
   mut offset : Int32
+  // Off while the wheel has moved the view away from the highlight.
+  mut follow : Bool
   mut focused : Bool
   style : @style.Style
   highlight : @style.Style
@@ -23,6 +25,7 @@ pub fn ListView::new(
     items,
     index: 0,
     offset: 0,
+    follow: true,
     focused: false,
     style,
     highlight,
@@ -54,6 +57,7 @@ pub fn ListView::index(self : ListView) -> Int32 {
 ///|
 pub fn ListView::select(self : ListView, index : Int32) -> Unit {
   self.index = clamp(index, 0, self.items.length() - 1)
+  self.follow = true
 }
 
 ///|
@@ -155,11 +159,11 @@ pub impl Widget for ListView with fn handle(self, ctx, msg) {
           true
         }
         ScrollUp => {
-          self.move_by(-1, ctx)
+          self.wheel(-1, ctx)
           true
         }
         ScrollDown => {
-          self.move_by(1, ctx)
+          self.wheel(1, ctx)
           true
         }
         _ => false
@@ -197,8 +201,17 @@ fn ListView::move_to(self : ListView, index : Int32, ctx : Ctx) -> Unit {
     return
   }
   self.index = next
+  self.follow = true
   self.scroll_to_fit(ctx.size.height)
   ctx.emit(Highlighted(id=ctx.id, index=next))
+  ctx.repaint()
+}
+
+///|
+fn ListView::wheel(self : ListView, delta : Int32, ctx : Ctx) -> Unit {
+  self.offset = self.offset + delta
+  self.follow = false
+  self.scroll_to_fit(ctx.size.height)
   ctx.repaint()
 }
 
@@ -208,7 +221,9 @@ fn ListView::scroll_to_fit(self : ListView, height : Int32) -> Unit {
     self.offset = 0
     return
   }
-  if self.index < self.offset {
+  if !self.follow {
+    ()
+  } else if self.index < self.offset {
     self.offset = self.index
   } else if self.index >= self.offset + height {
     self.offset = self.index - height + 1

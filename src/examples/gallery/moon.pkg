@@ -1,5 +1,4 @@
-// Every widget and every part of the design system, live in one terminal:
-// `moon run --target native src/examples/gallery`.
+// Every demo in one terminal: `moon run --target native src/examples/gallery`.
 import {
   "moonbitstack/moonetui/app",
   "moonbitstack/moonetui/driver/native",

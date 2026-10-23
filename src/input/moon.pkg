@@ -1,8 +1,4 @@
-// The terminal's byte stream turned into events.
-//
-// One parser serves every platform: Windows is put into virtual terminal input
-// mode, which makes its console send the same escape sequences a Unix terminal
-// does, so there is no second code path to keep in step with this one.
+// The terminal's byte stream to events, one parser for every platform.
 import {
   "moonbitstack/moonetui/event",
 }

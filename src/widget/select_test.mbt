@@ -104,3 +104,133 @@ test "the wheel scrolls an open select past its highlight" {
   ignore(press(w, 1, at, key(Down)))
   assert_eq(rows(w, at).map(r => r.trim().to_owned()), ["Select  ▲", "b", "c"])
 }
+
+///|
+fn letters(count : Int32, value? : String) -> @widget.Select {
+  @widget.Select::new(
+    options=Array::makei(count, i => {
+      let c = (97 + i).unsafe_to_char().to_string()
+      (c.to_upper(), c)
+    }),
+    value?,
+  )
+}
+
+///|
+test "an open select walks with up, home, end and the page keys" {
+  let pick = letters(10, value="e")
+  let w : &@widget.Widget = pick
+  let at = size(8, 5)
+  ignore(press(w, 1, at, key(Enter)))
+  ignore(rows(w, at))
+  ignore(press(w, 1, at, key(Up)))
+  ignore(press(w, 1, at, key(Enter)))
+  assert_eq(pick.value(), Some("d"))
+  ignore(press(w, 1, at, key(Enter)))
+  ignore(rows(w, at))
+  // Four options show under the closed line, so a page is three.
+  ignore(press(w, 1, at, key(End)))
+  ignore(press(w, 1, at, key(PageUp)))
+  ignore(press(w, 1, at, key(Enter)))
+  assert_eq(pick.value(), Some("g"))
+  ignore(press(w, 1, at, key(Enter)))
+  ignore(rows(w, at))
+  ignore(press(w, 1, at, key(Home)))
+  ignore(press(w, 1, at, key(PageDown)))
+  ignore(press(w, 1, at, key(Enter)))
+  assert_eq(pick.value(), Some("d"))
+}
+
+///|
+test "a closed select leaves the paging keys, modified keys and letters to others" {
+  let w : &@widget.Widget = letters(3)
+  let at = size(8, 4)
+  let codes : Array[@event.KeyCode] = [
+    Home,
+    End,
+    PageUp,
+    PageDown,
+    Escape,
+    Char(97),
+  ]
+  for code in codes {
+    assert_eq(feed(w, at, key(code)), (false, []))
+  }
+  let ctrl = @event.Mods::of_param(5)
+  assert_eq(feed(w, at, Key(@event.Key::with_mods(Enter, ctrl))), (false, []))
+  assert_eq(feed(w, at, mouse(ScrollDown, 0, 0)), (false, []))
+  assert_eq(feed(w, at, mouse(Move, 0, 0)), (false, []))
+  assert_eq(feed(w, at, Paste("a")), (false, []))
+}
+
+///|
+test "choosing the option already chosen closes the select and reports nothing" {
+  let pick = letters(3, value="b")
+  let w : &@widget.Widget = pick
+  let at = size(8, 4)
+  ignore(press(w, 1, at, key(Enter)))
+  assert_eq(press(w, 1, at, key(Enter)), [Repaint(id=1)])
+  assert_eq(pick.expanded(), false)
+  assert_eq(pick.value(), Some("b"))
+}
+
+///|
+test "losing focus closes an open select and forgets the search" {
+  let pick = letters(3)
+  let w : &@widget.Widget = pick
+  let at = size(8, 4)
+  ignore(press(w, 1, at, key(Enter)))
+  ignore(press(w, 1, at, key(Char(99))))
+  ignore(press(w, 1, at, Focus(false)))
+  assert_eq(pick.expanded(), false)
+  // A fresh search starts from nothing: "a" finds A, not "ca".
+  ignore(press(w, 1, at, key(Enter)))
+  ignore(press(w, 1, at, key(Char(97))))
+  ignore(press(w, 1, at, key(Enter)))
+  assert_eq(pick.value(), Some("a"))
+}
+
+///|
+test "a search with no match leaves the highlight where it was" {
+  let pick = letters(3, value="b")
+  let w : &@widget.Widget = pick
+  let at = size(8, 4)
+  ignore(press(w, 1, at, key(Enter)))
+  ignore(press(w, 1, at, key(Char(122))))
+  ignore(press(w, 1, at, key(Enter)))
+  assert_eq(pick.value(), Some("b"))
+}
+
+///|
+test "an open select closes on a click on its own line and ignores clicks below its options" {
+  let pick = letters(2)
+  let w : &@widget.Widget = pick
+  let at = size(8, 6)
+  ignore(press(w, 1, at, mouse(Down, 0, 0)))
+  assert_eq(pick.expanded(), true)
+  ignore(press(w, 1, at, mouse(Down, 0, 5)))
+  assert_eq(pick.expanded(), true)
+  assert_eq(pick.is_blank(), true)
+  ignore(press(w, 1, at, mouse(Down, 0, 0)))
+  assert_eq(pick.expanded(), false)
+}
+
+///|
+test "the wheel scrolls an open select back up" {
+  let pick = letters(6)
+  let w : &@widget.Widget = pick
+  let at = size(8, 3)
+  ignore(press(w, 1, at, key(Enter)))
+  ignore(press(w, 1, at, mouse(ScrollDown, 0, 1)))
+  ignore(press(w, 1, at, mouse(ScrollDown, 0, 1)))
+  assert_eq(rows(w, at)[1].trim(), "C")
+  ignore(press(w, 1, at, mouse(ScrollUp, 0, 1)))
+  assert_eq(rows(w, at)[1].trim(), "B")
+}
+
+///|
+test "a select draws nothing in no room, and nothing below itself when closed" {
+  let w : &@widget.Widget = letters(3)
+  assert_eq(rows(w, size(0, 1)), [""])
+  assert_eq(rows(w, size(8, 3))[1], "        ")
+}

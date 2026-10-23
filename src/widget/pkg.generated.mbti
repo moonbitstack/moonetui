@@ -304,6 +304,7 @@ pub struct ListView {
   mut items : Array[String]
   mut index : Int32
   mut offset : Int32
+  mut follow : Bool
   mut focused : Bool
   style : @style.Style
   highlight : @style.Style
@@ -533,6 +534,7 @@ pub struct RadioSet {
   mut selected : Int32
   mut pressed : Int32
   mut offset : Int32
+  mut follow : Bool
   mut focused : Bool
   cursor : @style.Style
   blurred_cursor : @style.Style
@@ -840,6 +842,8 @@ pub struct TextArea {
   mut undo : Array[Snap]
   mut redo : Array[Snap]
   mut run : Bool
+  mut follow : Bool
+  history : Int32
   style : @style.Style
   cursor_style : @style.Style
   selection_style : @style.Style
@@ -855,7 +859,7 @@ pub fn TextArea::hint(Self, @geom.Size) -> @geom.Size
 pub fn TextArea::insert(Self, String) -> Unit
 pub fn TextArea::line_count(Self) -> Int32
 pub fn TextArea::load_text(Self, String) -> Unit
-pub fn TextArea::new(text? : String, indent_width? : Int32, tab_indents? : Bool, show_line_numbers? : Bool, style? : @style.Style, cursor_style? : @style.Style, selection_style? : @style.Style, gutter_style? : @style.Style, gutter_focus_style? : @style.Style) -> Self
+pub fn TextArea::new(text? : String, indent_width? : Int32, tab_indents? : Bool, show_line_numbers? : Bool, style? : @style.Style, cursor_style? : @style.Style, selection_style? : @style.Style, gutter_style? : @style.Style, gutter_focus_style? : @style.Style, history? : Int32) -> Self
 pub fn TextArea::offset(Self) -> (Int32, Int32)
 pub fn TextArea::redo(Self) -> Bool
 pub fn TextArea::render_line(Self, Int32, @geom.Size) -> @strip.Strip

@@ -1,11 +1,9 @@
-// moonetui documentation — theme, routing, tiny interactions. No frameworks.
 
 (function () {
   "use strict";
 
   var root = document.documentElement;
 
-  // Theme: dark first, choice kept locally.
   var saved = null;
   try {
     saved = localStorage.getItem("moonetui-theme");
@@ -35,7 +33,6 @@
     });
   });
 
-  // Hash routing: #/started shows the section with that id.
   var links = Array.prototype.slice.call(
     document.querySelectorAll(".side nav a")
   );
@@ -79,8 +76,7 @@
   });
   show(location.hash);
 
-  // The toolkit itself, compiled to JavaScript, draws on each canvas once it
-  // comes into view; a page that is never opened never loads it.
+  // Loaded on first view, so a page never opened costs nothing.
   var toolkit = null;
   function load() {
     if (!toolkit) {

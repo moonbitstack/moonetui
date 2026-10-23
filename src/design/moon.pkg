@@ -1,11 +1,5 @@
-// The design system: style properties, selectors, and the cascade.
-//
-// A style here is a value with every property optional, so that rules can
-// stack: what one rule leaves unset, the rule below it supplies. The cascade
-// is the same one Textual runs — rules matched in order of specificity, inline
-// styles on top, a few properties inherited from the container — written down
-// as plain functions rather than a style sheet language, because a selector
-// that type-checks beats a file that parses.
+// Style properties, selectors and the cascade Textual runs, as functions:
+// a selector that type-checks beats a file that parses.
 import {
   "moonbitstack/moonetui/geom",
   "moonbitstack/moonetui/layout",

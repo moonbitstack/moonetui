@@ -1,5 +1,4 @@
-// The gallery and every demo, drawn on canvases in a page. The documentation
-// site loads this module; `index.html` beside it is the gallery on its own.
+// The demos on canvases; the documentation site loads this module.
 import {
   "moonbitlang/core/debug",
   "moonbitstack/moonetui/app",

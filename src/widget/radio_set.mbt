@@ -11,6 +11,8 @@ pub struct RadioSet {
   mut selected : Int32
   mut pressed : Int32
   mut offset : Int32
+  // Off while the wheel has moved the view away from the cursor.
+  mut follow : Bool
   mut focused : Bool
   cursor : @style.Style
   blurred_cursor : @style.Style
@@ -44,6 +46,7 @@ pub fn RadioSet::new(
     },
     pressed,
     offset: 0,
+    follow: true,
     focused: false,
     cursor,
     blurred_cursor,
@@ -86,6 +89,7 @@ pub fn RadioSet::set_selected(self : RadioSet, index : Int32) -> Unit {
     return
   }
   self.selected = index
+  self.follow = true
 }
 
 ///|
@@ -175,16 +179,21 @@ pub impl Widget for RadioSet with fn handle(self, ctx, msg) {
           let at = self.offset + mouse.y
           if at >= 0 && at < self.buttons.length() {
             self.selected = at
+            self.follow = true
             self.press(at, ctx)
           }
           true
         }
         ScrollUp => {
-          self.move_cursor(-1, ctx)
+          self.offset = self.offset - 1
+          self.follow = false
+          ctx.repaint()
           true
         }
         ScrollDown => {
-          self.move_cursor(1, ctx)
+          self.offset = self.offset + 1
+          self.follow = false
+          ctx.repaint()
           true
         }
         _ => false
@@ -207,6 +216,7 @@ fn RadioSet::move_cursor(self : RadioSet, step : Int32, ctx : Ctx) -> Unit {
   }
   let at = if self.selected < 0 { 0 } else { self.selected }
   self.selected = ((at + step) % count + count) % count
+  self.follow = true
   ctx.repaint()
 }
 
@@ -228,7 +238,9 @@ fn RadioSet::scroll_to_fit(self : RadioSet, height : Int32) -> Unit {
     self.offset = 0
     return
   }
-  if self.selected < self.offset {
+  if !self.follow {
+    ()
+  } else if self.selected < self.offset {
     self.offset = self.selected
   } else if self.selected >= self.offset + height {
     self.offset = self.selected - height + 1

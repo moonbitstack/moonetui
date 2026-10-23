@@ -61,3 +61,15 @@ test "the level bar colours are the caller's to choose" {
   )
   assert_eq(toast.bar_style().fg, @style.magenta)
 }
+
+///|
+test "toast changes its message, shows an error bar, and ignores keys" {
+  let toast = @widget.Toast::new("old", level=Error)
+  toast.set_message("new")
+  assert_eq(toast.bar_style().fg, @style.red)
+  let w : &@widget.Widget = toast
+  let out = rows(w, size(10, 3)).map(r => r.trim_end().to_owned())
+  assert_eq(out[0].contains("new"), true)
+  assert_eq(out[2], "")
+  assert_eq(feed(w, size(10, 3), key(Enter)), (false, []))
+}

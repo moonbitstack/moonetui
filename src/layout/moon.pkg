@@ -1,10 +1,5 @@
-// Placing boxes along an axis.
-//
-// The rules are this library's own: a box asks for a fixed number of cells, a
-// percentage, as much as its content needs, or a share of what is left over.
-// Terminal cells are whole, so every division here lands on an integer and the
-// parts always add up to the whole — a layout that loses a column to rounding
-// leaves a visible gap.
+// Sizes along an axis. Every split lands on whole cells and adds up to the
+// whole, since a lost column shows as a gap.
 import {
   "moonbitstack/moonetui/geom",
 }

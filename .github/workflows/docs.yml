@@ -1,7 +1,6 @@
 name: Docs
 
-# Publishes the documentation site to GitHub Pages. The page runs every demo
-# live, so the toolkit is built to JavaScript here and shipped beside it.
+# The pages run every demo live, so the toolkit is built to JavaScript here.
 
 on:
   push:

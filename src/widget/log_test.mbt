@@ -124,3 +124,50 @@ test "log takes focus on click and answers the wheel" {
   )
   assert_eq(rows(w, size(4, 2)), ["a   ", "b   "])
 }
+
+///|
+test "log keys page and pan through what it holds" {
+  let log = @widget.Log::new()
+  for i in 0..<10 {
+    log.write_line("line \{i} is long")
+  }
+  let w : &@widget.Widget = log
+  let at = size(6, 4)
+  ignore(rows(w, at))
+  ignore(feed(w, at, key(PageUp)))
+  ignore(feed(w, at, key(PageUp)))
+  ignore(rows(w, at))
+  assert_eq(log.offset(), (0, 0))
+  ignore(feed(w, at, key(PageDown)))
+  ignore(feed(w, at, key(Down)))
+  ignore(rows(w, at))
+  assert_eq(log.offset(), (0, 4))
+  ignore(feed(w, at, key(Right)))
+  ignore(feed(w, at, key(Right)))
+  ignore(feed(w, at, key(Left)))
+  ignore(feed(w, at, mouse(ScrollRight, 0, 0)))
+  ignore(feed(w, at, mouse(ScrollRight, 0, 0)))
+  ignore(feed(w, at, mouse(ScrollLeft, 0, 0)))
+  ignore(rows(w, at))
+  assert_eq(log.offset(), (2, 4))
+  log.set_auto_scroll(false)
+  let ctrl = @event.Mods::of_param(5)
+  assert_eq(feed(w, at, Key(@event.Key::with_mods(Up, ctrl))), (false, []))
+  assert_eq(feed(w, at, key(Enter)), (false, []))
+  assert_eq(feed(w, at, mouse(Move, 0, 0)), (false, []))
+  assert_eq(feed(w, at, Paste("x")), (false, []))
+}
+
+///|
+test "log pages by one row in a one-row view" {
+  let log = @widget.Log::new()
+  for i in 0..<5 {
+    log.write_line("\{i}")
+  }
+  let w : &@widget.Widget = log
+  let at = size(4, 1)
+  ignore(rows(w, at))
+  ignore(feed(w, at, key(PageUp)))
+  ignore(rows(w, at))
+  assert_eq(log.offset(), (0, 3))
+}

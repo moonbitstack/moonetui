@@ -1,6 +1,5 @@
-// Every widget and every part of the design system as a small live
-// application. The gallery runs them in a terminal, the documentation runs the
-// same ones in its pages, and the code shown beside each is the code here.
+// Every widget and style as a small live application, shared by the gallery
+// and the documentation.
 import {
   "moonbitlang/core/cmp",
   "moonbitstack/moonetui/app",

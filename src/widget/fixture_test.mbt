@@ -34,3 +34,20 @@ fn press(
   w.handle(ctx, msg) |> ignore
   ctx.asked()
 }
+
+///|
+fn mouse(kind : @event.MouseKind, x : Int32, y : Int32) -> @widget.Msg {
+  Mouse({ kind, button: 0, x, y, mods: @event.none, })
+}
+
+///|
+/// Whether `w` took `msg`, and what it asked for.
+fn feed(
+  w : &@widget.Widget,
+  at : @geom.Size,
+  msg : @widget.Msg,
+) -> (Bool, Array[@widget.Out]) {
+  let ctx = @widget.Ctx::new(1, at)
+  let took = w.handle(ctx, msg)
+  (took, ctx.asked())
+}

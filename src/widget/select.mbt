@@ -217,28 +217,21 @@ pub impl Widget for Select with fn handle(self, ctx, msg) {
             } else {
               false
             }
-          Home => {
-            if self.expanded && self.options.length() > 0 {
-              self.move_highlight(0, ctx)
-            }
+          // Closed, these keys belong to whoever is around.
+          Home if self.expanded => {
+            self.move_highlight(0, ctx)
             true
           }
-          End => {
-            if self.expanded && self.options.length() > 0 {
-              self.move_highlight(self.options.length() - 1, ctx)
-            }
+          End if self.expanded => {
+            self.move_highlight(self.options.length() - 1, ctx)
             true
           }
-          PageUp => {
-            if self.expanded {
-              self.move_highlight(self.highlighted - self.page_step(), ctx)
-            }
+          PageUp if self.expanded => {
+            self.move_highlight(self.highlighted - self.page_step(), ctx)
             true
           }
-          PageDown => {
-            if self.expanded {
-              self.move_highlight(self.highlighted + self.page_step(), ctx)
-            }
+          PageDown if self.expanded => {
+            self.move_highlight(self.highlighted + self.page_step(), ctx)
             true
           }
           _ => false
@@ -325,7 +318,7 @@ fn Select::choose(self : Select, index : Int32, ctx : Ctx) -> Unit {
     self.close(ctx)
     return
   }
-  if !self.allow_blank && index == self.chosen {
+  if index == self.chosen {
     self.close(ctx)
     return
   }

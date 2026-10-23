@@ -248,3 +248,107 @@ test "alt with a control key keeps the key it names" {
     ),
   ])
 }
+
+///|
+fn plain(code : @event.KeyCode) -> Array[@event.Event] {
+  [Key({ code, mods: no_mods, })]
+}
+
+///|
+test "every vt-style key number names its key" {
+  let table : Array[(String, @event.KeyCode)] = [
+    ("1", Home),
+    ("2", Insert),
+    ("3", Delete),
+    ("4", End),
+    ("5", PageUp),
+    ("6", PageDown),
+    ("7", Home),
+    ("8", End),
+    ("11", F(1)),
+    ("12", F(2)),
+    ("13", F(3)),
+    ("14", F(4)),
+    ("15", F(5)),
+    ("17", F(6)),
+    ("18", F(7)),
+    ("19", F(8)),
+    ("20", F(9)),
+    ("21", F(10)),
+    ("23", F(11)),
+    ("24", F(12)),
+  ]
+  for row in table {
+    assert_eq(parse(ascii("\u{1b}[" + row.0 + "~")), plain(row.1))
+  }
+  assert_eq(parse(ascii("\u{1b}[99~")), [])
+}
+
+///|
+test "the SS3 function keys, End in CSI, and the kitty u form" {
+  assert_eq(parse(ascii("\u{1b}OQ")), plain(F(2)))
+  assert_eq(parse(ascii("\u{1b}OR")), plain(F(3)))
+  assert_eq(parse(ascii("\u{1b}OS")), plain(F(4)))
+  assert_eq(parse(ascii("\u{1b}[F")), plain(End))
+  assert_eq(parse(ascii("\u{1b}[97;5u")), [Key({ code: Char(97), mods: ctrl, })])
+}
+
+///|
+test "a paste end with no start is ignored" {
+  assert_eq(parse(ascii("\u{1b}[201~a")), plain(Char(97)))
+}
+
+///|
+test "sideways wheel reports, and a mouse report too short to read" {
+  assert_eq(parse(ascii("\u{1b}[<66;3;2M")), [
+    Mouse({ kind: ScrollLeft, button: 2, x: 2, y: 1, mods: no_mods, }),
+  ])
+  assert_eq(parse(ascii("\u{1b}[<67;3;2M")), [
+    Mouse({ kind: ScrollRight, button: 3, x: 2, y: 1, mods: no_mods, }),
+  ])
+  assert_eq(parse(ascii("\u{1b}[<64;3M")), [])
+}
+
+///|
+test "line feed is enter and NUL is control-space" {
+  assert_eq(parse(bytes([0x0A])), plain(Enter))
+  assert_eq(parse(bytes([0x00])), [Key({ code: Char(0x20), mods: ctrl, })])
+}
+
+///|
+test "broken UTF-8 becomes U+FFFD, one per bad byte" {
+  assert_eq(parse(bytes([0xFF])), plain(Char(0xFFFD)))
+  assert_eq(parse(bytes([0x80])), plain(Char(0xFFFD)))
+  assert_eq(parse(bytes([0xC3, 0x28])), [
+    Key({ code: Char(0xFFFD), mods: no_mods, }),
+    Key({ code: Char(0x28), mods: no_mods, }),
+  ])
+  assert_eq(parse(bytes([0xC3, 0xA9])), plain(Char(0xE9)))
+  // A bad continuation settles at once rather than holding the next key back.
+  let p = @input.Parser::new()
+  let out : Array[@event.Event] = []
+  p.feed(bytes([0xE2, 0x28]), out)
+  assert_eq(out, [
+    Key({ code: Char(0xFFFD), mods: no_mods, }),
+    Key({ code: Char(0x28), mods: no_mods, }),
+  ])
+  // Input that stops mid-character ends in one replacement character.
+  assert_eq(parse(bytes([0x61, 0xE2, 0x82])), [
+    Key({ code: Char(0x61), mods: no_mods, }),
+    Key({ code: Char(0xFFFD), mods: no_mods, }),
+    Key({ code: Char(0xFFFD), mods: no_mods, }),
+  ])
+  assert_eq(parse(bytes([0xF0, 0x9F, 0x98, 0x80])), plain(Char(0x1F600)))
+}
+
+///|
+test "reset drops whatever was half read" {
+  let p = @input.Parser::new()
+  let out : Array[@event.Event] = []
+  p.feed(ascii("\u{1b}[200~half"), out)
+  p.reset()
+  assert_eq(p.pending(), 0)
+  p.feed(ascii("x"), out)
+  p.idle(out)
+  assert_eq(out, plain(Char(0x78)))
+}

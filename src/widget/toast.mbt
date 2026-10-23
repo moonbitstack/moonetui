@@ -141,7 +141,6 @@ pub impl Widget for Toast with fn handle(self, ctx, msg) {
       if self.expired() {
         return false
       }
-      // A click retires a toast early, like a notification dismissed by hand.
       self.elapsed = self.duration
       ctx.emit(Dismissed(id=ctx.id))
       true

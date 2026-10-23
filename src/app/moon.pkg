@@ -1,10 +1,5 @@
-// The application: a tree of widgets, a focus ring, and the loop that turns
-// terminal input into messages and widget state into bytes.
-//
-// The loop is a `step` the host calls rather than a `while` the library owns.
-// `wasm-gc` has no async, and a browser cannot be blocked, so the only shape
-// that works everywhere is one where the caller decides when the next frame
-// happens.
+// Widget tree, focus ring and frame loop. The host calls `step` because wasm-gc
+// has no async and a browser cannot block.
 import {
   "moonbitstack/moonetui/comp",
   "moonbitstack/moonetui/design",

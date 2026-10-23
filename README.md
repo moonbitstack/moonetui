@@ -8,7 +8,7 @@ Cell buffer · differential ANSI renderer · incremental key parser · layout ·
 
 [![Check and Test](https://img.shields.io/github/actions/workflow/status/moonbitstack/moonetui/ci.yml?branch=master&label=CI&logo=github)](https://github.com/moonbitstack/moonetui/actions)
 [![Docs](https://img.shields.io/github/actions/workflow/status/moonbitstack/moonetui/docs.yml?branch=master&label=docs&logo=github)](https://moonbitstack.github.io/moonetui/)
-[![mooncakes](https://img.shields.io/badge/mooncakes-0.2.0-7aa2f7)](https://mooncakes.io/docs/#/moonbitstack/moonetui/)
+[![mooncakes](https://img.shields.io/badge/mooncakes-0.3.0-7aa2f7)](https://mooncakes.io/docs/#/moonbitstack/moonetui/)
 [![licence](https://img.shields.io/badge/licence-Apache--2.0-blue)](LICENSE)
 
 <p>
@@ -132,7 +132,7 @@ moon test  --target all
 moon fmt && moon info --target all     # the diff must stay clean
 ```
 
-339 tests per backend, the same suite on wasm, wasm-gc, js and native, run on Ubuntu, macOS and Windows in CI.
+420 tests per backend, the same suite on wasm, wasm-gc, js and native, run on Ubuntu, macOS and Windows in CI. They cover 91% of the lines.
 
 ## Licence
 

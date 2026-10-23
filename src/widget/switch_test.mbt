@@ -50,3 +50,36 @@ test "a focused switch says so on its track" {
   ignore(press(w, 1, size(4, 1), Focus(false)))
   assert_eq(w.render_line(0, size(4, 1)), plain)
 }
+
+///|
+test "a switch flips on space, enter and a click, and says so" {
+  let sw = @widget.Switch::new()
+  let w : &@widget.Widget = sw
+  let at = size(4, 1)
+  assert_eq(
+    feed(w, at, key(Char(32))),
+    (true, [Toggled(id=1, on=true), Repaint(id=1)]),
+  )
+  assert_eq(
+    feed(w, at, key(Enter)),
+    (true, [Toggled(id=1, on=false), Repaint(id=1)]),
+  )
+  assert_eq(
+    feed(w, at, mouse(Down, 1, 0)),
+    (true, [TakeFocus(id=1), Toggled(id=1, on=true), Repaint(id=1)]),
+  )
+  assert_eq(sw.value(), true)
+  sw.set_value(false)
+  assert_eq(sw.value(), false)
+}
+
+///|
+test "a switch ignores other keys, other mouse events and pastes" {
+  let w : &@widget.Widget = @widget.Switch::new()
+  let at = size(4, 1)
+  assert_eq(feed(w, at, key(Char(97))), (false, []))
+  let ctrl = @event.Mods::of_param(5)
+  assert_eq(feed(w, at, Key(@event.Key::with_mods(Enter, ctrl))), (false, []))
+  assert_eq(feed(w, at, mouse(Move, 1, 0)), (false, []))
+  assert_eq(feed(w, at, Paste(" ")), (false, []))
+}

@@ -267,6 +267,7 @@ pub fn Tree::clear(self : Tree) -> Unit {
   let root = self.nodes[0]
   root.children.clear()
   root.loaded = false
+  self.nodes.truncate(1)
   self.cursor = -1
   self.offset = 0
 }
