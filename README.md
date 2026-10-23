@@ -1,6 +1,6 @@
 <div align="center">
 
-<h1><img src="docs/assets/logo.svg" alt="moonetui logo" width="48" height="48" align="middle">&nbsp;&nbsp;MoonBit Easy Terminal UI Frame</h1>
+<h1><img src="docs/assets/logo.svg" alt="moonetui logo" width="40" height="40" align="absmiddle">&nbsp;&nbsp;MoonBit Easy Terminal UI Frame</h1>
 
 **`moonetui`** · a terminal UI toolkit for [MoonBit](https://www.moonbitlang.com/)
 
