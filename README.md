@@ -1,10 +1,8 @@
 <div align="center">
 
-<img src="docs/assets/logo.svg" alt="" width="96" height="96">
+<h1><img src="docs/assets/logo.svg" alt="moonetui logo" width="48" height="48" align="middle">&nbsp;&nbsp;MoonBit Easy Terminal UI Frame</h1>
 
-# moonetui
-
-**A terminal UI toolkit for [MoonBit](https://www.moonbitlang.com/)**
+**`moonetui`** · a terminal UI toolkit for [MoonBit](https://www.moonbitlang.com/)
 
 Cell buffer · differential ANSI renderer · incremental key parser · layout · CSS-like design system · thirty-two widgets · drivers for terminals, Node, browsers and serial lines
 
