@@ -84,17 +84,33 @@ code, pre, .term {
 }
 
 .side .brand .mark {
-  width: 34px;
-  height: 34px;
-  border-radius: 9px;
-  display: grid;
-  place-items: center;
-  background: linear-gradient(135deg, var(--accent), var(--accent-6));
-  color: #fff;
-  font-weight: 800;
-  font-size: 15px;
-  letter-spacing: -0.5px;
-  font-family: ui-monospace, monospace;
+  width: 36px;
+  height: 36px;
+  flex: none;
+}
+
+.mark .from { stop-color: var(--accent); }
+.mark .to { stop-color: var(--accent-6); }
+.mark .body { fill: color-mix(in srgb, var(--accent) 9%, transparent); }
+.mark .bar { fill: color-mix(in srgb, var(--accent) 18%, transparent); }
+.mark .edge { fill: none; stroke: url(#mark-edge); stroke-width: 3; }
+.mark .red { fill: var(--accent-5); }
+.mark .amber { fill: var(--accent-4); }
+.mark .green { fill: var(--accent-3); }
+.mark .prompt {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.mark .cursor {
+  fill: var(--accent-3);
+  animation: mark-blink 1.2s steps(1) infinite;
+}
+
+@keyframes mark-blink {
+  50% { opacity: 0; }
 }
 
 .side .brand b { font-size: 19px; letter-spacing: -0.3px; }
