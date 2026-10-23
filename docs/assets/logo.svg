@@ -1,15 +1,15 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
   <title>moonetui</title>
   <style>
-    .body { fill: #3b66d8; fill-opacity: .07; }
-    .bar { fill: #3b66d8; fill-opacity: .14; }
+    .body { fill: #3b66d8; fill-opacity: .10; }
+    .bar { fill: #3b66d8; fill-opacity: .20; }
     .prompt { stroke: #1c2434; }
     .cursor { fill: #4d8a35; }
     .from { stop-color: #3b66d8; }
     .to { stop-color: #7d52d8; }
     @media (prefers-color-scheme: dark) {
-      .body { fill: #7aa2f7; fill-opacity: .09; }
-      .bar { fill: #7aa2f7; fill-opacity: .18; }
+      .body { fill: #7aa2f7; fill-opacity: .14; }
+      .bar { fill: #7aa2f7; fill-opacity: .26; }
       .prompt { stroke: #dce3f1; }
       .cursor { fill: #9ece6a; }
       .from { stop-color: #7aa2f7; }
@@ -22,15 +22,15 @@
       <stop offset="1" class="to"/>
     </linearGradient>
   </defs>
-  <rect class="body" x="6" y="7" width="52" height="50" rx="7"/>
-  <path class="bar" d="M6 14a7 7 0 0 1 7-7h38a7 7 0 0 1 7 7v8.5H6z"/>
-  <g fill="none" stroke="url(#edge)" stroke-width="3">
-    <rect x="6" y="7" width="52" height="50" rx="7"/>
-    <path d="M7.5 22.5H56.5"/>
+  <rect class="body" x="5" y="6" width="54" height="52" rx="9"/>
+  <path class="bar" d="M5 15a9 9 0 0 1 9-9h36a9 9 0 0 1 9 9v6H5z"/>
+  <g fill="none" stroke="url(#edge)" stroke-width="4">
+    <rect x="5" y="6" width="54" height="52" rx="9"/>
+    <path d="M7 21H57"/>
   </g>
-  <circle cx="14" cy="15" r="2" fill="#f7768e"/>
-  <circle cx="20.5" cy="15" r="2" fill="#e0af68"/>
-  <circle cx="27" cy="15" r="2" fill="#9ece6a"/>
-  <path class="prompt" d="M16 31L25 38L16 45" fill="none" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-  <rect class="cursor" x="31" y="31.5" width="10" height="13" rx="1.5"/>
+  <circle cx="14" cy="13.5" r="2.4" fill="#f7768e"/>
+  <circle cx="21" cy="13.5" r="2.4" fill="#e0af68"/>
+  <circle cx="28" cy="13.5" r="2.4" fill="#9ece6a"/>
+  <path class="prompt" d="M15 30L25 38.5L15 47" fill="none" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  <rect class="cursor" x="30" y="30" width="12" height="17" rx="2"/>
 </svg>

@@ -91,16 +91,16 @@ code, pre, .term {
 
 .mark .from { stop-color: var(--accent); }
 .mark .to { stop-color: var(--accent-6); }
-.mark .body { fill: color-mix(in srgb, var(--accent) 9%, transparent); }
-.mark .bar { fill: color-mix(in srgb, var(--accent) 18%, transparent); }
-.mark .edge { fill: none; stroke: url(#mark-edge); stroke-width: 3; }
+.mark .body { fill: color-mix(in srgb, var(--accent) 13%, transparent); }
+.mark .bar { fill: color-mix(in srgb, var(--accent) 24%, transparent); }
+.mark .edge { fill: none; stroke: url(#mark-edge); stroke-width: 4; }
 .mark .red { fill: var(--accent-5); }
 .mark .amber { fill: var(--accent-4); }
 .mark .green { fill: var(--accent-3); }
 .mark .prompt {
   fill: none;
   stroke: var(--ink);
-  stroke-width: 4;
+  stroke-width: 5;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
