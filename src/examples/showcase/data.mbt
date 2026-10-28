@@ -21,6 +21,27 @@ pub fn data_table() -> Demo {
 }
 
 ///|
+pub fn stateful_table() -> Demo {
+  let state = @widget.TableState::new(row=1, column=1)
+  let table = @widget.StatefulTable::new(
+    header=["Name", "Role", "Status"],
+    rows=[
+      ["alpha", "builder", "ok"],
+      ["beta", "tester", "ok"],
+      ["gamma", "deployer", "busy"],
+    ],
+    state~,
+  )
+  Demo::new(
+    "StatefulTable",
+    @app.column(0, [@app.leaf(1, table)]),
+    group=Data,
+    note="The active cell lives in a TableState the caller keeps, in the same way.",
+    rows=5,
+  )
+}
+
+///|
 pub fn markdown() -> Demo {
   let doc = @widget.Markdown::new(
     "# Deploy report\n\nAll **four** backends pass, with `--deny-warn`.\n\n- wasm and wasm-gc\n- js and native\n\n> Shipped on a Thursday.",

@@ -101,6 +101,10 @@ pub fn selection_list() -> Demo
 
 pub fn sparkline() -> Demo
 
+pub fn stateful_list() -> Demo
+
+pub fn stateful_table() -> Demo
+
 pub fn states() -> Demo
 
 pub fn static_text() -> Demo

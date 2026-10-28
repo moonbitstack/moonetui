@@ -39,6 +39,22 @@ pub fn list_view() -> Demo {
 }
 
 ///|
+pub fn stateful_list() -> Demo {
+  let state = @widget.ListState::new(selected=1)
+  let list = @widget.StatefulList::new(
+    items=["alpha", "beta", "gamma", "delta", "epsilon", "中文也对齐"],
+    state~,
+  )
+  Demo::new(
+    "StatefulList",
+    @app.column(0, [@app.leaf(1, list)]),
+    group=Navigation,
+    note="Selection and scroll live in a ListState the caller keeps, so another widget can share them or the caller can set them between frames.",
+    rows=4,
+  )
+}
+
+///|
 pub fn tabs() -> Demo {
   Demo::new(
     "Tabs",

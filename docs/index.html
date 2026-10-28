@@ -841,6 +841,26 @@ w.handle(ctx, @widget.Msg::Key(@event.Key::of(Enter)))
   )
 }</pre>
   </div>
+  <div class="wcard" id="demo-statefullist">
+    <h4><code class="inline">StatefulList</code></h4>
+    <p class="wdesc">Selection and scroll live in a ListState the caller keeps, so another widget can share them or the caller can set them between frames.</p>
+    <div class="wlive"><canvas id="live-statefullist" data-demo="StatefulList" tabindex="0" style="height: 72px"></canvas></div>
+    <div class="wmsg" data-for="live-statefullist"></div>
+    <pre class="block wcode"><span class="kw">pub</span> <span class="kw">fn</span> stateful_list() -&gt; Demo {
+  <span class="kw">let</span> state = <span class="fn">@widget.</span>ListState::new(selected=1)
+  <span class="kw">let</span> list = <span class="fn">@widget.</span>StatefulList::new(
+    items=[<span class="st">&quot;alpha&quot;</span>, <span class="st">&quot;beta&quot;</span>, <span class="st">&quot;gamma&quot;</span>, <span class="st">&quot;delta&quot;</span>, <span class="st">&quot;epsilon&quot;</span>, <span class="st">&quot;中文也对齐&quot;</span>],
+    state~,
+  )
+  Demo::new(
+    <span class="st">&quot;StatefulList&quot;</span>,
+    <span class="fn">@app.</span>column(0, [<span class="fn">@app.</span>leaf(1, list)]),
+    group=Navigation,
+    note=<span class="st">&quot;Selection and scroll live in a ListState the caller keeps, so another widget can share them or the caller can set them between frames.&quot;</span>,
+    rows=4,
+  )
+}</pre>
+  </div>
   <div class="wcard" id="demo-tabs">
     <h4><code class="inline">Tabs</code></h4>
     <p class="wdesc">A row of tabs with an underline under the active one; the arrows move it.</p>
@@ -1051,6 +1071,31 @@ w.handle(ctx, @widget.Msg::Key(@event.Key::of(Enter)))
     <span class="fn">@app.</span>column(0, [<span class="fn">@app.</span>leaf(1, table)]),
     group=Data,
     note=<span class="st">&quot;Columns, a cell cursor, sorting by any column, and stripes if asked.&quot;</span>,
+    rows=5,
+  )
+}</pre>
+  </div>
+  <div class="wcard" id="demo-statefultable">
+    <h4><code class="inline">StatefulTable</code></h4>
+    <p class="wdesc">The active cell lives in a TableState the caller keeps, in the same way.</p>
+    <div class="wlive"><canvas id="live-statefultable" data-demo="StatefulTable" tabindex="0" style="height: 90px"></canvas></div>
+    <div class="wmsg" data-for="live-statefultable"></div>
+    <pre class="block wcode"><span class="kw">pub</span> <span class="kw">fn</span> stateful_table() -&gt; Demo {
+  <span class="kw">let</span> state = <span class="fn">@widget.</span>TableState::new(row=1, column=1)
+  <span class="kw">let</span> table = <span class="fn">@widget.</span>StatefulTable::new(
+    header=[<span class="st">&quot;Name&quot;</span>, <span class="st">&quot;Role&quot;</span>, <span class="st">&quot;Status&quot;</span>],
+    rows=[
+      [<span class="st">&quot;alpha&quot;</span>, <span class="st">&quot;builder&quot;</span>, <span class="st">&quot;ok&quot;</span>],
+      [<span class="st">&quot;beta&quot;</span>, <span class="st">&quot;tester&quot;</span>, <span class="st">&quot;ok&quot;</span>],
+      [<span class="st">&quot;gamma&quot;</span>, <span class="st">&quot;deployer&quot;</span>, <span class="st">&quot;busy&quot;</span>],
+    ],
+    state~,
+  )
+  Demo::new(
+    <span class="st">&quot;StatefulTable&quot;</span>,
+    <span class="fn">@app.</span>column(0, [<span class="fn">@app.</span>leaf(1, table)]),
+    group=Data,
+    note=<span class="st">&quot;The active cell lives in a TableState the caller keeps, in the same way.&quot;</span>,
     rows=5,
   )
 }</pre>
