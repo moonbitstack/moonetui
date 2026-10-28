@@ -4,11 +4,11 @@
 
 **`moonetui`** · a terminal UI toolkit for [MoonBit](https://www.moonbitlang.com/)
 
-Cell buffer · differential ANSI renderer · incremental key parser · layout · CSS-like design system · thirty-two widgets · drivers for terminals, Node, browsers and serial lines
+Cell buffer · differential ANSI renderer · incremental key parser · layout · CSS-like design system · fifty widgets · drivers for terminals, Node, browsers and serial lines
 
 [![Check and Test](https://img.shields.io/github/actions/workflow/status/moonbitstack/moonetui/ci.yml?branch=master&label=CI&logo=github)](https://github.com/moonbitstack/moonetui/actions)
 [![Docs](https://img.shields.io/github/actions/workflow/status/moonbitstack/moonetui/docs.yml?branch=master&label=docs&logo=github)](https://moonbitstack.github.io/moonetui/)
-[![mooncakes](https://img.shields.io/badge/mooncakes-0.3.0-7aa2f7)](https://mooncakes.io/docs/#/moonbitstack/moonetui/)
+[![mooncakes](https://img.shields.io/badge/mooncakes-0.4.0-7aa2f7)](https://mooncakes.io/docs/#/moonbitstack/moonetui/)
 [![licence](https://img.shields.io/badge/licence-Apache--2.0-blue)](LICENSE)
 
 <p>
@@ -91,13 +91,27 @@ Its `moon.pkg` imports `app`, `design`, `driver/native`, `layout`, `style` and `
 
 | Group | Widgets |
 |:--|:--|
-| Text and display | `Static` and `label()`, `Header`, `Footer`, `Rule`, `Digits`, `Sparkline`, `Progress`, `LoadingIndicator`, `Placeholder` |
-| Entry and logs | `Input`, `TextArea`, `Log`, `RichLog` |
+| Text and display | `Static` and `label()`, `Header` (with a `Clock`), `Footer`, `Rule`, `Digits`, `Sparkline`, `Progress`, `LoadingIndicator`, `Placeholder`, `Pretty`, `Link` |
+| Entry and logs | `Input`, `TextArea`, `Log`, `RichLog`, `MaskedInput` |
 | Choices | `Switch`, `Checkbox`, `RadioButton`, `RadioSet`, `OptionList`, `SelectionList`, `Select` |
-| Navigation and structure | `Button`, `ListView`, `Tabs`, `TabbedContent`, `Collapsible`, `Tree`, `DirectoryTree` |
+| Navigation and structure | `Button`, `ListView`, `Tabs`, `TabbedContent`, `Collapsible`, `Tree`, `DirectoryTree`, `ContentSwitcher`, `StatefulList`, `StatefulTable` |
 | Data and notices | `DataTable`, `Markdown`, `Tooltip`, `Toast` |
+| Dialogs | `MessageBox`, `InputBox`, `FileDialog` |
+| Menus and commands | `Menu`, `MenuBar`, `CommandPalette` |
+| Charts and meters | `Chart` (lines and scatter), `BarChart`, `Gauge`, `Scrollbar` |
+| Decoration | `Block` — a frame, title and padding that wraps any widget |
 
 Each one has its keyboard contract, message shape and tests, and a live demo on the [documentation site](https://moonbitstack.github.io/moonetui/#/widgets) beside its source.
+
+### What 0.4.0 adds
+
+Prefabricated dialogs (`MessageBox`, `InputBox`, `FileDialog`), a `MenuBar` with drop-down
+`Menu`s and a `CommandPalette`, anchored and pivoted layout, the `Block` decorator, state-outside
+widgets (`StatefulList`, `StatefulTable`) that share selection and scroll with the caller, charts
+and meters (`Chart`, `BarChart`, `Gauge`, `Scrollbar`), a semantic colour `Theme` that swaps as a
+value object, and the remaining controls: `ContentSwitcher`, `Pretty`, `MaskedInput`, `Link` and
+a `Clock` for the `Header`. Every new control has headless snapshot tests with a keyboard and a
+mouse example.
 
 ## Package map
 
@@ -111,8 +125,8 @@ Each one has its keyboard contract, message shape and tests, and a live demo on 
 | `@comp` | The compositor: placements to rows, rows to changed spans, spans to escape sequences |
 | `@driver` | The seam to a terminal, and a headless terminal for tests |
 | `@vt` | A virtual terminal: the screen an escape stream draws, for the browser driver, tests and screenshots |
-| `@layout` | Sizes along an axis, and the grid with spans and gutters |
-| `@design` | Rules over name, id, class and state; borders, padding, margins, alignment, docks, offsets, transitions |
+| `@layout` | Sizes along an axis, the grid with spans and gutters, and anchored, pivoted placement |
+| `@design` | Rules over name, id, class and state; borders, padding, margins, alignment, docks, offsets, transitions, and the semantic `Theme` |
 | `@widget` | The widget contract and the inventory |
 | `@app` | The widget tree, focus ring, scroll containers, docks, grids, screens, timers and the frame loop |
 | `@driver/native` · `@driver/node` · `@driver/web` | A real terminal through the C library; Node; a canvas in the browser |
@@ -132,7 +146,7 @@ moon test  --target all
 moon fmt && moon info --target all     # the diff must stay clean
 ```
 
-420 tests per backend, the same suite on wasm, wasm-gc, js and native, run on Ubuntu, macOS and Windows in CI. They cover 91% of the lines.
+599 tests per backend, the same suite on wasm, wasm-gc, js and native, run on Ubuntu, macOS and Windows in CI. They cover 91% of the lines.
 
 ## Licence
 
