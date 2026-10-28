@@ -13,7 +13,17 @@ import {
 // Values
 pub let bare : Resolved
 
+pub let dark : Theme
+
 pub let empty : Styles
+
+pub let light : Theme
+
+pub let nord : Theme
+
+pub fn roles() -> Array[Role]
+
+pub fn themes() -> Array[Theme]
 
 // Errors
 
@@ -96,6 +106,8 @@ pub(all) struct Resolved {
   border : EdgeKind
   align : Align
   dock : Edge?
+  anchor : @layout.Anchor?
+  pivot : @layout.Pivot
   column_span : Int32?
   row_span : Int32?
   offset_x : Int32
@@ -117,6 +129,25 @@ pub fn Resolved::has_chrome(Self) -> Bool
 pub fn Resolved::not_equal(Self, Self) -> Bool
 pub fn Resolved::of(Styles, @style.Style) -> Self
 pub fn Resolved::to_repr(Self) -> @debug.Repr
+
+pub(all) enum Role {
+  Primary
+  Secondary
+  Accent
+  Surface
+  Panel
+  Text
+  Muted
+  Success
+  Warning
+  Error
+  Border
+} derive(Eq, @debug.Debug)
+pub fn Role::equal(Self, Self) -> Bool
+pub fn Role::name(Self) -> String
+pub fn Role::not_equal(Self, Self) -> Bool
+pub fn Role::note(Self) -> String
+pub fn Role::to_repr(Self) -> @debug.Repr
 
 pub(all) struct Rule {
   sel : Sel
@@ -155,6 +186,8 @@ pub(all) struct Styles {
   border : EdgeKind?
   align : Align?
   dock : Edge?
+  anchor : @layout.Anchor?
+  pivot : @layout.Pivot?
   column_span : Int32?
   row_span : Int32?
   offset_x : Int32?
@@ -166,7 +199,7 @@ pub(all) struct Styles {
 pub fn Styles::equal(Self, Self) -> Bool
 pub fn Styles::is_empty(Self) -> Bool
 pub fn Styles::merge(Self, Self) -> Self
-pub fn Styles::new(display? : Display, width? : @layout.Extent, height? : @layout.Extent, min_width? : Int32, max_width? : Int32, min_height? : Int32, max_height? : Int32, padding? : @geom.Spacing, margin? : @geom.Spacing, border? : EdgeKind, align? : Align, dock? : Edge, column_span? : Int32, row_span? : Int32, offset_x? : Int32, offset_y? : Int32, transition? : Int32, scrollbar? : @style.Style, text? : @style.Style) -> Self
+pub fn Styles::new(display? : Display, width? : @layout.Extent, height? : @layout.Extent, min_width? : Int32, max_width? : Int32, min_height? : Int32, max_height? : Int32, padding? : @geom.Spacing, margin? : @geom.Spacing, border? : EdgeKind, align? : Align, dock? : Edge, anchor? : @layout.Anchor, pivot? : @layout.Pivot, column_span? : Int32, row_span? : Int32, offset_x? : Int32, offset_y? : Int32, transition? : Int32, scrollbar? : @style.Style, text? : @style.Style) -> Self
 pub fn Styles::not_equal(Self, Self) -> Bool
 pub fn Styles::to_repr(Self) -> @debug.Repr
 
@@ -174,6 +207,7 @@ pub(all) struct Stylesheet {
   rules : Array[Rule]
 } derive(Eq, @debug.Debug)
 pub fn Stylesheet::add(Self, Sel, Styles) -> Unit
+pub fn Stylesheet::append(Self, Self) -> Unit
 pub fn Stylesheet::equal(Self, Self) -> Bool
 pub fn Stylesheet::is_empty(Self) -> Bool
 pub fn Stylesheet::list(Self) -> Array[Rule]
@@ -181,6 +215,32 @@ pub fn Stylesheet::new() -> Self
 pub fn Stylesheet::not_equal(Self, Self) -> Bool
 pub fn Stylesheet::pick(Self, String, Int32, Array[String], Bool, hovered? : Bool, disabled? : Bool) -> Styles
 pub fn Stylesheet::to_repr(Self) -> @debug.Repr
+
+pub(all) struct Theme {
+  name : String
+  primary : @style.Colour
+  secondary : @style.Colour
+  accent : @style.Colour
+  surface : @style.Colour
+  panel : @style.Colour
+  text : @style.Colour
+  muted : @style.Colour
+  success : @style.Colour
+  warning : @style.Colour
+  error : @style.Colour
+  border : @style.Colour
+} derive(Eq, @debug.Debug)
+pub fn Theme::base(Self) -> @style.Style
+pub fn Theme::colour(Self, Role) -> @style.Colour
+pub fn Theme::equal(Self, Self) -> Bool
+pub fn Theme::fg(Self, Role) -> @style.Style
+pub fn Theme::fill(Self, Role) -> @style.Style
+pub fn Theme::new(name? : String, primary? : @style.Colour, secondary? : @style.Colour, accent? : @style.Colour, surface? : @style.Colour, panel? : @style.Colour, text? : @style.Colour, muted? : @style.Colour, success? : @style.Colour, warning? : @style.Colour, error? : @style.Colour, border? : @style.Colour) -> Self
+pub fn Theme::not_equal(Self, Self) -> Bool
+pub fn Theme::of(String) -> Self?
+pub fn Theme::set(Self, Role, @style.Colour) -> Self
+pub fn Theme::sheet(Self) -> Stylesheet
+pub fn Theme::to_repr(Self) -> @debug.Repr
 
 pub(all) enum VAlign {
   Top

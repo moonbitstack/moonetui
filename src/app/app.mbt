@@ -8,7 +8,7 @@ pub struct App[D] {
   quit : @event.Key?
   mut root : Node
   parser : @input.Parser
-  base : @style.Style
+  mut base : @style.Style
   mut sheet : @design.Stylesheet
   frame_ms : Int32
   mut rects : Map[Int32, @geom.Region]
@@ -283,6 +283,15 @@ pub fn[D : @driver.Driver] App::after(
 /// Restyle the whole tree with another stylesheet, as a theme switch does.
 pub fn[D] App::set_sheet(self : App[D], sheet : @design.Stylesheet) -> Unit {
   self.sheet = sheet
+  self.dirty = true
+}
+
+///|
+/// Restyle the whole tree with another theme: the colours it inherits, and
+/// the rules every role names. One call is a theme switch.
+pub fn[D] App::set_theme(self : App[D], theme : @design.Theme) -> Unit {
+  self.base = theme.base()
+  self.sheet = theme.sheet()
   self.dirty = true
 }
 

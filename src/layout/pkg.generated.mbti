@@ -7,11 +7,19 @@ import {
 }
 
 // Values
+pub fn anchor_region(@geom.Region, @geom.Size, anchor? : Anchor, pivot? : Pivot, margin? : @geom.Spacing) -> @geom.Region
+
 pub fn arrange(@geom.Region, Dir, Array[Box], Array[Int32], gap? : Int32) -> Array[@geom.Region]
 
 pub fn arrange_grid(@geom.Region, Array[(Int32, Int32)], Array[GridChild], cols~ : Int32, gutter? : Int32) -> Array[@geom.Region]
 
+pub let centre : Pivot
+
+pub fn corners() -> Array[Anchor]
+
 pub fn cross_of(@geom.Size, Dir) -> Int32
+
+pub let free : Anchor
 
 pub fn grid_row_heights(Array[GridChild], Array[(Int32, Int32)]) -> Array[Int32]
 
@@ -19,9 +27,27 @@ pub fn grid_slots(Array[GridChild], cols~ : Int32, rows? : Int32) -> Array[(Int3
 
 pub fn main_of(@geom.Size, Dir) -> Int32
 
+pub fn pivots() -> Array[Pivot]
+
+pub let stretch : Anchor
+
 // Errors
 
 // Types and methods
+pub(all) struct Anchor {
+  top : Bool
+  right : Bool
+  bottom : Bool
+  left : Bool
+} derive(Eq, @debug.Debug)
+pub fn Anchor::equal(Self, Self) -> Bool
+pub fn Anchor::is_free(Self) -> Bool
+pub fn Anchor::new(top? : Bool, right? : Bool, bottom? : Bool, left? : Bool) -> Self
+pub fn Anchor::not_equal(Self, Self) -> Bool
+pub fn Anchor::spans_x(Self) -> Bool
+pub fn Anchor::spans_y(Self) -> Bool
+pub fn Anchor::to_repr(Self) -> @debug.Repr
+
 pub(all) struct Box {
   extent : Extent
   min : Int32
@@ -60,6 +86,23 @@ pub fn GridChild::equal(Self, Self) -> Bool
 pub fn GridChild::new(col_span? : Int32, row_span? : Int32, height? : Int32) -> Self
 pub fn GridChild::not_equal(Self, Self) -> Bool
 pub fn GridChild::to_repr(Self) -> @debug.Repr
+
+pub(all) enum Pivot {
+  TopLeft
+  TopCentre
+  TopRight
+  MiddleLeft
+  Middle
+  MiddleRight
+  BottomLeft
+  BottomCentre
+  BottomRight
+} derive(Eq, @debug.Debug)
+pub fn Pivot::equal(Self, Self) -> Bool
+pub fn Pivot::frac_x(Self) -> Double
+pub fn Pivot::frac_y(Self) -> Double
+pub fn Pivot::not_equal(Self, Self) -> Bool
+pub fn Pivot::to_repr(Self) -> @debug.Repr
 
 // Type aliases
 

@@ -12,7 +12,11 @@ import {
 // Values
 pub fn align_line(String, Int32, Align, @style.Style) -> @strip.Strip
 
+pub let ascii : Border
+
 pub fn clip_to(String, Int32) -> String
+
+pub let double : Border
 
 pub fn frame(Border, Int32, @geom.Size, @style.Style, @strip.Strip) -> @strip.Strip
 
@@ -20,7 +24,17 @@ pub let heavy : Border
 
 pub fn label(String, style? : @style.Style) -> Static
 
+pub let ok : Array[String]
+
+pub let ok_cancel : Array[String]
+
+pub let round : Border
+
 pub let thin : Border
+
+pub let yes_no : Array[String]
+
+pub let yes_no_cancel : Array[String]
 
 // Errors
 
@@ -33,6 +47,67 @@ pub(all) enum Align {
 pub fn Align::equal(Self, Self) -> Bool
 pub fn Align::not_equal(Self, Self) -> Bool
 pub fn Align::to_repr(Self) -> @debug.Repr
+
+pub(all) struct Axis {
+  title : String
+  labels : Array[String]
+  bounds : Bounds
+  style : @style.Style
+} derive(Eq, @debug.Debug)
+pub fn Axis::equal(Self, Self) -> Bool
+pub fn Axis::new(labels? : Array[String], bounds? : Bounds, title? : String, style? : @style.Style) -> Self
+pub fn Axis::not_equal(Self, Self) -> Bool
+pub fn Axis::to_repr(Self) -> @debug.Repr
+
+pub(all) struct Bar {
+  label : String
+  value : Double
+  style : @style.Style?
+} derive(Eq, @debug.Debug)
+pub fn Bar::equal(Self, Self) -> Bool
+pub fn Bar::new(String, value? : Double, style? : @style.Style?) -> Self
+pub fn Bar::not_equal(Self, Self) -> Bool
+pub fn Bar::to_repr(Self) -> @debug.Repr
+
+pub struct BarChart {
+  mut bars : Array[Bar]
+  mut max : Double?
+  gap : Int32
+  values : Bool
+  style : @style.Style
+  bar_style : @style.Style
+  label_style : @style.Style
+}
+pub fn BarChart::bars(Self) -> Array[Bar]
+pub fn BarChart::focusable(Self) -> Bool
+pub fn BarChart::handle(Self, Ctx, Msg) -> Bool
+pub fn BarChart::hint(Self, @geom.Size) -> @geom.Size
+pub fn BarChart::new(bars? : Array[Bar], max? : Double?, gap? : Int32, values? : Bool, style? : @style.Style, bar_style? : @style.Style, label_style? : @style.Style) -> Self
+pub fn BarChart::render_line(Self, Int32, @geom.Size) -> @strip.Strip
+pub fn BarChart::scale(Self) -> Double
+pub fn BarChart::set_bars(Self, Array[Bar]) -> Unit
+pub fn BarChart::set_max(Self, Double?) -> Unit
+pub impl Widget for BarChart
+
+pub struct Block {
+  inner : &Widget
+  border : Border?
+  mut title : String
+  title_align : Align
+  padding : @geom.Spacing
+  style : @style.Style
+  border_style : @style.Style
+  title_style : @style.Style
+}
+pub fn Block::focusable(Self) -> Bool
+pub fn Block::handle(Self, Ctx, Msg) -> Bool
+pub fn Block::hint(Self, @geom.Size) -> @geom.Size
+pub fn Block::new(&Widget, title? : String, border? : Border?, padding? : @geom.Spacing, title_align? : Align, style? : @style.Style, border_style? : @style.Style, title_style? : @style.Style) -> Self
+pub fn Block::padding_of(Self) -> @geom.Spacing
+pub fn Block::render_line(Self, Int32, @geom.Size) -> @strip.Strip
+pub fn Block::set_title(Self, String) -> Unit
+pub fn Block::title(Self) -> String
+pub impl Widget for Block
 
 pub(all) struct Border {
   top_left : String
@@ -47,6 +122,16 @@ pub(all) struct Border {
 pub fn Border::equal(Self, Self) -> Bool
 pub fn Border::not_equal(Self, Self) -> Bool
 pub fn Border::to_repr(Self) -> @debug.Repr
+
+pub(all) struct Bounds {
+  low : Double
+  high : Double
+} derive(Eq, @debug.Debug)
+pub fn Bounds::equal(Self, Self) -> Bool
+pub fn Bounds::new(low? : Double, high? : Double) -> Self
+pub fn Bounds::not_equal(Self, Self) -> Bool
+pub fn Bounds::span(Self) -> Double
+pub fn Bounds::to_repr(Self) -> @debug.Repr
 
 pub struct Button {
   mut text : String
@@ -66,6 +151,27 @@ pub fn Button::render_line(Self, Int32, @geom.Size) -> @strip.Strip
 pub fn Button::set(Self, String) -> Unit
 pub fn Button::text(Self) -> String
 pub impl Widget for Button
+
+pub struct Chart {
+  mut datasets : Array[Dataset]
+  mut x : Axis
+  mut y : Axis
+  legend : Bool
+  style : @style.Style
+  axis_style : @style.Style
+  label_style : @style.Style
+}
+pub fn Chart::bounds(Self) -> Bounds
+pub fn Chart::datasets(Self) -> Array[Dataset]
+pub fn Chart::focusable(Self) -> Bool
+pub fn Chart::handle(Self, Ctx, Msg) -> Bool
+pub fn Chart::hint(Self, @geom.Size) -> @geom.Size
+pub fn Chart::new(datasets? : Array[Dataset], x? : Axis, y? : Axis, legend? : Bool, style? : @style.Style, axis_style? : @style.Style, label_style? : @style.Style) -> Self
+pub fn Chart::render_line(Self, Int32, @geom.Size) -> @strip.Strip
+pub fn Chart::set_datasets(Self, Array[Dataset]) -> Unit
+pub fn Chart::set_x(Self, Axis) -> Unit
+pub fn Chart::set_y(Self, Axis) -> Unit
+pub impl Widget for Chart
 
 pub struct Checkbox {
   mut label : String
@@ -102,6 +208,24 @@ pub fn Choice::new(String, disabled? : Bool) -> Self
 pub fn Choice::not_equal(Self, Self) -> Bool
 pub fn Choice::to_repr(Self) -> @debug.Repr
 
+pub(all) struct Clock {
+  mut hour : Int32
+  mut minute : Int32
+  mut second : Int32
+  mut carry : Int32
+} derive(Eq, @debug.Debug)
+pub fn Clock::advance(Self, Int32) -> Bool
+pub fn Clock::equal(Self, Self) -> Bool
+pub fn Clock::hour(Self) -> Int32
+pub fn Clock::minute(Self) -> Int32
+pub fn Clock::new(hour? : Int32, minute? : Int32, second? : Int32) -> Self
+pub fn Clock::not_equal(Self, Self) -> Bool
+pub fn Clock::second(Self) -> Int32
+pub fn Clock::seconds(Self) -> Int32
+pub fn Clock::set(Self, hour~ : Int32, minute~ : Int32, second~ : Int32) -> Unit
+pub fn Clock::text(Self) -> String
+pub fn Clock::to_repr(Self) -> @debug.Repr
+
 pub struct Collapsible {
   mut title : String
   mut collapsed : Bool
@@ -136,6 +260,61 @@ pub fn Column::equal(Self, Self) -> Bool
 pub fn Column::new(String, width? : Int32, align? : Align) -> Self
 pub fn Column::not_equal(Self, Self) -> Bool
 pub fn Column::to_repr(Self) -> @debug.Repr
+
+pub(all) struct Command {
+  name : String
+  hint : String
+  key : String
+} derive(Eq, @debug.Debug)
+pub fn Command::equal(Self, Self) -> Bool
+pub fn Command::new(String, hint? : String, key? : String) -> Self
+pub fn Command::not_equal(Self, Self) -> Bool
+pub fn Command::to_repr(Self) -> @debug.Repr
+
+pub struct CommandPalette {
+  commands : Array[Command]
+  mut query : String
+  mut highlighted : Int32
+  mut offset : Int32
+  mut seen : Int32
+  mut run : Int32
+  mut focused : Bool
+  style : @style.Style
+  hint_style : @style.Style
+  key_style : @style.Style
+  border_style : @style.Style
+  field_style : @style.Style
+  highlight : @style.Style
+  blurred_highlight : @style.Style
+}
+pub fn CommandPalette::add(Self, String, hint? : String, key? : String) -> Unit
+pub fn CommandPalette::commands(Self) -> Array[Command]
+pub fn CommandPalette::focusable(Self) -> Bool
+pub fn CommandPalette::handle(Self, Ctx, Msg) -> Bool
+pub fn CommandPalette::hint(Self, @geom.Size) -> @geom.Size
+pub fn CommandPalette::matches(Self) -> Array[Int32]
+pub fn CommandPalette::new(commands? : Array[Command], style? : @style.Style, hint_style? : @style.Style, key_style? : @style.Style, border_style? : @style.Style, field_style? : @style.Style, highlight? : @style.Style, blurred_highlight? : @style.Style) -> Self
+pub fn CommandPalette::query(Self) -> String
+pub fn CommandPalette::render_line(Self, Int32, @geom.Size) -> @strip.Strip
+pub fn CommandPalette::run(Self) -> Int32?
+pub fn CommandPalette::set_query(Self, String) -> Unit
+pub impl Widget for CommandPalette
+
+pub struct ContentSwitcher {
+  children : Array[&Widget]
+  mut current : Int32
+  mut focused : Bool
+}
+pub fn ContentSwitcher::add(Self, &Widget) -> Unit
+pub fn ContentSwitcher::count(Self) -> Int32
+pub fn ContentSwitcher::current(Self) -> Int32
+pub fn ContentSwitcher::focusable(Self) -> Bool
+pub fn ContentSwitcher::handle(Self, Ctx, Msg) -> Bool
+pub fn ContentSwitcher::hint(Self, @geom.Size) -> @geom.Size
+pub fn ContentSwitcher::new(children? : Array[&Widget], current? : Int32) -> Self
+pub fn ContentSwitcher::render_line(Self, Int32, @geom.Size) -> @strip.Strip
+pub fn ContentSwitcher::switch_to(Self, Int32) -> Unit
+pub impl Widget for ContentSwitcher
 
 pub struct Ctx {
   id : Int32
@@ -208,6 +387,29 @@ pub fn DataTable::sort(Self, Int32, reverse? : Bool) -> Unit
 pub fn DataTable::to_repr(Self) -> @debug.Repr
 pub impl Widget for DataTable
 
+pub(all) struct Dataset {
+  name : String
+  kind : GraphKind
+  points : Array[(Double, Double)]
+  style : @style.Style
+} derive(Eq, @debug.Debug)
+pub fn Dataset::equal(Self, Self) -> Bool
+pub fn Dataset::new(String, Array[(Double, Double)], kind? : GraphKind, style? : @style.Style) -> Self
+pub fn Dataset::not_equal(Self, Self) -> Bool
+pub fn Dataset::to_repr(Self) -> @debug.Repr
+
+pub(all) enum DialogKind {
+  Info
+  Question
+  Warning
+  Error
+} derive(Eq, @debug.Debug)
+pub fn DialogKind::equal(Self, Self) -> Bool
+pub fn DialogKind::mark(Self) -> String
+pub fn DialogKind::not_equal(Self, Self) -> Bool
+pub fn DialogKind::style(Self) -> @style.Style
+pub fn DialogKind::to_repr(Self) -> @debug.Repr
+
 pub struct Digits {
   mut value : String
   style : @style.Style
@@ -249,6 +451,69 @@ pub fn DirectoryTree::set_path(Self, String) -> Unit
 pub fn DirectoryTree::tree(Self) -> Tree
 pub impl Widget for DirectoryTree
 
+pub struct FileDialog {
+  mut title : String
+  mode : FileMode
+  mut path : String
+  mut entries : Array[FileEntry]
+  mut filter : String
+  mut name : String
+  mut highlighted : Int32
+  mut offset : Int32
+  mut seen : Int32
+  mut follow : Bool
+  mut answered : Int32
+  mut focused : Bool
+  style : @style.Style
+  border_style : @style.Style
+  title_style : @style.Style
+  dir_style : @style.Style
+  size_style : @style.Style
+  highlight : @style.Style
+  blurred_highlight : @style.Style
+  field_style : @style.Style
+}
+pub fn FileDialog::buttons(Self) -> Array[String]
+pub fn FileDialog::chosen(Self) -> Int32?
+pub fn FileDialog::filter(Self) -> String
+pub fn FileDialog::focusable(Self) -> Bool
+pub fn FileDialog::handle(Self, Ctx, Msg) -> Bool
+pub fn FileDialog::hint(Self, @geom.Size) -> @geom.Size
+pub fn FileDialog::is_answered(Self) -> Bool
+pub fn FileDialog::name(Self) -> String
+pub fn FileDialog::new(title? : String, path? : String, entries? : Array[FileEntry], mode? : FileMode, filter? : String, name? : String, style? : @style.Style, border_style? : @style.Style, title_style? : @style.Style, dir_style? : @style.Style, size_style? : @style.Style, highlight? : @style.Style, blurred_highlight? : @style.Style, field_style? : @style.Style) -> Self
+pub fn FileDialog::path(Self) -> String
+pub fn FileDialog::render_line(Self, Int32, @geom.Size) -> @strip.Strip
+pub fn FileDialog::selected(Self) -> FileEntry?
+pub fn FileDialog::set_entries(Self, Array[FileEntry]) -> Unit
+pub fn FileDialog::set_filter(Self, String) -> Unit
+pub fn FileDialog::set_name(Self, String) -> Unit
+pub fn FileDialog::set_path(Self, String) -> Unit
+pub fn FileDialog::set_title(Self, String) -> Unit
+pub fn FileDialog::title(Self) -> String
+pub fn FileDialog::value(Self) -> String
+pub impl Widget for FileDialog
+
+pub(all) struct FileEntry {
+  name : String
+  dir : Bool
+  size : Int32
+} derive(Eq, @debug.Debug)
+pub fn FileEntry::equal(Self, Self) -> Bool
+pub fn FileEntry::is_dir(Self) -> Bool
+pub fn FileEntry::new(String, dir? : Bool, size? : Int32) -> Self
+pub fn FileEntry::not_equal(Self, Self) -> Bool
+pub fn FileEntry::to_repr(Self) -> @debug.Repr
+
+pub(all) enum FileMode {
+  Open
+  Save
+} derive(Eq, @debug.Debug)
+pub fn FileMode::confirm(Self) -> String
+pub fn FileMode::equal(Self, Self) -> Bool
+pub fn FileMode::not_equal(Self, Self) -> Bool
+pub fn FileMode::to_repr(Self) -> @debug.Repr
+
 pub struct Footer {
   mut bindings : Array[(String, String)]
   style : @style.Style
@@ -262,18 +527,49 @@ pub fn Footer::render_line(Self, Int32, @geom.Size) -> @strip.Strip
 pub fn Footer::set(Self, Array[(String, String)]) -> Unit
 pub impl Widget for Footer
 
+pub struct Gauge {
+  mut ratio : Double
+  mut label : String
+  style : @style.Style
+  bar_style : @style.Style
+  rest_style : @style.Style
+}
+pub fn Gauge::focusable(Self) -> Bool
+pub fn Gauge::handle(Self, Ctx, Msg) -> Bool
+pub fn Gauge::hint(Self, @geom.Size) -> @geom.Size
+pub fn Gauge::label(Self) -> String
+pub fn Gauge::new(ratio? : Double, label? : String, style? : @style.Style, bar_style? : @style.Style, rest_style? : @style.Style) -> Self
+pub fn Gauge::percent(Self) -> Int32
+pub fn Gauge::ratio(Self) -> Double
+pub fn Gauge::render_line(Self, Int32, @geom.Size) -> @strip.Strip
+pub fn Gauge::set_label(Self, String) -> Unit
+pub fn Gauge::set_ratio(Self, Double) -> Unit
+pub impl Widget for Gauge
+
+pub(all) enum GraphKind {
+  Line
+  Scatter
+} derive(Eq, @debug.Debug)
+pub fn GraphKind::equal(Self, Self) -> Bool
+pub fn GraphKind::marker(Self) -> String
+pub fn GraphKind::not_equal(Self, Self) -> Bool
+pub fn GraphKind::to_repr(Self) -> @debug.Repr
+
 pub struct Header {
   mut title : String
   mut note : String
+  mut clock : Clock?
   style : @style.Style
 }
 pub fn Header::focusable(Self) -> Bool
 pub fn Header::handle(Self, Ctx, Msg) -> Bool
 pub fn Header::hint(Self, @geom.Size) -> @geom.Size
-pub fn Header::new(String, note? : String, style? : @style.Style) -> Self
+pub fn Header::new(String, note? : String, clock? : Clock?, style? : @style.Style) -> Self
 pub fn Header::render_line(Self, Int32, @geom.Size) -> @strip.Strip
 pub fn Header::set(Self, String) -> Unit
+pub fn Header::set_clock(Self, Clock?) -> Unit
 pub fn Header::set_note(Self, String) -> Unit
+pub fn Header::time(Self) -> String?
 pub impl Widget for Header
 
 pub struct Input {
@@ -299,6 +595,89 @@ pub fn Input::render_line(Self, Int32, @geom.Size) -> @strip.Strip
 pub fn Input::set(Self, String) -> Unit
 pub fn Input::text(Self) -> String
 pub impl Widget for Input
+
+pub struct InputBox {
+  mut title : String
+  mut prompt : String
+  field : Input
+  buttons : Array[String]
+  mut highlighted : Int32
+  mut answered : Int32
+  style : @style.Style
+  border_style : @style.Style
+  title_style : @style.Style
+  highlight : @style.Style
+}
+pub fn InputBox::chosen(Self) -> Int32?
+pub fn InputBox::focusable(Self) -> Bool
+pub fn InputBox::handle(Self, Ctx, Msg) -> Bool
+pub fn InputBox::hint(Self, @geom.Size) -> @geom.Size
+pub fn InputBox::is_answered(Self) -> Bool
+pub fn InputBox::label(Self) -> String?
+pub fn InputBox::new(title? : String, prompt? : String, value? : String, buttons? : Array[String], style? : @style.Style, border_style? : @style.Style, title_style? : @style.Style, highlight? : @style.Style) -> Self
+pub fn InputBox::render_line(Self, Int32, @geom.Size) -> @strip.Strip
+pub fn InputBox::set(Self, String) -> Unit
+pub fn InputBox::set_prompt(Self, String) -> Unit
+pub fn InputBox::set_title(Self, String) -> Unit
+pub fn InputBox::text(Self) -> String
+pub impl Widget for InputBox
+
+pub(all) struct Item {
+  label : String
+  shortcut : String
+  checked : Bool
+  enabled : Bool
+  rule : Bool
+} derive(Eq, @debug.Debug)
+pub fn Item::equal(Self, Self) -> Bool
+pub fn Item::is_enabled(Self) -> Bool
+pub fn Item::is_separator(Self) -> Bool
+pub fn Item::new(String, shortcut? : String, checked? : Bool, enabled? : Bool) -> Self
+pub fn Item::not_equal(Self, Self) -> Bool
+pub fn Item::separator() -> Self
+pub fn Item::to_repr(Self) -> @debug.Repr
+
+pub struct Link {
+  mut text : String
+  mut target : String
+  mut visited : Bool
+  mut focused : Bool
+  style : @style.Style
+  visited_style : @style.Style
+  focus_style : @style.Style
+}
+pub fn Link::focusable(Self) -> Bool
+pub fn Link::handle(Self, Ctx, Msg) -> Bool
+pub fn Link::hint(Self, @geom.Size) -> @geom.Size
+pub fn Link::is_visited(Self) -> Bool
+pub fn Link::new(String, target? : String, style? : @style.Style, visited_style? : @style.Style, focus_style? : @style.Style) -> Self
+pub fn Link::render_line(Self, Int32, @geom.Size) -> @strip.Strip
+pub fn Link::set(Self, String) -> Unit
+pub fn Link::set_target(Self, String) -> Unit
+pub fn Link::target(Self) -> String
+pub fn Link::text(Self) -> String
+pub fn Link::visit(Self, visited? : Bool) -> Unit
+pub impl Widget for Link
+
+pub(all) struct ListState {
+  mut selected : Int32
+  mut offset : Int32
+  mut seen : Int32
+  mut followed : Bool
+} derive(Eq, @debug.Debug)
+pub fn ListState::clear(Self) -> Unit
+pub fn ListState::equal(Self, Self) -> Bool
+pub fn ListState::follow(Self, Int32, Int32) -> Unit
+pub fn ListState::is_set(Self) -> Bool
+pub fn ListState::move_by(Self, Int32, Int32) -> Bool
+pub fn ListState::new(selected? : Int32, offset? : Int32) -> Self
+pub fn ListState::not_equal(Self, Self) -> Bool
+pub fn ListState::offset(Self) -> Int32
+pub fn ListState::scroll_by(Self, Int32, Int32) -> Bool
+pub fn ListState::seen(Self) -> Int32
+pub fn ListState::select(Self, Int32, Int32) -> Bool
+pub fn ListState::selected(Self) -> Int32
+pub fn ListState::to_repr(Self) -> @debug.Repr
 
 pub struct ListView {
   mut items : Array[String]
@@ -393,6 +772,104 @@ pub fn Markdown::to_repr(Self) -> @debug.Repr
 pub fn Markdown::update(Self, String) -> Unit
 pub impl Widget for Markdown
 
+pub struct MaskedInput {
+  mask : String
+  filled : Array[String]
+  mut at : Int32
+  mut focused : Bool
+  placeholder : String
+  style : @style.Style
+  literal_style : @style.Style
+  cursor_style : @style.Style
+}
+pub fn MaskedInput::clear(Self) -> Unit
+pub fn MaskedInput::cursor(Self) -> Int32
+pub fn MaskedInput::focusable(Self) -> Bool
+pub fn MaskedInput::handle(Self, Ctx, Msg) -> Bool
+pub fn MaskedInput::hint(Self, @geom.Size) -> @geom.Size
+pub fn MaskedInput::is_complete(Self) -> Bool
+pub fn MaskedInput::new(String, placeholder? : String, style? : @style.Style, literal_style? : @style.Style, cursor_style? : @style.Style) -> Self
+pub fn MaskedInput::render_line(Self, Int32, @geom.Size) -> @strip.Strip
+pub fn MaskedInput::set(Self, String) -> Unit
+pub fn MaskedInput::text(Self) -> String
+pub fn MaskedInput::values(Self) -> Array[String]
+pub impl Widget for MaskedInput
+
+pub struct Menu {
+  mut items : Array[Item]
+  mut highlighted : Int32
+  mut taken : Int32
+  mut focused : Bool
+  style : @style.Style
+  dim_style : @style.Style
+  shortcut_style : @style.Style
+  border_style : @style.Style
+  highlight : @style.Style
+  blurred_highlight : @style.Style
+}
+pub fn Menu::focusable(Self) -> Bool
+pub fn Menu::handle(Self, Ctx, Msg) -> Bool
+pub fn Menu::highlighted(Self) -> Int32
+pub fn Menu::hint(Self, @geom.Size) -> @geom.Size
+pub fn Menu::items(Self) -> Array[Item]
+pub fn Menu::new(items? : Array[Item], style? : @style.Style, dim_style? : @style.Style, shortcut_style? : @style.Style, border_style? : @style.Style, highlight? : @style.Style, blurred_highlight? : @style.Style) -> Self
+pub fn Menu::render_line(Self, Int32, @geom.Size) -> @strip.Strip
+pub fn Menu::set_items(Self, Array[Item]) -> Unit
+pub fn Menu::taken(Self) -> Int32?
+pub fn Menu::width_of(Self) -> Int32
+pub impl Widget for Menu
+
+pub struct MenuBar {
+  titles : Array[String]
+  menus : Array[Menu]
+  mut at : Int32
+  mut open : Int32
+  mut picked : (Int32, Int32)?
+  mut focused : Bool
+  style : @style.Style
+  bar_style : @style.Style
+  highlight : @style.Style
+  open_style : @style.Style
+}
+pub fn MenuBar::add(Self, String, Array[Item]) -> Unit
+pub fn MenuBar::close(Self) -> Unit
+pub fn MenuBar::focusable(Self) -> Bool
+pub fn MenuBar::handle(Self, Ctx, Msg) -> Bool
+pub fn MenuBar::hint(Self, @geom.Size) -> @geom.Size
+pub fn MenuBar::is_open(Self) -> Bool
+pub fn MenuBar::new(style? : @style.Style, bar_style? : @style.Style, highlight? : @style.Style, open_style? : @style.Style) -> Self
+pub fn MenuBar::opened(Self) -> Int32
+pub fn MenuBar::render_line(Self, Int32, @geom.Size) -> @strip.Strip
+pub fn MenuBar::taken(Self) -> (Int32, Int32)?
+pub fn MenuBar::titles(Self) -> Array[String]
+pub impl Widget for MenuBar
+
+pub struct MessageBox {
+  mut title : String
+  mut message : String
+  kind : DialogKind
+  buttons : Array[String]
+  mut highlighted : Int32
+  mut answered : Int32
+  mut focused : Bool
+  style : @style.Style
+  border_style : @style.Style
+  title_style : @style.Style
+  highlight : @style.Style
+}
+pub fn MessageBox::chosen(Self) -> Int32?
+pub fn MessageBox::focusable(Self) -> Bool
+pub fn MessageBox::handle(Self, Ctx, Msg) -> Bool
+pub fn MessageBox::highlighted(Self) -> Int32
+pub fn MessageBox::hint(Self, @geom.Size) -> @geom.Size
+pub fn MessageBox::is_answered(Self) -> Bool
+pub fn MessageBox::label(Self) -> String?
+pub fn MessageBox::new(title? : String, message? : String, kind? : DialogKind, buttons? : Array[String], style? : @style.Style, border_style? : @style.Style, title_style? : @style.Style, highlight? : @style.Style) -> Self
+pub fn MessageBox::render_line(Self, Int32, @geom.Size) -> @strip.Strip
+pub fn MessageBox::set_message(Self, String) -> Unit
+pub fn MessageBox::set_title(Self, String) -> Unit
+pub impl Widget for MessageBox
+
 pub(all) enum Msg {
   Key(@event.Key)
   Mouse(@event.Mouse)
@@ -444,6 +921,7 @@ pub(all) enum Out {
   Changed(id~ : Int32, value~ : String)
   Submitted(id~ : Int32, value~ : String)
   Selected(id~ : Int32, index~ : Int32)
+  MenuPicked(id~ : Int32, menu~ : Int32, index~ : Int32)
   Scrolled(id~ : Int32, x~ : Int32, y~ : Int32)
   Focused(id~ : Int32)
   Blurred(id~ : Int32)
@@ -486,6 +964,28 @@ pub(all) enum PlaceholderVariant {
 pub fn PlaceholderVariant::equal(Self, Self) -> Bool
 pub fn PlaceholderVariant::not_equal(Self, Self) -> Bool
 pub fn PlaceholderVariant::to_repr(Self) -> @debug.Repr
+
+pub struct Pretty {
+  mut value : Value
+  mut offset : Int32
+  mut focused : Bool
+  indent : Int32
+  style : @style.Style
+  key_style : @style.Style
+  text_style : @style.Style
+  number_style : @style.Style
+  punct_style : @style.Style
+}
+pub fn Pretty::focusable(Self) -> Bool
+pub fn Pretty::handle(Self, Ctx, Msg) -> Bool
+pub fn Pretty::hint(Self, @geom.Size) -> @geom.Size
+pub fn Pretty::lines(Self, Int32) -> Array[Array[@strip.Seg]]
+pub fn Pretty::new(value? : Value, indent? : Int32, style? : @style.Style, key_style? : @style.Style, text_style? : @style.Style, number_style? : @style.Style, punct_style? : @style.Style) -> Self
+pub fn Pretty::offset(Self) -> Int32
+pub fn Pretty::render_line(Self, Int32, @geom.Size) -> @strip.Strip
+pub fn Pretty::set(Self, Value) -> Unit
+pub fn Pretty::value(Self) -> Value
+pub impl Widget for Pretty
 
 pub struct Progress {
   mut value : Int32
@@ -634,6 +1134,30 @@ pub fn RuleKind::equal(Self, Self) -> Bool
 pub fn RuleKind::not_equal(Self, Self) -> Bool
 pub fn RuleKind::to_repr(Self) -> @debug.Repr
 
+pub struct Scrollbar {
+  mut position : Int32
+  mut content : Int32
+  mut viewport : Int32
+  vertical : Bool
+  style : @style.Style
+  thumb_style : @style.Style
+  track_style : @style.Style
+}
+pub fn Scrollbar::content(Self) -> Int32
+pub fn Scrollbar::focusable(Self) -> Bool
+pub fn Scrollbar::handle(Self, Ctx, Msg) -> Bool
+pub fn Scrollbar::hint(Self, @geom.Size) -> @geom.Size
+pub fn Scrollbar::is_needed(Self) -> Bool
+pub fn Scrollbar::is_vertical(Self) -> Bool
+pub fn Scrollbar::max(Self) -> Int32
+pub fn Scrollbar::new(content? : Int32, viewport? : Int32, position? : Int32, vertical? : Bool, style? : @style.Style, thumb_style? : @style.Style, track_style? : @style.Style) -> Self
+pub fn Scrollbar::position(Self) -> Int32
+pub fn Scrollbar::render_line(Self, Int32, @geom.Size) -> @strip.Strip
+pub fn Scrollbar::set(Self, content~ : Int32, viewport~ : Int32, position~ : Int32) -> Unit
+pub fn Scrollbar::thumb(Self, Int32) -> (Int32, Int32)
+pub fn Scrollbar::viewport(Self) -> Int32
+pub impl Widget for Scrollbar
+
 pub struct Select {
   options : Array[(String, String)]
   prompt : String
@@ -714,6 +1238,19 @@ pub fn SelectionList::toggle(Self, Int32) -> Unit
 pub fn SelectionList::toggle_all(Self) -> Unit
 pub impl Widget for SelectionList
 
+pub(all) enum Slot {
+  Digit
+  Letter
+  Either
+  Any
+} derive(Eq, @debug.Debug)
+pub fn Slot::equal(Self, Self) -> Bool
+pub fn Slot::glyph(Self) -> String
+pub fn Slot::not_equal(Self, Self) -> Bool
+pub fn Slot::of(String) -> Self?
+pub fn Slot::takes(Self, String) -> Bool
+pub fn Slot::to_repr(Self) -> @debug.Repr
+
 type Snap
 
 pub struct Sparkline {
@@ -734,6 +1271,48 @@ pub fn Sparkline::render_line(Self, Int32, @geom.Size) -> @strip.Strip
 pub fn Sparkline::set(Self, Array[Double]) -> Unit
 pub fn Sparkline::to_repr(Self) -> @debug.Repr
 pub impl Widget for Sparkline
+
+pub struct StatefulList {
+  mut items : Array[String]
+  state : ListState
+  mut focused : Bool
+  style : @style.Style
+  highlight : @style.Style
+  blurred_highlight : @style.Style
+}
+pub fn StatefulList::focusable(Self) -> Bool
+pub fn StatefulList::handle(Self, Ctx, Msg) -> Bool
+pub fn StatefulList::hint(Self, @geom.Size) -> @geom.Size
+pub fn StatefulList::items(Self) -> Array[String]
+pub fn StatefulList::new(items? : Array[String], state? : ListState, style? : @style.Style, highlight? : @style.Style, blurred_highlight? : @style.Style) -> Self
+pub fn StatefulList::render_line(Self, Int32, @geom.Size) -> @strip.Strip
+pub fn StatefulList::set_items(Self, Array[String]) -> Unit
+pub fn StatefulList::state(Self) -> ListState
+pub impl Widget for StatefulList
+
+pub struct StatefulTable {
+  mut header : Array[String]
+  mut rows : Array[Array[String]]
+  state : TableState
+  widths : Array[Int32]?
+  mut focused : Bool
+  style : @style.Style
+  header_style : @style.Style
+  highlight : @style.Style
+  blurred_highlight : @style.Style
+  column_highlight : @style.Style
+}
+pub fn StatefulTable::columns(Self) -> Int32
+pub fn StatefulTable::focusable(Self) -> Bool
+pub fn StatefulTable::handle(Self, Ctx, Msg) -> Bool
+pub fn StatefulTable::hint(Self, @geom.Size) -> @geom.Size
+pub fn StatefulTable::new(rows? : Array[Array[String]], header? : Array[String], state? : TableState, widths? : Array[Int32]?, style? : @style.Style, header_style? : @style.Style, highlight? : @style.Style, blurred_highlight? : @style.Style, column_highlight? : @style.Style) -> Self
+pub fn StatefulTable::render_line(Self, Int32, @geom.Size) -> @strip.Strip
+pub fn StatefulTable::rows(Self) -> Array[Array[String]]
+pub fn StatefulTable::set_header(Self, Array[String]) -> Unit
+pub fn StatefulTable::set_rows(Self, Array[Array[String]]) -> Unit
+pub fn StatefulTable::state(Self) -> TableState
+pub impl Widget for StatefulTable
 
 pub struct Static {
   mut lines : Array[String]
@@ -795,6 +1374,27 @@ pub fn TabbedContent::new(labels? : Array[String], panes? : Array[&Widget], acti
 pub fn TabbedContent::render_line(Self, Int32, @geom.Size) -> @strip.Strip
 pub fn TabbedContent::set_disabled(Self, Int32, Bool) -> Unit
 pub impl Widget for TabbedContent
+
+pub(all) struct TableState {
+  mut row : Int32
+  mut column : Int32
+  mut offset : Int32
+  mut seen : Int32
+  mut followed : Bool
+} derive(Eq, @debug.Debug)
+pub fn TableState::clear(Self) -> Unit
+pub fn TableState::column(Self) -> Int32
+pub fn TableState::equal(Self, Self) -> Bool
+pub fn TableState::follow(Self, Int32, Int32) -> Unit
+pub fn TableState::is_set(Self) -> Bool
+pub fn TableState::move_by(Self, Int32, Int32, Int32, Int32) -> Bool
+pub fn TableState::new(row? : Int32, column? : Int32, offset? : Int32) -> Self
+pub fn TableState::not_equal(Self, Self) -> Bool
+pub fn TableState::offset(Self) -> Int32
+pub fn TableState::row(Self) -> Int32
+pub fn TableState::scroll_by(Self, Int32, Int32) -> Bool
+pub fn TableState::select(Self, Int32, Int32, Int32, Int32) -> Bool
+pub fn TableState::to_repr(Self) -> @debug.Repr
 
 pub struct Tabs {
   mut labels : Array[String]
@@ -994,6 +1594,20 @@ pub fn TreeNode::label(Self) -> String
 pub fn TreeNode::new(label~ : String, data? : String, expand? : Bool, allow_expand? : Bool, parent? : Int32) -> Self
 pub fn TreeNode::not_equal(Self, Self) -> Bool
 pub fn TreeNode::to_repr(Self) -> @debug.Repr
+
+pub(all) enum Value {
+  VNil
+  VBool(Bool)
+  VInt(Int32)
+  VNum(Double)
+  VStr(String)
+  VArr(Array[Value])
+  VObj(Array[(String, Value)])
+} derive(Eq, @debug.Debug)
+pub fn Value::equal(Self, Self) -> Bool
+pub fn Value::not_equal(Self, Self) -> Bool
+pub fn Value::summary(Self) -> String
+pub fn Value::to_repr(Self) -> @debug.Repr
 
 // Type aliases
 

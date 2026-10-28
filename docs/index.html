@@ -274,6 +274,40 @@ w.handle(ctx, @widget.Msg::Key(@event.Key::of(Enter)))
   <span class="fn">@layout.</span>Box::new(extent=Cells(n))
 }</pre>
   </div>
+  <div class="wcard" id="demo-clock">
+    <h4><code class="inline">Clock</code></h4>
+    <p class="wdesc">A time of day that runs off the same tick every widget sees, so a header can keep one without a clock of the host&#x27;s.</p>
+    <div class="wlive"><canvas id="live-clock" data-demo="Clock" tabindex="0" style="height: 36px"></canvas></div>
+    <div class="wmsg" data-for="live-clock"></div>
+    <pre class="block wcode"><span class="kw">pub</span> <span class="kw">fn</span> clock() -&gt; Demo {
+  <span class="kw">let</span> bar = <span class="fn">@widget.</span>Header::new(
+    <span class="st">&quot;moonetui&quot;</span>,
+    note=<span class="st">&quot;0.4.0&quot;</span>,
+    clock=Some(<span class="fn">@widget.</span>Clock::new(hour=9, minute=41, second=26)),
+  )
+  Demo::new(
+    <span class="st">&quot;Clock&quot;</span>,
+    <span class="fn">@app.</span>column(0, [
+      <span class="fn">@app.</span>leaf(1, bar, box=line(1)),
+      <span class="fn">@app.</span>leaf(
+        2,
+        <span class="fn">@widget.</span>label(
+          <span class="st">&quot;The bar&#x27;s clock counts itself forward from every frame.&quot;</span>,
+          style=<span class="fn">@style.</span>Style::new(dim=<span class="kw">true</span>),
+        ),
+        box=line(1),
+      ),
+    ]),
+    group=Text,
+    note=<span class="st">&quot;A time of day that runs off the same tick every widget sees, so a header can keep one without a clock of the host&#x27;s.&quot;</span>,
+    rows=2,
+  )
+}
+
+<span class="kw">fn</span> line(n : Int32) -&gt; <span class="fn">@layout.</span>Box {
+  <span class="fn">@layout.</span>Box::new(extent=Cells(n))
+}</pre>
+  </div>
   <div class="wcard" id="demo-footer">
     <h4><code class="inline">Footer</code></h4>
     <p class="wdesc">Key hints along the bottom edge, as many as the width holds.</p>
@@ -292,6 +326,33 @@ w.handle(ctx, @widget.Msg::Key(@event.Key::of(Enter)))
     group=Text,
     note=<span class="st">&quot;Key hints along the bottom edge, as many as the width holds.&quot;</span>,
     rows=1,
+  )
+}
+
+<span class="kw">fn</span> line(n : Int32) -&gt; <span class="fn">@layout.</span>Box {
+  <span class="fn">@layout.</span>Box::new(extent=Cells(n))
+}</pre>
+  </div>
+  <div class="wcard" id="demo-link">
+    <h4><code class="inline">Link</code></h4>
+    <p class="wdesc">Words that go somewhere: underlined, taken by Enter or by a click, and dimmed once they have been.</p>
+    <div class="wlive"><canvas id="live-link" data-demo="Link" tabindex="0" style="height: 36px"></canvas></div>
+    <div class="wmsg" data-for="live-link"></div>
+    <pre class="block wcode"><span class="kw">pub</span> <span class="kw">fn</span> link() -&gt; Demo {
+  <span class="kw">let</span> guide = <span class="fn">@widget.</span>Link::new(
+    <span class="st">&quot;The MoonBit guide&quot;</span>,
+    target=<span class="st">&quot;https://docs.moonbitlang.com&quot;</span>,
+  )
+  <span class="kw">let</span> mooncakes = <span class="fn">@widget.</span>Link::new(<span class="st">&quot;mooncakes.io&quot;</span>)
+  Demo::new(
+    <span class="st">&quot;Link&quot;</span>,
+    <span class="fn">@app.</span>column(0, [
+      <span class="fn">@app.</span>leaf(1, guide, box=line(1)),
+      <span class="fn">@app.</span>leaf(2, mooncakes, box=line(1)),
+    ]),
+    group=Text,
+    note=<span class="st">&quot;Words that go somewhere: underlined, taken by Enter or by a click, and dimmed once they have been.&quot;</span>,
+    rows=2,
   )
 }
 
@@ -464,6 +525,34 @@ w.handle(ctx, @widget.Msg::Key(@event.Key::of(Enter)))
   )
 }</pre>
   </div>
+  <div class="wcard" id="demo-pretty">
+    <h4><code class="inline">Pretty</code></h4>
+    <p class="wdesc">A value printed the way it reads: laid out with an indent, coloured by what each part is, on one line when it fits.</p>
+    <div class="wlive"><canvas id="live-pretty" data-demo="Pretty" tabindex="0" style="height: 180px"></canvas></div>
+    <div class="wmsg" data-for="live-pretty"></div>
+    <pre class="block wcode"><span class="kw">pub</span> <span class="kw">fn</span> pretty() -&gt; Demo {
+  <span class="kw">let</span> pretty = <span class="fn">@widget.</span>Pretty::new(
+    value=VObj([
+      (<span class="st">&quot;name&quot;</span>, VStr(<span class="st">&quot;moonetui&quot;</span>)),
+      (<span class="st">&quot;version&quot;</span>, VStr(<span class="st">&quot;0.4.0&quot;</span>)),
+      (<span class="st">&quot;widgets&quot;</span>, VInt(48)),
+      (<span class="st">&quot;colours&quot;</span>, VArr([VStr(<span class="st">&quot;ansi&quot;</span>), VStr(<span class="st">&quot;256&quot;</span>), VStr(<span class="st">&quot;24-bit&quot;</span>)])),
+      (<span class="st">&quot;unicode&quot;</span>, VBool(<span class="kw">true</span>)),
+    ]),
+  )
+  Demo::new(
+    <span class="st">&quot;Pretty&quot;</span>,
+    <span class="fn">@app.</span>column(0, [<span class="fn">@app.</span>leaf(1, pretty, box=line(10))]),
+    group=Text,
+    note=<span class="st">&quot;A value printed the way it reads: laid out with an indent, coloured by what each part is, on one line when it fits.&quot;</span>,
+    rows=10,
+  )
+}
+
+<span class="kw">fn</span> line(n : Int32) -&gt; <span class="fn">@layout.</span>Box {
+  <span class="fn">@layout.</span>Box::new(extent=Cells(n))
+}</pre>
+  </div>
   <h3>Entry and logs</h3>
   <div class="wcard" id="demo-input">
     <h4><code class="inline">Input</code></h4>
@@ -483,6 +572,32 @@ w.handle(ctx, @widget.Msg::Key(@event.Key::of(Enter)))
     ]),
     group=Entry,
     note=<span class="st">&quot;A single-line field with Textual&#x27;s keys; a password field shows dots.&quot;</span>,
+    rows=3,
+  )
+}
+
+<span class="kw">fn</span> line(n : Int32) -&gt; <span class="fn">@layout.</span>Box {
+  <span class="fn">@layout.</span>Box::new(extent=Cells(n))
+}</pre>
+  </div>
+  <div class="wcard" id="demo-maskedinput">
+    <h4><code class="inline">MaskedInput</code></h4>
+    <p class="wdesc">A field ruled by a template: # a digit, A a letter, ? either, * anything, and the rest written as it is.</p>
+    <div class="wlive"><canvas id="live-maskedinput" data-demo="MaskedInput" tabindex="0" style="height: 54px"></canvas></div>
+    <div class="wmsg" data-for="live-maskedinput"></div>
+    <pre class="block wcode"><span class="kw">pub</span> <span class="kw">fn</span> masked_input() -&gt; Demo {
+  <span class="kw">let</span> phone = <span class="fn">@widget.</span>MaskedInput::new(<span class="st">&quot;(###) ###-####&quot;</span>)
+  <span class="kw">let</span> date = <span class="fn">@widget.</span>MaskedInput::new(<span class="st">&quot;####-##-##&quot;</span>)
+  <span class="kw">let</span> key = <span class="fn">@widget.</span>MaskedInput::new(<span class="st">&quot;????-????&quot;</span>, placeholder=<span class="st">&quot;·&quot;</span>)
+  Demo::new(
+    <span class="st">&quot;MaskedInput&quot;</span>,
+    <span class="fn">@app.</span>column(0, [
+      <span class="fn">@app.</span>leaf(1, phone, box=line(1)),
+      <span class="fn">@app.</span>leaf(2, date, box=line(1)),
+      <span class="fn">@app.</span>leaf(3, key, box=line(1)),
+    ]),
+    group=Entry,
+    note=<span class="st">&quot;A field ruled by a template: # a digit, A a letter, ? either, * anything, and the rest written as it is.&quot;</span>,
     rows=3,
   )
 }
@@ -790,6 +905,79 @@ w.handle(ctx, @widget.Msg::Key(@event.Key::of(Enter)))
   )
 }</pre>
   </div>
+  <div class="wcard" id="demo-contentswitcher">
+    <h4><code class="inline">ContentSwitcher</code></h4>
+    <p class="wdesc">One of several widgets in the same place: the one showing is drawn, measured and given the input.</p>
+    <div class="wlive"><canvas id="live-contentswitcher" data-demo="ContentSwitcher" tabindex="0" style="height: 54px"></canvas></div>
+    <div class="wmsg" data-for="live-contentswitcher"></div>
+    <pre class="block wcode"><span class="kw">pub</span> <span class="kw">fn</span> content_switcher() -&gt; Demo {
+  <span class="kw">let</span> first = <span class="fn">@widget.</span>Static::new(<span class="st">&quot;The first thing the space holds.&quot;</span>)
+  <span class="kw">let</span> second = <span class="fn">@widget.</span>Button::new(<span class="st">&quot;Take the second&quot;</span>)
+  <span class="kw">let</span> switcher = <span class="fn">@widget.</span>ContentSwitcher::new(children=[first, second])
+  switcher.switch_to(0)
+  Demo::new(
+    <span class="st">&quot;ContentSwitcher&quot;</span>,
+    <span class="fn">@app.</span>column(0, [
+      <span class="fn">@app.</span>leaf(1, switcher, box=line(1)),
+      <span class="fn">@app.</span>leaf(
+        2,
+        <span class="fn">@widget.</span>label(
+          <span class="st">&quot;One of several in the same place; the host calls switch_to.&quot;</span>,
+          style=<span class="fn">@style.</span>Style::new(dim=<span class="kw">true</span>),
+        ),
+        box=line(1),
+      ),
+      <span class="fn">@app.</span>leaf(3, <span class="fn">@widget.</span>Button::new(<span class="st">&quot;Switch&quot;</span>), box=line(1)),
+    ]),
+    group=Navigation,
+    note=<span class="st">&quot;One of several widgets in the same place: the one showing is drawn, measured and given the input.&quot;</span>,
+    rows=3,
+  )
+}
+
+<span class="kw">fn</span> line(n : Int32) -&gt; <span class="fn">@layout.</span>Box {
+  <span class="fn">@layout.</span>Box::new(extent=Cells(n))
+}</pre>
+  </div>
+  <div class="wcard" id="demo-block">
+    <h4><code class="inline">Block</code></h4>
+    <p class="wdesc">A frame, a title and padding around any other widget, which is drawn and driven at the size left for it.</p>
+    <div class="wlive"><canvas id="live-block" data-demo="Block" tabindex="0" style="height: 90px"></canvas></div>
+    <div class="wmsg" data-for="live-block"></div>
+    <pre class="block wcode"><span class="kw">pub</span> <span class="kw">fn</span> block() -&gt; Demo {
+  <span class="kw">let</span> framed = <span class="fn">@widget.</span>Block::new(
+    <span class="fn">@widget.</span>Static::new(<span class="st">&quot;Any widget goes inside.&quot;</span>),
+    title=<span class="st">&quot;Wrapped&quot;</span>,
+    border=Some(<span class="fn">@widget.</span>round),
+    padding=<span class="fn">@geom.</span>Spacing::all(1),
+  )
+  <span class="kw">let</span> padded = <span class="fn">@widget.</span>Block::new(
+    <span class="fn">@widget.</span>Static::new(<span class="st">&quot;Padding alone.&quot;</span>, align=Centre),
+    border=None,
+    padding=<span class="fn">@geom.</span>Spacing::all(1),
+    style=<span class="fn">@style.</span>Style::new(bg=<span class="fn">@style.</span>blue),
+  )
+  Demo::new(
+    <span class="st">&quot;Block&quot;</span>,
+    <span class="fn">@app.</span>row(
+      0,
+      [
+        <span class="fn">@app.</span>leaf(
+          1,
+          framed,
+          box=<span class="fn">@layout.</span>Box::new(extent=Frac(1)),
+          styles=<span class="fn">@design.</span>Styles::new(border=<span class="fn">@design.</span>Off),
+        ),
+        <span class="fn">@app.</span>leaf(2, padded, box=<span class="fn">@layout.</span>Box::new(extent=Frac(1))),
+      ],
+      gap=1,
+    ),
+    group=Navigation,
+    note=<span class="st">&quot;A frame, a title and padding around any other widget, which is drawn and driven at the size left for it.&quot;</span>,
+    rows=5,
+  )
+}</pre>
+  </div>
   <div class="wcard" id="demo-tree">
     <h4><code class="inline">Tree</code></h4>
     <p class="wdesc">Nodes with guides; Enter selects, Space folds, Shift and an arrow walk the family.</p>
@@ -929,6 +1117,340 @@ w.handle(ctx, @widget.Msg::Key(@event.Key::of(Enter)))
     note=<span class="st">&quot;A notice with a coloured bar for its level; it expires on its own or on a click.&quot;</span>,
     rows=4,
   )
+}</pre>
+  </div>
+  <h3>Dialogs, menus and commands</h3>
+  <div class="wcard" id="demo-messagebox">
+    <h4><code class="inline">MessageBox</code></h4>
+    <p class="wdesc">A question or a notice with a row of buttons: the arrows move, Enter takes, Escape closes.</p>
+    <div class="wlive"><canvas id="live-messagebox" data-demo="MessageBox" tabindex="0" style="height: 126px"></canvas></div>
+    <div class="wmsg" data-for="live-messagebox"></div>
+    <pre class="block wcode"><span class="kw">pub</span> <span class="kw">fn</span> message_box() -&gt; Demo {
+  <span class="kw">let</span> ask = <span class="fn">@widget.</span>MessageBox::new(
+    title=<span class="st">&quot;Quit&quot;</span>,
+    message=<span class="st">&quot;The buffer has changes that were never saved. Discard them?&quot;</span>,
+    kind=Question,
+    buttons=<span class="fn">@widget.</span>yes_no,
+  )
+  <span class="kw">let</span> note = <span class="fn">@widget.</span>MessageBox::new(
+    title=<span class="st">&quot;Saved&quot;</span>,
+    message=<span class="st">&quot;Everything is written to disk.&quot;</span>,
+    kind=Info,
+    buttons=<span class="fn">@widget.</span>ok,
+  )
+  Demo::new(
+    <span class="st">&quot;MessageBox&quot;</span>,
+    <span class="fn">@app.</span>row(
+      0,
+      [
+        <span class="fn">@app.</span>leaf(1, ask, box=<span class="fn">@layout.</span>Box::new(extent=Frac(1))),
+        <span class="fn">@app.</span>leaf(2, note, box=<span class="fn">@layout.</span>Box::new(extent=Frac(1))),
+      ],
+      gap=1,
+    ),
+    group=Overlay,
+    note=<span class="st">&quot;A question or a notice with a row of buttons: the arrows move, Enter takes, Escape closes.&quot;</span>,
+    rows=7,
+  )
+}</pre>
+  </div>
+  <div class="wcard" id="demo-inputbox">
+    <h4><code class="inline">InputBox</code></h4>
+    <p class="wdesc">A prompt, a one-line field and two buttons: typing goes to the field, Enter takes the button highlighted.</p>
+    <div class="wlive"><canvas id="live-inputbox" data-demo="InputBox" tabindex="0" style="height: 90px"></canvas></div>
+    <div class="wmsg" data-for="live-inputbox"></div>
+    <pre class="block wcode"><span class="kw">pub</span> <span class="kw">fn</span> input_box() -&gt; Demo {
+  <span class="kw">let</span> box = <span class="fn">@widget.</span>InputBox::new(
+    title=<span class="st">&quot;Rename&quot;</span>,
+    prompt=<span class="st">&quot;New name&quot;</span>,
+    value=<span class="st">&quot;untitled&quot;</span>,
+    buttons=<span class="fn">@widget.</span>ok_cancel,
+  )
+  Demo::new(
+    <span class="st">&quot;InputBox&quot;</span>,
+    <span class="fn">@app.</span>column(0, [<span class="fn">@app.</span>leaf(1, box, box=line(5))]),
+    group=Overlay,
+    note=<span class="st">&quot;A prompt, a one-line field and two buttons: typing goes to the field, Enter takes the button highlighted.&quot;</span>,
+    rows=5,
+  )
+}
+
+<span class="kw">fn</span> line(n : Int32) -&gt; <span class="fn">@layout.</span>Box {
+  <span class="fn">@layout.</span>Box::new(extent=Cells(n))
+}</pre>
+  </div>
+  <div class="wcard" id="demo-filedialog">
+    <h4><code class="inline">FileDialog</code></h4>
+    <p class="wdesc">A listing the caller hands over: this library never touches a file system, so walking the tree stays outside it.</p>
+    <div class="wlive"><canvas id="live-filedialog" data-demo="FileDialog" tabindex="0" style="height: 216px"></canvas></div>
+    <div class="wmsg" data-for="live-filedialog"></div>
+    <pre class="block wcode"><span class="kw">pub</span> <span class="kw">fn</span> file_dialog() -&gt; Demo {
+  <span class="kw">let</span> dialog = <span class="fn">@widget.</span>FileDialog::new(
+    title=<span class="st">&quot;Open file&quot;</span>,
+    path=<span class="st">&quot;~/src/moonetui&quot;</span>,
+    mode=Open,
+    filter=<span class="st">&quot;mbt&quot;</span>,
+    entries=[
+      <span class="fn">@widget.</span>FileEntry::new(<span class="st">&quot;..&quot;</span>, dir=<span class="kw">true</span>),
+      <span class="fn">@widget.</span>FileEntry::new(<span class="st">&quot;src&quot;</span>, dir=<span class="kw">true</span>),
+      <span class="fn">@widget.</span>FileEntry::new(<span class="st">&quot;docs&quot;</span>, dir=<span class="kw">true</span>),
+      <span class="fn">@widget.</span>FileEntry::new(<span class="st">&quot;widget.mbt&quot;</span>, size=4820),
+      <span class="fn">@widget.</span>FileEntry::new(<span class="st">&quot;app.mbt&quot;</span>, size=3110),
+      <span class="fn">@widget.</span>FileEntry::new(<span class="st">&quot;README.md&quot;</span>, size=812),
+    ],
+  )
+  Demo::new(
+    <span class="st">&quot;FileDialog&quot;</span>,
+    <span class="fn">@app.</span>column(0, [<span class="fn">@app.</span>leaf(1, dialog, box=line(12))]),
+    group=Overlay,
+    note=<span class="st">&quot;A listing the caller hands over: this library never touches a file system, so walking the tree stays outside it.&quot;</span>,
+    rows=12,
+  )
+}
+
+<span class="kw">fn</span> line(n : Int32) -&gt; <span class="fn">@layout.</span>Box {
+  <span class="fn">@layout.</span>Box::new(extent=Cells(n))
+}</pre>
+  </div>
+  <div class="wcard" id="demo-menubar">
+    <h4><code class="inline">MenuBar</code></h4>
+    <p class="wdesc">Titles along the top, each with a list that drops beneath it; the arrows walk along and then down.</p>
+    <div class="wlive"><canvas id="live-menubar" data-demo="MenuBar" tabindex="0" style="height: 90px"></canvas></div>
+    <div class="wmsg" data-for="live-menubar"></div>
+    <pre class="block wcode"><span class="kw">pub</span> <span class="kw">fn</span> menu_bar() -&gt; Demo {
+  <span class="kw">let</span> bar = <span class="fn">@widget.</span>MenuBar::new()
+  bar.add(<span class="st">&quot;File&quot;</span>, [
+    <span class="fn">@widget.</span>Item::new(<span class="st">&quot;New&quot;</span>, shortcut=<span class="st">&quot;ctrl-n&quot;</span>),
+    <span class="fn">@widget.</span>Item::new(<span class="st">&quot;Open&quot;</span>, shortcut=<span class="st">&quot;ctrl-o&quot;</span>),
+    <span class="fn">@widget.</span>Item::separator(),
+    <span class="fn">@widget.</span>Item::new(<span class="st">&quot;Quit&quot;</span>, shortcut=<span class="st">&quot;ctrl-q&quot;</span>),
+  ])
+  bar.add(<span class="st">&quot;View&quot;</span>, [
+    <span class="fn">@widget.</span>Item::new(<span class="st">&quot;Wrap&quot;</span>, checked=<span class="kw">true</span>),
+    <span class="fn">@widget.</span>Item::new(<span class="st">&quot;Numbers&quot;</span>, checked=<span class="kw">true</span>),
+    <span class="fn">@widget.</span>Item::separator(),
+    <span class="fn">@widget.</span>Item::new(<span class="st">&quot;Full screen&quot;</span>),
+  ])
+  bar.add(<span class="st">&quot;Help&quot;</span>, [<span class="fn">@widget.</span>Item::new(<span class="st">&quot;About&quot;</span>)])
+  Demo::new(
+    <span class="st">&quot;MenuBar&quot;</span>,
+    <span class="fn">@app.</span>column(0, [
+      <span class="fn">@app.</span>leaf(1, bar, box=line(1)),
+      <span class="fn">@app.</span>leaf(
+        2,
+        <span class="fn">@widget.</span>label(
+          <span class="st">&quot;Enter or the down arrow opens a list.&quot;</span>,
+          style=<span class="fn">@style.</span>Style::new(dim=<span class="kw">true</span>),
+        ),
+        box=line(1),
+      ),
+    ]),
+    group=Overlay,
+    note=<span class="st">&quot;Titles along the top, each with a list that drops beneath it; the arrows walk along and then down.&quot;</span>,
+    rows=5,
+  )
+}
+
+<span class="kw">fn</span> line(n : Int32) -&gt; <span class="fn">@layout.</span>Box {
+  <span class="fn">@layout.</span>Box::new(extent=Cells(n))
+}</pre>
+  </div>
+  <div class="wcard" id="demo-menu">
+    <h4><code class="inline">Menu</code></h4>
+    <p class="wdesc">A list on its own: ticks for what is on, keys beside them, rules between groups, and what is off is skipped.</p>
+    <div class="wlive"><canvas id="live-menu" data-demo="Menu" tabindex="0" style="height: 126px"></canvas></div>
+    <div class="wmsg" data-for="live-menu"></div>
+    <pre class="block wcode"><span class="kw">pub</span> <span class="kw">fn</span> menu() -&gt; Demo {
+  <span class="kw">let</span> menu = <span class="fn">@widget.</span>Menu::new(items=[
+    <span class="fn">@widget.</span>Item::new(<span class="st">&quot;Cut&quot;</span>, shortcut=<span class="st">&quot;ctrl-x&quot;</span>),
+    <span class="fn">@widget.</span>Item::new(<span class="st">&quot;Copy&quot;</span>, shortcut=<span class="st">&quot;ctrl-c&quot;</span>),
+    <span class="fn">@widget.</span>Item::new(<span class="st">&quot;Paste&quot;</span>, shortcut=<span class="st">&quot;ctrl-v&quot;</span>),
+    <span class="fn">@widget.</span>Item::separator(),
+    <span class="fn">@widget.</span>Item::new(<span class="st">&quot;Grayscale&quot;</span>, checked=<span class="kw">true</span>),
+    <span class="fn">@widget.</span>Item::new(<span class="st">&quot;Locked&quot;</span>, enabled=<span class="kw">false</span>),
+  ])
+  Demo::new(
+    <span class="st">&quot;Menu&quot;</span>,
+    <span class="fn">@app.</span>column(0, [<span class="fn">@app.</span>leaf(1, menu, box=line(7))]),
+    group=Overlay,
+    note=<span class="st">&quot;A list on its own: ticks for what is on, keys beside them, rules between groups, and what is off is skipped.&quot;</span>,
+    rows=7,
+  )
+}
+
+<span class="kw">fn</span> line(n : Int32) -&gt; <span class="fn">@layout.</span>Box {
+  <span class="fn">@layout.</span>Box::new(extent=Cells(n))
+}</pre>
+  </div>
+  <div class="wcard" id="demo-commandpalette">
+    <h4><code class="inline">CommandPalette</code></h4>
+    <p class="wdesc">Type part of a name and the list narrows: the query&#x27;s letters read out of the name in order.</p>
+    <div class="wlive"><canvas id="live-commandpalette" data-demo="CommandPalette" tabindex="0" style="height: 162px"></canvas></div>
+    <div class="wmsg" data-for="live-commandpalette"></div>
+    <pre class="block wcode"><span class="kw">pub</span> <span class="kw">fn</span> command_palette() -&gt; Demo {
+  <span class="kw">let</span> palette = <span class="fn">@widget.</span>CommandPalette::new()
+  palette.add(<span class="st">&quot;Open file&quot;</span>, hint=<span class="st">&quot;read one in&quot;</span>, key=<span class="st">&quot;ctrl-o&quot;</span>)
+  palette.add(<span class="st">&quot;Save file&quot;</span>, hint=<span class="st">&quot;write it out&quot;</span>, key=<span class="st">&quot;ctrl-s&quot;</span>)
+  palette.add(<span class="st">&quot;Toggle wrap&quot;</span>, key=<span class="st">&quot;ctrl-w&quot;</span>)
+  palette.add(<span class="st">&quot;Switch theme&quot;</span>, hint=<span class="st">&quot;dark, light, nord&quot;</span>)
+  palette.add(<span class="st">&quot;Quit&quot;</span>, key=<span class="st">&quot;ctrl-q&quot;</span>)
+  Demo::new(
+    <span class="st">&quot;CommandPalette&quot;</span>,
+    <span class="fn">@app.</span>column(0, [<span class="fn">@app.</span>leaf(1, palette, box=line(9))]),
+    group=Overlay,
+    note=<span class="st">&quot;Type part of a name and the list narrows: the query&#x27;s letters read out of the name in order.&quot;</span>,
+    rows=9,
+  )
+}
+
+<span class="kw">fn</span> line(n : Int32) -&gt; <span class="fn">@layout.</span>Box {
+  <span class="fn">@layout.</span>Box::new(extent=Cells(n))
+}</pre>
+  </div>
+  <h3>Charts and meters</h3>
+  <div class="wcard" id="demo-chart">
+    <h4><code class="inline">Chart</code></h4>
+    <p class="wdesc">Series of points on two axes: one joined from point to point, one left as the points themselves.</p>
+    <div class="wlive"><canvas id="live-chart" data-demo="Chart" tabindex="0" style="height: 180px"></canvas></div>
+    <div class="wmsg" data-for="live-chart"></div>
+    <pre class="block wcode"><span class="kw">pub</span> <span class="kw">fn</span> chart() -&gt; Demo {
+  <span class="kw">let</span> load = <span class="fn">@widget.</span>Chart::new(
+    datasets=[
+      <span class="fn">@widget.</span>Dataset::new(
+        <span class="st">&quot;cpu&quot;</span>,
+        [(0.0, 1.0), (1.0, 3.0), (2.0, 2.0), (3.0, 5.0), (4.0, 4.0), (5.0, 6.0)],
+        style=<span class="fn">@style.</span>Style::new(fg=<span class="fn">@style.</span>cyan),
+      ),
+      <span class="fn">@widget.</span>Dataset::new(
+        <span class="st">&quot;mem&quot;</span>,
+        [(0.0, 2.0), (1.0, 2.0), (2.0, 4.0), (3.0, 3.0), (4.0, 5.0), (5.0, 5.0)],
+        kind=Scatter,
+        style=<span class="fn">@style.</span>Style::new(fg=<span class="fn">@style.</span>magenta),
+      ),
+    ],
+    x=<span class="fn">@widget.</span>Axis::new(
+      labels=[<span class="st">&quot;0s&quot;</span>, <span class="st">&quot;5s&quot;</span>, <span class="st">&quot;10s&quot;</span>],
+      bounds=<span class="fn">@widget.</span>Bounds::new(low=0.0, high=5.0),
+      title=<span class="st">&quot;time&quot;</span>,
+    ),
+    y=<span class="fn">@widget.</span>Axis::new(bounds=<span class="fn">@widget.</span>Bounds::new(low=0.0, high=6.0)),
+  )
+  Demo::new(
+    <span class="st">&quot;Chart&quot;</span>,
+    <span class="fn">@app.</span>column(0, [<span class="fn">@app.</span>leaf(1, load)]),
+    group=Chart,
+    note=<span class="st">&quot;Series of points on two axes: one joined from point to point, one left as the points themselves.&quot;</span>,
+    rows=10,
+  )
+}</pre>
+  </div>
+  <div class="wcard" id="demo-barchart">
+    <h4><code class="inline">BarChart</code></h4>
+    <p class="wdesc">A column per bar, named along the bottom, the tallest filling the plot unless a scale is given.</p>
+    <div class="wlive"><canvas id="live-barchart" data-demo="BarChart" tabindex="0" style="height: 144px"></canvas></div>
+    <div class="wmsg" data-for="live-barchart"></div>
+    <pre class="block wcode"><span class="kw">pub</span> <span class="kw">fn</span> bar_chart() -&gt; Demo {
+  <span class="kw">let</span> chart = <span class="fn">@widget.</span>BarChart::new(
+    bars=[
+      <span class="fn">@widget.</span>Bar::new(
+        <span class="st">&quot;mon&quot;</span>,
+        value=5.0,
+        style=Some(<span class="fn">@style.</span>Style::new(fg=<span class="fn">@style.</span>cyan)),
+      ),
+      <span class="fn">@widget.</span>Bar::new(<span class="st">&quot;tue&quot;</span>, value=8.0),
+      <span class="fn">@widget.</span>Bar::new(<span class="st">&quot;wed&quot;</span>, value=3.0),
+      <span class="fn">@widget.</span>Bar::new(<span class="st">&quot;thu&quot;</span>, value=6.0),
+      <span class="fn">@widget.</span>Bar::new(<span class="st">&quot;fri&quot;</span>, value=9.0),
+    ],
+    values=<span class="kw">true</span>,
+  )
+  Demo::new(
+    <span class="st">&quot;BarChart&quot;</span>,
+    <span class="fn">@app.</span>column(0, [<span class="fn">@app.</span>leaf(1, chart)]),
+    group=Chart,
+    note=<span class="st">&quot;A column per bar, named along the bottom, the tallest filling the plot unless a scale is given.&quot;</span>,
+    rows=8,
+  )
+}</pre>
+  </div>
+  <div class="wcard" id="demo-gauge">
+    <h4><code class="inline">Gauge</code></h4>
+    <p class="wdesc">How far round a meter is: a word on the left, a bar, and the percentage on the right.</p>
+    <div class="wlive"><canvas id="live-gauge" data-demo="Gauge" tabindex="0" style="height: 54px"></canvas></div>
+    <div class="wmsg" data-for="live-gauge"></div>
+    <pre class="block wcode"><span class="kw">pub</span> <span class="kw">fn</span> gauge() -&gt; Demo {
+  <span class="kw">let</span> cpu = <span class="fn">@widget.</span>Gauge::new(ratio=0.62, label=<span class="st">&quot;cpu&quot;</span>)
+  <span class="kw">let</span> memory = <span class="fn">@widget.</span>Gauge::new(
+    ratio=0.35,
+    label=<span class="st">&quot;memory&quot;</span>,
+    bar_style=<span class="fn">@style.</span>Style::new(fg=<span class="fn">@style.</span>green),
+  )
+  <span class="kw">let</span> disk = <span class="fn">@widget.</span>Gauge::new(
+    ratio=0.91,
+    label=<span class="st">&quot;disk&quot;</span>,
+    bar_style=<span class="fn">@style.</span>Style::new(fg=<span class="fn">@style.</span>red),
+  )
+  Demo::new(
+    <span class="st">&quot;Gauge&quot;</span>,
+    <span class="fn">@app.</span>column(0, [
+      <span class="fn">@app.</span>leaf(1, cpu, box=line(1)),
+      <span class="fn">@app.</span>leaf(2, memory, box=line(1)),
+      <span class="fn">@app.</span>leaf(3, disk, box=line(1)),
+    ]),
+    group=Chart,
+    note=<span class="st">&quot;How far round a meter is: a word on the left, a bar, and the percentage on the right.&quot;</span>,
+    rows=3,
+  )
+}
+
+<span class="kw">fn</span> line(n : Int32) -&gt; <span class="fn">@layout.</span>Box {
+  <span class="fn">@layout.</span>Box::new(extent=Cells(n))
+}</pre>
+  </div>
+  <div class="wcard" id="demo-scrollbar">
+    <h4><code class="inline">Scrollbar</code></h4>
+    <p class="wdesc">A thumb in a track, on either axis: a click goes to that part of the content, and the keys move once it has focus.</p>
+    <div class="wlive"><canvas id="live-scrollbar" data-demo="Scrollbar" tabindex="0" style="height: 126px"></canvas></div>
+    <div class="wmsg" data-for="live-scrollbar"></div>
+    <pre class="block wcode"><span class="kw">pub</span> <span class="kw">fn</span> scrollbar() -&gt; Demo {
+  <span class="kw">let</span> bar = <span class="fn">@widget.</span>Scrollbar::new(content=100, viewport=24)
+  <span class="kw">let</span> across = <span class="fn">@widget.</span>Scrollbar::new(
+    content=100,
+    viewport=24,
+    vertical=<span class="kw">false</span>,
+    thumb_style=<span class="fn">@style.</span>Style::new(fg=<span class="fn">@style.</span>cyan, reverse=<span class="kw">true</span>),
+  )
+  <span class="kw">let</span> lines : Array[<span class="fn">@app.</span>Node] = []
+  <span class="kw">for</span> i <span class="kw">in</span> 0..&lt;6 {
+    lines.push(
+      <span class="fn">@app.</span>leaf(
+        10 + i,
+        <span class="fn">@widget.</span>Static::new(<span class="st">&quot;line &quot;</span> + i.to_string()),
+        box=line(1),
+      ),
+    )
+  }
+  Demo::new(
+    <span class="st">&quot;Scrollbar&quot;</span>,
+    <span class="fn">@app.</span>column(0, [
+      <span class="fn">@app.</span>row(
+        1,
+        [
+          <span class="fn">@app.</span>column(2, lines),
+          <span class="fn">@app.</span>leaf(3, bar, box=<span class="fn">@layout.</span>Box::new(extent=Cells(1))),
+        ],
+        box=line(6),
+      ),
+      <span class="fn">@app.</span>leaf(4, across, box=line(1)),
+    ]),
+    group=Chart,
+    note=<span class="st">&quot;A thumb in a track, on either axis: a click goes to that part of the content, and the keys move once it has focus.&quot;</span>,
+    rows=7,
+  )
+}
+
+<span class="kw">fn</span> line(n : Int32) -&gt; <span class="fn">@layout.</span>Box {
+  <span class="fn">@layout.</span>Box::new(extent=Cells(n))
 }</pre>
   </div>
 <!-- /generated:widgets -->
@@ -1148,6 +1670,58 @@ priv <span class="kw">struct</span> Swatches {}
   )
 }</pre>
   </div>
+  <div class="wcard" id="demo-anchors">
+    <h4><code class="inline">Anchors</code></h4>
+    <p class="wdesc">A box held to the edges it names: an axis with both edges held stretches, one with neither keeps its size and sits where its pivot says.</p>
+    <div class="wlive"><canvas id="live-anchors" data-demo="Anchors" tabindex="0" style="height: 144px"></canvas></div>
+    <div class="wmsg" data-for="live-anchors"></div>
+    <pre class="block wcode"><span class="kw">pub</span> <span class="kw">fn</span> anchoring() -&gt; Demo {
+  <span class="kw">let</span> corners : Array[<span class="fn">@app.</span>Node] = []
+  <span class="kw">let</span> pinned : Array[(String, <span class="fn">@layout.</span>Anchor)] = [
+    (<span class="st">&quot;top left&quot;</span>, <span class="fn">@layout.</span>Anchor::new(top=<span class="kw">true</span>, left=<span class="kw">true</span>)),
+    (<span class="st">&quot;top right&quot;</span>, <span class="fn">@layout.</span>Anchor::new(top=<span class="kw">true</span>, right=<span class="kw">true</span>)),
+    (<span class="st">&quot;bottom left&quot;</span>, <span class="fn">@layout.</span>Anchor::new(bottom=<span class="kw">true</span>, left=<span class="kw">true</span>)),
+    (<span class="st">&quot;bottom right&quot;</span>, <span class="fn">@layout.</span>Anchor::new(bottom=<span class="kw">true</span>, right=<span class="kw">true</span>)),
+  ]
+  <span class="kw">for</span> i, place <span class="kw">in</span> pinned {
+    <span class="kw">let</span> (word, anchor) = place
+    corners.push(
+      <span class="fn">@app.</span>leaf(
+        i + 1,
+        <span class="fn">@widget.</span>Static::new(word, align=Centre),
+        styles=<span class="fn">@design.</span>Styles::new(
+          width=Cells(16),
+          height=Cells(3),
+          anchor~,
+          align=<span class="fn">@design.</span>Align::new(v=<span class="fn">@design.</span>Middle),
+          border=<span class="fn">@design.</span>Round,
+        ),
+      ),
+    )
+  }
+  corners.push(
+    <span class="fn">@app.</span>leaf(
+      9,
+      <span class="fn">@widget.</span>Static::new(<span class="st">&quot;held to nothing, put in the middle&quot;</span>, align=Centre),
+      styles=<span class="fn">@design.</span>Styles::new(
+        width=Cells(36),
+        height=Cells(3),
+        anchor=<span class="fn">@layout.</span>free,
+        pivot=Middle,
+        align=<span class="fn">@design.</span>Align::new(v=<span class="fn">@design.</span>Middle),
+        border=<span class="fn">@design.</span>Round,
+      ),
+    ),
+  )
+  Demo::new(
+    <span class="st">&quot;Anchors&quot;</span>,
+    <span class="fn">@app.</span>column(0, corners),
+    group=Style,
+    note=<span class="st">&quot;A box held to the edges it names: an axis with both edges held stretches, one with neither keeps its size and sits where its pivot says.&quot;</span>,
+    rows=8,
+  )
+}</pre>
+  </div>
   <div class="wcard" id="demo-grid">
     <h4><code class="inline">Grid</code></h4>
     <p class="wdesc">A grid of columns and rows, with spans and a gutter that loses no column.</p>
@@ -1190,6 +1764,39 @@ priv <span class="kw">struct</span> Swatches {}
     rows=6,
     sheet~,
   )
+}</pre>
+  </div>
+  <div class="wcard" id="demo-theme">
+    <h4><code class="inline">Theme</code></h4>
+    <p class="wdesc">One value holding every semantic colour: set it as a whole and everything styled by role changes with it.</p>
+    <div class="wlive"><canvas id="live-theme" data-demo="Theme" tabindex="0" style="height: 198px"></canvas></div>
+    <div class="wmsg" data-for="live-theme"></div>
+    <pre class="block wcode"><span class="kw">pub</span> <span class="kw">fn</span> theme() -&gt; Demo {
+  <span class="kw">let</span> sheet = <span class="fn">@design.</span>dark.sheet()
+  <span class="kw">let</span> roles = <span class="fn">@design.</span>roles()
+  <span class="kw">let</span> swatches : Array[<span class="fn">@app.</span>Node] = []
+  <span class="kw">for</span> i, role <span class="kw">in</span> roles {
+    swatches.push(
+      <span class="fn">@app.</span>leaf(
+        i + 1,
+        <span class="fn">@widget.</span>Static::new(role.name(), align=Centre),
+        box=line(1),
+        classes=[role.name() + <span class="st">&quot;-fill&quot;</span>],
+      ),
+    )
+  }
+  Demo::new(
+    <span class="st">&quot;Theme&quot;</span>,
+    <span class="fn">@app.</span>column(0, swatches),
+    group=Style,
+    note=<span class="st">&quot;One value holding every semantic colour: set it as a whole and everything styled by role changes with it.&quot;</span>,
+    rows=11,
+    sheet~,
+  )
+}
+
+<span class="kw">fn</span> line(n : Int32) -&gt; <span class="fn">@layout.</span>Box {
+  <span class="fn">@layout.</span>Box::new(extent=Cells(n))
 }</pre>
   </div>
   <div class="wcard" id="demo-states">

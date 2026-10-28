@@ -34,6 +34,8 @@ TITLES = {
     "Choice": "Choices",
     "Navigation": "Navigation and structure",
     "Data": "Data and notices",
+    "Overlay": "Dialogs, menus and commands",
+    "Chart": "Charts and meters",
     "Style": "Seen live",
 }
 
@@ -152,7 +154,14 @@ def main():
     by_fn = functions()
     demos = [by_fn[name] for name in order()]
     page = PAGE.read_text(encoding="utf-8")
-    page = fill(page, "widgets", section(demos, ["Text", "Entry", "Choice", "Navigation", "Data"]))
+    page = fill(
+        page,
+        "widgets",
+        section(
+            demos,
+            ["Text", "Entry", "Choice", "Navigation", "Data", "Overlay", "Chart"],
+        ),
+    )
     page = fill(page, "style", section(demos, ["Style"]))
     PAGE.write_text(page, encoding="utf-8", newline="\n")
     print(f"{len(demos)} demos written")

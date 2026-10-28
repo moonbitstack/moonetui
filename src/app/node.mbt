@@ -313,6 +313,7 @@ pub fn Node::place(
       let content = res.content_region(framed)
       let flow : Array[(Node, @design.Resolved)] = []
       let docked : Array[(Node, @design.Resolved)] = []
+      let anchored : Array[(Node, @design.Resolved)] = []
       for kid in kids {
         let kid_res = kid.resolve(theme, res.text)
         if kid_res.hidden {
@@ -320,7 +321,13 @@ pub fn Node::place(
         }
         match kid_res.dock {
           Some(_) => docked.push((kid, kid_res))
-          None => flow.push((kid, kid_res))
+          None =>
+            match kid_res.anchor {
+              // An anchored box is laid out against the parent's edges, not
+              // along the flow, so it takes none of the flow's space.
+              Some(_) => anchored.push((kid, kid_res))
+              None => flow.push((kid, kid_res))
+            }
         }
       }
       // Same-edge docks overlap and only the tallest takes space. Docks go first and
@@ -384,6 +391,31 @@ pub fn Node::place(
           offsets~,
         )
         i = i - 1
+      }
+      // Docks claim their edge of the column first; anchors then take their
+      // place against what is left, over whatever the flow puts there.
+      for pair in anchored {
+        let (kid, kid_res) = pair
+        let anchor = match kid_res.anchor {
+          Some(own) => own
+          None => continue
+        }
+        let want = @geom.Size::new(
+          anchored_extent(kid, kid_res, Horizontal, content.size(), theme),
+          anchored_extent(kid, kid_res, Vertical, content.size(), theme),
+        )
+        kid.place(
+          @layout.anchor_region(content, want, anchor~, pivot=kid_res.pivot),
+          visible,
+          scene,
+          rects,
+          styled~,
+          theme~,
+          inherited=res.text,
+          views~,
+          bare~,
+          offsets~,
+        )
       }
       let inner = @geom.Region::new(
         content.x + edge_left,
@@ -655,6 +687,29 @@ pub fn Node::scroll_around(self : Node, id : Int32) -> (Int32, ScrollState)? {
             None
           }
       }
+  }
+}
+
+///|
+/// How far an anchored box reaches along `dir`: the width or height its own
+/// styles name, and otherwise what its content asks for. An anchored box is
+/// laid out against the parent, so a size it states outright is the one to
+/// use rather than the flow's.
+fn anchored_extent(
+  kid : Node,
+  res : @design.Resolved,
+  dir : @layout.Dir,
+  space : @geom.Size,
+  theme : Theme,
+) -> Int32 {
+  let own = match dir {
+    Vertical => res.height
+    Horizontal => res.width
+  }
+  match own {
+    Some(Cells(n)) => if n < 0 { 0 } else { n }
+    Some(Pct(p)) => @layout.main_of(space, dir) * p / 100
+    _ => kid.hint(space, dir, theme~)
   }
 }
 

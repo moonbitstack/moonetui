@@ -9,15 +9,29 @@ import {
 }
 
 // Values
+pub fn anchoring() -> Demo
+
+pub fn bar_chart() -> Demo
+
+pub fn block() -> Demo
+
 pub fn borders() -> Demo
 
 pub fn button() -> Demo
 
+pub fn chart() -> Demo
+
 pub fn checkbox() -> Demo
+
+pub fn clock() -> Demo
 
 pub fn collapsible() -> Demo
 
 pub fn colours() -> Demo
+
+pub fn command_palette() -> Demo
+
+pub fn content_switcher() -> Demo
 
 pub fn data_table() -> Demo
 
@@ -29,15 +43,23 @@ pub fn directory_tree() -> Demo
 
 pub fn docks() -> Demo
 
+pub fn file_dialog() -> Demo
+
 pub fn find(String) -> Demo?
 
 pub fn footer() -> Demo
+
+pub fn gauge() -> Demo
 
 pub fn grid() -> Demo
 
 pub fn header() -> Demo
 
 pub fn input() -> Demo
+
+pub fn input_box() -> Demo
+
+pub fn link() -> Demo
 
 pub fn list_view() -> Demo
 
@@ -47,11 +69,21 @@ pub fn log() -> Demo
 
 pub fn markdown() -> Demo
 
+pub fn masked_input() -> Demo
+
+pub fn menu() -> Demo
+
+pub fn menu_bar() -> Demo
+
 pub let menu_id : Int32
+
+pub fn message_box() -> Demo
 
 pub fn option_list() -> Demo
 
 pub fn placeholder() -> Demo
+
+pub fn pretty() -> Demo
 
 pub fn progress() -> Demo
 
@@ -60,6 +92,8 @@ pub fn radio_set() -> Demo
 pub fn rich_log() -> Demo
 
 pub fn rule() -> Demo
+
+pub fn scrollbar() -> Demo
 
 pub fn select() -> Demo
 
@@ -80,6 +114,8 @@ pub fn tabs() -> Demo
 pub fn text_area() -> Demo
 
 pub fn text_styles() -> Demo
+
+pub fn theme() -> Demo
 
 pub fn toast() -> Demo
 
@@ -118,6 +154,8 @@ pub(all) enum Group {
   Choice
   Navigation
   Data
+  Overlay
+  Chart
   Style
 } derive(Eq, @debug.Debug)
 pub fn Group::equal(Self, Self) -> Bool

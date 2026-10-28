@@ -18,6 +18,7 @@ pub(all) enum Out {
   Changed(id~ : Int32, value~ : String)
   Submitted(id~ : Int32, value~ : String)
   Selected(id~ : Int32, index~ : Int32)
+  MenuPicked(id~ : Int32, menu~ : Int32, index~ : Int32)
   Scrolled(id~ : Int32, x~ : Int32, y~ : Int32)
   Focused(id~ : Int32)
   Blurred(id~ : Int32)
@@ -126,6 +127,42 @@ pub let heavy : Border = {
   bottom_left: "┗",
   bottom: "━",
   bottom_right: "┛",
+}
+
+///|
+pub let ascii : Border = {
+  top_left: "+",
+  top: "-",
+  top_right: "+",
+  left: "|",
+  right: "|",
+  bottom_left: "+",
+  bottom: "-",
+  bottom_right: "+",
+}
+
+///|
+pub let round : Border = {
+  top_left: "╭",
+  top: "─",
+  top_right: "╮",
+  left: "│",
+  right: "│",
+  bottom_left: "╰",
+  bottom: "─",
+  bottom_right: "╯",
+}
+
+///|
+pub let double : Border = {
+  top_left: "╔",
+  top: "═",
+  top_right: "╗",
+  left: "║",
+  right: "║",
+  bottom_left: "╚",
+  bottom: "═",
+  bottom_right: "╝",
 }
 
 ///|

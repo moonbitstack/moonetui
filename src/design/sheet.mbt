@@ -107,6 +107,15 @@ pub fn Stylesheet::add(self : Stylesheet, sel : Sel, styles : Styles) -> Unit {
 }
 
 ///|
+/// Every rule of `other` after this sheet's own, which is how a theme's rules
+/// and a caller's are combined: the ones added last win.
+pub fn Stylesheet::append(self : Stylesheet, other : Stylesheet) -> Unit {
+  for rule in other.list() {
+    self.rules.push(rule)
+  }
+}
+
+///|
 pub fn Stylesheet::is_empty(self : Stylesheet) -> Bool {
   self.rules.length() == 0
 }

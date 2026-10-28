@@ -8,6 +8,8 @@ pub(all) enum Group {
   Choice
   Navigation
   Data
+  Overlay
+  Chart
   Style
 } derive(Eq, Debug)
 
@@ -25,6 +27,8 @@ pub fn Group::title(self : Group) -> String {
     Choice => "Choices"
     Navigation => "Navigation and structure"
     Data => "Data and notices"
+    Overlay => "Dialogs, menus and commands"
+    Chart => "Charts and meters"
     Style => "Design system"
   }
 }
@@ -61,14 +65,18 @@ pub fn demos() -> Array[Demo] {
   [
     static_text(),
     header(),
+    clock(),
     footer(),
+    link(),
     rule(),
     digits(),
     sparkline(),
     progress(),
     loading_indicator(),
     placeholder(),
+    pretty(),
     input(),
+    masked_input(),
     text_area(),
     log(),
     rich_log(),
@@ -83,17 +91,31 @@ pub fn demos() -> Array[Demo] {
     tabs(),
     tabbed_content(),
     collapsible(),
+    content_switcher(),
+    block(),
     tree(),
     directory_tree(),
     data_table(),
     markdown(),
     tooltip(),
     toast(),
+    message_box(),
+    input_box(),
+    file_dialog(),
+    menu_bar(),
+    menu(),
+    command_palette(),
+    chart(),
+    bar_chart(),
+    gauge(),
+    scrollbar(),
     borders(),
     colours(),
     text_styles(),
     docks(),
+    anchoring(),
     grid(),
+    theme(),
     states(),
   ]
 }

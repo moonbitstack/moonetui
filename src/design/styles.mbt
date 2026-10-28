@@ -113,40 +113,10 @@ pub extend EdgeKind with Eq::{not_equal, equal}
 pub fn EdgeKind::glyphs(self : EdgeKind) -> @widget.Border {
   match self {
     Off => @widget.thin
-    Ascii =>
-      {
-        top_left: "+",
-        top: "-",
-        top_right: "+",
-        left: "|",
-        right: "|",
-        bottom_left: "+",
-        bottom: "-",
-        bottom_right: "+",
-      }
+    Ascii => @widget.ascii
     Thin => @widget.thin
-    Round =>
-      {
-        top_left: "╭",
-        top: "─",
-        top_right: "╮",
-        left: "│",
-        right: "│",
-        bottom_left: "╰",
-        bottom: "─",
-        bottom_right: "╯",
-      }
-    Double =>
-      {
-        top_left: "╔",
-        top: "═",
-        top_right: "╗",
-        left: "║",
-        right: "║",
-        bottom_left: "╚",
-        bottom: "═",
-        bottom_right: "╝",
-      }
+    Round => @widget.round
+    Double => @widget.double
     Heavy => @widget.heavy
   }
 }
@@ -165,6 +135,8 @@ pub(all) struct Styles {
   border : EdgeKind?
   align : Align?
   dock : Edge?
+  anchor : @layout.Anchor?
+  pivot : @layout.Pivot?
   column_span : Int32?
   row_span : Int32?
   offset_x : Int32?
@@ -194,6 +166,8 @@ pub let empty : Styles = {
   border: None,
   align: None,
   dock: None,
+  anchor: None,
+  pivot: None,
   column_span: None,
   row_span: None,
   offset_x: None,
@@ -217,6 +191,8 @@ pub fn Styles::new(
   border? : EdgeKind,
   align? : Align,
   dock? : Edge,
+  anchor? : @layout.Anchor,
+  pivot? : @layout.Pivot,
   column_span? : Int32,
   row_span? : Int32,
   offset_x? : Int32,
@@ -238,6 +214,8 @@ pub fn Styles::new(
     border,
     align,
     dock,
+    anchor,
+    pivot,
     column_span,
     row_span,
     offset_x,
@@ -268,6 +246,8 @@ pub fn Styles::merge(self : Styles, other : Styles) -> Styles {
     border: pick(other.border, self.border),
     align: pick(other.align, self.align),
     dock: pick(other.dock, self.dock),
+    anchor: pick(other.anchor, self.anchor),
+    pivot: pick(other.pivot, self.pivot),
     column_span: pick(other.column_span, self.column_span),
     row_span: pick(other.row_span, self.row_span),
     offset_x: pick(other.offset_x, self.offset_x),
@@ -304,6 +284,8 @@ pub(all) struct Resolved {
   border : EdgeKind
   align : Align
   dock : Edge?
+  anchor : @layout.Anchor?
+  pivot : @layout.Pivot
   column_span : Int32?
   row_span : Int32?
   offset_x : Int32
@@ -333,6 +315,8 @@ pub let bare : Resolved = {
   border: Off,
   align: Align::new(),
   dock: None,
+  anchor: None,
+  pivot: TopLeft,
   column_span: None,
   row_span: None,
   offset_x: 0,
@@ -364,6 +348,8 @@ pub fn Resolved::of(styles : Styles, inherited : @style.Style) -> Resolved {
     border: styles.border.unwrap_or(bare.border),
     align: styles.align.unwrap_or(bare.align),
     dock: styles.dock,
+    anchor: styles.anchor,
+    pivot: styles.pivot.unwrap_or(bare.pivot),
     column_span: styles.column_span,
     row_span: styles.row_span,
     offset_x: styles.offset_x.unwrap_or(0),
