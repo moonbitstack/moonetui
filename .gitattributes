@@ -1,0 +1,9 @@
+# Normalize all text files to LF on checkout/commit.
+* text=auto eol=lf
+
+# Build artifacts and binary-ish files: do not touch.
+_build/ -text
+.workbuddy/ -text
+*.png binary
+*.svg text
+*.woff binary
