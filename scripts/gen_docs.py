@@ -2,7 +2,8 @@
 
 Every card is a canvas the page runs the demo on, the line its widgets report
 on, and the demo's whole source. The source is read from the showcase files, so
-the code beside a demo is always the code that runs.
+the code beside a demo is always the code that runs. The version, the widget
+count and the test count on the page and in the README are filled the same way.
 
 Usage: python scripts/gen_docs.py
 """
@@ -14,6 +15,7 @@ import re
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 SHOWCASE = ROOT / "src" / "examples" / "showcase"
 PAGE = ROOT / "docs" / "index.html"
+README = ROOT / "README.md"
 
 # Cell height in CSS pixels at the 14px font the cards use: 14 × 1.25, rounded.
 CELL = 18
@@ -21,6 +23,7 @@ CELL = 18
 KEYWORDS = {
     "let", "mut", "fn", "pub", "if", "else", "match", "for", "in", "while",
     "return", "guard", "is", "true", "false", "struct", "enum", "impl", "with",
+    "trait", "suberror", "derive", "raise", "async",
 }
 TOKEN = re.compile(
     r'(?P<cm>//[^\n]*)|(?P<st>"(?:\\.|[^"\\])*")|(?P<pk>@[a-z_/]+\.)'
@@ -150,10 +153,24 @@ def fill(page: str, region: str, body: str) -> str:
     return page[:a] + "\n" + body + page[b:]
 
 
+def tests() -> int:
+    test = re.compile(r"^(?:async )?test\b", re.M)
+    return sum(len(test.findall(p.read_text(encoding="utf-8"))) for p in (ROOT / "src").rglob("*.mbt"))
+
+
+def stamp(page: str, version: str, widgets: int, count: int) -> str:
+    page = re.sub(r'(data-fill="version">)[^<]*', rf"\g<1>{version}", page)
+    page = re.sub(r'(data-count="widgets">)\d+', rf"\g<1>{widgets}", page)
+    return re.sub(r'(data-count="tests">)\d+', rf"\g<1>{count}", page)
+
+
 def main():
     by_fn = functions()
     demos = [by_fn[name] for name in order()]
-    page = PAGE.read_text(encoding="utf-8")
+    version = find(r'^version = "([^"]+)"', (ROOT / "moon.mod").read_text(encoding="utf-8"), re.M).group(1)
+    widgets = sum(1 for d in demos if d["group"] != "Style")
+    count = tests()
+    page = stamp(PAGE.read_text(encoding="utf-8"), version, widgets, count)
     page = fill(
         page,
         "widgets",
@@ -164,6 +181,9 @@ def main():
     )
     page = fill(page, "style", section(demos, ["Style"]))
     PAGE.write_text(page, encoding="utf-8", newline="\n")
+    readme = README.read_text(encoding="utf-8")
+    readme = re.sub(r"^\d+ tests per backend", f"{count} tests per backend", readme, flags=re.M)
+    README.write_text(readme, encoding="utf-8", newline="\n")
     print(f"{len(demos)} demos written")
 
 

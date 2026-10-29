@@ -77,6 +77,45 @@
   show(location.hash);
 
   // Loaded on first view, so a page never opened costs nothing.
+  var filter = document.querySelector(".api-filter");
+  if (filter) {
+    var items = Array.prototype.slice.call(document.querySelectorAll(".api-item"));
+    var pkgs = Array.prototype.slice.call(document.querySelectorAll(".api-pkg"));
+    var count = document.querySelector(".api-count");
+    var empty = document.querySelector(".api-empty");
+    var total = count.getAttribute("data-total");
+    filter.addEventListener("input", function () {
+      var q = filter.value.trim().toLowerCase();
+      var shown = 0;
+      items.forEach(function (item) {
+        var own = q === "" || item.getAttribute("data-q").indexOf(q) >= 0;
+        var any = false;
+        item.querySelectorAll(".api-method").forEach(function (m) {
+          var on = own || m.getAttribute("data-q").indexOf(q) >= 0;
+          m.hidden = !on;
+          any = any || on;
+        });
+        item.hidden = !(own || any);
+        if (!item.hidden) {
+          shown += 1;
+        }
+      });
+      pkgs.forEach(function (pkg) {
+        pkg.hidden = !pkg.querySelector(".api-item:not([hidden])");
+      });
+      count.textContent = q === "" ? total + " entries" : shown + " matching";
+      empty.hidden = shown > 0;
+    });
+    document.querySelectorAll(".api-index button").forEach(function (chip) {
+      chip.addEventListener("click", function () {
+        var target = document.getElementById(chip.getAttribute("data-pkg"));
+        if (target) {
+          target.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      });
+    });
+  }
+
   var toolkit = null;
   function load() {
     if (!toolkit) {

@@ -51,8 +51,9 @@ jobs:
           moon info --target all
           git diff --exit-code
 
-      - name: the documentation's demo cards match the showcase
+      - name: the documentation matches the showcase and the interfaces
         if: ${{ runner.os == 'Linux' }}
         run: |
           python3 scripts/gen_docs.py
-          git diff --exit-code docs/index.html
+          python3 scripts/gen_api.py
+          git diff --exit-code docs/index.html README.md
