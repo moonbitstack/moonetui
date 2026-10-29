@@ -67,7 +67,7 @@ pub fn pretty() -> Demo {
   let pretty = @widget.Pretty::new(
     value=VObj([
       ("name", VStr("moonetui")),
-      ("version", VStr("0.4.0")),
+      ("version", VStr("0.3.1")),
       ("widgets", VInt(48)),
       ("colours", VArr([VStr("ansi"), VStr("256"), VStr("24-bit")])),
       ("unicode", VBool(true)),
@@ -123,7 +123,7 @@ pub fn link() -> Demo {
 pub fn clock() -> Demo {
   let bar = @widget.Header::new(
     "moonetui",
-    note="0.4.0",
+    note="0.3.1",
     clock=Some(@widget.Clock::new(hour=9, minute=41, second=26)),
   )
   Demo::new(

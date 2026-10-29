@@ -8,7 +8,7 @@ Cell buffer · differential ANSI renderer · incremental key parser · layout ·
 
 [![Check and Test](https://img.shields.io/github/actions/workflow/status/moonbitstack/moonetui/ci.yml?branch=master&label=CI&logo=github)](https://github.com/moonbitstack/moonetui/actions)
 [![Docs](https://img.shields.io/github/actions/workflow/status/moonbitstack/moonetui/docs.yml?branch=master&label=docs&logo=github)](https://moonbitstack.github.io/moonetui/)
-[![mooncakes](https://img.shields.io/badge/mooncakes-0.4.0-7aa2f7)](https://mooncakes.io/docs/#/moonbitstack/moonetui/)
+[![mooncakes](https://img.shields.io/badge/mooncakes-0.3.1-7aa2f7)](https://mooncakes.io/docs/#/moonbitstack/moonetui/)
 [![licence](https://img.shields.io/badge/licence-Apache--2.0-blue)](LICENSE)
 
 <p>
@@ -102,16 +102,6 @@ Its `moon.pkg` imports `app`, `design`, `driver/native`, `layout`, `style` and `
 | Decoration | `Block` — a frame, title and padding that wraps any widget |
 
 Each one has its keyboard contract, message shape and tests, and a live demo on the [documentation site](https://moonbitstack.github.io/moonetui/#/widgets) beside its source.
-
-### What 0.4.0 adds
-
-Prefabricated dialogs (`MessageBox`, `InputBox`, `FileDialog`), a `MenuBar` with drop-down
-`Menu`s and a `CommandPalette`, anchored and pivoted layout, the `Block` decorator, state-outside
-widgets (`StatefulList`, `StatefulTable`) that share selection and scroll with the caller, charts
-and meters (`Chart`, `BarChart`, `Gauge`, `Scrollbar`), a semantic colour `Theme` that swaps as a
-value object, and the remaining controls: `ContentSwitcher`, `Pretty`, `MaskedInput`, `Link` and
-a `Clock` for the `Header`. Every new control has headless snapshot tests with a keyboard and a
-mouse example.
 
 ## Package map
 
