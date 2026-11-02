@@ -622,7 +622,7 @@ fn MenuBar::by_letter(self : MenuBar, letter : String, ctx : Ctx) -> Bool {
   let needle = letter.to_lower()
   for i in 0..<self.titles.length() {
     if self.titles[i].length() > 0 &&
-      self.titles[i].to_lower().view(start_offset=0, end_offset=1) == needle {
+      self.titles[i].to_lower().exact_view(start=0, end=1) == needle {
       self.at = i
       ctx.repaint()
       return true

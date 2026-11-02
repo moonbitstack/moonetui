@@ -397,7 +397,7 @@ fn FileDialog::type_char(self : FileDialog, letter : String, ctx : Ctx) -> Bool 
     let probe = (from + at + 1) % shown.length()
     let entry = self.entries[shown[probe]]
     if entry.name.length() > 0 &&
-      entry.name.to_lower().view(start_offset=0, end_offset=1) == needle {
+      entry.name.to_lower().exact_view(start=0, end=1) == needle {
       return self.move_to(probe, ctx)
     }
     at = at + 1
@@ -588,7 +588,7 @@ fn ends_with(text : String, suffix : String) -> Bool {
   if text.length() < suffix.length() {
     return false
   }
-  text.view(start_offset=text.length() - suffix.length()).to_lower() ==
+  text.exact_view(start=text.length() - suffix.length()).to_lower() ==
   suffix.to_lower()
 }
 

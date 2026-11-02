@@ -51,7 +51,7 @@ test "the gallery puts each demo on the stage as the menu moves to it" {
       Array::makei(100, x => screen.at(x, y).text).join("")
     }).join("\n")
     assert_eq(
-      text.contains(demos[i].note.view(end_offset=20)),
+      text.contains(demos[i].note.exact_view(end=20)),
       true,
       msg=demos[i].name,
     )

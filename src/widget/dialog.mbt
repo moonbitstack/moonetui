@@ -256,7 +256,7 @@ fn MessageBox::by_letter(self : MessageBox, letter : String, ctx : Ctx) -> Bool 
   let needle = letter.to_lower()
   for i in 0..<self.buttons.length() {
     if self.buttons[i].length() > 0 &&
-      self.buttons[i].to_lower().view(start_offset=0, end_offset=1) == needle {
+      self.buttons[i].to_lower().exact_view(start=0, end=1) == needle {
       self.choose(i, ctx)
       return true
     }
