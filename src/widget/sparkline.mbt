@@ -2,22 +2,24 @@
 // SPDX-License-Identifier: Apache-2.0
 
 ///|
+#derive(Eq, Debug)
 pub(all) enum Summary {
   Maximum
   Minimum
   Mean
   Median
   Latest
-} derive(Eq, Debug)
+}
 
 ///|
+#derive(Eq, Debug)
 pub struct Sparkline {
   mut data : Array[Double]
   summary : Summary
   min_colour : @style.Colour
   max_colour : @style.Colour
   style : @style.Style
-} derive(Eq, Debug)
+}
 
 ///|
 pub fn Sparkline::new(

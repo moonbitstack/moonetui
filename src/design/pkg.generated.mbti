@@ -28,45 +28,50 @@ pub fn themes() -> Array[Theme]
 // Errors
 
 // Types and methods
+#derive(Eq, @debug.Debug)
 pub(all) struct Align {
   h : HAlign
   v : VAlign
-} derive(Eq, @debug.Debug)
+}
 pub fn Align::equal(Self, Self) -> Bool
 pub fn Align::main_offset(Self, @layout.Dir, Int32) -> Int32
 pub fn Align::new(h? : HAlign, v? : VAlign) -> Self
 pub fn Align::not_equal(Self, Self) -> Bool
 pub fn Align::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) struct Decor {
   border : EdgeKind
   style : @style.Style
   size : @geom.Size
-} derive(Eq, @debug.Debug)
+}
 pub fn Decor::equal(Self, Self) -> Bool
 pub fn Decor::frame_line(Self, @geom.Spacing, Int32, @strip.Strip?) -> @strip.Strip
 pub fn Decor::line(Self, Int32) -> @strip.Strip
 pub fn Decor::not_equal(Self, Self) -> Bool
 pub fn Decor::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) enum Display {
   Block
   Hidden
-} derive(Eq, @debug.Debug)
+}
 pub fn Display::equal(Self, Self) -> Bool
 pub fn Display::not_equal(Self, Self) -> Bool
 pub fn Display::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) enum Edge {
   Top
   Right
   Bottom
   Left
-} derive(Eq, @debug.Debug)
+}
 pub fn Edge::equal(Self, Self) -> Bool
 pub fn Edge::not_equal(Self, Self) -> Bool
 pub fn Edge::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) enum EdgeKind {
   Off
   Ascii
@@ -74,31 +79,34 @@ pub(all) enum EdgeKind {
   Round
   Double
   Heavy
-} derive(Eq, @debug.Debug)
+}
 pub fn EdgeKind::equal(Self, Self) -> Bool
 pub fn EdgeKind::glyphs(Self) -> @widget.Border
 pub fn EdgeKind::not_equal(Self, Self) -> Bool
 pub fn EdgeKind::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) enum HAlign {
   Left
   Centre
   Right
-} derive(Eq, @debug.Debug)
+}
 pub fn HAlign::equal(Self, Self) -> Bool
 pub fn HAlign::not_equal(Self, Self) -> Bool
 pub fn HAlign::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) struct Preset {
   base : @style.Style
   sheet : Stylesheet
-} derive(Eq, @debug.Debug)
+}
 pub fn Preset::dark() -> Self
 pub fn Preset::equal(Self, Self) -> Bool
 pub fn Preset::light() -> Self
 pub fn Preset::not_equal(Self, Self) -> Bool
 pub fn Preset::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) struct Resolved {
   hidden : Bool
   margin : @geom.Spacing
@@ -121,7 +129,7 @@ pub(all) struct Resolved {
   min_height : Int32?
   max_height : Int32?
   text : @style.Style
-} derive(Eq, @debug.Debug)
+}
 pub fn Resolved::box(Self, @layout.Dir, @layout.Box) -> @layout.Box
 pub fn Resolved::content_region(Self, @geom.Region) -> @geom.Region
 pub fn Resolved::equal(Self, Self) -> Bool
@@ -130,6 +138,7 @@ pub fn Resolved::not_equal(Self, Self) -> Bool
 pub fn Resolved::of(Styles, @style.Style) -> Self
 pub fn Resolved::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) enum Role {
   Primary
   Secondary
@@ -142,22 +151,24 @@ pub(all) enum Role {
   Warning
   Error
   Border
-} derive(Eq, @debug.Debug)
+}
 pub fn Role::equal(Self, Self) -> Bool
 pub fn Role::name(Self) -> String
 pub fn Role::not_equal(Self, Self) -> Bool
 pub fn Role::note(Self) -> String
 pub fn Role::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) struct Rule {
   sel : Sel
   styles : Styles
-} derive(Eq, @debug.Debug)
+}
 pub fn Rule::equal(Self, Self) -> Bool
 pub fn Rule::new(Sel, Styles) -> Self
 pub fn Rule::not_equal(Self, Self) -> Bool
 pub fn Rule::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) struct Sel {
   name : String
   id : Int32
@@ -165,7 +176,7 @@ pub(all) struct Sel {
   focus : Bool
   hover : Bool
   disabled : Bool
-} derive(Eq, @debug.Debug)
+}
 pub fn Sel::equal(Self, Self) -> Bool
 pub fn Sel::matches(Self, String, Int32, Array[String], Bool, Bool, Bool) -> Bool
 pub fn Sel::new(name? : String, id? : Int32, classes? : Array[String], focus? : Bool, hover? : Bool, disabled? : Bool) -> Self
@@ -173,6 +184,7 @@ pub fn Sel::not_equal(Self, Self) -> Bool
 pub fn Sel::specificity(Self) -> Int32
 pub fn Sel::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) struct Styles {
   display : Display?
   width : @layout.Extent?
@@ -195,7 +207,7 @@ pub(all) struct Styles {
   transition : Int32?
   scrollbar : @style.Style?
   text : @style.Style?
-} derive(Eq, @debug.Debug)
+}
 pub fn Styles::equal(Self, Self) -> Bool
 pub fn Styles::is_empty(Self) -> Bool
 pub fn Styles::merge(Self, Self) -> Self
@@ -203,9 +215,10 @@ pub fn Styles::new(display? : Display, width? : @layout.Extent, height? : @layou
 pub fn Styles::not_equal(Self, Self) -> Bool
 pub fn Styles::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) struct Stylesheet {
   rules : Array[Rule]
-} derive(Eq, @debug.Debug)
+}
 pub fn Stylesheet::add(Self, Sel, Styles) -> Unit
 pub fn Stylesheet::append(Self, Self) -> Unit
 pub fn Stylesheet::equal(Self, Self) -> Bool
@@ -216,6 +229,7 @@ pub fn Stylesheet::not_equal(Self, Self) -> Bool
 pub fn Stylesheet::pick(Self, String, Int32, Array[String], Bool, hovered? : Bool, disabled? : Bool) -> Styles
 pub fn Stylesheet::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) struct Theme {
   name : String
   primary : @style.Colour
@@ -229,7 +243,7 @@ pub(all) struct Theme {
   warning : @style.Colour
   error : @style.Colour
   border : @style.Colour
-} derive(Eq, @debug.Debug)
+}
 pub fn Theme::base(Self) -> @style.Style
 pub fn Theme::colour(Self, Role) -> @style.Colour
 pub fn Theme::equal(Self, Self) -> Bool
@@ -242,11 +256,12 @@ pub fn Theme::set(Self, Role, @style.Colour) -> Self
 pub fn Theme::sheet(Self) -> Stylesheet
 pub fn Theme::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) enum VAlign {
   Top
   Middle
   Bottom
-} derive(Eq, @debug.Debug)
+}
 pub fn VAlign::equal(Self, Self) -> Bool
 pub fn VAlign::not_equal(Self, Self) -> Bool
 pub fn VAlign::to_repr(Self) -> @debug.Repr

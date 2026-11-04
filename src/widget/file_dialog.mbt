@@ -5,11 +5,12 @@
 /// One row of a listing, as the caller hands it over. This library never
 /// touches a file system: whatever walks the directories is the caller's, and
 /// what it finds comes in as this.
+#derive(Eq, Debug)
 pub(all) struct FileEntry {
   name : String
   dir : Bool
   size : Int32
-} derive(Eq, Debug)
+}
 
 ///|
 pub fn FileEntry::new(
@@ -27,10 +28,11 @@ pub fn FileEntry::is_dir(self : FileEntry) -> Bool {
 
 ///|
 /// Whether to open something that is there, or to name something to write.
+#derive(Eq, Debug)
 pub(all) enum FileMode {
   Open
   Save
-} derive(Eq, Debug)
+}
 
 ///|
 pub fn FileMode::confirm(self : FileMode) -> String {

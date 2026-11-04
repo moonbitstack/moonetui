@@ -2,10 +2,11 @@
 // SPDX-License-Identifier: Apache-2.0
 
 ///|
+#derive(Eq, Debug)
 pub(all) struct Cell {
   text : String
   style : @style.Style
-} derive(Eq, Debug)
+}
 
 ///|
 /// The screen an escape stream draws. It reads the ECMA-48 subset a full-screen

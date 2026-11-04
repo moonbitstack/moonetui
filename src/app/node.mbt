@@ -45,13 +45,14 @@ pub enum Node {
 }
 
 ///|
+#derive(Eq, Debug)
 pub(all) struct Theme {
   sheet : @design.Stylesheet
   focus : Int32
   hover : Int32
   disabled : Array[Int32]
   base : @style.Style
-} derive(Eq, Debug)
+}
 
 ///|
 pub extend Theme with Debug::{to_repr}

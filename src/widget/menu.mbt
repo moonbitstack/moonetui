@@ -4,13 +4,14 @@
 ///|
 /// One line of a menu: a label, the keys that do the same thing, a tick for
 /// a setting that is on, or a rule between two groups of them.
+#derive(Eq, Debug)
 pub(all) struct Item {
   label : String
   shortcut : String
   checked : Bool
   enabled : Bool
   rule : Bool
-} derive(Eq, Debug)
+}
 
 ///|
 pub fn Item::new(

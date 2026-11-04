@@ -2,19 +2,21 @@
 // SPDX-License-Identifier: Apache-2.0
 
 ///|
+#derive(Eq, Debug)
 pub(all) enum PlaceholderVariant {
   Default
   Size
   Text
-} derive(Eq, Debug)
+}
 
 ///|
+#derive(Eq, Debug)
 pub struct Placeholder {
   label : String
   mut variant : PlaceholderVariant
   colour : Int32
   style : @style.Style
-} derive(Eq, Debug)
+}
 
 ///|
 pub fn Placeholder::new(

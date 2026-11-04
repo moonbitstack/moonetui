@@ -2,10 +2,11 @@
 // SPDX-License-Identifier: Apache-2.0
 
 ///|
+#derive(Eq, Debug)
 pub struct DirEntry {
   name : String
   is_dir : Bool
-} derive(Eq, Debug)
+}
 
 ///|
 pub fn DirEntry::new(name : String, is_dir~ : Bool) -> DirEntry {

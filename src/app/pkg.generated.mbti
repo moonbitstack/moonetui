@@ -31,12 +31,13 @@ pub fn scroll(Int32, Node, box? : @layout.Box, state? : ScrollState, bar? : @sty
 // Errors
 
 // Types and methods
+#derive(Eq, @debug.Debug)
 pub(all) struct Anim {
   from : @geom.Region
   to : @geom.Region
   start : Int32
   ms : Int32
-} derive(Eq, @debug.Debug)
+}
 pub fn Anim::at(Self, Int32) -> @geom.Region
 pub fn Anim::equal(Self, Self) -> Bool
 pub fn Anim::not_equal(Self, Self) -> Bool
@@ -122,6 +123,7 @@ pub(all) struct Screen {
   focus : Int32
 }
 
+#derive(Eq, @debug.Debug)
 pub(all) struct ScrollState {
   mut x : Int32
   mut y : Int32
@@ -129,7 +131,7 @@ pub(all) struct ScrollState {
   mut vh : Int32
   mut cw : Int32
   mut ch : Int32
-} derive(Eq, @debug.Debug)
+}
 pub fn ScrollState::equal(Self, Self) -> Bool
 pub fn ScrollState::max_x(Self) -> Int32
 pub fn ScrollState::max_y(Self) -> Int32
@@ -139,32 +141,35 @@ pub fn ScrollState::scroll_by(Self, dx? : Int32, dy? : Int32) -> Bool
 pub fn ScrollState::scroll_to(Self, x? : Int32, y? : Int32) -> Bool
 pub fn ScrollState::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) struct Theme {
   sheet : @design.Stylesheet
   focus : Int32
   hover : Int32
   disabled : Array[Int32]
   base : @style.Style
-} derive(Eq, @debug.Debug)
+}
 pub fn Theme::equal(Self, Self) -> Bool
 pub fn Theme::new(sheet? : @design.Stylesheet, focus? : Int32, hover? : Int32, disabled? : Array[Int32], base? : @style.Style) -> Self
 pub fn Theme::not_equal(Self, Self) -> Bool
 pub fn Theme::to_repr(Self) -> @debug.Repr
 
+#derive(@debug.Debug)
 pub(all) struct Timer {
   ms : Int32
   at : Int32
   repeat : Bool
   fire : () -> Unit
-} derive(@debug.Debug)
+}
 pub fn Timer::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) struct View {
   state : ScrollState
   bar : @style.Style
   vbar : Bool
   hbar : Bool
-} derive(Eq, @debug.Debug)
+}
 pub fn View::equal(Self, Self) -> Bool
 pub fn View::not_equal(Self, Self) -> Bool
 pub fn View::to_repr(Self) -> @debug.Repr

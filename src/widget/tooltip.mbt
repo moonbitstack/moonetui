@@ -2,12 +2,13 @@
 // SPDX-License-Identifier: Apache-2.0
 
 ///|
+#derive(Eq, Debug)
 pub struct Tooltip {
   mut content : String
   mut style : @style.Style
   max_width : Int32
   padding : Int32
-} derive(Eq, Debug)
+}
 
 ///|
 pub extend Tooltip with Debug::{to_repr}

@@ -2,9 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 ///|
+#derive(Debug)
 pub(all) suberror TtyError {
   Io(String)
-} derive(Debug)
+}
 
 ///|
 pub(open) trait Driver {

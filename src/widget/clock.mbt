@@ -5,12 +5,13 @@
 /// A time of day that counts itself forward from the frames it is given, so a
 /// clock runs off the same `Tick` every other widget sees and needs no clock
 /// of the host's.
+#derive(Eq, Debug)
 pub(all) struct Clock {
   mut hour : Int32
   mut minute : Int32
   mut second : Int32
   mut carry : Int32
-} derive(Eq, Debug)
+}
 
 ///|
 pub fn Clock::new(

@@ -4,11 +4,12 @@
 ///|
 /// One column of a bar chart: what it is called, how tall it stands, and the
 /// colour it is drawn in when it has one of its own.
+#derive(Eq, Debug)
 pub(all) struct Bar {
   label : String
   value : Double
   style : @style.Style?
-} derive(Eq, Debug)
+}
 
 ///|
 pub fn Bar::new(

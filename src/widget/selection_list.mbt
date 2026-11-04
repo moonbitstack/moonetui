@@ -2,12 +2,13 @@
 // SPDX-License-Identifier: Apache-2.0
 
 ///|
+#derive(Eq, Debug)
 pub(all) struct Selection {
   prompt : String
   value : String
   initial : Bool
   disabled : Bool
-} derive(Eq, Debug)
+}
 
 ///|
 pub fn Selection::new(
@@ -20,6 +21,7 @@ pub fn Selection::new(
 }
 
 ///|
+#derive(Eq, Debug)
 pub struct SelectionList {
   mut options : Array[Selection]
   mut states : Array[Bool]
@@ -35,7 +37,7 @@ pub struct SelectionList {
   disabled_style : @style.Style
   selected_style : @style.Style
   unselected_style : @style.Style
-} derive(Eq, Debug)
+}
 
 ///|
 pub fn SelectionList::new(

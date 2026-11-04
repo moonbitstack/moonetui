@@ -2,12 +2,13 @@
 // SPDX-License-Identifier: Apache-2.0
 
 ///|
+#derive(Eq, Debug)
 pub(all) enum CursorType {
   Cell
   Row
   Column
   None
-} derive(Eq, Debug)
+}
 
 ///|
 pub extend CursorType with Debug::{to_repr}
@@ -16,11 +17,12 @@ pub extend CursorType with Debug::{to_repr}
 pub extend CursorType with Eq::{not_equal, equal}
 
 ///|
+#derive(Eq, Debug)
 pub(all) struct Column {
   label : String
   width : Int32
   align : Align
-} derive(Eq, Debug)
+}
 
 ///|
 pub extend Column with Debug::{to_repr}
@@ -38,10 +40,11 @@ pub fn Column::new(
 }
 
 ///|
+#derive(Eq, Debug)
 pub(all) struct Row {
   label : String
   cells : Array[String]
-} derive(Eq, Debug)
+}
 
 ///|
 pub extend Row with Debug::{to_repr}
@@ -55,6 +58,7 @@ pub fn Row::new(cells : Array[String], label~ : String = "") -> Row {
 }
 
 ///|
+#derive(Eq, Debug)
 pub struct DataTable {
   mut columns : Array[Column]
   mut rows : Array[Row]
@@ -79,7 +83,7 @@ pub struct DataTable {
   even_style : @style.Style
   label_style : @style.Style
   style : @style.Style
-} derive(Eq, Debug)
+}
 
 ///|
 pub extend DataTable with Debug::{to_repr}

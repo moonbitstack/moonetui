@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 ///|
+#derive(Eq, Debug)
 pub struct Select {
   options : Array[(String, String)]
   prompt : String
@@ -19,7 +20,7 @@ pub struct Select {
   arrow_style : @style.Style
   highlight : @style.Style
   blurred_highlight : @style.Style
-} derive(Eq, Debug)
+}
 
 ///|
 pub fn Select::new(

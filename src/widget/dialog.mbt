@@ -4,12 +4,13 @@
 ///|
 /// What a message box is telling the user, which sets the mark beside the
 /// text and the colour it is drawn in.
+#derive(Eq, Debug)
 pub(all) enum DialogKind {
   Info
   Question
   Warning
   Error
-} derive(Eq, Debug)
+}
 
 ///|
 pub fn DialogKind::mark(self : DialogKind) -> String {

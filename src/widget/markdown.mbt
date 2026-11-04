@@ -622,6 +622,7 @@ fn md_marker(depth : Int32, bullet : Bool, number : Int32) -> String {
 }
 
 ///|
+#derive(Eq, Debug)
 pub struct Markdown {
   mut source : String
   mut laid : Array[@strip.Strip]
@@ -634,7 +635,7 @@ pub struct Markdown {
   code_style : @style.Style
   quote_style : @style.Style
   rule_style : @style.Style
-} derive(Eq, Debug)
+}
 
 ///|
 pub extend Markdown with Debug::{to_repr}

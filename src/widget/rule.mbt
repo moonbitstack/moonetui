@@ -2,12 +2,14 @@
 // SPDX-License-Identifier: Apache-2.0
 
 ///|
+#derive(Eq, Debug)
 pub(all) enum RuleDir {
   Horizontal
   Vertical
-} derive(Eq, Debug)
+}
 
 ///|
+#derive(Eq, Debug)
 pub(all) enum RuleKind {
   Ascii
   Blank
@@ -18,14 +20,15 @@ pub(all) enum RuleKind {
   None
   Solid
   Thick
-} derive(Eq, Debug)
+}
 
 ///|
+#derive(Eq, Debug)
 pub struct Rule {
   dir : RuleDir
   mut kind : RuleKind
   style : @style.Style
-} derive(Eq, Debug)
+}
 
 ///|
 pub fn Rule::horizontal(

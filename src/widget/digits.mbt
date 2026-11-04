@@ -2,10 +2,11 @@
 // SPDX-License-Identifier: Apache-2.0
 
 ///|
+#derive(Eq, Debug)
 pub struct Digits {
   mut value : String
   style : @style.Style
-} derive(Eq, Debug)
+}
 
 ///|
 pub fn Digits::new(

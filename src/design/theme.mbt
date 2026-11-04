@@ -5,6 +5,7 @@
 /// What a colour in a theme is for. A widget asks for a role and the theme
 /// answers with the colour that role holds, so a whole look changes by
 /// swapping one value.
+#derive(Eq, Debug)
 pub(all) enum Role {
   Primary
   Secondary
@@ -17,7 +18,7 @@ pub(all) enum Role {
   Warning
   Error
   Border
-} derive(Eq, Debug)
+}
 
 ///|
 pub fn roles() -> Array[Role] {
@@ -76,6 +77,7 @@ pub fn Role::note(self : Role) -> String {
 ///|
 /// A set of semantic colours as one value: everything a look is made of,
 /// switched as a whole.
+#derive(Eq, Debug)
 pub(all) struct Theme {
   name : String
   primary : @style.Colour
@@ -89,7 +91,7 @@ pub(all) struct Theme {
   warning : @style.Colour
   error : @style.Colour
   border : @style.Colour
-} derive(Eq, Debug)
+}
 
 ///|
 /// A theme of the default look, with any role left out taken from `dark`.

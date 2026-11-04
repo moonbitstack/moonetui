@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 ///|
+#derive(Eq, Debug)
 pub(all) struct Sel {
   name : String
   id : Int32
@@ -9,7 +10,7 @@ pub(all) struct Sel {
   focus : Bool
   hover : Bool
   disabled : Bool
-} derive(Eq, Debug)
+}
 
 ///|
 pub extend Sel with Debug::{to_repr}
@@ -69,10 +70,11 @@ pub fn Sel::specificity(self : Sel) -> Int32 {
 }
 
 ///|
+#derive(Eq, Debug)
 pub(all) struct Rule {
   sel : Sel
   styles : Styles
-} derive(Eq, Debug)
+}
 
 ///|
 pub extend Rule with Debug::{to_repr}
@@ -86,9 +88,10 @@ pub fn Rule::new(sel : Sel, styles : Styles) -> Rule {
 }
 
 ///|
+#derive(Eq, Debug)
 pub(all) struct Stylesheet {
   rules : Array[Rule]
-} derive(Eq, Debug)
+}
 
 ///|
 pub extend Stylesheet with Debug::{to_repr}

@@ -9,11 +9,12 @@ pub struct Static {
 }
 
 ///|
+#derive(Eq, Debug)
 pub(all) enum Align {
   Left
   Centre
   Right
-} derive(Eq, Debug)
+}
 
 ///|
 pub fn Static::new(

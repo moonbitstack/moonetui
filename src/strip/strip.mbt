@@ -2,11 +2,12 @@
 // SPDX-License-Identifier: Apache-2.0
 
 ///|
+#derive(Eq, Debug)
 pub(all) struct Seg {
   text : String
   style : @style.Style
   cells : Int32
-} derive(Eq, Debug)
+}
 
 ///|
 pub fn Seg::new(text : String, style : @style.Style) -> Seg {
@@ -14,10 +15,11 @@ pub fn Seg::new(text : String, style : @style.Style) -> Seg {
 }
 
 ///|
+#derive(Eq, Debug)
 pub(all) struct Strip {
   segs : Array[Seg]
   cells : Int32
-} derive(Eq, Debug)
+}
 
 ///|
 pub fn Strip::empty() -> Strip {

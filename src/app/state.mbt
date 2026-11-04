@@ -4,12 +4,13 @@
 ///|
 /// One node gliding from where it was to where the layout just put it. The
 /// times are milliseconds off the driver's clock.
+#derive(Eq, Debug)
 pub(all) struct Anim {
   from : @geom.Region
   to : @geom.Region
   start : Int32
   ms : Int32
-} derive(Eq, Debug)
+}
 
 ///|
 pub extend Anim with Debug::{to_repr}
@@ -37,12 +38,13 @@ pub fn Anim::at(self : Anim, now : Int32) -> @geom.Region {
 }
 
 ///|
+#derive(Debug)
 pub(all) struct Timer {
   ms : Int32
   at : Int32
   repeat : Bool
   fire : () -> Unit
-} derive(Debug)
+}
 
 ///|
 pub extend Timer with Debug::{to_repr}

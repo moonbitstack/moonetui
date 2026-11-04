@@ -2,15 +2,17 @@
 // SPDX-License-Identifier: Apache-2.0
 
 ///|
+#derive(Eq, Debug)
 pub(all) enum Msg {
   Key(@event.Key)
   Mouse(@event.Mouse)
   Paste(String)
   Focus(Bool)
   Tick(Int32)
-} derive(Eq, Debug)
+}
 
 ///|
+#derive(Eq, Debug)
 pub(all) enum Out {
   Repaint(id~ : Int32)
   TakeFocus(id~ : Int32)
@@ -30,7 +32,7 @@ pub(all) enum Out {
   HeaderSelected(id~ : Int32, col~ : Int32)
   Dismissed(id~ : Int32)
   Quit
-} derive(Eq, Debug)
+}
 
 ///|
 pub struct Ctx {
@@ -94,6 +96,7 @@ fn text_order(a : String, b : String) -> Int32 {
 }
 
 ///|
+#derive(Eq, Debug)
 pub(all) struct Border {
   top_left : String
   top : String
@@ -103,7 +106,7 @@ pub(all) struct Border {
   bottom_left : String
   bottom : String
   bottom_right : String
-} derive(Eq, Debug)
+}
 
 ///|
 pub let thin : Border = {

@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 ///|
+#derive(Eq, Debug)
 pub struct RichLog {
   mut lines : Array[@strip.Strip]
   mut width : Int32
@@ -15,7 +16,7 @@ pub struct RichLog {
   mut offset_y : Int32
   mut focused : Bool
   style : @style.Style
-} derive(Eq, Debug)
+}
 
 ///|
 pub fn RichLog::new(

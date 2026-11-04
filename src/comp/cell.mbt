@@ -2,11 +2,12 @@
 // SPDX-License-Identifier: Apache-2.0
 
 ///|
+#derive(Eq, Debug)
 pub(all) struct Cell {
   text : String
   style : @style.Style
   continuation : Bool
-} derive(Eq, Debug)
+}
 
 ///|
 pub fn Cell::blank(style : @style.Style) -> Cell {

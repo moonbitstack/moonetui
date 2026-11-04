@@ -152,6 +152,7 @@ pub fn[D] Gallery::react(Self, @app.App[D], @widget.Out) -> Unit
 pub fn Gallery::sheet(Self) -> @design.Stylesheet
 pub fn Gallery::tree(Self) -> @app.Node
 
+#derive(Eq, @debug.Debug)
 pub(all) enum Group {
   Text
   Entry
@@ -161,7 +162,7 @@ pub(all) enum Group {
   Overlay
   Chart
   Style
-} derive(Eq, @debug.Debug)
+}
 pub fn Group::equal(Self, Self) -> Bool
 pub fn Group::not_equal(Self, Self) -> Bool
 pub fn Group::title(Self) -> String

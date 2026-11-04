@@ -2,11 +2,12 @@
 // SPDX-License-Identifier: Apache-2.0
 
 ///|
+#derive(Eq, Debug)
 pub(all) struct Placement {
   node : Int32
   rect : @geom.Region
   clip : @geom.Region
-} derive(Eq, Debug)
+}
 
 ///|
 pub fn Placement::visible(self : Placement) -> @geom.Region {
@@ -14,10 +15,11 @@ pub fn Placement::visible(self : Placement) -> @geom.Region {
 }
 
 ///|
+#derive(Eq, Debug)
 pub(all) struct Scene {
   size : @geom.Size
   items : Array[Placement]
-} derive(Eq, Debug)
+}
 
 ///|
 pub fn Scene::new(size : @geom.Size) -> Scene {

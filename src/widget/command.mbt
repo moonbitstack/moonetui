@@ -3,11 +3,12 @@
 
 ///|
 /// One thing the application can do, as the palette lists it.
+#derive(Eq, Debug)
 pub(all) struct Command {
   name : String
   hint : String
   key : String
-} derive(Eq, Debug)
+}
 
 ///|
 pub fn Command::new(

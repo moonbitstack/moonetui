@@ -2,11 +2,12 @@
 // SPDX-License-Identifier: Apache-2.0
 
 ///|
+#derive(Eq, Debug)
 pub(all) struct Span {
   y : Int32
   x : Int32
   line : @strip.Strip
-} derive(Eq, Debug)
+}
 
 ///|
 pub fn diff(

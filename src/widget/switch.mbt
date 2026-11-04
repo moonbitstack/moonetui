@@ -4,6 +4,7 @@
 ///|
 /// The switch: a four-wide strip, half thumb and half track, the thumb on
 /// the left when off and on the right when on.
+#derive(Eq, Debug)
 pub struct Switch {
   mut value : Bool
   mut focused : Bool
@@ -11,7 +12,7 @@ pub struct Switch {
   off_style : @style.Style
   track : @style.Style
   focus_track : @style.Style
-} derive(Eq, Debug)
+}
 
 ///|
 pub fn Switch::new(

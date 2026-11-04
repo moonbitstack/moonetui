@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 ///|
+#derive(Eq, Debug)
 pub struct Log {
   mut lines : Array[String]
   mut width : Int32
@@ -13,7 +14,7 @@ pub struct Log {
   mut offset_y : Int32
   mut focused : Bool
   style : @style.Style
-} derive(Eq, Debug)
+}
 
 ///|
 pub fn Log::new(

@@ -32,9 +32,10 @@ pub fn leave(alt? : Bool, mouse? : Bool, paste? : Bool, focus? : Bool, resize? :
 pub let leave_alt : String
 
 // Errors
+#derive(@debug.Debug)
 pub(all) suberror TtyError {
   Io(String)
-} derive(@debug.Debug)
+}
 pub fn TtyError::to_repr(Self) -> @debug.Repr
 
 // Types and methods

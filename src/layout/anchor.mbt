@@ -6,12 +6,13 @@
 /// however the parent is sized; an axis with both of its edges held stretches
 /// the box to fill what lies between them. A box held to no edge keeps the
 /// size it asked for and sits where its pivot says.
+#derive(Eq, Debug)
 pub(all) struct Anchor {
   top : Bool
   right : Bool
   bottom : Bool
   left : Bool
-} derive(Eq, Debug)
+}
 
 ///|
 /// Held to nothing: the box floats, placed by its pivot.
@@ -67,6 +68,7 @@ pub fn corners() -> Array[Anchor] {
 
 ///|
 /// Where a box no edge holds sits in the space its parent left it.
+#derive(Eq, Debug)
 pub(all) enum Pivot {
   TopLeft
   TopCentre
@@ -77,7 +79,7 @@ pub(all) enum Pivot {
   BottomLeft
   BottomCentre
   BottomRight
-} derive(Eq, Debug)
+}
 
 ///|
 pub let centre : Pivot = Middle

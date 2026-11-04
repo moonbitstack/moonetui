@@ -2,10 +2,11 @@
 // SPDX-License-Identifier: Apache-2.0
 
 ///|
+#derive(Eq, Debug)
 pub(all) enum Display {
   Block
   Hidden
-} derive(Eq, Debug)
+}
 
 ///|
 pub extend Display with Debug::{to_repr}
@@ -14,11 +15,12 @@ pub extend Display with Debug::{to_repr}
 pub extend Display with Eq::{not_equal, equal}
 
 ///|
+#derive(Eq, Debug)
 pub(all) enum HAlign {
   Left
   Centre
   Right
-} derive(Eq, Debug)
+}
 
 ///|
 pub extend HAlign with Debug::{to_repr}
@@ -27,11 +29,12 @@ pub extend HAlign with Debug::{to_repr}
 pub extend HAlign with Eq::{not_equal, equal}
 
 ///|
+#derive(Eq, Debug)
 pub(all) enum VAlign {
   Top
   Middle
   Bottom
-} derive(Eq, Debug)
+}
 
 ///|
 pub extend VAlign with Debug::{to_repr}
@@ -40,10 +43,11 @@ pub extend VAlign with Debug::{to_repr}
 pub extend VAlign with Eq::{not_equal, equal}
 
 ///|
+#derive(Eq, Debug)
 pub(all) struct Align {
   h : HAlign
   v : VAlign
-} derive(Eq, Debug)
+}
 
 ///|
 pub extend Align with Debug::{to_repr}
@@ -80,12 +84,13 @@ pub fn Align::main_offset(
 }
 
 ///|
+#derive(Eq, Debug)
 pub(all) enum Edge {
   Top
   Right
   Bottom
   Left
-} derive(Eq, Debug)
+}
 
 ///|
 pub extend Edge with Debug::{to_repr}
@@ -94,6 +99,7 @@ pub extend Edge with Debug::{to_repr}
 pub extend Edge with Eq::{not_equal, equal}
 
 ///|
+#derive(Eq, Debug)
 pub(all) enum EdgeKind {
   Off
   Ascii
@@ -101,7 +107,7 @@ pub(all) enum EdgeKind {
   Round
   Double
   Heavy
-} derive(Eq, Debug)
+}
 
 ///|
 pub extend EdgeKind with Debug::{to_repr}
@@ -122,6 +128,7 @@ pub fn EdgeKind::glyphs(self : EdgeKind) -> @widget.Border {
 }
 
 ///|
+#derive(Eq, Debug)
 pub(all) struct Styles {
   display : Display?
   width : @layout.Extent?
@@ -144,7 +151,7 @@ pub(all) struct Styles {
   transition : Int32?
   scrollbar : @style.Style?
   text : @style.Style?
-} derive(Eq, Debug)
+}
 
 ///|
 pub extend Styles with Debug::{to_repr}
@@ -277,6 +284,7 @@ fn[T] pick(over : T?, under : T?) -> T? {
 }
 
 ///|
+#derive(Eq, Debug)
 pub(all) struct Resolved {
   hidden : Bool
   margin : @geom.Spacing
@@ -299,7 +307,7 @@ pub(all) struct Resolved {
   min_height : Int32?
   max_height : Int32?
   text : @style.Style
-} derive(Eq, Debug)
+}
 
 ///|
 pub extend Resolved with Debug::{to_repr}
@@ -408,11 +416,12 @@ pub fn Resolved::has_chrome(self : Resolved) -> Bool {
 }
 
 ///|
+#derive(Eq, Debug)
 pub(all) struct Decor {
   border : EdgeKind
   style : @style.Style
   size : @geom.Size
-} derive(Eq, Debug)
+}
 
 ///|
 pub extend Decor with Debug::{to_repr}

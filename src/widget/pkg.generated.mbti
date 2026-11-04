@@ -39,31 +39,34 @@ pub let yes_no_cancel : Array[String]
 // Errors
 
 // Types and methods
+#derive(Eq, @debug.Debug)
 pub(all) enum Align {
   Left
   Centre
   Right
-} derive(Eq, @debug.Debug)
+}
 pub fn Align::equal(Self, Self) -> Bool
 pub fn Align::not_equal(Self, Self) -> Bool
 pub fn Align::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) struct Axis {
   title : String
   labels : Array[String]
   bounds : Bounds
   style : @style.Style
-} derive(Eq, @debug.Debug)
+}
 pub fn Axis::equal(Self, Self) -> Bool
 pub fn Axis::new(labels? : Array[String], bounds? : Bounds, title? : String, style? : @style.Style) -> Self
 pub fn Axis::not_equal(Self, Self) -> Bool
 pub fn Axis::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) struct Bar {
   label : String
   value : Double
   style : @style.Style?
-} derive(Eq, @debug.Debug)
+}
 pub fn Bar::equal(Self, Self) -> Bool
 pub fn Bar::new(String, value? : Double, style? : @style.Style?) -> Self
 pub fn Bar::not_equal(Self, Self) -> Bool
@@ -109,6 +112,7 @@ pub fn Block::set_title(Self, String) -> Unit
 pub fn Block::title(Self) -> String
 pub impl Widget for Block
 
+#derive(Eq, @debug.Debug)
 pub(all) struct Border {
   top_left : String
   top : String
@@ -118,15 +122,16 @@ pub(all) struct Border {
   bottom_left : String
   bottom : String
   bottom_right : String
-} derive(Eq, @debug.Debug)
+}
 pub fn Border::equal(Self, Self) -> Bool
 pub fn Border::not_equal(Self, Self) -> Bool
 pub fn Border::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) struct Bounds {
   low : Double
   high : Double
-} derive(Eq, @debug.Debug)
+}
 pub fn Bounds::equal(Self, Self) -> Bool
 pub fn Bounds::new(low? : Double, high? : Double) -> Self
 pub fn Bounds::not_equal(Self, Self) -> Bool
@@ -173,6 +178,7 @@ pub fn Chart::set_x(Self, Axis) -> Unit
 pub fn Chart::set_y(Self, Axis) -> Unit
 pub impl Widget for Chart
 
+#derive(Eq, @debug.Debug)
 pub struct Checkbox {
   mut label : String
   mut value : Bool
@@ -182,7 +188,7 @@ pub struct Checkbox {
   label_style : @style.Style
   focus_style : @style.Style
   mut focused : Bool
-} derive(Eq, @debug.Debug)
+}
 pub fn Checkbox::equal(Self, Self) -> Bool
 pub fn Checkbox::focusable(Self) -> Bool
 pub fn Checkbox::handle(Self, Ctx, Msg) -> Bool
@@ -198,22 +204,24 @@ pub fn Checkbox::toggle(Self) -> Unit
 pub fn Checkbox::value(Self) -> Bool
 pub impl Widget for Checkbox
 
+#derive(Eq, @debug.Debug)
 pub(all) struct Choice {
   prompt : String
   mut disabled : Bool
   divider : Bool
-} derive(Eq, @debug.Debug)
+}
 pub fn Choice::equal(Self, Self) -> Bool
 pub fn Choice::new(String, disabled? : Bool) -> Self
 pub fn Choice::not_equal(Self, Self) -> Bool
 pub fn Choice::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) struct Clock {
   mut hour : Int32
   mut minute : Int32
   mut second : Int32
   mut carry : Int32
-} derive(Eq, @debug.Debug)
+}
 pub fn Clock::advance(Self, Int32) -> Bool
 pub fn Clock::equal(Self, Self) -> Bool
 pub fn Clock::hour(Self) -> Int32
@@ -251,21 +259,23 @@ pub fn Collapsible::set_title(Self, String) -> Unit
 pub fn Collapsible::title(Self) -> String
 pub impl Widget for Collapsible
 
+#derive(Eq, @debug.Debug)
 pub(all) struct Column {
   label : String
   width : Int32
   align : Align
-} derive(Eq, @debug.Debug)
+}
 pub fn Column::equal(Self, Self) -> Bool
 pub fn Column::new(String, width? : Int32, align? : Align) -> Self
 pub fn Column::not_equal(Self, Self) -> Bool
 pub fn Column::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) struct Command {
   name : String
   hint : String
   key : String
-} derive(Eq, @debug.Debug)
+}
 pub fn Command::equal(Self, Self) -> Bool
 pub fn Command::new(String, hint? : String, key? : String) -> Self
 pub fn Command::not_equal(Self, Self) -> Bool
@@ -327,16 +337,18 @@ pub fn Ctx::emit(Self, Out) -> Unit
 pub fn Ctx::new(Int32, @geom.Size, focused? : Bool) -> Self
 pub fn Ctx::repaint(Self) -> Unit
 
+#derive(Eq, @debug.Debug)
 pub(all) enum CursorType {
   Cell
   Row
   Column
   None
-} derive(Eq, @debug.Debug)
+}
 pub fn CursorType::equal(Self, Self) -> Bool
 pub fn CursorType::not_equal(Self, Self) -> Bool
 pub fn CursorType::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub struct DataTable {
   mut columns : Array[Column]
   mut rows : Array[Row]
@@ -361,7 +373,7 @@ pub struct DataTable {
   even_style : @style.Style
   label_style : @style.Style
   style : @style.Style
-} derive(Eq, @debug.Debug)
+}
 pub fn DataTable::add_column(Self, String, width? : Int32, align? : Align) -> Int32
 pub fn DataTable::add_row(Self, Array[String], label? : String) -> Int32
 pub fn DataTable::cell(Self, Int32, Int32) -> String
@@ -387,33 +399,36 @@ pub fn DataTable::sort(Self, Int32, reverse? : Bool) -> Unit
 pub fn DataTable::to_repr(Self) -> @debug.Repr
 pub impl Widget for DataTable
 
+#derive(Eq, @debug.Debug)
 pub(all) struct Dataset {
   name : String
   kind : GraphKind
   points : Array[(Double, Double)]
   style : @style.Style
-} derive(Eq, @debug.Debug)
+}
 pub fn Dataset::equal(Self, Self) -> Bool
 pub fn Dataset::new(String, Array[(Double, Double)], kind? : GraphKind, style? : @style.Style) -> Self
 pub fn Dataset::not_equal(Self, Self) -> Bool
 pub fn Dataset::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) enum DialogKind {
   Info
   Question
   Warning
   Error
-} derive(Eq, @debug.Debug)
+}
 pub fn DialogKind::equal(Self, Self) -> Bool
 pub fn DialogKind::mark(Self) -> String
 pub fn DialogKind::not_equal(Self, Self) -> Bool
 pub fn DialogKind::style(Self) -> @style.Style
 pub fn DialogKind::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub struct Digits {
   mut value : String
   style : @style.Style
-} derive(Eq, @debug.Debug)
+}
 pub fn Digits::equal(Self, Self) -> Bool
 pub fn Digits::focusable(Self) -> Bool
 pub fn Digits::handle(Self, Ctx, Msg) -> Bool
@@ -427,10 +442,11 @@ pub fn Digits::value(Self) -> String
 pub fn Digits::width_of(String) -> Int32
 pub impl Widget for Digits
 
+#derive(Eq, @debug.Debug)
 pub struct DirEntry {
   name : String
   is_dir : Bool
-} derive(Eq, @debug.Debug)
+}
 pub fn DirEntry::equal(Self, Self) -> Bool
 pub fn DirEntry::new(String, is_dir~ : Bool) -> Self
 pub fn DirEntry::not_equal(Self, Self) -> Bool
@@ -494,21 +510,23 @@ pub fn FileDialog::title(Self) -> String
 pub fn FileDialog::value(Self) -> String
 pub impl Widget for FileDialog
 
+#derive(Eq, @debug.Debug)
 pub(all) struct FileEntry {
   name : String
   dir : Bool
   size : Int32
-} derive(Eq, @debug.Debug)
+}
 pub fn FileEntry::equal(Self, Self) -> Bool
 pub fn FileEntry::is_dir(Self) -> Bool
 pub fn FileEntry::new(String, dir? : Bool, size? : Int32) -> Self
 pub fn FileEntry::not_equal(Self, Self) -> Bool
 pub fn FileEntry::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) enum FileMode {
   Open
   Save
-} derive(Eq, @debug.Debug)
+}
 pub fn FileMode::confirm(Self) -> String
 pub fn FileMode::equal(Self, Self) -> Bool
 pub fn FileMode::not_equal(Self, Self) -> Bool
@@ -546,10 +564,11 @@ pub fn Gauge::set_label(Self, String) -> Unit
 pub fn Gauge::set_ratio(Self, Double) -> Unit
 pub impl Widget for Gauge
 
+#derive(Eq, @debug.Debug)
 pub(all) enum GraphKind {
   Line
   Scatter
-} derive(Eq, @debug.Debug)
+}
 pub fn GraphKind::equal(Self, Self) -> Bool
 pub fn GraphKind::marker(Self) -> String
 pub fn GraphKind::not_equal(Self, Self) -> Bool
@@ -622,13 +641,14 @@ pub fn InputBox::set_title(Self, String) -> Unit
 pub fn InputBox::text(Self) -> String
 pub impl Widget for InputBox
 
+#derive(Eq, @debug.Debug)
 pub(all) struct Item {
   label : String
   shortcut : String
   checked : Bool
   enabled : Bool
   rule : Bool
-} derive(Eq, @debug.Debug)
+}
 pub fn Item::equal(Self, Self) -> Bool
 pub fn Item::is_enabled(Self) -> Bool
 pub fn Item::is_separator(Self) -> Bool
@@ -659,12 +679,13 @@ pub fn Link::text(Self) -> String
 pub fn Link::visit(Self, visited? : Bool) -> Unit
 pub impl Widget for Link
 
+#derive(Eq, @debug.Debug)
 pub(all) struct ListState {
   mut selected : Int32
   mut offset : Int32
   mut seen : Int32
   mut followed : Bool
-} derive(Eq, @debug.Debug)
+}
 pub fn ListState::clear(Self) -> Unit
 pub fn ListState::equal(Self, Self) -> Bool
 pub fn ListState::follow(Self, Int32, Int32) -> Unit
@@ -701,11 +722,12 @@ pub fn ListView::select(Self, Int32) -> Unit
 pub fn ListView::set(Self, Array[String]) -> Unit
 pub impl Widget for ListView
 
+#derive(Eq, @debug.Debug)
 pub struct LoadingIndicator {
   mut frame : Int32
   style : @style.Style
   dim_style : @style.Style
-} derive(Eq, @debug.Debug)
+}
 pub fn LoadingIndicator::equal(Self, Self) -> Bool
 pub fn LoadingIndicator::focusable(Self) -> Bool
 pub fn LoadingIndicator::frame(Self) -> Int32
@@ -717,6 +739,7 @@ pub fn LoadingIndicator::render_line(Self, Int32, @geom.Size) -> @strip.Strip
 pub fn LoadingIndicator::to_repr(Self) -> @debug.Repr
 pub impl Widget for LoadingIndicator
 
+#derive(Eq, @debug.Debug)
 pub struct Log {
   mut lines : Array[String]
   mut width : Int32
@@ -728,7 +751,7 @@ pub struct Log {
   mut offset_y : Int32
   mut focused : Bool
   style : @style.Style
-} derive(Eq, @debug.Debug)
+}
 pub fn Log::clear(Self) -> Unit
 pub fn Log::equal(Self, Self) -> Bool
 pub fn Log::focusable(Self) -> Bool
@@ -747,6 +770,7 @@ pub fn Log::write_line(Self, String, scroll_end? : Bool) -> Unit
 pub fn Log::write_lines(Self, Array[String], scroll_end? : Bool) -> Unit
 pub impl Widget for Log
 
+#derive(Eq, @debug.Debug)
 pub struct Markdown {
   mut source : String
   mut laid : Array[@strip.Strip]
@@ -759,7 +783,7 @@ pub struct Markdown {
   code_style : @style.Style
   quote_style : @style.Style
   rule_style : @style.Style
-} derive(Eq, @debug.Debug)
+}
 pub fn Markdown::equal(Self, Self) -> Bool
 pub fn Markdown::focusable(Self) -> Bool
 pub fn Markdown::handle(Self, Ctx, Msg) -> Bool
@@ -870,17 +894,19 @@ pub fn MessageBox::set_message(Self, String) -> Unit
 pub fn MessageBox::set_title(Self, String) -> Unit
 pub impl Widget for MessageBox
 
+#derive(Eq, @debug.Debug)
 pub(all) enum Msg {
   Key(@event.Key)
   Mouse(@event.Mouse)
   Paste(String)
   Focus(Bool)
   Tick(Int32)
-} derive(Eq, @debug.Debug)
+}
 pub fn Msg::equal(Self, Self) -> Bool
 pub fn Msg::not_equal(Self, Self) -> Bool
 pub fn Msg::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub struct OptionList {
   mut options : Array[Choice]
   mut highlighted : Int32
@@ -895,7 +921,7 @@ pub struct OptionList {
   disabled_style : @style.Style
   hover_style : @style.Style
   separator_style : @style.Style
-} derive(Eq, @debug.Debug)
+}
 pub fn OptionList::add_option(Self, Choice) -> Unit
 pub fn OptionList::add_separator(Self) -> Unit
 pub fn OptionList::clear_options(Self) -> Unit
@@ -914,6 +940,7 @@ pub fn OptionList::set_options(Self, Array[Choice]) -> Unit
 pub fn OptionList::to_repr(Self) -> @debug.Repr
 pub impl Widget for OptionList
 
+#derive(Eq, @debug.Debug)
 pub(all) enum Out {
   Repaint(id~ : Int32)
   TakeFocus(id~ : Int32)
@@ -933,17 +960,18 @@ pub(all) enum Out {
   HeaderSelected(id~ : Int32, col~ : Int32)
   Dismissed(id~ : Int32)
   Quit
-} derive(Eq, @debug.Debug)
+}
 pub fn Out::equal(Self, Self) -> Bool
 pub fn Out::not_equal(Self, Self) -> Bool
 pub fn Out::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub struct Placeholder {
   label : String
   mut variant : PlaceholderVariant
   colour : Int32
   style : @style.Style
-} derive(Eq, @debug.Debug)
+}
 pub fn Placeholder::cycle(Self) -> Unit
 pub fn Placeholder::equal(Self, Self) -> Bool
 pub fn Placeholder::focusable(Self) -> Bool
@@ -956,11 +984,12 @@ pub fn Placeholder::to_repr(Self) -> @debug.Repr
 pub fn Placeholder::variant(Self) -> PlaceholderVariant
 pub impl Widget for Placeholder
 
+#derive(Eq, @debug.Debug)
 pub(all) enum PlaceholderVariant {
   Default
   Size
   Text
-} derive(Eq, @debug.Debug)
+}
 pub fn PlaceholderVariant::equal(Self, Self) -> Bool
 pub fn PlaceholderVariant::not_equal(Self, Self) -> Bool
 pub fn PlaceholderVariant::to_repr(Self) -> @debug.Repr
@@ -1005,6 +1034,7 @@ pub fn Progress::set(Self, Int32) -> Unit
 pub fn Progress::set_total(Self, Int32) -> Unit
 pub impl Widget for Progress
 
+#derive(Eq, @debug.Debug)
 pub struct RadioButton {
   mut label : String
   mut value : Bool
@@ -1014,7 +1044,7 @@ pub struct RadioButton {
   label_style : @style.Style
   focus_style : @style.Style
   mut focused : Bool
-} derive(Eq, @debug.Debug)
+}
 pub fn RadioButton::equal(Self, Self) -> Bool
 pub fn RadioButton::focusable(Self) -> Bool
 pub fn RadioButton::handle(Self, Ctx, Msg) -> Bool
@@ -1029,6 +1059,7 @@ pub fn RadioButton::to_repr(Self) -> @debug.Repr
 pub fn RadioButton::value(Self) -> Bool
 pub impl Widget for RadioButton
 
+#derive(Eq, @debug.Debug)
 pub struct RadioSet {
   buttons : Array[RadioButton]
   mut selected : Int32
@@ -1038,7 +1069,7 @@ pub struct RadioSet {
   mut focused : Bool
   cursor : @style.Style
   blurred_cursor : @style.Style
-} derive(Eq, @debug.Debug)
+}
 pub fn RadioSet::buttons(Self) -> Array[RadioButton]
 pub fn RadioSet::equal(Self, Self) -> Bool
 pub fn RadioSet::focusable(Self) -> Bool
@@ -1054,6 +1085,7 @@ pub fn RadioSet::set_selected(Self, Int32) -> Unit
 pub fn RadioSet::to_repr(Self) -> @debug.Repr
 pub impl Widget for RadioSet
 
+#derive(Eq, @debug.Debug)
 pub struct RichLog {
   mut lines : Array[@strip.Strip]
   mut width : Int32
@@ -1067,7 +1099,7 @@ pub struct RichLog {
   mut offset_y : Int32
   mut focused : Bool
   style : @style.Style
-} derive(Eq, @debug.Debug)
+}
 pub fn RichLog::clear(Self) -> Unit
 pub fn RichLog::equal(Self, Self) -> Bool
 pub fn RichLog::focusable(Self) -> Bool
@@ -1085,20 +1117,22 @@ pub fn RichLog::to_repr(Self) -> @debug.Repr
 pub fn RichLog::write(Self, String, style? : @style.Style, width? : Int32, scroll_end? : Bool) -> Unit
 pub impl Widget for RichLog
 
+#derive(Eq, @debug.Debug)
 pub(all) struct Row {
   label : String
   cells : Array[String]
-} derive(Eq, @debug.Debug)
+}
 pub fn Row::equal(Self, Self) -> Bool
 pub fn Row::new(Array[String], label? : String) -> Self
 pub fn Row::not_equal(Self, Self) -> Bool
 pub fn Row::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub struct Rule {
   dir : RuleDir
   mut kind : RuleKind
   style : @style.Style
-} derive(Eq, @debug.Debug)
+}
 pub fn Rule::equal(Self, Self) -> Bool
 pub fn Rule::focusable(Self) -> Bool
 pub fn Rule::handle(Self, Ctx, Msg) -> Bool
@@ -1111,14 +1145,16 @@ pub fn Rule::to_repr(Self) -> @debug.Repr
 pub fn Rule::vertical(kind? : RuleKind, style? : @style.Style) -> Self
 pub impl Widget for Rule
 
+#derive(Eq, @debug.Debug)
 pub(all) enum RuleDir {
   Horizontal
   Vertical
-} derive(Eq, @debug.Debug)
+}
 pub fn RuleDir::equal(Self, Self) -> Bool
 pub fn RuleDir::not_equal(Self, Self) -> Bool
 pub fn RuleDir::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) enum RuleKind {
   Ascii
   Blank
@@ -1129,7 +1165,7 @@ pub(all) enum RuleKind {
   None
   Solid
   Thick
-} derive(Eq, @debug.Debug)
+}
 pub fn RuleKind::equal(Self, Self) -> Bool
 pub fn RuleKind::not_equal(Self, Self) -> Bool
 pub fn RuleKind::to_repr(Self) -> @debug.Repr
@@ -1158,6 +1194,7 @@ pub fn Scrollbar::thumb(Self, Int32) -> (Int32, Int32)
 pub fn Scrollbar::viewport(Self) -> Int32
 pub impl Widget for Scrollbar
 
+#derive(Eq, @debug.Debug)
 pub struct Select {
   options : Array[(String, String)]
   prompt : String
@@ -1175,7 +1212,7 @@ pub struct Select {
   arrow_style : @style.Style
   highlight : @style.Style
   blurred_highlight : @style.Style
-} derive(Eq, @debug.Debug)
+}
 pub fn Select::clear(Self) -> Unit
 pub fn Select::equal(Self, Self) -> Bool
 pub fn Select::expanded(Self) -> Bool
@@ -1191,17 +1228,19 @@ pub fn Select::to_repr(Self) -> @debug.Repr
 pub fn Select::value(Self) -> String?
 pub impl Widget for Select
 
+#derive(Eq, @debug.Debug)
 pub(all) struct Selection {
   prompt : String
   value : String
   initial : Bool
   disabled : Bool
-} derive(Eq, @debug.Debug)
+}
 pub fn Selection::equal(Self, Self) -> Bool
 pub fn Selection::new(String, String, initial_state? : Bool, disabled? : Bool) -> Self
 pub fn Selection::not_equal(Self, Self) -> Bool
 pub fn Selection::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub struct SelectionList {
   mut options : Array[Selection]
   mut states : Array[Bool]
@@ -1217,7 +1256,7 @@ pub struct SelectionList {
   disabled_style : @style.Style
   selected_style : @style.Style
   unselected_style : @style.Style
-} derive(Eq, @debug.Debug)
+}
 pub fn SelectionList::deselect_all(Self) -> Unit
 pub fn SelectionList::equal(Self, Self) -> Bool
 pub fn SelectionList::focusable(Self) -> Bool
@@ -1238,12 +1277,13 @@ pub fn SelectionList::toggle(Self, Int32) -> Unit
 pub fn SelectionList::toggle_all(Self) -> Unit
 pub impl Widget for SelectionList
 
+#derive(Eq, @debug.Debug)
 pub(all) enum Slot {
   Digit
   Letter
   Either
   Any
-} derive(Eq, @debug.Debug)
+}
 pub fn Slot::equal(Self, Self) -> Bool
 pub fn Slot::glyph(Self) -> String
 pub fn Slot::not_equal(Self, Self) -> Bool
@@ -1253,13 +1293,14 @@ pub fn Slot::to_repr(Self) -> @debug.Repr
 
 type Snap
 
+#derive(Eq, @debug.Debug)
 pub struct Sparkline {
   mut data : Array[Double]
   summary : Summary
   min_colour : @style.Colour
   max_colour : @style.Colour
   style : @style.Style
-} derive(Eq, @debug.Debug)
+}
 pub fn Sparkline::data(Self) -> Array[Double]
 pub fn Sparkline::equal(Self, Self) -> Bool
 pub fn Sparkline::focusable(Self) -> Bool
@@ -1329,17 +1370,19 @@ pub fn Static::set_style(Self, @style.Style) -> Unit
 pub fn Static::text(Self) -> String
 pub impl Widget for Static
 
+#derive(Eq, @debug.Debug)
 pub(all) enum Summary {
   Maximum
   Minimum
   Mean
   Median
   Latest
-} derive(Eq, @debug.Debug)
+}
 pub fn Summary::equal(Self, Self) -> Bool
 pub fn Summary::not_equal(Self, Self) -> Bool
 pub fn Summary::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub struct Switch {
   mut value : Bool
   mut focused : Bool
@@ -1347,7 +1390,7 @@ pub struct Switch {
   off_style : @style.Style
   track : @style.Style
   focus_track : @style.Style
-} derive(Eq, @debug.Debug)
+}
 pub fn Switch::equal(Self, Self) -> Bool
 pub fn Switch::focusable(Self) -> Bool
 pub fn Switch::handle(Self, Ctx, Msg) -> Bool
@@ -1375,13 +1418,14 @@ pub fn TabbedContent::render_line(Self, Int32, @geom.Size) -> @strip.Strip
 pub fn TabbedContent::set_disabled(Self, Int32, Bool) -> Unit
 pub impl Widget for TabbedContent
 
+#derive(Eq, @debug.Debug)
 pub(all) struct TableState {
   mut row : Int32
   mut column : Int32
   mut offset : Int32
   mut seen : Int32
   mut followed : Bool
-} derive(Eq, @debug.Debug)
+}
 pub fn TableState::clear(Self) -> Unit
 pub fn TableState::column(Self) -> Int32
 pub fn TableState::equal(Self, Self) -> Bool
@@ -1396,6 +1440,7 @@ pub fn TableState::scroll_by(Self, Int32, Int32) -> Bool
 pub fn TableState::select(Self, Int32, Int32, Int32, Int32) -> Bool
 pub fn TableState::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub struct Tabs {
   mut labels : Array[String]
   mut disabled : Array[Bool]
@@ -1406,7 +1451,7 @@ pub struct Tabs {
   bar_style : @style.Style
   bar_highlight : @style.Style
   focus_style : @style.Style
-} derive(Eq, @debug.Debug)
+}
 pub fn Tabs::activate(Self, Int32) -> Unit
 pub fn Tabs::active(Self) -> Int32
 pub fn Tabs::equal(Self, Self) -> Bool
@@ -1469,6 +1514,7 @@ pub fn TextArea::text(Self) -> String
 pub fn TextArea::undo(Self) -> Bool
 pub impl Widget for TextArea
 
+#derive(Eq, @debug.Debug)
 pub struct Toast {
   title : String
   mut message : String
@@ -1480,7 +1526,7 @@ pub struct Toast {
   bar_info : @style.Style
   bar_warning : @style.Style
   bar_error : @style.Style
-} derive(Eq, @debug.Debug)
+}
 pub fn Toast::bar_style(Self) -> @style.Style
 pub fn Toast::equal(Self, Self) -> Bool
 pub fn Toast::expired(Self) -> Bool
@@ -1494,21 +1540,23 @@ pub fn Toast::set_message(Self, String) -> Unit
 pub fn Toast::to_repr(Self) -> @debug.Repr
 pub impl Widget for Toast
 
+#derive(Eq, @debug.Debug)
 pub(all) enum ToastLevel {
   Information
   Warning
   Error
-} derive(Eq, @debug.Debug)
+}
 pub fn ToastLevel::equal(Self, Self) -> Bool
 pub fn ToastLevel::not_equal(Self, Self) -> Bool
 pub fn ToastLevel::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub struct Tooltip {
   mut content : String
   mut style : @style.Style
   max_width : Int32
   padding : Int32
-} derive(Eq, @debug.Debug)
+}
 pub fn Tooltip::equal(Self, Self) -> Bool
 pub fn Tooltip::focusable(Self) -> Bool
 pub fn Tooltip::handle(Self, Ctx, Msg) -> Bool
@@ -1522,6 +1570,7 @@ pub fn Tooltip::to_repr(Self) -> @debug.Repr
 pub fn Tooltip::wrapped(Self, Int32) -> Array[String]
 pub impl Widget for Tooltip
 
+#derive(Eq, @debug.Debug)
 pub struct Tree {
   nodes : Array[TreeNode]
   mut show_root : Bool
@@ -1542,7 +1591,7 @@ pub struct Tree {
   guide_style : @style.Style
   cursor_style : @style.Style
   hover_style : @style.Style
-} derive(Eq, @debug.Debug)
+}
 pub fn Tree::add(Self, Int32, String, data? : String, expand? : Bool, allow_expand? : Bool) -> Int32
 pub fn Tree::add_leaf(Self, Int32, String, data? : String) -> Int32
 pub fn Tree::allow_expand(Self, Int32) -> Bool
@@ -1579,6 +1628,7 @@ pub fn Tree::show_root(Self, Bool) -> Unit
 pub fn Tree::to_repr(Self) -> @debug.Repr
 pub impl Widget for Tree
 
+#derive(Eq, @debug.Debug)
 pub struct TreeNode {
   mut label : String
   mut data : String
@@ -1587,7 +1637,7 @@ pub struct TreeNode {
   mut loaded : Bool
   children : Array[Int32]
   parent : Int32
-} derive(Eq, @debug.Debug)
+}
 pub fn TreeNode::equal(Self, Self) -> Bool
 pub fn TreeNode::is_expanded(Self) -> Bool
 pub fn TreeNode::label(Self) -> String
@@ -1595,6 +1645,7 @@ pub fn TreeNode::new(label~ : String, data? : String, expand? : Bool, allow_expa
 pub fn TreeNode::not_equal(Self, Self) -> Bool
 pub fn TreeNode::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) enum Value {
   VNil
   VBool(Bool)
@@ -1603,7 +1654,7 @@ pub(all) enum Value {
   VStr(String)
   VArr(Array[Value])
   VObj(Array[(String, Value)])
-} derive(Eq, @debug.Debug)
+}
 pub fn Value::equal(Self, Self) -> Bool
 pub fn Value::not_equal(Self, Self) -> Bool
 pub fn Value::summary(Self) -> String

@@ -51,6 +51,7 @@ pub let yellow : Colour
 // Errors
 
 // Types and methods
+#derive(Eq, @debug.Debug)
 pub(all) struct Attrs {
   bold : Bool
   dim : Bool
@@ -59,7 +60,7 @@ pub(all) struct Attrs {
   blink : Bool
   reverse : Bool
   strike : Bool
-} derive(Eq, @debug.Debug)
+}
 pub fn Attrs::drops_from(Self, Self) -> Bool
 pub fn Attrs::equal(Self, Self) -> Bool
 pub fn Attrs::is_plain(Self) -> Bool
@@ -67,12 +68,13 @@ pub fn Attrs::not_equal(Self, Self) -> Bool
 pub fn Attrs::to_repr(Self) -> @debug.Repr
 pub fn Attrs::union(Self, Self) -> Self
 
+#derive(Eq, @debug.Debug)
 pub(all) enum Colour {
   Default
   Ansi(Int32)
   Ansi256(Int32)
   Rgb(Int32, Int32, Int32)
-} derive(Eq, @debug.Debug)
+}
 pub fn Colour::blend(Self, Self, Int32) -> Self
 pub fn Colour::equal(Self, Self) -> Bool
 pub fn Colour::not_equal(Self, Self) -> Bool
@@ -83,11 +85,12 @@ pub fn Colour::to_ansi256(Self) -> Self
 pub fn Colour::to_repr(Self) -> @debug.Repr
 pub fn Colour::to_rgb(Self) -> (Int32, Int32, Int32)?
 
+#derive(Eq, @debug.Debug)
 pub(all) struct Style {
   fg : Colour
   bg : Colour
   attrs : Attrs
-} derive(Eq, @debug.Debug)
+}
 pub fn Style::equal(Self, Self) -> Bool
 pub fn Style::is_default(Self) -> Bool
 pub fn Style::merge(Self, Self) -> Self

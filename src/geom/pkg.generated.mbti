@@ -11,10 +11,11 @@ pub let origin : Offset
 // Errors
 
 // Types and methods
+#derive(Eq, @debug.Debug)
 pub(all) struct Offset {
   x : Int32
   y : Int32
-} derive(Eq, @debug.Debug)
+}
 pub fn Offset::add(Self, Self) -> Self
 pub fn Offset::equal(Self, Self) -> Bool
 pub fn Offset::is_origin(Self) -> Bool
@@ -28,12 +29,13 @@ pub impl Add for Offset
 pub impl Neg for Offset
 pub impl Sub for Offset
 
+#derive(Eq, @debug.Debug)
 pub(all) struct Region {
   x : Int32
   y : Int32
   width : Int32
   height : Int32
-} derive(Eq, @debug.Debug)
+}
 pub fn Region::area(Self) -> Int32
 pub fn Region::bottom(Self) -> Int32
 pub fn Region::clip(Self, Int32, Int32) -> Self
@@ -55,10 +57,11 @@ pub fn Region::to_repr(Self) -> @debug.Repr
 pub fn Region::translate(Self, Offset) -> Self
 pub fn Region::union(Self, Self) -> Self
 
+#derive(Eq, @debug.Debug)
 pub(all) struct Size {
   width : Int32
   height : Int32
-} derive(Eq, @debug.Debug)
+}
 pub fn Size::area(Self) -> Int32
 pub fn Size::clamp_offset(Self, Offset) -> Offset
 pub fn Size::contains(Self, Int32, Int32) -> Bool
@@ -69,12 +72,13 @@ pub fn Size::not_equal(Self, Self) -> Bool
 pub fn Size::region(Self) -> Region
 pub fn Size::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) struct Spacing {
   top : Int32
   right : Int32
   bottom : Int32
   left : Int32
-} derive(Eq, @debug.Debug)
+}
 pub fn Spacing::add(Self, Self) -> Self
 pub fn Spacing::all(Int32) -> Self
 pub fn Spacing::equal(Self, Self) -> Bool

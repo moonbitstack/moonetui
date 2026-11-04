@@ -2,21 +2,23 @@
 // SPDX-License-Identifier: Apache-2.0
 
 ///|
+#derive(Eq, Debug)
 pub(all) enum Extent {
   Auto
   Cells(Int32)
   Frac(Int32)
   Pct(Int32)
-} derive(Eq, Debug)
+}
 
 ///|
 /// A `max` of -1 means unbounded, which no real limit can be confused with.
+#derive(Eq, Debug)
 pub(all) struct Box {
   extent : Extent
   min : Int32
   max : Int32
   pad : @geom.Spacing
-} derive(Eq, Debug)
+}
 
 ///|
 pub fn Box::new(
@@ -29,10 +31,11 @@ pub fn Box::new(
 }
 
 ///|
+#derive(Eq, Debug)
 pub(all) enum Dir {
   Vertical
   Horizontal
-} derive(Eq, Debug)
+}
 
 ///|
 pub fn arrange(
@@ -195,11 +198,12 @@ fn at_least_zero(value : Int32) -> Int32 {
 }
 
 ///|
+#derive(Eq, Debug)
 pub(all) struct GridChild {
   col_span : Int32
   row_span : Int32
   height : Int32
-} derive(Eq, Debug)
+}
 
 ///|
 pub extend GridChild with Debug::{to_repr}

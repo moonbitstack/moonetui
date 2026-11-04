@@ -4,10 +4,11 @@
 ///|
 /// A starting point: a base text style and a stylesheet of sensible
 /// rules, both free to be added to or overridden.
+#derive(Eq, Debug)
 pub(all) struct Preset {
   base : @style.Style
   sheet : Stylesheet
-} derive(Eq, Debug)
+}
 
 ///|
 pub extend Preset with Debug::{to_repr}

@@ -3,6 +3,7 @@
 
 ///|
 /// A value to print, as the shapes a caller's own data comes in.
+#derive(Eq, Debug)
 pub(all) enum Value {
   VNil
   VBool(Bool)
@@ -11,7 +12,7 @@ pub(all) enum Value {
   VStr(String)
   VArr(Array[Value])
   VObj(Array[(String, Value)])
-} derive(Eq, Debug)
+}
 
 ///|
 /// The one-line reading of a value, which is what is printed when the whole

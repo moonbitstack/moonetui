@@ -34,12 +34,13 @@ pub let stretch : Anchor
 // Errors
 
 // Types and methods
+#derive(Eq, @debug.Debug)
 pub(all) struct Anchor {
   top : Bool
   right : Bool
   bottom : Bool
   left : Bool
-} derive(Eq, @debug.Debug)
+}
 pub fn Anchor::equal(Self, Self) -> Bool
 pub fn Anchor::is_free(Self) -> Bool
 pub fn Anchor::new(top? : Bool, right? : Bool, bottom? : Bool, left? : Bool) -> Self
@@ -48,45 +49,50 @@ pub fn Anchor::spans_x(Self) -> Bool
 pub fn Anchor::spans_y(Self) -> Bool
 pub fn Anchor::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) struct Box {
   extent : Extent
   min : Int32
   max : Int32
   pad : @geom.Spacing
-} derive(Eq, @debug.Debug)
+}
 pub fn Box::equal(Self, Self) -> Bool
 pub fn Box::new(extent? : Extent, min? : Int32, max? : Int32, pad? : @geom.Spacing) -> Self
 pub fn Box::not_equal(Self, Self) -> Bool
 pub fn Box::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) enum Dir {
   Vertical
   Horizontal
-} derive(Eq, @debug.Debug)
+}
 pub fn Dir::equal(Self, Self) -> Bool
 pub fn Dir::not_equal(Self, Self) -> Bool
 pub fn Dir::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) enum Extent {
   Auto
   Cells(Int32)
   Frac(Int32)
   Pct(Int32)
-} derive(Eq, @debug.Debug)
+}
 pub fn Extent::equal(Self, Self) -> Bool
 pub fn Extent::not_equal(Self, Self) -> Bool
 pub fn Extent::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) struct GridChild {
   col_span : Int32
   row_span : Int32
   height : Int32
-} derive(Eq, @debug.Debug)
+}
 pub fn GridChild::equal(Self, Self) -> Bool
 pub fn GridChild::new(col_span? : Int32, row_span? : Int32, height? : Int32) -> Self
 pub fn GridChild::not_equal(Self, Self) -> Bool
 pub fn GridChild::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) enum Pivot {
   TopLeft
   TopCentre
@@ -97,7 +103,7 @@ pub(all) enum Pivot {
   BottomLeft
   BottomCentre
   BottomRight
-} derive(Eq, @debug.Debug)
+}
 pub fn Pivot::equal(Self, Self) -> Bool
 pub fn Pivot::frac_x(Self) -> Double
 pub fn Pivot::frac_y(Self) -> Double

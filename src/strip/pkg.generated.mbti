@@ -20,20 +20,22 @@ pub fn str_cells(String) -> Int32
 // Errors
 
 // Types and methods
+#derive(Eq, @debug.Debug)
 pub(all) struct Seg {
   text : String
   style : @style.Style
   cells : Int32
-} derive(Eq, @debug.Debug)
+}
 pub fn Seg::equal(Self, Self) -> Bool
 pub fn Seg::new(String, @style.Style) -> Self
 pub fn Seg::not_equal(Self, Self) -> Bool
 pub fn Seg::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) struct Strip {
   segs : Array[Seg]
   cells : Int32
-} derive(Eq, @debug.Debug)
+}
 pub fn Strip::apply(Self, @style.Style) -> Self
 pub fn Strip::blank(Int32, @style.Style) -> Self
 pub fn Strip::cell_length(Self) -> Int32

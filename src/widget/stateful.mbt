@@ -6,12 +6,13 @@
 /// the view has been scrolled. A widget that takes one is drawn from it and
 /// moves it, so two widgets can share a choice and a caller can set either
 /// without asking the widget.
+#derive(Eq, Debug)
 pub(all) struct ListState {
   mut selected : Int32
   mut offset : Int32
   mut seen : Int32
   mut followed : Bool
-} derive(Eq, Debug)
+}
 
 ///|
 pub fn ListState::new(selected~ : Int32 = -1, offset~ : Int32 = 0) -> ListState {
@@ -117,13 +118,14 @@ pub fn ListState::follow(self : ListState, rows : Int32, count : Int32) -> Unit 
 ///|
 /// What a table knows and the caller keeps: the cell it is on, and how far
 /// the rows have been scrolled.
+#derive(Eq, Debug)
 pub(all) struct TableState {
   mut row : Int32
   mut column : Int32
   mut offset : Int32
   mut seen : Int32
   mut followed : Bool
-} derive(Eq, Debug)
+}
 
 ///|
 pub fn TableState::new(

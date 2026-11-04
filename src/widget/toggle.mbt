@@ -43,6 +43,7 @@ fn toggle_width(label : String) -> Int32 {
 }
 
 ///|
+#derive(Eq, Debug)
 pub struct Checkbox {
   mut label : String
   mut value : Bool
@@ -52,7 +53,7 @@ pub struct Checkbox {
   label_style : @style.Style
   focus_style : @style.Style
   mut focused : Bool
-} derive(Eq, Debug)
+}
 
 ///|
 pub fn Checkbox::new(
@@ -170,6 +171,7 @@ pub impl Widget for Checkbox with fn focusable(_self) {
 }
 
 ///|
+#derive(Eq, Debug)
 pub struct RadioButton {
   mut label : String
   mut value : Bool
@@ -179,7 +181,7 @@ pub struct RadioButton {
   label_style : @style.Style
   focus_style : @style.Style
   mut focused : Bool
-} derive(Eq, Debug)
+}
 
 ///|
 pub fn RadioButton::new(

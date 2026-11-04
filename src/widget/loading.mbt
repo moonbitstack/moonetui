@@ -2,11 +2,12 @@
 // SPDX-License-Identifier: Apache-2.0
 
 ///|
+#derive(Eq, Debug)
 pub struct LoadingIndicator {
   mut frame : Int32
   style : @style.Style
   dim_style : @style.Style
-} derive(Eq, Debug)
+}
 
 ///|
 pub fn LoadingIndicator::new(

@@ -2,12 +2,13 @@
 // SPDX-License-Identifier: Apache-2.0
 
 ///|
+#derive(Eq, Debug)
 pub(all) enum Colour {
   Default
   Ansi(Int32)
   Ansi256(Int32)
   Rgb(Int32, Int32, Int32)
-} derive(Eq, Debug)
+}
 
 ///|
 pub let black : Colour = Ansi(0)

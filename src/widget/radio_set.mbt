@@ -6,6 +6,7 @@
 /// arrows move a cursor that is separate from which button is pressed, and
 /// pressing the pressed button again changes nothing. A click on a row moves
 /// the cursor there and presses it.
+#derive(Eq, Debug)
 pub struct RadioSet {
   buttons : Array[RadioButton]
   mut selected : Int32
@@ -16,7 +17,7 @@ pub struct RadioSet {
   mut focused : Bool
   cursor : @style.Style
   blurred_cursor : @style.Style
-} derive(Eq, Debug)
+}
 
 ///|
 pub fn RadioSet::new(

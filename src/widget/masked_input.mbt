@@ -5,12 +5,13 @@
 /// What a place in a mask takes: a digit, a letter, either, or any character
 /// at all. Every other character in the mask is a literal, shown as it is
 /// written and stepped over.
+#derive(Eq, Debug)
 pub(all) enum Slot {
   Digit
   Letter
   Either
   Any
-} derive(Eq, Debug)
+}
 
 ///|
 pub fn Slot::of(glyph : String) -> Slot? {

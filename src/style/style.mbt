@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 ///|
+#derive(Eq, Debug)
 pub(all) struct Attrs {
   bold : Bool
   dim : Bool
@@ -10,7 +11,7 @@ pub(all) struct Attrs {
   blink : Bool
   reverse : Bool
   strike : Bool
-} derive(Eq, Debug)
+}
 
 ///|
 pub let plain : Attrs = {
@@ -58,11 +59,12 @@ fn not_set(flag : Bool) -> Bool {
 }
 
 ///|
+#derive(Eq, Debug)
 pub(all) struct Style {
   fg : Colour
   bg : Colour
   attrs : Attrs
-} derive(Eq, Debug)
+}
 
 ///|
 pub let default : Style = { fg: Default, bg: Default, attrs: plain, }

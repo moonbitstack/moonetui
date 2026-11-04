@@ -4,10 +4,11 @@
 ///|
 /// The stretch of values an axis covers. A `high` no greater than `low` is
 /// taken from the data instead.
+#derive(Eq, Debug)
 pub(all) struct Bounds {
   low : Double
   high : Double
-} derive(Eq, Debug)
+}
 
 ///|
 pub fn Bounds::new(low~ : Double = 0.0, high~ : Double = 0.0) -> Bounds {
@@ -25,12 +26,13 @@ pub fn Bounds::span(self : Bounds) -> Double {
 
 ///|
 /// One side of a plot: the words along it and the stretch they cover.
+#derive(Eq, Debug)
 pub(all) struct Axis {
   title : String
   labels : Array[String]
   bounds : Bounds
   style : @style.Style
-} derive(Eq, Debug)
+}
 
 ///|
 pub fn Axis::new(
@@ -45,10 +47,11 @@ pub fn Axis::new(
 ///|
 /// How a series is drawn: joined from point to point, or as the points
 /// themselves.
+#derive(Eq, Debug)
 pub(all) enum GraphKind {
   Line
   Scatter
-} derive(Eq, Debug)
+}
 
 ///|
 pub fn GraphKind::marker(self : GraphKind) -> String {
@@ -60,12 +63,13 @@ pub fn GraphKind::marker(self : GraphKind) -> String {
 
 ///|
 /// One series of points, named and drawn in its own colour.
+#derive(Eq, Debug)
 pub(all) struct Dataset {
   name : String
   kind : GraphKind
   points : Array[(Double, Double)]
   style : @style.Style
-} derive(Eq, Debug)
+}
 
 ///|
 pub fn Dataset::new(

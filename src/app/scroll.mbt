@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 ///|
+#derive(Eq, Debug)
 pub(all) struct ScrollState {
   mut x : Int32
   mut y : Int32
@@ -9,7 +10,7 @@ pub(all) struct ScrollState {
   mut vh : Int32
   mut cw : Int32
   mut ch : Int32
-} derive(Eq, Debug)
+}
 
 ///|
 pub extend ScrollState with Debug::{to_repr}
@@ -64,12 +65,13 @@ pub fn ScrollState::scroll_by(
 }
 
 ///|
+#derive(Eq, Debug)
 pub(all) struct View {
   state : ScrollState
   bar : @style.Style
   vbar : Bool
   hbar : Bool
-} derive(Eq, Debug)
+}
 
 ///|
 pub extend View with Debug::{to_repr}

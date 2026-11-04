@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 ///|
+#derive(Eq, Debug)
 pub(all) enum KeyCode {
   // A code point, not a MoonBit `Char`, so an astral character is one key.
   Char(Int32)
@@ -21,14 +22,15 @@ pub(all) enum KeyCode {
   PageUp
   PageDown
   F(Int32)
-} derive(Eq, Debug)
+}
 
 ///|
+#derive(Eq, Debug)
 pub(all) struct Mods {
   ctrl : Bool
   alt : Bool
   shift : Bool
-} derive(Eq, Debug)
+}
 
 ///|
 pub let none : Mods = { ctrl: false, alt: false, shift: false, }
@@ -49,10 +51,11 @@ pub fn Mods::is_none(self : Mods) -> Bool {
 }
 
 ///|
+#derive(Eq, Debug)
 pub(all) struct Key {
   code : KeyCode
   mods : Mods
-} derive(Eq, Debug)
+}
 
 ///|
 pub fn Key::of(code : KeyCode) -> Key {
@@ -70,6 +73,7 @@ pub fn Key::char(code : Int32) -> Key {
 }
 
 ///|
+#derive(Eq, Debug)
 pub(all) enum MouseKind {
   Down
   Up
@@ -78,18 +82,20 @@ pub(all) enum MouseKind {
   ScrollDown
   ScrollLeft
   ScrollRight
-} derive(Eq, Debug)
+}
 
 ///|
+#derive(Eq, Debug)
 pub(all) struct Mouse {
   kind : MouseKind
   button : Int32
   x : Int32
   y : Int32
   mods : Mods
-} derive(Eq, Debug)
+}
 
 ///|
+#derive(Eq, Debug)
 pub(all) enum Event {
   Key(Key)
   Mouse(Mouse)
@@ -97,7 +103,7 @@ pub(all) enum Event {
   Resize(Int32, Int32)
   FocusIn
   FocusOut
-} derive(Eq, Debug)
+}
 
 ///|
 pub extend Event with Debug::{to_repr}

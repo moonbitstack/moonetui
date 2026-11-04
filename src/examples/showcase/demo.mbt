@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 ///|
+#derive(Eq, Debug)
 pub(all) enum Group {
   Text
   Entry
@@ -11,7 +12,7 @@ pub(all) enum Group {
   Overlay
   Chart
   Style
-} derive(Eq, Debug)
+}
 
 ///|
 pub extend Group with Debug::{to_repr}

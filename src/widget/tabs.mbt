@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 ///|
+#derive(Eq, Debug)
 pub struct Tabs {
   mut labels : Array[String]
   mut disabled : Array[Bool]
@@ -12,7 +13,7 @@ pub struct Tabs {
   bar_style : @style.Style
   bar_highlight : @style.Style
   focus_style : @style.Style
-} derive(Eq, Debug)
+}
 
 ///|
 pub fn Tabs::new(

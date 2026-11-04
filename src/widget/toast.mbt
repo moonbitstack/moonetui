@@ -2,11 +2,12 @@
 // SPDX-License-Identifier: Apache-2.0
 
 ///|
+#derive(Eq, Debug)
 pub(all) enum ToastLevel {
   Information
   Warning
   Error
-} derive(Eq, Debug)
+}
 
 ///|
 pub extend ToastLevel with Debug::{to_repr}
@@ -15,6 +16,7 @@ pub extend ToastLevel with Debug::{to_repr}
 pub extend ToastLevel with Eq::{not_equal, equal}
 
 ///|
+#derive(Eq, Debug)
 pub struct Toast {
   title : String
   mut message : String
@@ -26,7 +28,7 @@ pub struct Toast {
   bar_info : @style.Style
   bar_warning : @style.Style
   bar_error : @style.Style
-} derive(Eq, Debug)
+}
 
 ///|
 pub extend Toast with Debug::{to_repr}

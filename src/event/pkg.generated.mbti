@@ -11,6 +11,7 @@ pub let none : Mods
 // Errors
 
 // Types and methods
+#derive(Eq, @debug.Debug)
 pub(all) enum Event {
   Key(Key)
   Mouse(Mouse)
@@ -18,15 +19,16 @@ pub(all) enum Event {
   Resize(Int32, Int32)
   FocusIn
   FocusOut
-} derive(Eq, @debug.Debug)
+}
 pub fn Event::equal(Self, Self) -> Bool
 pub fn Event::not_equal(Self, Self) -> Bool
 pub fn Event::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) struct Key {
   code : KeyCode
   mods : Mods
-} derive(Eq, @debug.Debug)
+}
 pub fn Key::char(Int32) -> Self
 pub fn Key::equal(Self, Self) -> Bool
 pub fn Key::not_equal(Self, Self) -> Bool
@@ -34,6 +36,7 @@ pub fn Key::of(KeyCode) -> Self
 pub fn Key::to_repr(Self) -> @debug.Repr
 pub fn Key::with_mods(KeyCode, Mods) -> Self
 
+#derive(Eq, @debug.Debug)
 pub(all) enum KeyCode {
   Char(Int32)
   Enter
@@ -52,33 +55,36 @@ pub(all) enum KeyCode {
   PageUp
   PageDown
   F(Int32)
-} derive(Eq, @debug.Debug)
+}
 pub fn KeyCode::equal(Self, Self) -> Bool
 pub fn KeyCode::not_equal(Self, Self) -> Bool
 pub fn KeyCode::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) struct Mods {
   ctrl : Bool
   alt : Bool
   shift : Bool
-} derive(Eq, @debug.Debug)
+}
 pub fn Mods::equal(Self, Self) -> Bool
 pub fn Mods::is_none(Self) -> Bool
 pub fn Mods::not_equal(Self, Self) -> Bool
 pub fn Mods::of_param(Int32) -> Self
 pub fn Mods::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) struct Mouse {
   kind : MouseKind
   button : Int32
   x : Int32
   y : Int32
   mods : Mods
-} derive(Eq, @debug.Debug)
+}
 pub fn Mouse::equal(Self, Self) -> Bool
 pub fn Mouse::not_equal(Self, Self) -> Bool
 pub fn Mouse::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) enum MouseKind {
   Down
   Up
@@ -87,7 +93,7 @@ pub(all) enum MouseKind {
   ScrollDown
   ScrollLeft
   ScrollRight
-} derive(Eq, @debug.Debug)
+}
 pub fn MouseKind::equal(Self, Self) -> Bool
 pub fn MouseKind::not_equal(Self, Self) -> Bool
 pub fn MouseKind::to_repr(Self) -> @debug.Repr

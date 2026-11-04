@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 ///|
+#derive(Eq, Debug)
 pub struct TreeNode {
   mut label : String
   mut data : String
@@ -10,7 +11,7 @@ pub struct TreeNode {
   mut loaded : Bool
   children : Array[Int32]
   parent : Int32
-} derive(Eq, Debug)
+}
 
 ///|
 pub fn TreeNode::new(
@@ -54,6 +55,7 @@ priv struct TreeLine {
 }
 
 ///|
+#derive(Eq, Debug)
 pub struct Tree {
   nodes : Array[TreeNode]
   mut show_root : Bool
@@ -74,7 +76,7 @@ pub struct Tree {
   guide_style : @style.Style
   cursor_style : @style.Style
   hover_style : @style.Style
-} derive(Eq, Debug)
+}
 
 ///|
 pub fn Tree::new(

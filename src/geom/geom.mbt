@@ -2,10 +2,11 @@
 // SPDX-License-Identifier: Apache-2.0
 
 ///|
+#derive(Eq, Debug)
 pub(all) struct Offset {
   x : Int32
   y : Int32
-} derive(Eq, Debug)
+}
 
 ///|
 pub let origin : Offset = { x: 0, y: 0, }
@@ -41,10 +42,11 @@ pub fn Offset::scale(self : Offset, factor : Int32) -> Offset {
 }
 
 ///|
+#derive(Eq, Debug)
 pub(all) struct Size {
   width : Int32
   height : Int32
-} derive(Eq, Debug)
+}
 
 ///|
 pub fn Size::new(width : Int32, height : Int32) -> Size {
@@ -80,12 +82,13 @@ pub fn Size::clamp_offset(self : Size, offset : Offset) -> Offset {
 }
 
 ///|
+#derive(Eq, Debug)
 pub(all) struct Region {
   x : Int32
   y : Int32
   width : Int32
   height : Int32
-} derive(Eq, Debug)
+}
 
 ///|
 pub fn Region::new(
@@ -240,12 +243,13 @@ pub fn Region::clip(self : Region, width : Int32, height : Int32) -> Region {
 }
 
 ///|
+#derive(Eq, Debug)
 pub(all) struct Spacing {
   top : Int32
   right : Int32
   bottom : Int32
   left : Int32
-} derive(Eq, Debug)
+}
 
 ///|
 pub fn Spacing::all(amount : Int32) -> Spacing {
