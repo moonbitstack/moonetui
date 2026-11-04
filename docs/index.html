@@ -2010,7 +2010,7 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
       <pre class="block"><span class="kw">pub</span>(all) <span class="kw">struct</span> Offset {
   x : Int32
   y : Int32
-} <span class="kw">derive</span>(Eq, <span class="fn">@debug.</span>Debug)</pre>
+}</pre>
       <div class="api-impls">implements <code>Add</code>, <code>Neg</code>, <code>Sub</code></div>
       <div class="api-methods">
         <div class="api-method" data-q="add"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Offset::add(Self, Self) -&gt; Self</pre></div>
@@ -2028,7 +2028,7 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
   y : Int32
   width : Int32
   height : Int32
-} <span class="kw">derive</span>(Eq, <span class="fn">@debug.</span>Debug)</pre>
+}</pre>
       <div class="api-methods">
         <div class="api-method" data-q="area"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Region::area(Self) -&gt; Int32</pre></div>
         <div class="api-method" data-q="bottom"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Region::bottom(Self) -&gt; Int32</pre></div>
@@ -2054,7 +2054,7 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
       <pre class="block"><span class="kw">pub</span>(all) <span class="kw">struct</span> Size {
   width : Int32
   height : Int32
-} <span class="kw">derive</span>(Eq, <span class="fn">@debug.</span>Debug)</pre>
+}</pre>
       <div class="api-methods">
         <div class="api-method" data-q="area"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Size::area(Self) -&gt; Int32</pre></div>
         <div class="api-method" data-q="clamp_offset"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Size::clamp_offset(Self, Offset) -&gt; Offset</pre></div>
@@ -2071,7 +2071,7 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
   right : Int32
   bottom : Int32
   left : Int32
-} <span class="kw">derive</span>(Eq, <span class="fn">@debug.</span>Debug)</pre>
+}</pre>
       <div class="api-methods">
         <div class="api-method" data-q="add"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Spacing::add(Self, Self) -&gt; Self</pre></div>
         <div class="api-method" data-q="all"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Spacing::all(Int32) -&gt; Self</pre></div>
@@ -2102,7 +2102,7 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
   blink : Bool
   reverse : Bool
   strike : Bool
-} <span class="kw">derive</span>(Eq, <span class="fn">@debug.</span>Debug)</pre>
+}</pre>
       <div class="api-methods">
         <div class="api-method" data-q="drops_from"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Attrs::drops_from(Self, Self) -&gt; Bool</pre></div>
         <div class="api-method" data-q="is_plain"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Attrs::is_plain(Self) -&gt; Bool</pre></div>
@@ -2116,7 +2116,7 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
   Ansi(Int32)
   Ansi256(Int32)
   Rgb(Int32, Int32, Int32)
-} <span class="kw">derive</span>(Eq, <span class="fn">@debug.</span>Debug)</pre>
+}</pre>
       <div class="api-methods">
         <div class="api-method" data-q="blend"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Colour::blend(Self, Self, Int32) -&gt; Self</pre></div>
         <div class="api-method" data-q="parse"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Colour::parse(String) -&gt; Self?</pre></div>
@@ -2132,7 +2132,7 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
   fg : Colour
   bg : Colour
   attrs : Attrs
-} <span class="kw">derive</span>(Eq, <span class="fn">@debug.</span>Debug)</pre>
+}</pre>
       <div class="api-methods">
         <div class="api-method" data-q="is_default"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Style::is_default(Self) -&gt; Bool</pre></div>
         <div class="api-method" data-q="merge"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Style::merge(Self, Self) -&gt; Self</pre></div>
@@ -2236,7 +2236,7 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
   text : String
   style : <span class="fn">@style.</span>Style
   cells : Int32
-} <span class="kw">derive</span>(Eq, <span class="fn">@debug.</span>Debug)</pre>
+}</pre>
       <div class="api-methods">
         <div class="api-method" data-q="new"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Seg::new(String, <span class="fn">@style.</span>Style) -&gt; Self</pre></div>
       </div>
@@ -2246,7 +2246,7 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
       <pre class="block"><span class="kw">pub</span>(all) <span class="kw">struct</span> Strip {
   segs : Array[Seg]
   cells : Int32
-} <span class="kw">derive</span>(Eq, <span class="fn">@debug.</span>Debug)</pre>
+}</pre>
       <div class="api-methods">
         <div class="api-method" data-q="apply"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Strip::apply(Self, <span class="fn">@style.</span>Style) -&gt; Self</pre></div>
         <div class="api-method" data-q="blank"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Strip::blank(Int32, <span class="fn">@style.</span>Style) -&gt; Self</pre></div>
@@ -2294,7 +2294,7 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
   right : Bool
   bottom : Bool
   left : Bool
-} <span class="kw">derive</span>(Eq, <span class="fn">@debug.</span>Debug)</pre>
+}</pre>
       <p>Which edges of the parent a box is held to. A held edge keeps its distance however the parent is sized; an axis with both of its edges held stretches the box to fill what lies between them. A box held to no edge keeps the size it asked for and sits where its pivot says.</p>
       <div class="api-methods">
         <div class="api-method" data-q="is_free"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Anchor::is_free(Self) -&gt; Bool</pre></div>
@@ -2310,7 +2310,7 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
   min : Int32
   max : Int32
   pad : <span class="fn">@geom.</span>Spacing
-} <span class="kw">derive</span>(Eq, <span class="fn">@debug.</span>Debug)</pre>
+}</pre>
       <p>A <code>max</code> of -1 means unbounded, which no real limit can be confused with.</p>
       <div class="api-methods">
         <div class="api-method" data-q="new"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Box::new(extent? : Extent, min? : Int32, max? : Int32, pad? : <span class="fn">@geom.</span>Spacing) -&gt; Self</pre></div>
@@ -2321,7 +2321,7 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
       <pre class="block"><span class="kw">pub</span>(all) <span class="kw">enum</span> Dir {
   Vertical
   Horizontal
-} <span class="kw">derive</span>(Eq, <span class="fn">@debug.</span>Debug)</pre>
+}</pre>
     </div>
     <div class="api-item" data-q="layout extent">
       <h4><span class="api-kind type">type</span><code>Extent</code></h4>
@@ -2330,7 +2330,7 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
   Cells(Int32)
   Frac(Int32)
   Pct(Int32)
-} <span class="kw">derive</span>(Eq, <span class="fn">@debug.</span>Debug)</pre>
+}</pre>
     </div>
     <div class="api-item" data-q="layout gridchild">
       <h4><span class="api-kind type">type</span><code>GridChild</code></h4>
@@ -2338,7 +2338,7 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
   col_span : Int32
   row_span : Int32
   height : Int32
-} <span class="kw">derive</span>(Eq, <span class="fn">@debug.</span>Debug)</pre>
+}</pre>
       <div class="api-methods">
         <div class="api-method" data-q="new"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> GridChild::new(col_span? : Int32, row_span? : Int32, height? : Int32) -&gt; Self</pre></div>
       </div>
@@ -2355,7 +2355,7 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
   BottomLeft
   BottomCentre
   BottomRight
-} <span class="kw">derive</span>(Eq, <span class="fn">@debug.</span>Debug)</pre>
+}</pre>
       <p>Where a box no edge holds sits in the space its parent left it.</p>
       <div class="api-methods">
         <div class="api-method" data-q="frac_x"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Pivot::frac_x(Self) -&gt; Double</pre><p>How far across the free space the box starts, as a fraction of it.</p></div>
@@ -2431,14 +2431,14 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
   Resize(Int32, Int32)
   FocusIn
   FocusOut
-} <span class="kw">derive</span>(Eq, <span class="fn">@debug.</span>Debug)</pre>
+}</pre>
     </div>
     <div class="api-item" data-q="event key">
       <h4><span class="api-kind type">type</span><code>Key</code></h4>
       <pre class="block"><span class="kw">pub</span>(all) <span class="kw">struct</span> Key {
   code : KeyCode
   mods : Mods
-} <span class="kw">derive</span>(Eq, <span class="fn">@debug.</span>Debug)</pre>
+}</pre>
       <div class="api-methods">
         <div class="api-method" data-q="char"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Key::char(Int32) -&gt; Self</pre></div>
         <div class="api-method" data-q="of"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Key::of(KeyCode) -&gt; Self</pre></div>
@@ -2465,7 +2465,7 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
   PageUp
   PageDown
   F(Int32)
-} <span class="kw">derive</span>(Eq, <span class="fn">@debug.</span>Debug)</pre>
+}</pre>
     </div>
     <div class="api-item" data-q="event mods">
       <h4><span class="api-kind type">type</span><code>Mods</code></h4>
@@ -2473,7 +2473,7 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
   ctrl : Bool
   alt : Bool
   shift : Bool
-} <span class="kw">derive</span>(Eq, <span class="fn">@debug.</span>Debug)</pre>
+}</pre>
       <div class="api-methods">
         <div class="api-method" data-q="is_none"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Mods::is_none(Self) -&gt; Bool</pre></div>
         <div class="api-method" data-q="of_param"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Mods::of_param(Int32) -&gt; Self</pre></div>
@@ -2487,7 +2487,7 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
   x : Int32
   y : Int32
   mods : Mods
-} <span class="kw">derive</span>(Eq, <span class="fn">@debug.</span>Debug)</pre>
+}</pre>
     </div>
     <div class="api-item" data-q="event mousekind">
       <h4><span class="api-kind type">type</span><code>MouseKind</code></h4>
@@ -2499,7 +2499,7 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
   ScrollDown
   ScrollLeft
   ScrollRight
-} <span class="kw">derive</span>(Eq, <span class="fn">@debug.</span>Debug)</pre>
+}</pre>
     </div>
     <div class="api-item" data-q="event none">
       <h4><span class="api-kind let">let</span><code>none</code></h4>
@@ -2534,7 +2534,7 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
       <pre class="block"><span class="kw">pub</span>(all) <span class="kw">struct</span> Cell {
   text : String
   style : <span class="fn">@style.</span>Style
-} <span class="kw">derive</span>(Eq, <span class="fn">@debug.</span>Debug)</pre>
+}</pre>
     </div>
   </div>
   <div class="api-pkg" id="api-comp">
@@ -2546,7 +2546,7 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
   text : String
   style : <span class="fn">@style.</span>Style
   continuation : Bool
-} <span class="kw">derive</span>(Eq, <span class="fn">@debug.</span>Debug)</pre>
+}</pre>
       <div class="api-methods">
         <div class="api-method" data-q="blank"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Cell::blank(<span class="fn">@style.</span>Style) -&gt; Self</pre></div>
       </div>
@@ -2557,7 +2557,7 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
   node : Int32
   rect : <span class="fn">@geom.</span>Region
   clip : <span class="fn">@geom.</span>Region
-} <span class="kw">derive</span>(Eq, <span class="fn">@debug.</span>Debug)</pre>
+}</pre>
       <div class="api-methods">
         <div class="api-method" data-q="visible"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Placement::visible(Self) -&gt; <span class="fn">@geom.</span>Region</pre></div>
       </div>
@@ -2567,7 +2567,7 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
       <pre class="block"><span class="kw">pub</span>(all) <span class="kw">struct</span> Scene {
   size : <span class="fn">@geom.</span>Size
   items : Array[Placement]
-} <span class="kw">derive</span>(Eq, <span class="fn">@debug.</span>Debug)</pre>
+}</pre>
       <div class="api-methods">
         <div class="api-method" data-q="compose"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Scene::compose(Self, (Int32, Int32) -&gt; <span class="fn">@strip.</span>Strip, <span class="fn">@style.</span>Style) -&gt; Array[<span class="fn">@strip.</span>Strip]</pre></div>
         <div class="api-method" data-q="compose_line"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Scene::compose_line(Self, Int32, (Int32, Int32) -&gt; <span class="fn">@strip.</span>Strip, <span class="fn">@style.</span>Style) -&gt; <span class="fn">@strip.</span>Strip</pre><p>One row of the screen: the first placement covering a column wins it, so nothing is drawn twice and front items hide those behind them.</p></div>
@@ -2582,7 +2582,7 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
   y : Int32
   x : Int32
   line : <span class="fn">@strip.</span>Strip
-} <span class="kw">derive</span>(Eq, <span class="fn">@debug.</span>Debug)</pre>
+}</pre>
     </div>
     <div class="api-item" data-q="comp clear">
       <h4><span class="api-kind let">let</span><code>clear</code></h4>
@@ -2629,7 +2629,7 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
       <pre class="block"><span class="kw">pub</span>(all) <span class="kw">struct</span> Align {
   h : HAlign
   v : VAlign
-} <span class="kw">derive</span>(Eq, <span class="fn">@debug.</span>Debug)</pre>
+}</pre>
       <div class="api-methods">
         <div class="api-method" data-q="main_offset"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Align::main_offset(Self, <span class="fn">@layout.</span>Dir, Int32) -&gt; Int32</pre></div>
         <div class="api-method" data-q="new"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Align::new(h? : HAlign, v? : VAlign) -&gt; Self</pre></div>
@@ -2641,7 +2641,7 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
   border : EdgeKind
   style : <span class="fn">@style.</span>Style
   size : <span class="fn">@geom.</span>Size
-} <span class="kw">derive</span>(Eq, <span class="fn">@debug.</span>Debug)</pre>
+}</pre>
       <div class="api-methods">
         <div class="api-method" data-q="frame_line"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Decor::frame_line(Self, <span class="fn">@geom.</span>Spacing, Int32, <span class="fn">@strip.</span>Strip?) -&gt; <span class="fn">@strip.</span>Strip</pre></div>
         <div class="api-method" data-q="line"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Decor::line(Self, Int32) -&gt; <span class="fn">@strip.</span>Strip</pre></div>
@@ -2652,7 +2652,7 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
       <pre class="block"><span class="kw">pub</span>(all) <span class="kw">enum</span> Display {
   Block
   Hidden
-} <span class="kw">derive</span>(Eq, <span class="fn">@debug.</span>Debug)</pre>
+}</pre>
     </div>
     <div class="api-item" data-q="design edge">
       <h4><span class="api-kind type">type</span><code>Edge</code></h4>
@@ -2661,7 +2661,7 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
   Right
   Bottom
   Left
-} <span class="kw">derive</span>(Eq, <span class="fn">@debug.</span>Debug)</pre>
+}</pre>
     </div>
     <div class="api-item" data-q="design edgekind">
       <h4><span class="api-kind type">type</span><code>EdgeKind</code></h4>
@@ -2672,7 +2672,7 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
   Round
   Double
   Heavy
-} <span class="kw">derive</span>(Eq, <span class="fn">@debug.</span>Debug)</pre>
+}</pre>
       <div class="api-methods">
         <div class="api-method" data-q="glyphs"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> EdgeKind::glyphs(Self) -&gt; <span class="fn">@widget.</span>Border</pre></div>
       </div>
@@ -2683,14 +2683,14 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
   Left
   Centre
   Right
-} <span class="kw">derive</span>(Eq, <span class="fn">@debug.</span>Debug)</pre>
+}</pre>
     </div>
     <div class="api-item" data-q="design preset">
       <h4><span class="api-kind type">type</span><code>Preset</code></h4>
       <pre class="block"><span class="kw">pub</span>(all) <span class="kw">struct</span> Preset {
   base : <span class="fn">@style.</span>Style
   sheet : Stylesheet
-} <span class="kw">derive</span>(Eq, <span class="fn">@debug.</span>Debug)</pre>
+}</pre>
       <p>A starting point: a base text style and a stylesheet of sensible rules, both free to be added to or overridden.</p>
       <div class="api-methods">
         <div class="api-method" data-q="dark"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Preset::dark() -&gt; Self</pre><p>Light letters on whatever the terminal draws behind them.</p></div>
@@ -2721,7 +2721,7 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
   min_height : Int32?
   max_height : Int32?
   text : <span class="fn">@style.</span>Style
-} <span class="kw">derive</span>(Eq, <span class="fn">@debug.</span>Debug)</pre>
+}</pre>
       <div class="api-methods">
         <div class="api-method" data-q="box"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Resolved::box(Self, <span class="fn">@layout.</span>Dir, <span class="fn">@layout.</span>Box) -&gt; <span class="fn">@layout.</span>Box</pre></div>
         <div class="api-method" data-q="content_region"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Resolved::content_region(Self, <span class="fn">@geom.</span>Region) -&gt; <span class="fn">@geom.</span>Region</pre></div>
@@ -2743,7 +2743,7 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
   Warning
   Error
   Border
-} <span class="kw">derive</span>(Eq, <span class="fn">@debug.</span>Debug)</pre>
+}</pre>
       <p>What a colour in a theme is for. A widget asks for a role and the theme answers with the colour that role holds, so a whole look changes by swapping one value.</p>
       <div class="api-methods">
         <div class="api-method" data-q="name"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Role::name(Self) -&gt; String</pre><p>The class a rule carries for this role: the name a stylesheet is written against, so a theme can be applied without naming its colours.</p></div>
@@ -2755,7 +2755,7 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
       <pre class="block"><span class="kw">pub</span>(all) <span class="kw">struct</span> Rule {
   sel : Sel
   styles : Styles
-} <span class="kw">derive</span>(Eq, <span class="fn">@debug.</span>Debug)</pre>
+}</pre>
       <div class="api-methods">
         <div class="api-method" data-q="new"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Rule::new(Sel, Styles) -&gt; Self</pre></div>
       </div>
@@ -2769,7 +2769,7 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
   focus : Bool
   hover : Bool
   disabled : Bool
-} <span class="kw">derive</span>(Eq, <span class="fn">@debug.</span>Debug)</pre>
+}</pre>
       <div class="api-methods">
         <div class="api-method" data-q="matches"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Sel::matches(Self, String, Int32, Array[String], Bool, Bool, Bool) -&gt; Bool</pre></div>
         <div class="api-method" data-q="new"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Sel::new(name? : String, id? : Int32, classes? : Array[String], focus? : Bool, hover? : Bool, disabled? : Bool) -&gt; Self</pre></div>
@@ -2800,7 +2800,7 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
   transition : Int32?
   scrollbar : <span class="fn">@style.</span>Style?
   text : <span class="fn">@style.</span>Style?
-} <span class="kw">derive</span>(Eq, <span class="fn">@debug.</span>Debug)</pre>
+}</pre>
       <div class="api-methods">
         <div class="api-method" data-q="is_empty"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Styles::is_empty(Self) -&gt; Bool</pre></div>
         <div class="api-method" data-q="merge"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Styles::merge(Self, Self) -&gt; Self</pre></div>
@@ -2811,7 +2811,7 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
       <h4><span class="api-kind type">type</span><code>Stylesheet</code></h4>
       <pre class="block"><span class="kw">pub</span>(all) <span class="kw">struct</span> Stylesheet {
   rules : Array[Rule]
-} <span class="kw">derive</span>(Eq, <span class="fn">@debug.</span>Debug)</pre>
+}</pre>
       <div class="api-methods">
         <div class="api-method" data-q="add"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Stylesheet::add(Self, Sel, Styles) -&gt; Unit</pre></div>
         <div class="api-method" data-q="append"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Stylesheet::append(Self, Self) -&gt; Unit</pre><p>Every rule of <code>other</code> after this sheet's own, which is how a theme's rules and a caller's are combined: the ones added last win.</p></div>
@@ -2836,7 +2836,7 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
   warning : <span class="fn">@style.</span>Colour
   error : <span class="fn">@style.</span>Colour
   border : <span class="fn">@style.</span>Colour
-} <span class="kw">derive</span>(Eq, <span class="fn">@debug.</span>Debug)</pre>
+}</pre>
       <p>A set of semantic colours as one value: everything a look is made of, switched as a whole.</p>
       <div class="api-methods">
         <div class="api-method" data-q="base"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Theme::base(Self) -&gt; <span class="fn">@style.</span>Style</pre><p>What the tree inherits: the text colour on the surface.</p></div>
@@ -2855,7 +2855,7 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
   Top
   Middle
   Bottom
-} <span class="kw">derive</span>(Eq, <span class="fn">@debug.</span>Debug)</pre>
+}</pre>
     </div>
     <div class="api-item" data-q="design bare">
       <h4><span class="api-kind let">let</span><code>bare</code></h4>
@@ -2908,7 +2908,7 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
   Left
   Centre
   Right
-} <span class="kw">derive</span>(Eq, <span class="fn">@debug.</span>Debug)</pre>
+}</pre>
     </div>
     <div class="api-item" data-q="widget axis">
       <h4><span class="api-kind type">type</span><code>Axis</code></h4>
@@ -2917,7 +2917,7 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
   labels : Array[String]
   bounds : Bounds
   style : <span class="fn">@style.</span>Style
-} <span class="kw">derive</span>(Eq, <span class="fn">@debug.</span>Debug)</pre>
+}</pre>
       <p>One side of a plot: the words along it and the stretch they cover.</p>
       <div class="api-methods">
         <div class="api-method" data-q="new"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Axis::new(labels? : Array[String], bounds? : Bounds, title? : String, style? : <span class="fn">@style.</span>Style) -&gt; Self</pre></div>
@@ -2929,7 +2929,7 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
   label : String
   value : Double
   style : <span class="fn">@style.</span>Style?
-} <span class="kw">derive</span>(Eq, <span class="fn">@debug.</span>Debug)</pre>
+}</pre>
       <p>One column of a bar chart: what it is called, how tall it stands, and the colour it is drawn in when it has one of its own.</p>
       <div class="api-methods">
         <div class="api-method" data-q="new"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Bar::new(String, value? : Double, style? : <span class="fn">@style.</span>Style?) -&gt; Self</pre></div>
@@ -2997,14 +2997,14 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
   bottom_left : String
   bottom : String
   bottom_right : String
-} <span class="kw">derive</span>(Eq, <span class="fn">@debug.</span>Debug)</pre>
+}</pre>
     </div>
     <div class="api-item" data-q="widget bounds">
       <h4><span class="api-kind type">type</span><code>Bounds</code></h4>
       <pre class="block"><span class="kw">pub</span>(all) <span class="kw">struct</span> Bounds {
   low : Double
   high : Double
-} <span class="kw">derive</span>(Eq, <span class="fn">@debug.</span>Debug)</pre>
+}</pre>
       <p>The stretch of values an axis covers. A <code>high</code> no greater than <code>low</code> is taken from the data instead.</p>
       <div class="api-methods">
         <div class="api-method" data-q="new"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Bounds::new(low? : Double, high? : Double) -&gt; Self</pre></div>
@@ -3072,7 +3072,7 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
   label_style : <span class="fn">@style.</span>Style
   focus_style : <span class="fn">@style.</span>Style
   <span class="kw">mut</span> focused : Bool
-} <span class="kw">derive</span>(Eq, <span class="fn">@debug.</span>Debug)</pre>
+}</pre>
       <div class="api-impls">implements <code>Widget</code></div>
       <div class="api-methods">
         <div class="api-method" data-q="focusable"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Checkbox::focusable(Self) -&gt; Bool</pre></div>
@@ -3093,7 +3093,7 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
   prompt : String
   <span class="kw">mut</span> disabled : Bool
   divider : Bool
-} <span class="kw">derive</span>(Eq, <span class="fn">@debug.</span>Debug)</pre>
+}</pre>
       <div class="api-methods">
         <div class="api-method" data-q="new"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Choice::new(String, disabled? : Bool) -&gt; Self</pre></div>
       </div>
@@ -3105,7 +3105,7 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
   <span class="kw">mut</span> minute : Int32
   <span class="kw">mut</span> second : Int32
   <span class="kw">mut</span> carry : Int32
-} <span class="kw">derive</span>(Eq, <span class="fn">@debug.</span>Debug)</pre>
+}</pre>
       <p>A time of day that counts itself forward from the frames it is given, so a clock runs off the same <code>Tick</code> every other widget sees and needs no clock of the host's.</p>
       <div class="api-methods">
         <div class="api-method" data-q="advance"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Clock::advance(Self, Int32) -&gt; Bool</pre><p>Move on by <code>ms</code> milliseconds, answering whether the time it shows changed, which is all a caller needs to know to ask for a frame.</p></div>
@@ -3153,7 +3153,7 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
   label : String
   width : Int32
   align : Align
-} <span class="kw">derive</span>(Eq, <span class="fn">@debug.</span>Debug)</pre>
+}</pre>
       <div class="api-methods">
         <div class="api-method" data-q="new"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Column::new(String, width? : Int32, align? : Align) -&gt; Self</pre></div>
       </div>
@@ -3164,7 +3164,7 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
   name : String
   hint : String
   key : String
-} <span class="kw">derive</span>(Eq, <span class="fn">@debug.</span>Debug)</pre>
+}</pre>
       <p>One thing the application can do, as the palette lists it.</p>
       <div class="api-methods">
         <div class="api-method" data-q="new"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Command::new(String, hint? : String, key? : String) -&gt; Self</pre></div>
@@ -3249,7 +3249,7 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
   Row
   Column
   None
-} <span class="kw">derive</span>(Eq, <span class="fn">@debug.</span>Debug)</pre>
+}</pre>
     </div>
     <div class="api-item" data-q="widget datatable">
       <h4><span class="api-kind type">type</span><code>DataTable</code></h4>
@@ -3277,7 +3277,7 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
   even_style : <span class="fn">@style.</span>Style
   label_style : <span class="fn">@style.</span>Style
   style : <span class="fn">@style.</span>Style
-} <span class="kw">derive</span>(Eq, <span class="fn">@debug.</span>Debug)</pre>
+}</pre>
       <div class="api-impls">implements <code>Widget</code></div>
       <div class="api-methods">
         <div class="api-method" data-q="add_column"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> DataTable::add_column(Self, String, width? : Int32, align? : Align) -&gt; Int32</pre></div>
@@ -3309,7 +3309,7 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
   kind : GraphKind
   points : Array[(Double, Double)]
   style : <span class="fn">@style.</span>Style
-} <span class="kw">derive</span>(Eq, <span class="fn">@debug.</span>Debug)</pre>
+}</pre>
       <p>One series of points, named and drawn in its own colour.</p>
       <div class="api-methods">
         <div class="api-method" data-q="new"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Dataset::new(String, Array[(Double, Double)], kind? : GraphKind, style? : <span class="fn">@style.</span>Style) -&gt; Self</pre></div>
@@ -3322,7 +3322,7 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
   Question
   Warning
   Error
-} <span class="kw">derive</span>(Eq, <span class="fn">@debug.</span>Debug)</pre>
+}</pre>
       <p>What a message box is telling the user, which sets the mark beside the text and the colour it is drawn in.</p>
       <div class="api-methods">
         <div class="api-method" data-q="mark"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> DialogKind::mark(Self) -&gt; String</pre></div>
@@ -3334,7 +3334,7 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
       <pre class="block"><span class="kw">pub</span> <span class="kw">struct</span> Digits {
   <span class="kw">mut</span> value : String
   style : <span class="fn">@style.</span>Style
-} <span class="kw">derive</span>(Eq, <span class="fn">@debug.</span>Debug)</pre>
+}</pre>
       <div class="api-impls">implements <code>Widget</code></div>
       <div class="api-methods">
         <div class="api-method" data-q="focusable"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Digits::focusable(Self) -&gt; Bool</pre></div>
@@ -3352,7 +3352,7 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
       <pre class="block"><span class="kw">pub</span> <span class="kw">struct</span> DirEntry {
   name : String
   is_dir : Bool
-} <span class="kw">derive</span>(Eq, <span class="fn">@debug.</span>Debug)</pre>
+}</pre>
       <div class="api-methods">
         <div class="api-method" data-q="new"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> DirEntry::new(String, is_dir~ : Bool) -&gt; Self</pre></div>
       </div>
@@ -3431,7 +3431,7 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
   name : String
   dir : Bool
   size : Int32
-} <span class="kw">derive</span>(Eq, <span class="fn">@debug.</span>Debug)</pre>
+}</pre>
       <p>One row of a listing, as the caller hands it over. This library never touches a file system: whatever walks the directories is the caller's, and what it finds comes in as this.</p>
       <div class="api-methods">
         <div class="api-method" data-q="is_dir"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> FileEntry::is_dir(Self) -&gt; Bool</pre></div>
@@ -3443,7 +3443,7 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
       <pre class="block"><span class="kw">pub</span>(all) <span class="kw">enum</span> FileMode {
   Open
   Save
-} <span class="kw">derive</span>(Eq, <span class="fn">@debug.</span>Debug)</pre>
+}</pre>
       <p>Whether to open something that is there, or to name something to write.</p>
       <div class="api-methods">
         <div class="api-method" data-q="confirm"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> FileMode::confirm(Self) -&gt; String</pre></div>
@@ -3495,7 +3495,7 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
       <pre class="block"><span class="kw">pub</span>(all) <span class="kw">enum</span> GraphKind {
   Line
   Scatter
-} <span class="kw">derive</span>(Eq, <span class="fn">@debug.</span>Debug)</pre>
+}</pre>
       <p>How a series is drawn: joined from point to point, or as the points themselves.</p>
       <div class="api-methods">
         <div class="api-method" data-q="marker"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> GraphKind::marker(Self) -&gt; String</pre></div>
@@ -3593,7 +3593,7 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
   checked : Bool
   enabled : Bool
   rule : Bool
-} <span class="kw">derive</span>(Eq, <span class="fn">@debug.</span>Debug)</pre>
+}</pre>
       <p>One line of a menu: a label, the keys that do the same thing, a tick for a setting that is on, or a rule between two groups of them.</p>
       <div class="api-methods">
         <div class="api-method" data-q="is_enabled"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Item::is_enabled(Self) -&gt; Bool</pre></div>
@@ -3636,7 +3636,7 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
   <span class="kw">mut</span> offset : Int32
   <span class="kw">mut</span> seen : Int32
   <span class="kw">mut</span> followed : Bool
-} <span class="kw">derive</span>(Eq, <span class="fn">@debug.</span>Debug)</pre>
+}</pre>
       <p>What a list knows and the caller keeps: which row is chosen and how far the view has been scrolled. A widget that takes one is drawn from it and moves it, so two widgets can share a choice and a caller can set either without asking the widget.</p>
       <div class="api-methods">
         <div class="api-method" data-q="clear"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> ListState::clear(Self) -&gt; Unit</pre></div>
@@ -3683,7 +3683,7 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
   <span class="kw">mut</span> frame : Int32
   style : <span class="fn">@style.</span>Style
   dim_style : <span class="fn">@style.</span>Style
-} <span class="kw">derive</span>(Eq, <span class="fn">@debug.</span>Debug)</pre>
+}</pre>
       <div class="api-impls">implements <code>Widget</code></div>
       <div class="api-methods">
         <div class="api-method" data-q="focusable"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> LoadingIndicator::focusable(Self) -&gt; Bool</pre></div>
@@ -3707,7 +3707,7 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
   <span class="kw">mut</span> offset_y : Int32
   <span class="kw">mut</span> focused : Bool
   style : <span class="fn">@style.</span>Style
-} <span class="kw">derive</span>(Eq, <span class="fn">@debug.</span>Debug)</pre>
+}</pre>
       <div class="api-impls">implements <code>Widget</code></div>
       <div class="api-methods">
         <div class="api-method" data-q="clear"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Log::clear(Self) -&gt; Unit</pre></div>
@@ -3739,7 +3739,7 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
   code_style : <span class="fn">@style.</span>Style
   quote_style : <span class="fn">@style.</span>Style
   rule_style : <span class="fn">@style.</span>Style
-} <span class="kw">derive</span>(Eq, <span class="fn">@debug.</span>Debug)</pre>
+}</pre>
       <div class="api-impls">implements <code>Widget</code></div>
       <div class="api-methods">
         <div class="api-method" data-q="focusable"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Markdown::focusable(Self) -&gt; Bool</pre></div>
@@ -3881,7 +3881,7 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
   Paste(String)
   Focus(Bool)
   Tick(Int32)
-} <span class="kw">derive</span>(Eq, <span class="fn">@debug.</span>Debug)</pre>
+}</pre>
     </div>
     <div class="api-item" data-q="widget optionlist">
       <h4><span class="api-kind type">type</span><code>OptionList</code></h4>
@@ -3899,7 +3899,7 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
   disabled_style : <span class="fn">@style.</span>Style
   hover_style : <span class="fn">@style.</span>Style
   separator_style : <span class="fn">@style.</span>Style
-} <span class="kw">derive</span>(Eq, <span class="fn">@debug.</span>Debug)</pre>
+}</pre>
       <div class="api-impls">implements <code>Widget</code></div>
       <div class="api-methods">
         <div class="api-method" data-q="add_option"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> OptionList::add_option(Self, Choice) -&gt; Unit</pre></div>
@@ -3938,7 +3938,7 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
   HeaderSelected(id~ : Int32, col~ : Int32)
   Dismissed(id~ : Int32)
   Quit
-} <span class="kw">derive</span>(Eq, <span class="fn">@debug.</span>Debug)</pre>
+}</pre>
     </div>
     <div class="api-item" data-q="widget placeholder">
       <h4><span class="api-kind type">type</span><code>Placeholder</code></h4>
@@ -3947,7 +3947,7 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
   <span class="kw">mut</span> variant : PlaceholderVariant
   colour : Int32
   style : <span class="fn">@style.</span>Style
-} <span class="kw">derive</span>(Eq, <span class="fn">@debug.</span>Debug)</pre>
+}</pre>
       <div class="api-impls">implements <code>Widget</code></div>
       <div class="api-methods">
         <div class="api-method" data-q="cycle"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Placeholder::cycle(Self) -&gt; Unit</pre></div>
@@ -3965,7 +3965,7 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
   Default
   Size
   Text
-} <span class="kw">derive</span>(Eq, <span class="fn">@debug.</span>Debug)</pre>
+}</pre>
     </div>
     <div class="api-item" data-q="widget pretty">
       <h4><span class="api-kind type">type</span><code>Pretty</code></h4>
@@ -4028,7 +4028,7 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
   label_style : <span class="fn">@style.</span>Style
   focus_style : <span class="fn">@style.</span>Style
   <span class="kw">mut</span> focused : Bool
-} <span class="kw">derive</span>(Eq, <span class="fn">@debug.</span>Debug)</pre>
+}</pre>
       <div class="api-impls">implements <code>Widget</code></div>
       <div class="api-methods">
         <div class="api-method" data-q="focusable"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> RadioButton::focusable(Self) -&gt; Bool</pre></div>
@@ -4053,7 +4053,7 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
   <span class="kw">mut</span> focused : Bool
   cursor : <span class="fn">@style.</span>Style
   blurred_cursor : <span class="fn">@style.</span>Style
-} <span class="kw">derive</span>(Eq, <span class="fn">@debug.</span>Debug)</pre>
+}</pre>
       <p>Radio buttons grouped into a set: turning one on turns the others off, the arrows move a cursor that is separate from which button is pressed, and pressing the pressed button again changes nothing. A click on a row moves the cursor there and presses it.</p>
       <div class="api-impls">implements <code>Widget</code></div>
       <div class="api-methods">
@@ -4084,7 +4084,7 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
   <span class="kw">mut</span> offset_y : Int32
   <span class="kw">mut</span> focused : Bool
   style : <span class="fn">@style.</span>Style
-} <span class="kw">derive</span>(Eq, <span class="fn">@debug.</span>Debug)</pre>
+}</pre>
       <div class="api-impls">implements <code>Widget</code></div>
       <div class="api-methods">
         <div class="api-method" data-q="clear"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> RichLog::clear(Self) -&gt; Unit</pre></div>
@@ -4106,7 +4106,7 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
       <pre class="block"><span class="kw">pub</span>(all) <span class="kw">struct</span> Row {
   label : String
   cells : Array[String]
-} <span class="kw">derive</span>(Eq, <span class="fn">@debug.</span>Debug)</pre>
+}</pre>
       <div class="api-methods">
         <div class="api-method" data-q="new"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Row::new(Array[String], label? : String) -&gt; Self</pre></div>
       </div>
@@ -4117,7 +4117,7 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
   dir : RuleDir
   <span class="kw">mut</span> kind : RuleKind
   style : <span class="fn">@style.</span>Style
-} <span class="kw">derive</span>(Eq, <span class="fn">@debug.</span>Debug)</pre>
+}</pre>
       <div class="api-impls">implements <code>Widget</code></div>
       <div class="api-methods">
         <div class="api-method" data-q="focusable"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Rule::focusable(Self) -&gt; Bool</pre></div>
@@ -4134,7 +4134,7 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
       <pre class="block"><span class="kw">pub</span>(all) <span class="kw">enum</span> RuleDir {
   Horizontal
   Vertical
-} <span class="kw">derive</span>(Eq, <span class="fn">@debug.</span>Debug)</pre>
+}</pre>
     </div>
     <div class="api-item" data-q="widget rulekind">
       <h4><span class="api-kind type">type</span><code>RuleKind</code></h4>
@@ -4148,7 +4148,7 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
   None
   Solid
   Thick
-} <span class="kw">derive</span>(Eq, <span class="fn">@debug.</span>Debug)</pre>
+}</pre>
     </div>
     <div class="api-item" data-q="widget scrollbar">
       <h4><span class="api-kind type">type</span><code>Scrollbar</code></h4>
@@ -4199,7 +4199,7 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
   arrow_style : <span class="fn">@style.</span>Style
   highlight : <span class="fn">@style.</span>Style
   blurred_highlight : <span class="fn">@style.</span>Style
-} <span class="kw">derive</span>(Eq, <span class="fn">@debug.</span>Debug)</pre>
+}</pre>
       <div class="api-impls">implements <code>Widget</code></div>
       <div class="api-methods">
         <div class="api-method" data-q="clear"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Select::clear(Self) -&gt; Unit</pre></div>
@@ -4221,7 +4221,7 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
   value : String
   initial : Bool
   disabled : Bool
-} <span class="kw">derive</span>(Eq, <span class="fn">@debug.</span>Debug)</pre>
+}</pre>
       <div class="api-methods">
         <div class="api-method" data-q="new"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Selection::new(String, String, initial_state? : Bool, disabled? : Bool) -&gt; Self</pre></div>
       </div>
@@ -4243,7 +4243,7 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
   disabled_style : <span class="fn">@style.</span>Style
   selected_style : <span class="fn">@style.</span>Style
   unselected_style : <span class="fn">@style.</span>Style
-} <span class="kw">derive</span>(Eq, <span class="fn">@debug.</span>Debug)</pre>
+}</pre>
       <div class="api-impls">implements <code>Widget</code></div>
       <div class="api-methods">
         <div class="api-method" data-q="deselect_all"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> SelectionList::deselect_all(Self) -&gt; Unit</pre></div>
@@ -4270,7 +4270,7 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
   Letter
   Either
   Any
-} <span class="kw">derive</span>(Eq, <span class="fn">@debug.</span>Debug)</pre>
+}</pre>
       <p>What a place in a mask takes: a digit, a letter, either, or any character at all. Every other character in the mask is a literal, shown as it is written and stepped over.</p>
       <div class="api-methods">
         <div class="api-method" data-q="glyph"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Slot::glyph(Self) -&gt; String</pre></div>
@@ -4286,7 +4286,7 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
   min_colour : <span class="fn">@style.</span>Colour
   max_colour : <span class="fn">@style.</span>Colour
   style : <span class="fn">@style.</span>Style
-} <span class="kw">derive</span>(Eq, <span class="fn">@debug.</span>Debug)</pre>
+}</pre>
       <div class="api-impls">implements <code>Widget</code></div>
       <div class="api-methods">
         <div class="api-method" data-q="data"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Sparkline::data(Self) -&gt; Array[Double]</pre></div>
@@ -4378,7 +4378,7 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
   Mean
   Median
   Latest
-} <span class="kw">derive</span>(Eq, <span class="fn">@debug.</span>Debug)</pre>
+}</pre>
     </div>
     <div class="api-item" data-q="widget switch">
       <h4><span class="api-kind type">type</span><code>Switch</code></h4>
@@ -4389,7 +4389,7 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
   off_style : <span class="fn">@style.</span>Style
   track : <span class="fn">@style.</span>Style
   focus_track : <span class="fn">@style.</span>Style
-} <span class="kw">derive</span>(Eq, <span class="fn">@debug.</span>Debug)</pre>
+}</pre>
       <p>The switch: a four-wide strip, half thumb and half track, the thumb on the left when off and on the right when on.</p>
       <div class="api-impls">implements <code>Widget</code></div>
       <div class="api-methods">
@@ -4429,7 +4429,7 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
   <span class="kw">mut</span> offset : Int32
   <span class="kw">mut</span> seen : Int32
   <span class="kw">mut</span> followed : Bool
-} <span class="kw">derive</span>(Eq, <span class="fn">@debug.</span>Debug)</pre>
+}</pre>
       <p>What a table knows and the caller keeps: the cell it is on, and how far the rows have been scrolled.</p>
       <div class="api-methods">
         <div class="api-method" data-q="clear"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> TableState::clear(Self) -&gt; Unit</pre></div>
@@ -4456,7 +4456,7 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
   bar_style : <span class="fn">@style.</span>Style
   bar_highlight : <span class="fn">@style.</span>Style
   focus_style : <span class="fn">@style.</span>Style
-} <span class="kw">derive</span>(Eq, <span class="fn">@debug.</span>Debug)</pre>
+}</pre>
       <div class="api-impls">implements <code>Widget</code></div>
       <div class="api-methods">
         <div class="api-method" data-q="activate"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Tabs::activate(Self, Int32) -&gt; Unit</pre></div>
@@ -4535,7 +4535,7 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
   bar_info : <span class="fn">@style.</span>Style
   bar_warning : <span class="fn">@style.</span>Style
   bar_error : <span class="fn">@style.</span>Style
-} <span class="kw">derive</span>(Eq, <span class="fn">@debug.</span>Debug)</pre>
+}</pre>
       <div class="api-impls">implements <code>Widget</code></div>
       <div class="api-methods">
         <div class="api-method" data-q="bar_style"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Toast::bar_style(Self) -&gt; <span class="fn">@style.</span>Style</pre></div>
@@ -4554,7 +4554,7 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
   Information
   Warning
   Error
-} <span class="kw">derive</span>(Eq, <span class="fn">@debug.</span>Debug)</pre>
+}</pre>
     </div>
     <div class="api-item" data-q="widget tooltip">
       <h4><span class="api-kind type">type</span><code>Tooltip</code></h4>
@@ -4563,7 +4563,7 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
   <span class="kw">mut</span> style : <span class="fn">@style.</span>Style
   max_width : Int32
   padding : Int32
-} <span class="kw">derive</span>(Eq, <span class="fn">@debug.</span>Debug)</pre>
+}</pre>
       <div class="api-impls">implements <code>Widget</code></div>
       <div class="api-methods">
         <div class="api-method" data-q="focusable"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Tooltip::focusable(Self) -&gt; Bool</pre></div>
@@ -4598,7 +4598,7 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
   guide_style : <span class="fn">@style.</span>Style
   cursor_style : <span class="fn">@style.</span>Style
   hover_style : <span class="fn">@style.</span>Style
-} <span class="kw">derive</span>(Eq, <span class="fn">@debug.</span>Debug)</pre>
+}</pre>
       <div class="api-impls">implements <code>Widget</code></div>
       <div class="api-methods">
         <div class="api-method" data-q="add"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Tree::add(Self, Int32, String, data? : String, expand? : Bool, allow_expand? : Bool) -&gt; Int32</pre></div>
@@ -4644,7 +4644,7 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
   <span class="kw">mut</span> loaded : Bool
   children : Array[Int32]
   parent : Int32
-} <span class="kw">derive</span>(Eq, <span class="fn">@debug.</span>Debug)</pre>
+}</pre>
       <div class="api-methods">
         <div class="api-method" data-q="is_expanded"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> TreeNode::is_expanded(Self) -&gt; Bool</pre></div>
         <div class="api-method" data-q="label"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> TreeNode::label(Self) -&gt; String</pre></div>
@@ -4661,7 +4661,7 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
   VStr(String)
   VArr(Array[Value])
   VObj(Array[(String, Value)])
-} <span class="kw">derive</span>(Eq, <span class="fn">@debug.</span>Debug)</pre>
+}</pre>
       <p>A value to print, as the shapes a caller's own data comes in.</p>
       <div class="api-methods">
         <div class="api-method" data-q="summary"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Value::summary(Self) -&gt; String</pre><p>The one-line reading of a value, which is what is printed when the whole thing fits.</p></div>
@@ -4731,7 +4731,7 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
   to : <span class="fn">@geom.</span>Region
   start : Int32
   ms : Int32
-} <span class="kw">derive</span>(Eq, <span class="fn">@debug.</span>Debug)</pre>
+}</pre>
       <p>One node gliding from where it was to where the layout just put it. The times are milliseconds off the driver's clock.</p>
       <div class="api-methods">
         <div class="api-method" data-q="at"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Anim::at(Self, Int32) -&gt; <span class="fn">@geom.</span>Region</pre><p>Where the node sits at <code>now</code>: eased from the old place toward the new one, and landed once the span has passed.</p></div>
@@ -4836,7 +4836,7 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
   <span class="kw">mut</span> vh : Int32
   <span class="kw">mut</span> cw : Int32
   <span class="kw">mut</span> ch : Int32
-} <span class="kw">derive</span>(Eq, <span class="fn">@debug.</span>Debug)</pre>
+}</pre>
       <div class="api-methods">
         <div class="api-method" data-q="max_x"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> ScrollState::max_x(Self) -&gt; Int32</pre></div>
         <div class="api-method" data-q="max_y"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> ScrollState::max_y(Self) -&gt; Int32</pre></div>
@@ -4853,7 +4853,7 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
   hover : Int32
   disabled : Array[Int32]
   base : <span class="fn">@style.</span>Style
-} <span class="kw">derive</span>(Eq, <span class="fn">@debug.</span>Debug)</pre>
+}</pre>
       <div class="api-methods">
         <div class="api-method" data-q="new"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Theme::new(sheet? : <span class="fn">@design.</span>Stylesheet, focus? : Int32, hover? : Int32, disabled? : Array[Int32], base? : <span class="fn">@style.</span>Style) -&gt; Self</pre></div>
       </div>
@@ -4865,7 +4865,7 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
   at : Int32
   repeat : Bool
   fire : () -&gt; Unit
-} <span class="kw">derive</span>(<span class="fn">@debug.</span>Debug)</pre>
+}</pre>
     </div>
     <div class="api-item" data-q="app view">
       <h4><span class="api-kind type">type</span><code>View</code></h4>
@@ -4874,7 +4874,7 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
   bar : <span class="fn">@style.</span>Style
   vbar : Bool
   hbar : Bool
-} <span class="kw">derive</span>(Eq, <span class="fn">@debug.</span>Debug)</pre>
+}</pre>
     </div>
     <div class="api-item" data-q="app ctrl_c">
       <h4><span class="api-kind let">let</span><code>ctrl_c</code></h4>
@@ -4949,7 +4949,7 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
       <h4><span class="api-kind error">error</span><code>TtyError</code></h4>
       <pre class="block"><span class="kw">pub</span>(all) <span class="kw">suberror</span> TtyError {
   Io(String)
-} <span class="kw">derive</span>(<span class="fn">@debug.</span>Debug)</pre>
+}</pre>
     </div>
     <div class="api-item" data-q="driver disable_focus">
       <h4><span class="api-kind let">let</span><code>disable_focus</code></h4>

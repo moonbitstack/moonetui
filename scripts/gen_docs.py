@@ -72,7 +72,7 @@ def helpers(texts: list) -> dict:
     items = {}
     for text in texts:
         for chunk in text.split("///|\n"):
-            lines = [l for l in chunk.splitlines() if not l.startswith("//")]
+            lines = [l for l in chunk.splitlines() if not l.startswith(("//", "#"))]
             if not lines or lines[0].startswith("pub "):
                 continue
             m = re.match(r"(?:priv )?(struct|fn|impl [@\w.]+ for) (\w+)", lines[0])
