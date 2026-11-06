@@ -1,1 +1,4 @@
 // Colours, attributes and differential SGR: a cell emits only what changed.
+import {
+  "moonbitstack/moonrgba",
+}

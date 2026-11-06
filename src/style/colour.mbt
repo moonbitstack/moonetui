@@ -97,8 +97,8 @@ pub fn Colour::parse(text : String) -> Colour? {
 pub fn Colour::to_rgb(self : Colour) -> (Int32, Int32, Int32)? {
   match self {
     Default => None
-    Ansi(i) => Some(ansi16_rgb(i))
-    Ansi256(i) => Some(ansi256_rgb(i))
+    Ansi(i) => @moonrgba.Ansi16::of(i).map(named => named.color().rgb8())
+    Ansi256(i) => Some(@moonrgba.Ansi256::of(i).color().rgb8())
     Rgb(r, g, b) => Some((r, g, b))
   }
 }
@@ -109,7 +109,7 @@ pub fn Colour::to_ansi256(self : Colour) -> Colour {
     Default => Default
     Ansi(_) => self
     Ansi256(_) => self
-    Rgb(r, g, b) => Ansi256(nearest_cube(r, g, b))
+    Rgb(r, g, b) => Ansi256(@moonrgba.Color::rgb(r, g, b).to_ansi256().code())
   }
 }
 
@@ -118,11 +118,8 @@ pub fn Colour::to_ansi16(self : Colour) -> Colour {
   match self {
     Default => Default
     Ansi(_) => self
-    Ansi256(i) => {
-      let (r, g, b) = ansi256_rgb(i)
-      Ansi(nearest_named(r, g, b))
-    }
-    Rgb(r, g, b) => Ansi(nearest_named(r, g, b))
+    Ansi256(i) => Ansi(@moonrgba.Ansi256::of(i).color().to_ansi16().code())
+    Rgb(r, g, b) => Ansi(@moonrgba.Color::rgb(r, g, b).to_ansi16().code())
   }
 }
 
@@ -180,122 +177,6 @@ fn hex2(hi : UInt16, lo : UInt16) -> Int32 {
     -1
   } else {
     h * 16 + l
-  }
-}
-
-///|
-let named : Array[(Int32, Int32, Int32)] = [
-  (0, 0, 0),
-  (128, 0, 0),
-  (0, 128, 0),
-  (128, 128, 0),
-  (0, 0, 128),
-  (128, 0, 128),
-  (0, 128, 128),
-  (192, 192, 192),
-  (128, 128, 128),
-  (255, 0, 0),
-  (0, 255, 0),
-  (255, 255, 0),
-  (0, 0, 255),
-  (255, 0, 255),
-  (0, 255, 255),
-  (255, 255, 255),
-]
-
-///|
-let levels : Array[Int32] = [0, 95, 135, 175, 215, 255]
-
-///|
-fn ansi16_rgb(index : Int32) -> (Int32, Int32, Int32) {
-  named[clamp(index, 0, 15)]
-}
-
-///|
-fn ansi256_rgb(index : Int32) -> (Int32, Int32, Int32) {
-  let i = clamp(index, 0, 255)
-  if i < 16 {
-    named[i]
-  } else if i < 232 {
-    let n = i - 16
-    (levels[n / 36], levels[n / 6 % 6], levels[n % 6])
-  } else {
-    // The trailing 24 entries are a grey ramp that misses both ends.
-    let grey = 8 + (i - 232) * 10
-    (grey, grey, grey)
-  }
-}
-
-///|
-fn nearest_cube(r : Int32, g : Int32, b : Int32) -> Int32 {
-  let cube = 16 +
-    nearest_level(r) * 36 +
-    nearest_level(g) * 6 +
-    nearest_level(b)
-  let grey = nearest_grey(r, g, b)
-  if dist(ansi256_rgb(cube), (r, g, b)) <= dist(ansi256_rgb(grey), (r, g, b)) {
-    cube
-  } else {
-    grey
-  }
-}
-
-///|
-fn nearest_level(value : Int32) -> Int32 {
-  let mut best = 0
-  let mut best_gap = 1000
-  for i in 0..<levels.length() {
-    let gap = abs(levels[i] - value)
-    if gap < best_gap {
-      best = i
-      best_gap = gap
-    }
-  }
-  best
-}
-
-///|
-fn nearest_grey(r : Int32, g : Int32, b : Int32) -> Int32 {
-  let average = (r + g + b) / 3
-  if average < 8 {
-    232
-  } else if average > 238 {
-    255
-  } else {
-    232 + (average - 8 + 5) / 10
-  }
-}
-
-///|
-fn nearest_named(r : Int32, g : Int32, b : Int32) -> Int32 {
-  let mut best = 0
-  let mut best_gap = 1000000
-  for i in 0..<named.length() {
-    let gap = dist(named[i], (r, g, b))
-    if gap < best_gap {
-      best = i
-      best_gap = gap
-    }
-  }
-  best
-}
-
-///|
-fn dist(a : (Int32, Int32, Int32), b : (Int32, Int32, Int32)) -> Int32 {
-  let (r1, g1, b1) = a
-  let (r2, g2, b2) = b
-  let dr = r1 - r2
-  let dg = g1 - g2
-  let db = b1 - b2
-  dr * dr + dg * dg + db * db
-}
-
-///|
-fn abs(value : Int32) -> Int32 {
-  if value < 0 {
-    -value
-  } else {
-    value
   }
 }
 

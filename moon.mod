@@ -33,4 +33,5 @@ source = "src"
 
 import {
   "moonbitstack/moonucd@0.1.3",
+  "moonbitstack/moonrgba@0.1.2",
 }
