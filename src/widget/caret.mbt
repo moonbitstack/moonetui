@@ -2,30 +2,17 @@
 // SPDX-License-Identifier: Apache-2.0
 
 ///|
-/// Where the character before `index` starts, so a caret never lands between
-/// the halves of a surrogate pair.
+/// Where the character before `index` starts. A character is a grapheme cluster,
+/// so a caret never lands inside an emoji sequence, between a letter and its
+/// accent, or between the halves of a surrogate pair.
 fn prev_char(text : String, index : Int32) -> Int32 {
-  if index <= 0 {
-    return 0
-  }
-  let low = text[index - 1].to_int()
-  if index >= 2 && low >= 0xDC00 && low <= 0xDFFF {
-    let high = text[index - 2].to_int()
-    if high >= 0xD800 && high <= 0xDBFF {
-      return index - 2
-    }
-  }
-  index - 1
+  @strip.prev_cluster(text, index)
 }
 
 ///|
 /// Where the character after the one at `index` starts.
 fn next_char(text : String, index : Int32) -> Int32 {
-  if index >= text.length() {
-    return text.length()
-  }
-  let (_, used) = @strip.code_at(text, index)
-  index + used
+  @strip.next_cluster(text, index)
 }
 
 ///|

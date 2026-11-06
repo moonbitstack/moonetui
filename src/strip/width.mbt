@@ -24,13 +24,51 @@ pub fn cell_width(code : Int32) -> Int32 {
 }
 
 ///|
-pub fn str_cells(text : String) -> Int32 {
-  let mut total = 0
+/// The grapheme clusters of `text` with the cells each takes, as `(start, end, cells)` in UTF-16
+/// offsets. A cluster is what a reader sees as one character and a cursor steps over (UAX #29): a
+/// letter with its combining marks, an emoji ZWJ sequence, a flag. A ZWJ sequence takes the cells
+/// of its first emoji, and a Variation Selector 16 widens a text-style character to two, as
+/// terminals draw them. A control character takes none.
+pub fn clusters(text : String) -> Array[(Int32, Int32, Int32)] {
+  let out = []
   let mut i = 0
   while i < text.length() {
-    let (code, used) = code_at(text, i)
-    total = total + cell_width(code)
-    i = i + used
+    let (_, end) = @segment.grapheme_at(text, i)
+    let end = if end > i { end } else { i + 1 }
+    out.push((i, end, @width.text_width(text[i:end]).max(0)))
+    i = end
+  }
+  out
+}
+
+///|
+/// Where the cluster after the one at `index` starts.
+pub fn next_cluster(text : String, index : Int32) -> Int32 {
+  if index >= text.length() {
+    return text.length()
+  }
+  let (_, end) = @segment.grapheme_at(text, index)
+  if end > index {
+    end
+  } else {
+    index + 1
+  }
+}
+
+///|
+/// Where the cluster before `index` starts.
+pub fn prev_cluster(text : String, index : Int32) -> Int32 {
+  if index <= 0 {
+    return 0
+  }
+  @segment.grapheme_at(text, index - 1).0
+}
+
+///|
+pub fn str_cells(text : String) -> Int32 {
+  let mut total = 0
+  for cluster in clusters(text) {
+    total = total + cluster.2
   }
   total
 }
@@ -41,15 +79,12 @@ pub fn cut_at(text : String, max_cells : Int32) -> Int32 {
     return 0
   }
   let mut used = 0
-  let mut i = 0
-  while i < text.length() {
-    let (code, size) = code_at(text, i)
-    let w = cell_width(code)
-    if used + w > max_cells {
-      return i
+  for cluster in clusters(text) {
+    let (start, _, cells) = cluster
+    if used + cells > max_cells {
+      return start
     }
-    used = used + w
-    i = i + size
+    used = used + cells
   }
   text.length()
 }
@@ -58,11 +93,12 @@ pub fn cut_at(text : String, max_cells : Int32) -> Int32 {
 pub fn cells_before(text : String, index : Int32) -> Int32 {
   let stop = if index > text.length() { text.length() } else { index }
   let mut total = 0
-  let mut i = 0
-  while i < stop {
-    let (code, used) = code_at(text, i)
-    total = total + cell_width(code)
-    i = i + used
+  for cluster in clusters(text) {
+    let (start, _, cells) = cluster
+    if start >= stop {
+      break
+    }
+    total = total + cells
   }
   total
 }

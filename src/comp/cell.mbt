@@ -19,36 +19,27 @@ pub fn cells(line : @strip.Strip) -> Array[Cell] {
   let out : Array[Cell] = []
   for seg in line.segs {
     let text = seg.text
-    let mut i = 0
-    while i < text.length() {
-      let (code, used) = @strip.code_at(text, i)
+    for cluster in @strip.clusters(text) {
+      let (start, end, width) = cluster
+      let (code, _) = @strip.code_at(text, start)
       // A control character would move the cursor or start a sequence on the
       // terminal itself, so it is dropped here rather than written.
       if code < 0x20 || (code >= 0x7F && code < 0xA0) {
-        i = i + used
         continue
       }
-      let width = @strip.cell_width(code)
+      let body = text[start:end].to_owned()
       if width == 0 {
+        // A mark with nothing before it in this cluster rides on the last cell.
         if out.length() > 0 {
           let last = out[out.length() - 1]
-          out[out.length() - 1] = {
-            ..last,
-            text: last.text + text[i:i + used].to_owned(),
-          }
+          out[out.length() - 1] = { ..last, text: last.text + body, }
         }
-        i = i + used
         continue
       }
-      out.push({
-        text: text[i:i + used].to_owned(),
-        style: seg.style,
-        continuation: false,
-      })
-      if width == 2 {
+      out.push({ text: body, style: seg.style, continuation: false, })
+      for _ in 1..<width {
         out.push({ text: "", style: seg.style, continuation: true, })
       }
-      i = i + used
     }
   }
   out

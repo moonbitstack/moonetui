@@ -167,25 +167,25 @@ pub fn Strip::simplify(self : Strip) -> Strip {
 fn crop_text(text : String, start : Int32, end : Int32) -> String {
   let out = StringBuilder()
   let mut column = 0
-  let mut i = 0
-  while i < text.length() {
-    let (code, used) = code_at(text, i)
-    let w = cell_width(code)
+  for cluster in clusters(text) {
+    let (from, until, w) = cluster
     let next = column + w
     if column >= end {
       break
     }
     if next > start {
-      if w == 2 && (column < start || next > end) {
-        out.write_string(" ")
+      if w >= 2 && (column < start || next > end) {
+        // Half a wide character cannot be drawn; a blank holds each of its columns in the window.
+        let first = if column < start { start } else { column }
+        let last = if next > end { end } else { next }
+        out.write_string(spaces(last - first))
       } else if w == 0 && column < start {
         ()
       } else {
-        out.write_substring(text, i, used)
+        out.write_substring(text, from, until - from)
       }
     }
     column = next
-    i = i + used
   }
   out.to_string()
 }

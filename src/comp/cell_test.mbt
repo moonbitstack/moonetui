@@ -34,3 +34,13 @@ test "control characters never reach the terminal" {
   )
   assert_eq(columns.map(c => c.text), ["a", "[", "2", "J", "b", "c", "d"])
 }
+
+///|
+test "an emoji sequence is one wide column, however many code points it has" {
+  let coder = "\u{1F469}\u{200D}\u{1F4BB}"
+  let columns = @comp.cells(@strip.Strip::of(coder + "x", plain))
+  assert_eq(columns.length(), 3)
+  assert_eq(columns[0].text, coder)
+  assert_eq(columns[1].continuation, true)
+  assert_eq(columns[2].text, "x")
+}

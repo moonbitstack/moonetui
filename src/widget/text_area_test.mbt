@@ -460,3 +460,16 @@ test "text area: the wheel moves the view off the caret until the caret moves" {
   ignore(rows(w, at))
   assert_eq(area.offset(), (0, 0))
 }
+
+///|
+test "text area steps over an emoji sequence and deletes it whole" {
+  let coder = "\u{1F469}\u{200D}\u{1F4BB}"
+  let area = @widget.TextArea::new(text=coder + "a")
+  let w : &@widget.Widget = area
+  let at = size(20, 3)
+  ignore(area_press(w, 1, at, key(Right)))
+  // One step crosses the five UTF-16 units of the sequence.
+  assert_eq(area.cursor(), (0, coder.length()))
+  ignore(area_press(w, 1, at, key(Backspace)))
+  assert_eq(area.text(), "a")
+}

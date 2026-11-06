@@ -2,4 +2,5 @@
 import {
   "moonbitstack/moonetui/style",
   "moonbitstack/moonucd/width",
+  "moonbitstack/moonucd/segment",
 }

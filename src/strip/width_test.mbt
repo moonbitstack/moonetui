@@ -46,3 +46,26 @@ test "cells_before measures a prefix" {
   assert_eq(@strip.cells_before("中a", 2), 3)
   assert_eq(@strip.cells_before("中a", 99), 3)
 }
+
+///|
+test "a grapheme cluster takes the cells terminals give it" {
+  // Woman, ZWJ, laptop: one emoji, two cells, not four.
+  assert_eq(@strip.str_cells("\u{1F469}\u{200D}\u{1F4BB}"), 2)
+  // A heart in text style is one cell; Variation Selector 16 asks for the emoji, two.
+  assert_eq(@strip.str_cells("\u{2764}"), 1)
+  assert_eq(@strip.str_cells("\u{2764}\u{FE0F}"), 2)
+  assert_eq(@strip.str_cells("e\u{301}"), 1)
+  // Two regional indicators are one flag.
+  assert_eq(@strip.str_cells("\u{1F1EF}\u{1F1F5}"), 2)
+}
+
+///|
+test "cutting and stepping never split a cluster" {
+  let coder = "\u{1F469}\u{200D}\u{1F4BB}"
+  let text = coder + "ab"
+  assert_eq(@strip.cut_at(text, 1), 0)
+  assert_eq(@strip.cut_at(text, 2), coder.length())
+  assert_eq(@strip.next_cluster(text, 0), coder.length())
+  assert_eq(@strip.prev_cluster(text, coder.length()), 0)
+  assert_eq(@strip.cells_before(text, coder.length() + 1), 3)
+}

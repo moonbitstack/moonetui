@@ -11,9 +11,15 @@ pub fn cell_width(Int32) -> Int32
 
 pub fn cells_before(String, Int32) -> Int32
 
+pub fn clusters(String) -> Array[(Int32, Int32, Int32)]
+
 pub fn code_at(String, Int32) -> (Int32, Int32)
 
 pub fn cut_at(String, Int32) -> Int32
+
+pub fn next_cluster(String, Int32) -> Int32
+
+pub fn prev_cluster(String, Int32) -> Int32
 
 pub fn str_cells(String) -> Int32
 
