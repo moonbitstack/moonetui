@@ -15,16 +15,12 @@ pub fn code_at(text : String, index : Int32) -> (Int32, Int32) {
 
 ///|
 pub fn cell_width(code : Int32) -> Int32 {
-  if code < 32 || (code >= 0x7F && code < 0xA0) {
-    return 0
+  // A lone surrogate has no character to ask about; it was always one cell here.
+  if code >= 0xD800 && code <= 0xDFFF {
+    return 1
   }
-  if in_ranges(zero, code) {
-    return 0
-  }
-  if in_ranges(wide, code) {
-    return 2
-  }
-  1
+  // A control character takes no cell in the grid, where wcwidth answers -1 for "not text".
+  @width.width(code.unsafe_to_char()).max(0)
 }
 
 ///|
@@ -69,22 +65,4 @@ pub fn cells_before(text : String, index : Int32) -> Int32 {
     i = i + used
   }
   total
-}
-
-///|
-fn in_ranges(table : Array[(Int32, Int32)], code : Int32) -> Bool {
-  let mut low = 0
-  let mut high = table.length() - 1
-  while low <= high {
-    let mid = (low + high) / 2
-    let (start, end) = table[mid]
-    if code < start {
-      high = mid - 1
-    } else if code > end {
-      low = mid + 1
-    } else {
-      return true
-    }
-  }
-  false
 }
