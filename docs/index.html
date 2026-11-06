@@ -1983,12 +1983,12 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
 <!-- generated:api -->
   <div class="api-tools">
     <input class="api-filter" type="search" placeholder="Filter by name, e.g. Button or render" aria-label="Filter the API">
-    <span class="api-count" data-total="1010">1010 entries</span>
+    <span class="api-count" data-total="1013">1013 entries</span>
   </div>
   <div class="api-index">
     <button type="button" data-pkg="api-geom">geom<span>43</span></button>
     <button type="button" data-pkg="api-style">style<span>39</span></button>
-    <button type="button" data-pkg="api-strip">strip<span>21</span></button>
+    <button type="button" data-pkg="api-strip">strip<span>24</span></button>
     <button type="button" data-pkg="api-layout">layout<span>26</span></button>
     <button type="button" data-pkg="api-event">event<span>12</span></button>
     <button type="button" data-pkg="api-input">input<span>6</span></button>
@@ -2271,6 +2271,11 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
       <h4><span class="api-kind fn">fn</span><code>cells_before</code></h4>
       <pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> cells_before(String, Int32) -&gt; Int32</pre>
     </div>
+    <div class="api-item" data-q="strip clusters">
+      <h4><span class="api-kind fn">fn</span><code>clusters</code></h4>
+      <pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> clusters(String) -&gt; Array[(Int32, Int32, Int32)]</pre>
+      <p>The grapheme clusters of <code>text</code> with the cells each takes, as <code>(start, end, cells)</code> in UTF-16 offsets. A cluster is what a reader sees as one character and a cursor steps over (UAX #29): a letter with its combining marks, an emoji ZWJ sequence, a flag. A ZWJ sequence takes the cells of its first emoji, and a Variation Selector 16 widens a text-style character to two, as terminals draw them. A control character takes none.</p>
+    </div>
     <div class="api-item" data-q="strip code_at">
       <h4><span class="api-kind fn">fn</span><code>code_at</code></h4>
       <pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> code_at(String, Int32) -&gt; (Int32, Int32)</pre>
@@ -2278,6 +2283,16 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
     <div class="api-item" data-q="strip cut_at">
       <h4><span class="api-kind fn">fn</span><code>cut_at</code></h4>
       <pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> cut_at(String, Int32) -&gt; Int32</pre>
+    </div>
+    <div class="api-item" data-q="strip next_cluster">
+      <h4><span class="api-kind fn">fn</span><code>next_cluster</code></h4>
+      <pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> next_cluster(String, Int32) -&gt; Int32</pre>
+      <p>Where the cluster after the one at <code>index</code> starts.</p>
+    </div>
+    <div class="api-item" data-q="strip prev_cluster">
+      <h4><span class="api-kind fn">fn</span><code>prev_cluster</code></h4>
+      <pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> prev_cluster(String, Int32) -&gt; Int32</pre>
+      <p>Where the cluster before <code>index</code> starts.</p>
     </div>
     <div class="api-item" data-q="strip str_cells">
       <h4><span class="api-kind fn">fn</span><code>str_cells</code></h4>
