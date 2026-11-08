@@ -46,9 +46,9 @@ moon run --target native src/examples/uart      # whole frames of plain text, as
 
 The gallery runs in a browser too: `moon build --target js`, serve the repository root, and open `src/examples/browser/index.html`.
 
-A first application: a list, a field, and a stylesheet that frames the list and thickens the frame while it has focus.
+A first application: a list, a field, and a stylesheet that frames the list and thickens the frame while it has focus. It runs on a terminal, so the block below is native only.
 
-```moonbit
+```mbt native
 fn main raise {
   let sheet = @design.Stylesheet::new()
   sheet.add(
