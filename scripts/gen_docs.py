@@ -183,6 +183,8 @@ def main():
     PAGE.write_text(page, encoding="utf-8", newline="\n")
     readme = README.read_text(encoding="utf-8")
     readme = re.sub(r"^\d+ tests per backend", f"{count} tests per backend", readme, flags=re.M)
+    readme = re.sub(r"mooncakes-[0-9.]+", f"mooncakes-{version}", readme)
+    readme = re.sub(r"\b\d+ widgets\b", f"{widgets} widgets", readme)
     README.write_text(readme, encoding="utf-8", newline="\n")
     print(f"{len(demos)} demos written")
 

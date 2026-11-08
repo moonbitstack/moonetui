@@ -4,11 +4,11 @@
 
 **`moonetui`** · a terminal UI toolkit for [MoonBit](https://www.moonbitlang.com/)
 
-Cell buffer · differential ANSI renderer · incremental key parser · layout · CSS-like design system · fifty widgets · drivers for terminals, Node, browsers and serial lines
+Cell buffer · differential ANSI renderer · incremental key parser · layout · CSS-like design system · 54 widgets · drivers for terminals, Node, browsers and serial lines
 
 [![Check and Test](https://img.shields.io/github/actions/workflow/status/moonbitstack/moonetui/ci.yml?branch=master&label=CI&logo=github)](https://github.com/moonbitstack/moonetui/actions)
 [![Docs](https://img.shields.io/github/actions/workflow/status/moonbitstack/moonetui/docs.yml?branch=master&label=docs&logo=github)](https://moonbitstack.github.io/moonetui/)
-[![mooncakes](https://img.shields.io/badge/mooncakes-0.3.1-7aa2f7)](https://mooncakes.io/docs/#/moonbitstack/moonetui/)
+[![mooncakes](https://img.shields.io/badge/mooncakes-0.3.4-7aa2f7)](https://mooncakes.io/docs/#/moonbitstack/moonetui/)
 [![licence](https://img.shields.io/badge/licence-Apache--2.0-blue)](LICENSE)
 
 <p>
@@ -91,11 +91,11 @@ Its `moon.pkg` imports `app`, `design`, `driver/native`, `layout`, `style` and `
 
 | Group | Widgets |
 |:--|:--|
-| Text and display | `Static` and `label()`, `Header` (with a `Clock`), `Footer`, `Rule`, `Digits`, `Sparkline`, `Progress`, `LoadingIndicator`, `Placeholder`, `Pretty`, `Link` |
+| Text and display | `Static` and `label()`, `Header` (with a `Clock`), `Footer`, `Rule`, `Digits`, `Sparkline`, `Progress`, `LoadingIndicator`, `Placeholder`, `Pretty`, `Link`, `KeyPanel` |
 | Entry and logs | `Input`, `TextArea`, `Log`, `RichLog`, `MaskedInput` |
-| Choices | `Switch`, `Checkbox`, `RadioButton`, `RadioSet`, `OptionList`, `SelectionList`, `Select` |
-| Navigation and structure | `Button`, `ListView`, `Tabs`, `TabbedContent`, `Collapsible`, `Tree`, `DirectoryTree`, `ContentSwitcher`, `StatefulList`, `StatefulTable` |
-| Data and notices | `DataTable`, `Markdown`, `Tooltip`, `Toast` |
+| Choices | `Switch`, `Checkbox`, `RadioButton`, `RadioSet`, `OptionList`, `SelectionList`, `Select`, `Slider`, `Calendar` |
+| Navigation and structure | `Button`, `ListView`, `Paginator`, `Tabs`, `TabbedContent`, `Collapsible`, `Tree`, `DirectoryTree`, `ContentSwitcher`, `StatefulList`, `StatefulTable` |
+| Data and notices | `DataTable`, `HexView`, `Diff`, `Markdown`, `Tooltip`, `Toast` |
 | Dialogs | `MessageBox`, `InputBox`, `FileDialog` |
 | Menus and commands | `Menu`, `MenuBar`, `CommandPalette` |
 | Charts and meters | `Chart` (lines and scatter), `BarChart`, `Gauge`, `Scrollbar` |
@@ -136,7 +136,7 @@ moon test  --target all
 moon fmt && moon info --target all     # the diff must stay clean
 ```
 
-603 tests per backend, the same suite on wasm, wasm-gc, js and native, run on Ubuntu, macOS and Windows in CI. They cover 91% of the lines.
+651 tests per backend, the same suite on wasm, wasm-gc, js and native, run on Ubuntu, macOS and Windows in CI. Every widget asserts the rows it draws, and every demo draws in a headless application.
 
 ## Licence
 

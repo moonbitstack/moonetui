@@ -5,12 +5,20 @@ writes, with the `///` comment above its definition. A driver package built for
 one target only has no `pkg.generated.mbti`; its interface comes from the
 `moon check` output for that target.
 
-Usage: moon check --target all && python scripts/gen_api.py
+The script runs `moon info --target all` itself, so the interfaces it reads are
+the ones the source has now, and it proves the page is complete: a public line
+of an interface it cannot parse, or a declaration it parses and then drops,
+stops it with a non-zero exit instead of leaving the item off the page.
+
+Usage: python scripts/gen_api.py [--moon moon]
 """
 
+import argparse
 import html
 import pathlib
 import re
+import subprocess
+import sys
 
 from gen_docs import PAGE, ROOT, fill, find, highlight
 
@@ -23,8 +31,25 @@ PACKAGES = [
     "driver/web",
 ]
 
-# Methods `derive` adds. A reader looks for them in the derive clause.
-DERIVED = {"equal", "not_equal", "to_repr", "output", "hash", "hash_combine", "to_json"}
+# Methods `derive` adds, and the shape each one has. A reader looks for them in
+# the derive clause, so the page leaves them out — but a method that happens to
+# share a name with one (`Headless::output`, which returns a String) is a public
+# item of its own and stays.
+DERIVED = {
+    "equal": r"-> Bool$",
+    "not_equal": r"-> Bool$",
+    "to_repr": r"-> @debug\.Repr$",
+    "output": r"\(Self, &@debug\.Logger\) -> Unit$",
+    "hash": r"-> @int\.Int$|-> Int$",
+    "hash_combine": r"-> Unit$",
+    "to_json": r"-> @json\.Json$",
+}
+
+
+def derived(short: str, sig: str) -> bool:
+    pattern = DERIVED.get(short)
+    return pattern is not None and re.search(pattern, sig.strip()) is not None
+
 
 KIND = {
     "struct": "type", "enum": "type", "trait": "trait", "error": "error",
@@ -61,6 +86,11 @@ def interface(path: str) -> pathlib.Path:
     return built
 
 
+# Lines that start a declaration but no pattern above reads: a page missing one
+# of these is missing a public item, so the script stops over them.
+UNPARSED = []
+
+
 def declarations(mbti: pathlib.Path) -> list:
     lines = mbti.read_text(encoding="utf-8").splitlines()
     out, i = [], 0
@@ -81,6 +111,8 @@ def declarations(mbti: pathlib.Path) -> list:
         if m:
             kind, name = named(m)
             out.append({"kind": kind, "name": name, "sig": text})
+        elif text.startswith("pub"):
+            UNPARSED.append(f"{mbti.name}: {text.splitlines()[0]}")
     return out
 
 
@@ -167,7 +199,7 @@ def package(path: str) -> tuple:
                 impls[m.group(2)].append(m.group(1))
         elif d["kind"] == "fn" and "::" in d["name"]:
             owner, short = d["name"].split("::", 1)
-            if short in DERIVED and d["name"] not in docs:
+            if short in DERIVED and d["name"] not in docs and derived(short, d["sig"]):
                 continue
             methods.setdefault(owner, []).append(d)
         elif d["kind"] == "fn":
@@ -191,16 +223,36 @@ def package(path: str) -> tuple:
         + "  </div>\n"
     )
     chip = f'    <button type="button" data-pkg="{slug}">{html.escape(path)}<span>{count}</span></button>\n'
-    return section, chip, count
+    shown = [d["name"] for d in types.values()] + [v["name"] for v in values]
+    shown += [f["name"] for f in free]
+    shown += [m["name"] for name in methods for m in methods[name]]
+    declared = [
+        d["name"]
+        for d in decls
+        if d["kind"] != "impl" and not derived(d["name"].split("::")[-1], d["sig"])
+    ]
+    return section, chip, count, sorted(set(declared) - set(shown))
 
 
 def main():
-    sections, chips, total = [], [], 0
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--moon", default="moon")
+    args = ap.parse_args()
+    # The interfaces are what `moon info` writes, so the page cannot be built
+    # from a stale copy of them.
+    r = subprocess.run(
+        [args.moon, "info", "--target", "all"], cwd=ROOT, capture_output=True, text=True
+    )
+    if r.returncode != 0:
+        print((r.stdout + r.stderr).strip()[-2000:], file=sys.stderr)
+        return 1
+    sections, chips, total, missing = [], [], 0, []
     for path in PACKAGES:
-        section, chip, count = package(path)
+        section, chip, count, dropped = package(path)
         sections.append(section)
         chips.append(chip)
         total += count
+        missing += [f"{path}: {name}" for name in dropped]
     body = (
         '  <div class="api-tools">\n'
         '    <input class="api-filter" type="search" placeholder="Filter by name, e.g. Button or render" aria-label="Filter the API">\n'
@@ -212,8 +264,15 @@ def main():
     )
     page = PAGE.read_text(encoding="utf-8")
     PAGE.write_text(fill(page, "api", body), encoding="utf-8", newline="\n")
+    gaps = UNPARSED + missing
+    if gaps:
+        print("the reference is missing public items:", file=sys.stderr)
+        for gap in gaps:
+            print(f"  {gap}", file=sys.stderr)
+        return 1
     print(f"{len(PACKAGES)} packages, {total} entries written")
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

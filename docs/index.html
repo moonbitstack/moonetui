@@ -56,7 +56,7 @@
 <!-- ============================= HOME ============================= -->
 <section class="page" id="page-home">
   <div class="hero">
-    <div class="eyebrow"><span class="dot"></span><span data-fill="version">0.3.4</span> · four backends · <span data-count="widgets">48</span> widgets</div>
+    <div class="eyebrow"><span class="dot"></span><span data-fill="version">0.3.4</span> · four backends · <span data-count="widgets">54</span> widgets</div>
     <h1>Interfaces for the terminal,<br><span class="grad">down to the serial line.</span></h1>
     <p class="tag">moonetui is a terminal UI toolkit for <a href="https://www.moonbitlang.com/">MoonBit</a> — a synchronous, portable core with a cell buffer, a differential ANSI renderer, a CSS-like design system, and widgets that run the same on wasm, on Node, in the browser — and on a plain UART.</p>
     <div class="cta">
@@ -76,8 +76,8 @@
 
   <div class="stats">
     <div class="stat"><div class="n">4</div><div class="l">backends · wasm, wasm-gc, js, native</div></div>
-    <div class="stat"><div class="n" data-count="tests">603</div><div class="l">tests per backend, all passing</div></div>
-    <div class="stat"><div class="n" data-count="widgets">48</div><div class="l">widgets, from toggles to trees</div></div>
+    <div class="stat"><div class="n" data-count="tests">651</div><div class="l">tests per backend, all passing</div></div>
+    <div class="stat"><div class="n" data-count="widgets">54</div><div class="l">widgets, from toggles to trees</div></div>
     <div class="stat"><div class="n">0</div><div class="l">dependencies · a single pure core</div></div>
   </div>
 
@@ -221,7 +221,7 @@ w.handle(ctx, @widget.Msg::Key(@event.Key::of(Enter)))
   </div>
 
   <h2>Widgets</h2>
-  <p class="lead"><span data-count="widgets">48</span> widgets, each with its own keyboard contract, message shape and rendering. Every card runs its demo from <code class="inline">src/examples/showcase</code> right here: click one and use the keys, and the line under it shows what the widget reports. The code under that is the demo's own source.</p>
+  <p class="lead"><span data-count="widgets">54</span> widgets, each with its own keyboard contract, message shape and rendering. Every card runs its demo from <code class="inline">src/examples/showcase</code> right here: click one and use the keys, and the line under it shows what the widget reports. The code under that is the demo's own source.</p>
   <pre class="block">moon run --target native src/examples/gallery</pre>
 <!-- generated:widgets -->
   <h3>Text and display</h3>
@@ -555,6 +555,29 @@ w.handle(ctx, @widget.Msg::Key(@event.Key::of(Enter)))
   <span class="fn">@layout.</span>Box::new(extent=Cells(n))
 }</pre>
   </div>
+  <div class="wcard" id="demo-keypanel">
+    <h4><code class="inline">KeyPanel</code></h4>
+    <p class="wdesc">What the keys do, in columns: a key against its description, drawn and nothing more.</p>
+    <div class="wlive"><canvas id="live-keypanel" data-demo="KeyPanel" tabindex="0" style="height: 54px"></canvas></div>
+    <div class="wmsg" data-for="live-keypanel"></div>
+    <pre class="block wcode"><span class="kw">pub</span> <span class="kw">fn</span> key_panel() -&gt; Demo {
+  <span class="kw">let</span> keys = <span class="fn">@widget.</span>KeyPanel::new(bindings=[
+    (<span class="st">&quot;ctrl+p&quot;</span>, <span class="st">&quot;command palette&quot;</span>),
+    (<span class="st">&quot;ctrl+s&quot;</span>, <span class="st">&quot;save&quot;</span>),
+    (<span class="st">&quot;tab&quot;</span>, <span class="st">&quot;next field&quot;</span>),
+    (<span class="st">&quot;shift+tab&quot;</span>, <span class="st">&quot;field before&quot;</span>),
+    (<span class="st">&quot;esc&quot;</span>, <span class="st">&quot;close&quot;</span>),
+    (<span class="st">&quot;?&quot;</span>, <span class="st">&quot;this panel&quot;</span>),
+  ])
+  Demo::new(
+    <span class="st">&quot;KeyPanel&quot;</span>,
+    <span class="fn">@app.</span>column(0, [<span class="fn">@app.</span>leaf(1, keys)]),
+    group=Text,
+    note=<span class="st">&quot;What the keys do, in columns: a key against its description, drawn and nothing more.&quot;</span>,
+    rows=3,
+  )
+}</pre>
+  </div>
   <h3>Entry and logs</h3>
   <div class="wcard" id="demo-input">
     <h4><code class="inline">Input</code></h4>
@@ -793,6 +816,53 @@ w.handle(ctx, @widget.Msg::Key(@event.Key::of(Enter)))
   )
 }</pre>
   </div>
+  <div class="wcard" id="demo-slider">
+    <h4><code class="inline">Slider</code></h4>
+    <p class="wdesc">A number chosen along a track: arrows and a page, Home and End, a click on the track, and the wheel.</p>
+    <div class="wlive"><canvas id="live-slider" data-demo="Slider" tabindex="0" style="height: 36px"></canvas></div>
+    <div class="wmsg" data-for="live-slider"></div>
+    <pre class="block wcode"><span class="kw">pub</span> <span class="kw">fn</span> slider() -&gt; Demo {
+  Demo::new(
+    <span class="st">&quot;Slider&quot;</span>,
+    <span class="fn">@app.</span>column(0, [
+      <span class="fn">@app.</span>leaf(1, <span class="fn">@widget.</span>Slider::new(value=64), box=line(1)),
+      <span class="fn">@app.</span>leaf(
+        2,
+        <span class="fn">@widget.</span>Slider::new(value=30, low=0, high=50, step=5),
+        box=line(1),
+      ),
+    ]),
+    group=Choice,
+    note=<span class="st">&quot;A number chosen along a track: arrows and a page, Home and End, a click on the track, and the wheel.&quot;</span>,
+    rows=2,
+  )
+}
+
+<span class="kw">fn</span> line(n : Int32) -&gt; <span class="fn">@layout.</span>Box {
+  <span class="fn">@layout.</span>Box::new(extent=Cells(n))
+}</pre>
+  </div>
+  <div class="wcard" id="demo-calendar">
+    <h4><code class="inline">Calendar</code></h4>
+    <p class="wdesc">A month as a grid with one day picked out; arrows walk days, Page Up and Page Down walk months.</p>
+    <div class="wlive"><canvas id="live-calendar" data-demo="Calendar" tabindex="0" style="height: 144px"></canvas></div>
+    <div class="wmsg" data-for="live-calendar"></div>
+    <pre class="block wcode"><span class="kw">pub</span> <span class="kw">fn</span> calendar() -&gt; Demo {
+  Demo::new(
+    <span class="st">&quot;Calendar&quot;</span>,
+    <span class="fn">@app.</span>column(0, [
+      <span class="fn">@app.</span>leaf(1, <span class="fn">@widget.</span>Calendar::on(2026, 11, 8), box=line(21)),
+    ]),
+    group=Choice,
+    note=<span class="st">&quot;A month as a grid with one day picked out; arrows walk days, Page Up and Page Down walk months.&quot;</span>,
+    rows=8,
+  )
+}
+
+<span class="kw">fn</span> line(n : Int32) -&gt; <span class="fn">@layout.</span>Box {
+  <span class="fn">@layout.</span>Box::new(extent=Cells(n))
+}</pre>
+  </div>
   <h3>Navigation and structure</h3>
   <div class="wcard" id="demo-button">
     <h4><code class="inline">Button</code></h4>
@@ -861,6 +931,26 @@ w.handle(ctx, @widget.Msg::Key(@event.Key::of(Enter)))
     note=<span class="st">&quot;Selection and scroll live in a ListState the caller keeps, so another widget can share them or the caller can set them between frames.&quot;</span>,
     rows=4,
   )
+}</pre>
+  </div>
+  <div class="wcard" id="demo-paginator">
+    <h4><code class="inline">Paginator</code></h4>
+    <p class="wdesc">Which page of a longer list is on show; the arrows and a click on a number change it.</p>
+    <div class="wlive"><canvas id="live-paginator" data-demo="Paginator" tabindex="0" style="height: 18px"></canvas></div>
+    <div class="wmsg" data-for="live-paginator"></div>
+    <pre class="block wcode"><span class="kw">pub</span> <span class="kw">fn</span> paginator() -&gt; Demo {
+  <span class="kw">let</span> pager = <span class="fn">@widget.</span>Paginator::new(page=3, pages=12)
+  Demo::new(
+    <span class="st">&quot;Paginator&quot;</span>,
+    <span class="fn">@app.</span>column(0, [<span class="fn">@app.</span>leaf(1, pager, box=line(1))]),
+    group=Navigation,
+    note=<span class="st">&quot;Which page of a longer list is on show; the arrows and a click on a number change it.&quot;</span>,
+    rows=1,
+  )
+}
+
+<span class="kw">fn</span> line(n : Int32) -&gt; <span class="fn">@layout.</span>Box {
+  <span class="fn">@layout.</span>Box::new(extent=Cells(n))
 }</pre>
   </div>
   <div class="wcard" id="demo-tabs">
@@ -1099,6 +1189,45 @@ w.handle(ctx, @widget.Msg::Key(@event.Key::of(Enter)))
     group=Data,
     note=<span class="st">&quot;The active cell lives in a TableState the caller keeps, in the same way.&quot;</span>,
     rows=5,
+  )
+}</pre>
+  </div>
+  <div class="wcard" id="demo-hexview">
+    <h4><code class="inline">HexView</code></h4>
+    <p class="wdesc">Bytes as a dump reads: the offset, the bytes in hex, and the same bytes as text.</p>
+    <div class="wlive"><canvas id="live-hexview" data-demo="HexView" tabindex="0" style="height: 54px"></canvas></div>
+    <div class="wmsg" data-for="live-hexview"></div>
+    <pre class="block wcode"><span class="kw">pub</span> <span class="kw">fn</span> hex_view() -&gt; Demo {
+  <span class="kw">let</span> bytes = b<span class="st">&quot;GET /index.html HTTP/1.1\r\nHost: moonbitstack\r\n&quot;</span>
+  Demo::new(
+    <span class="st">&quot;HexView&quot;</span>,
+    <span class="fn">@app.</span>column(0, [<span class="fn">@app.</span>leaf(1, <span class="fn">@widget.</span>HexView::new(data=bytes))]),
+    group=Data,
+    note=<span class="st">&quot;Bytes as a dump reads: the offset, the bytes in hex, and the same bytes as text.&quot;</span>,
+    rows=3,
+  )
+}</pre>
+  </div>
+  <div class="wcard" id="demo-diff">
+    <h4><code class="inline">Diff</code></h4>
+    <p class="wdesc">A unified difference as a reader of patches expects it: marks in the margin, headings picked out.</p>
+    <div class="wlive"><canvas id="live-diff" data-demo="Diff" tabindex="0" style="height: 108px"></canvas></div>
+    <div class="wmsg" data-for="live-diff"></div>
+    <pre class="block wcode"><span class="kw">pub</span> <span class="kw">fn</span> diff() -&gt; Demo {
+  <span class="kw">let</span> patch =
+    #|--- a/moon.mod
+    #|+++ b/moon.mod
+    #|@@ -1,3 +1,3 @@
+    #| name = <span class="st">&quot;moonbitstack/moonetui&quot;</span>
+    #|-version = <span class="st">&quot;0.3.4&quot;</span>
+    #|+version = <span class="st">&quot;0.3.5&quot;</span>
+    #| source = <span class="st">&quot;src&quot;</span>
+  Demo::new(
+    <span class="st">&quot;Diff&quot;</span>,
+    <span class="fn">@app.</span>column(0, [<span class="fn">@app.</span>leaf(1, <span class="fn">@widget.</span>Diff::of_unified(patch))]),
+    group=Data,
+    note=<span class="st">&quot;A unified difference as a reader of patches expects it: marks in the margin, headings picked out.&quot;</span>,
+    rows=6,
   )
 }</pre>
   </div>
@@ -1947,10 +2076,10 @@ priv <span class="kw">struct</span> Swatches {}
   <p class="lead">The same suite on four backends — a regression in one world fails loudly everywhere.</p>
 
   <div class="stats">
-    <div class="stat"><div class="n" data-count="tests">603</div><div class="l">wasm</div></div>
-    <div class="stat"><div class="n" data-count="tests">603</div><div class="l">wasm-gc</div></div>
-    <div class="stat"><div class="n" data-count="tests">603</div><div class="l">js</div></div>
-    <div class="stat"><div class="n" data-count="tests">603</div><div class="l">native</div></div>
+    <div class="stat"><div class="n" data-count="tests">651</div><div class="l">wasm</div></div>
+    <div class="stat"><div class="n" data-count="tests">651</div><div class="l">wasm-gc</div></div>
+    <div class="stat"><div class="n" data-count="tests">651</div><div class="l">js</div></div>
+    <div class="stat"><div class="n" data-count="tests">651</div><div class="l">native</div></div>
   </div>
 
   <h3>Run the suite</h3>
@@ -1983,7 +2112,7 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
 <!-- generated:api -->
   <div class="api-tools">
     <input class="api-filter" type="search" placeholder="Filter by name, e.g. Button or render" aria-label="Filter the API">
-    <span class="api-count" data-total="1013">1013 entries</span>
+    <span class="api-count" data-total="1081">1081 entries</span>
   </div>
   <div class="api-index">
     <button type="button" data-pkg="api-geom">geom<span>43</span></button>
@@ -1995,9 +2124,9 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
     <button type="button" data-pkg="api-vt">vt<span>12</span></button>
     <button type="button" data-pkg="api-comp">comp<span>20</span></button>
     <button type="button" data-pkg="api-design">design<span>56</span></button>
-    <button type="button" data-pkg="api-widget">widget<span>660</span></button>
+    <button type="button" data-pkg="api-widget">widget<span>727</span></button>
     <button type="button" data-pkg="api-app">app<span>56</span></button>
-    <button type="button" data-pkg="api-driver">driver<span>27</span></button>
+    <button type="button" data-pkg="api-driver">driver<span>28</span></button>
     <button type="button" data-pkg="api-driver-native">driver/native<span>11</span></button>
     <button type="button" data-pkg="api-driver-node">driver/node<span>10</span></button>
     <button type="button" data-pkg="api-driver-web">driver/web<span>11</span></button>
@@ -3049,6 +3178,31 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
         <div class="api-method" data-q="text"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Button::text(Self) -&gt; String</pre></div>
       </div>
     </div>
+    <div class="api-item" data-q="widget calendar">
+      <h4><span class="api-kind type">type</span><code>Calendar</code></h4>
+      <pre class="block"><span class="kw">pub</span> <span class="kw">struct</span> Calendar {
+  <span class="kw">mut</span> date : <span class="fn">@moondate.</span>Date
+  style : <span class="fn">@style.</span>Style
+  title_style : <span class="fn">@style.</span>Style
+  weekday_style : <span class="fn">@style.</span>Style
+  day_style : <span class="fn">@style.</span>Style
+  selected_style : <span class="fn">@style.</span>Style
+}</pre>
+      <p>A month laid out as a grid, one day picked out: the title, the weekdays and six rows of days, Monday first.</p>
+      <p>The arrows walk a day or a week, Page Up and Page Down walk a month, Home and End go to the ends of the month, and a click on a day goes to it.</p>
+      <div class="api-impls">implements <code>Widget</code></div>
+      <div class="api-methods">
+        <div class="api-method" data-q="date"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Calendar::date(Self) -&gt; <span class="fn">@moondate.</span>Date</pre><p>The day picked out.</p></div>
+        <div class="api-method" data-q="focusable"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Calendar::focusable(Self) -&gt; Bool</pre></div>
+        <div class="api-method" data-q="handle"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Calendar::handle(Self, Ctx, Msg) -&gt; Bool</pre></div>
+        <div class="api-method" data-q="height"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Calendar::height(Self) -&gt; Int32</pre><p>How many rows a whole month is drawn in, title and weekdays included.</p></div>
+        <div class="api-method" data-q="hint"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Calendar::hint(Self, <span class="fn">@geom.</span>Size) -&gt; <span class="fn">@geom.</span>Size</pre></div>
+        <div class="api-method" data-q="new"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Calendar::new(date? : <span class="fn">@moondate.</span>Date, style? : <span class="fn">@style.</span>Style, title_style? : <span class="fn">@style.</span>Style, weekday_style? : <span class="fn">@style.</span>Style, day_style? : <span class="fn">@style.</span>Style, selected_style? : <span class="fn">@style.</span>Style) -&gt; Self</pre></div>
+        <div class="api-method" data-q="on"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Calendar::on(Int32, Int32, Int32, style? : <span class="fn">@style.</span>Style, title_style? : <span class="fn">@style.</span>Style, weekday_style? : <span class="fn">@style.</span>Style, day_style? : <span class="fn">@style.</span>Style, selected_style? : <span class="fn">@style.</span>Style) -&gt; Self</pre><p>A calendar on a day given as three numbers, each held to a real one: a builder for callers that know the date rather than hold a <code>Date</code>.</p></div>
+        <div class="api-method" data-q="render_line"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Calendar::render_line(Self, Int32, <span class="fn">@geom.</span>Size) -&gt; <span class="fn">@strip.</span>Strip</pre></div>
+        <div class="api-method" data-q="set_date"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Calendar::set_date(Self, <span class="fn">@moondate.</span>Date) -&gt; Unit</pre><p>Pick a day out; the month on show follows it.</p></div>
+      </div>
+    </div>
     <div class="api-item" data-q="widget chart">
       <h4><span class="api-kind type">type</span><code>Chart</code></h4>
       <pre class="block"><span class="kw">pub</span> <span class="kw">struct</span> Chart {
@@ -3344,6 +3498,49 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
         <div class="api-method" data-q="style"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> DialogKind::style(Self) -&gt; <span class="fn">@style.</span>Style</pre></div>
       </div>
     </div>
+    <div class="api-item" data-q="widget diff">
+      <h4><span class="api-kind type">type</span><code>Diff</code></h4>
+      <pre class="block"><span class="kw">pub</span> <span class="kw">struct</span> Diff {
+  <span class="kw">mut</span> lines : Array[DiffLine]
+  <span class="kw">mut</span> offset : Int32
+  <span class="kw">mut</span> focused : Bool
+  style : <span class="fn">@style.</span>Style
+  added_style : <span class="fn">@style.</span>Style
+  removed_style : <span class="fn">@style.</span>Style
+  hunk_style : <span class="fn">@style.</span>Style
+  header_style : <span class="fn">@style.</span>Style
+  meta_style : <span class="fn">@style.</span>Style
+}</pre>
+      <p>A difference as a reader of patches expects it: one line a row, added lines marked and coloured, removed lines the other way, headings picked out.</p>
+      <p>The arrows walk a line or a screen, Home and End go to the ends, and the wheel moves a line.</p>
+      <div class="api-impls">implements <code>Widget</code></div>
+      <div class="api-methods">
+        <div class="api-method" data-q="focusable"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Diff::focusable(Self) -&gt; Bool</pre></div>
+        <div class="api-method" data-q="handle"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Diff::handle(Self, Ctx, Msg) -&gt; Bool</pre></div>
+        <div class="api-method" data-q="hint"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Diff::hint(Self, <span class="fn">@geom.</span>Size) -&gt; <span class="fn">@geom.</span>Size</pre></div>
+        <div class="api-method" data-q="lines"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Diff::lines(Self) -&gt; Array[DiffLine]</pre></div>
+        <div class="api-method" data-q="new"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Diff::new(lines? : Array[DiffLine], offset? : Int32, style? : <span class="fn">@style.</span>Style, added_style? : <span class="fn">@style.</span>Style, removed_style? : <span class="fn">@style.</span>Style, hunk_style? : <span class="fn">@style.</span>Style, header_style? : <span class="fn">@style.</span>Style, meta_style? : <span class="fn">@style.</span>Style) -&gt; Self</pre></div>
+        <div class="api-method" data-q="of_unified"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Diff::of_unified(String, style? : <span class="fn">@style.</span>Style, added_style? : <span class="fn">@style.</span>Style, removed_style? : <span class="fn">@style.</span>Style, hunk_style? : <span class="fn">@style.</span>Style, header_style? : <span class="fn">@style.</span>Style, meta_style? : <span class="fn">@style.</span>Style) -&gt; Self</pre><p>Read a unified difference: the <code>---</code> and <code>+++</code> pair, the <code>@@</code> headings, the <code>+</code> and <code>-</code> lines, and the git notes above them.</p><p>A unified difference prefixes every line it carries, so a blank line is the one byte of padding above or below a patch and is dropped. A line that starts with none of those marks reads as context.</p></div>
+        <div class="api-method" data-q="offset"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Diff::offset(Self) -&gt; Int32</pre><p>The line the view starts at.</p></div>
+        <div class="api-method" data-q="render_line"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Diff::render_line(Self, Int32, <span class="fn">@geom.</span>Size) -&gt; <span class="fn">@strip.</span>Strip</pre></div>
+        <div class="api-method" data-q="set_lines"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Diff::set_lines(Self, Array[DiffLine]) -&gt; Unit</pre></div>
+        <div class="api-method" data-q="set_offset"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Diff::set_offset(Self, Int32) -&gt; Unit</pre></div>
+        <div class="api-method" data-q="stats"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Diff::stats(Self) -&gt; (Int32, Int32)</pre><p>How many lines were added and how many removed.</p></div>
+      </div>
+    </div>
+    <div class="api-item" data-q="widget diffline">
+      <h4><span class="api-kind type">type</span><code>DiffLine</code></h4>
+      <pre class="block"><span class="kw">pub</span>(all) <span class="kw">struct</span> DiffLine {
+  kind : LineKind
+  text : String
+}</pre>
+      <p>One line, with what it is.</p>
+      <div class="api-methods">
+        <div class="api-method" data-q="kind"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> DiffLine::kind(Self) -&gt; LineKind</pre></div>
+        <div class="api-method" data-q="new"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> DiffLine::new(kind? : LineKind, text? : String) -&gt; Self</pre></div>
+        <div class="api-method" data-q="text"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> DiffLine::text(Self) -&gt; String</pre></div>
+      </div>
+    </div>
     <div class="api-item" data-q="widget digits">
       <h4><span class="api-kind type">type</span><code>Digits</code></h4>
       <pre class="block"><span class="kw">pub</span> <span class="kw">struct</span> Digits {
@@ -3538,6 +3735,32 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
         <div class="api-method" data-q="time"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Header::time(Self) -&gt; String?</pre><p>What the clock reads, if the bar has one.</p></div>
       </div>
     </div>
+    <div class="api-item" data-q="widget hexview">
+      <h4><span class="api-kind type">type</span><code>HexView</code></h4>
+      <pre class="block"><span class="kw">pub</span> <span class="kw">struct</span> HexView {
+  data : Bytes
+  <span class="kw">mut</span> offset : Int32
+  <span class="kw">mut</span> focused : Bool
+  per_row : Int32
+  style : <span class="fn">@style.</span>Style
+  offset_style : <span class="fn">@style.</span>Style
+  hex_style : <span class="fn">@style.</span>Style
+  ascii_style : <span class="fn">@style.</span>Style
+}</pre>
+      <p>Bytes as a reader of dumps expects them: the offset, the bytes in hex, and the same bytes as text on the right.</p>
+      <p>The arrows walk a line or a screen, Home and End go to the ends, and the wheel moves a line. A narrow view shows eight bytes a row, and narrower still four, so the hex column always fits.</p>
+      <div class="api-impls">implements <code>Widget</code></div>
+      <div class="api-methods">
+        <div class="api-method" data-q="data"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> HexView::data(Self) -&gt; Bytes</pre></div>
+        <div class="api-method" data-q="focusable"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> HexView::focusable(Self) -&gt; Bool</pre></div>
+        <div class="api-method" data-q="handle"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> HexView::handle(Self, Ctx, Msg) -&gt; Bool</pre></div>
+        <div class="api-method" data-q="hint"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> HexView::hint(Self, <span class="fn">@geom.</span>Size) -&gt; <span class="fn">@geom.</span>Size</pre></div>
+        <div class="api-method" data-q="new"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> HexView::new(data? : Bytes, offset? : Int32, per_row? : Int32, style? : <span class="fn">@style.</span>Style, offset_style? : <span class="fn">@style.</span>Style, hex_style? : <span class="fn">@style.</span>Style, ascii_style? : <span class="fn">@style.</span>Style) -&gt; Self</pre></div>
+        <div class="api-method" data-q="offset"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> HexView::offset(Self) -&gt; Int32</pre><p>The byte the view starts at.</p></div>
+        <div class="api-method" data-q="render_line"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> HexView::render_line(Self, Int32, <span class="fn">@geom.</span>Size) -&gt; <span class="fn">@strip.</span>Strip</pre></div>
+        <div class="api-method" data-q="set_offset"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> HexView::set_offset(Self, Int32) -&gt; Unit</pre><p>Start at a byte, held to the ones there are.</p></div>
+      </div>
+    </div>
     <div class="api-item" data-q="widget input">
       <h4><span class="api-kind type">type</span><code>Input</code></h4>
       <pre class="block"><span class="kw">pub</span> <span class="kw">struct</span> Input {
@@ -3616,6 +3839,41 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
         <div class="api-method" data-q="new"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Item::new(String, shortcut? : String, checked? : Bool, enabled? : Bool) -&gt; Self</pre></div>
         <div class="api-method" data-q="separator"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Item::separator() -&gt; Self</pre></div>
       </div>
+    </div>
+    <div class="api-item" data-q="widget keypanel">
+      <h4><span class="api-kind type">type</span><code>KeyPanel</code></h4>
+      <pre class="block"><span class="kw">pub</span> <span class="kw">struct</span> KeyPanel {
+  <span class="kw">mut</span> bindings : Array[(String, String)]
+  columns : Int32
+  style : <span class="fn">@style.</span>Style
+  key_style : <span class="fn">@style.</span>Style
+  note_style : <span class="fn">@style.</span>Style
+}</pre>
+      <p>What the keys do, in columns: a key, right-aligned against its description, so a reader can look one up while a screen of a program is in front of them.</p>
+      <p>The panel draws and nothing more. It takes no focus, and a host that wants a binding to act puts the action in its own key handler.</p>
+      <div class="api-impls">implements <code>Widget</code></div>
+      <div class="api-methods">
+        <div class="api-method" data-q="bindings"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> KeyPanel::bindings(Self) -&gt; Array[(String, String)]</pre><p>The bindings, each a key and what it does.</p></div>
+        <div class="api-method" data-q="focusable"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> KeyPanel::focusable(Self) -&gt; Bool</pre></div>
+        <div class="api-method" data-q="handle"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> KeyPanel::handle(Self, Ctx, Msg) -&gt; Bool</pre></div>
+        <div class="api-method" data-q="hint"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> KeyPanel::hint(Self, <span class="fn">@geom.</span>Size) -&gt; <span class="fn">@geom.</span>Size</pre></div>
+        <div class="api-method" data-q="new"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> KeyPanel::new(bindings? : Array[(String, String)], columns? : Int32, style? : <span class="fn">@style.</span>Style, key_style? : <span class="fn">@style.</span>Style, note_style? : <span class="fn">@style.</span>Style) -&gt; Self</pre></div>
+        <div class="api-method" data-q="render_line"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> KeyPanel::render_line(Self, Int32, <span class="fn">@geom.</span>Size) -&gt; <span class="fn">@strip.</span>Strip</pre></div>
+        <div class="api-method" data-q="rows"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> KeyPanel::rows(Self, Int32) -&gt; Int32</pre><p>How many rows the whole panel needs at a given width.</p></div>
+        <div class="api-method" data-q="set_bindings"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> KeyPanel::set_bindings(Self, Array[(String, String)]) -&gt; Unit</pre></div>
+      </div>
+    </div>
+    <div class="api-item" data-q="widget linekind">
+      <h4><span class="api-kind type">type</span><code>LineKind</code></h4>
+      <pre class="block"><span class="kw">pub</span>(all) <span class="kw">enum</span> LineKind {
+  Context
+  Added
+  Removed
+  Hunk
+  Header
+  Meta
+}</pre>
+      <p>What a line of a difference is: unchanged, added, removed, a hunk heading, a file heading, or the note above one.</p>
     </div>
     <div class="api-item" data-q="widget link">
       <h4><span class="api-kind type">type</span><code>Link</code></h4>
@@ -3955,6 +4213,30 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
   Quit
 }</pre>
     </div>
+    <div class="api-item" data-q="widget paginator">
+      <h4><span class="api-kind type">type</span><code>Paginator</code></h4>
+      <pre class="block"><span class="kw">pub</span> <span class="kw">struct</span> Paginator {
+  <span class="kw">mut</span> page : Int32
+  <span class="kw">mut</span> pages : Int32
+  style : <span class="fn">@style.</span>Style
+  current_style : <span class="fn">@style.</span>Style
+  arrow_style : <span class="fn">@style.</span>Style
+}</pre>
+      <p>Which page of a longer list is on show: an arrow at each end and the pages between them, with the one you are on picked out.</p>
+      <p>The arrows step a page, Home and End go to the first and the last, and a click on a number goes to that page.</p>
+      <div class="api-impls">implements <code>Widget</code></div>
+      <div class="api-methods">
+        <div class="api-method" data-q="focusable"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Paginator::focusable(Self) -&gt; Bool</pre></div>
+        <div class="api-method" data-q="handle"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Paginator::handle(Self, Ctx, Msg) -&gt; Bool</pre></div>
+        <div class="api-method" data-q="hint"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Paginator::hint(Self, <span class="fn">@geom.</span>Size) -&gt; <span class="fn">@geom.</span>Size</pre></div>
+        <div class="api-method" data-q="new"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Paginator::new(page? : Int32, pages? : Int32, style? : <span class="fn">@style.</span>Style, current_style? : <span class="fn">@style.</span>Style, arrow_style? : <span class="fn">@style.</span>Style) -&gt; Self</pre></div>
+        <div class="api-method" data-q="page"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Paginator::page(Self) -&gt; Int32</pre><p>The page on show, counted from nothing.</p></div>
+        <div class="api-method" data-q="pages"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Paginator::pages(Self) -&gt; Int32</pre><p>How many pages there are.</p></div>
+        <div class="api-method" data-q="render_line"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Paginator::render_line(Self, Int32, <span class="fn">@geom.</span>Size) -&gt; <span class="fn">@strip.</span>Strip</pre></div>
+        <div class="api-method" data-q="set_page"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Paginator::set_page(Self, Int32) -&gt; Unit</pre><p>Go to a page, held to the ones there are.</p></div>
+        <div class="api-method" data-q="set_pages"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Paginator::set_pages(Self, Int32) -&gt; Unit</pre><p>How many pages there are, held to at least one, with the page on show kept inside them.</p></div>
+      </div>
+    </div>
     <div class="api-item" data-q="widget placeholder">
       <h4><span class="api-kind type">type</span><code>Placeholder</code></h4>
       <pre class="block"><span class="kw">pub</span> <span class="kw">struct</span> Placeholder {
@@ -4276,6 +4558,35 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
         <div class="api-method" data-q="set_selected"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> SelectionList::set_selected(Self, Int32, Bool) -&gt; Unit</pre></div>
         <div class="api-method" data-q="toggle"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> SelectionList::toggle(Self, Int32) -&gt; Unit</pre></div>
         <div class="api-method" data-q="toggle_all"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> SelectionList::toggle_all(Self) -&gt; Unit</pre></div>
+      </div>
+    </div>
+    <div class="api-item" data-q="widget slider">
+      <h4><span class="api-kind type">type</span><code>Slider</code></h4>
+      <pre class="block"><span class="kw">pub</span> <span class="kw">struct</span> Slider {
+  <span class="kw">mut</span> value : Int32
+  low : Int32
+  high : Int32
+  step : Int32
+  <span class="kw">mut</span> focused : Bool
+  style : <span class="fn">@style.</span>Style
+  track_style : <span class="fn">@style.</span>Style
+  bar_style : <span class="fn">@style.</span>Style
+  thumb_style : <span class="fn">@style.</span>Style
+}</pre>
+      <p>A number chosen along a line: the track, the thumb, and the value written after it.</p>
+      <p>The arrows move it by one step, Page Up and Page Down by ten, Home and End to the ends, and a click on the track goes to the place it landed on.</p>
+      <div class="api-impls">implements <code>Widget</code></div>
+      <div class="api-methods">
+        <div class="api-method" data-q="bounds"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Slider::bounds(Self) -&gt; (Int32, Int32)</pre><p>Where the ends of the track are.</p></div>
+        <div class="api-method" data-q="focusable"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Slider::focusable(Self) -&gt; Bool</pre></div>
+        <div class="api-method" data-q="handle"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Slider::handle(Self, Ctx, Msg) -&gt; Bool</pre></div>
+        <div class="api-method" data-q="hint"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Slider::hint(Self, <span class="fn">@geom.</span>Size) -&gt; <span class="fn">@geom.</span>Size</pre></div>
+        <div class="api-method" data-q="new"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Slider::new(value? : Int32, low? : Int32, high? : Int32, step? : Int32, style? : <span class="fn">@style.</span>Style, track_style? : <span class="fn">@style.</span>Style, bar_style? : <span class="fn">@style.</span>Style, thumb_style? : <span class="fn">@style.</span>Style) -&gt; Self</pre></div>
+        <div class="api-method" data-q="ratio"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Slider::ratio(Self) -&gt; Double</pre><p>How far along the track the value is, from nothing to all of it.</p></div>
+        <div class="api-method" data-q="render_line"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Slider::render_line(Self, Int32, <span class="fn">@geom.</span>Size) -&gt; <span class="fn">@strip.</span>Strip</pre></div>
+        <div class="api-method" data-q="set_value"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Slider::set_value(Self, Int32) -&gt; Unit</pre><p>Choose a number, held between the ends.</p></div>
+        <div class="api-method" data-q="step"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Slider::step(Self) -&gt; Int32</pre><p>How far one press of an arrow moves it.</p></div>
+        <div class="api-method" data-q="value"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Slider::value(Self) -&gt; Int32</pre></div>
       </div>
     </div>
     <div class="api-item" data-q="widget slot">
@@ -4686,6 +4997,11 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
       <h4><span class="api-kind let">let</span><code>ascii</code></h4>
       <pre class="block"><span class="kw">pub</span> <span class="kw">let</span> ascii : Border</pre>
     </div>
+    <div class="api-item" data-q="widget calendar_width">
+      <h4><span class="api-kind let">let</span><code>calendar_width</code></h4>
+      <pre class="block"><span class="kw">pub</span> <span class="kw">let</span> calendar_width : Int32</pre>
+      <p>Days are drawn in three cells, so a month is twenty-one cells wide.</p>
+    </div>
     <div class="api-item" data-q="widget double">
       <h4><span class="api-kind let">let</span><code>double</code></h4>
       <pre class="block"><span class="kw">pub</span> <span class="kw">let</span> double : Border</pre>
@@ -4923,12 +5239,12 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
     <div class="api-item" data-q="driver driver">
       <h4><span class="api-kind trait">trait</span><code>Driver</code></h4>
       <pre class="block"><span class="kw">pub</span>(open) <span class="kw">trait</span> Driver {
-  <span class="kw">fn</span> start(Self) -&gt; Unit <span class="kw">raise</span> TtyError
-  <span class="kw">fn</span> stop(Self) -&gt; Unit <span class="kw">raise</span> TtyError
-  <span class="kw">fn</span> write(Self, String) -&gt; Unit <span class="kw">raise</span> TtyError
-  <span class="kw">fn</span> flush(Self) -&gt; Unit <span class="kw">raise</span> TtyError
-  <span class="kw">fn</span> size(Self) -&gt; <span class="fn">@geom.</span>Size <span class="kw">raise</span> TtyError
-  <span class="kw">fn</span> poll(Self, Int32) -&gt; Bytes <span class="kw">raise</span> TtyError
+  <span class="kw">fn</span> start(Self) -&gt; Unit <span class="kw">raise</span> Refused
+  <span class="kw">fn</span> stop(Self) -&gt; Unit <span class="kw">raise</span> Refused
+  <span class="kw">fn</span> write(Self, String) -&gt; Unit <span class="kw">raise</span> Refused
+  <span class="kw">fn</span> flush(Self) -&gt; Unit <span class="kw">raise</span> Refused
+  <span class="kw">fn</span> size(Self) -&gt; <span class="fn">@geom.</span>Size <span class="kw">raise</span> Refused
+  <span class="kw">fn</span> poll(Self, Int32) -&gt; Bytes <span class="kw">raise</span> Refused
   <span class="kw">fn</span> now(Self) -&gt; Int32
 }</pre>
     </div>
@@ -4947,22 +5263,23 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
       <div class="api-impls">implements <code>Driver</code></div>
       <div class="api-methods">
         <div class="api-method" data-q="clear_output"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Headless::clear_output(Self) -&gt; Unit</pre></div>
-        <div class="api-method" data-q="flush"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Headless::flush(Self) -&gt; Unit <span class="kw">raise</span> TtyError</pre></div>
+        <div class="api-method" data-q="flush"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Headless::flush(Self) -&gt; Unit <span class="kw">raise</span> Refused</pre></div>
         <div class="api-method" data-q="is_running"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Headless::is_running(Self) -&gt; Bool</pre></div>
         <div class="api-method" data-q="new"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Headless::new(<span class="fn">@geom.</span>Size, script? : Array[Bytes], tick? : Int32) -&gt; Self</pre></div>
         <div class="api-method" data-q="now"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Headless::now(Self) -&gt; Int32</pre></div>
-        <div class="api-method" data-q="poll"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Headless::poll(Self, Int32) -&gt; Bytes <span class="kw">raise</span> TtyError</pre></div>
+        <div class="api-method" data-q="output"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Headless::output(Self) -&gt; String</pre></div>
+        <div class="api-method" data-q="poll"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Headless::poll(Self, Int32) -&gt; Bytes <span class="kw">raise</span> Refused</pre></div>
         <div class="api-method" data-q="push"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Headless::push(Self, Bytes) -&gt; Unit</pre></div>
         <div class="api-method" data-q="set_size"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Headless::set_size(Self, <span class="fn">@geom.</span>Size) -&gt; Unit</pre></div>
-        <div class="api-method" data-q="size"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Headless::size(Self) -&gt; <span class="fn">@geom.</span>Size <span class="kw">raise</span> TtyError</pre></div>
-        <div class="api-method" data-q="start"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Headless::start(Self) -&gt; Unit <span class="kw">raise</span> TtyError</pre></div>
-        <div class="api-method" data-q="stop"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Headless::stop(Self) -&gt; Unit <span class="kw">raise</span> TtyError</pre></div>
-        <div class="api-method" data-q="write"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Headless::write(Self, String) -&gt; Unit <span class="kw">raise</span> TtyError</pre></div>
+        <div class="api-method" data-q="size"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Headless::size(Self) -&gt; <span class="fn">@geom.</span>Size <span class="kw">raise</span> Refused</pre></div>
+        <div class="api-method" data-q="start"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Headless::start(Self) -&gt; Unit <span class="kw">raise</span> Refused</pre></div>
+        <div class="api-method" data-q="stop"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Headless::stop(Self) -&gt; Unit <span class="kw">raise</span> Refused</pre></div>
+        <div class="api-method" data-q="write"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Headless::write(Self, String) -&gt; Unit <span class="kw">raise</span> Refused</pre></div>
       </div>
     </div>
-    <div class="api-item" data-q="driver ttyerror">
-      <h4><span class="api-kind error">error</span><code>TtyError</code></h4>
-      <pre class="block"><span class="kw">pub</span>(all) <span class="kw">suberror</span> TtyError {
+    <div class="api-item" data-q="driver refused">
+      <h4><span class="api-kind error">error</span><code>Refused</code></h4>
+      <pre class="block"><span class="kw">pub</span>(all) <span class="kw">suberror</span> Refused {
   Io(String)
 }</pre>
     </div>
@@ -5028,15 +5345,15 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
 }</pre>
       <div class="api-impls">implements <code>@driver.Driver</code></div>
       <div class="api-methods">
-        <div class="api-method" data-q="flush"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> NativeTty::flush(Self) -&gt; Unit <span class="kw">raise</span> <span class="fn">@driver.</span>TtyError</pre></div>
+        <div class="api-method" data-q="flush"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> NativeTty::flush(Self) -&gt; Unit <span class="kw">raise</span> <span class="fn">@driver.</span>Refused</pre></div>
         <div class="api-method" data-q="is_raw"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> NativeTty::is_raw(Self) -&gt; Bool</pre></div>
         <div class="api-method" data-q="new"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> NativeTty::new(buffer_size? : Int32) -&gt; Self</pre></div>
         <div class="api-method" data-q="now"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> NativeTty::now(Self) -&gt; Int32</pre></div>
-        <div class="api-method" data-q="poll"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> NativeTty::poll(Self, Int32) -&gt; Bytes <span class="kw">raise</span> <span class="fn">@driver.</span>TtyError</pre></div>
-        <div class="api-method" data-q="size"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> NativeTty::size(Self) -&gt; <span class="fn">@geom.</span>Size <span class="kw">raise</span> <span class="fn">@driver.</span>TtyError</pre></div>
-        <div class="api-method" data-q="start"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> NativeTty::start(Self) -&gt; Unit <span class="kw">raise</span> <span class="fn">@driver.</span>TtyError</pre></div>
-        <div class="api-method" data-q="stop"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> NativeTty::stop(Self) -&gt; Unit <span class="kw">raise</span> <span class="fn">@driver.</span>TtyError</pre></div>
-        <div class="api-method" data-q="write"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> NativeTty::write(Self, String) -&gt; Unit <span class="kw">raise</span> <span class="fn">@driver.</span>TtyError</pre></div>
+        <div class="api-method" data-q="poll"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> NativeTty::poll(Self, Int32) -&gt; Bytes <span class="kw">raise</span> <span class="fn">@driver.</span>Refused</pre></div>
+        <div class="api-method" data-q="size"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> NativeTty::size(Self) -&gt; <span class="fn">@geom.</span>Size <span class="kw">raise</span> <span class="fn">@driver.</span>Refused</pre></div>
+        <div class="api-method" data-q="start"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> NativeTty::start(Self) -&gt; Unit <span class="kw">raise</span> <span class="fn">@driver.</span>Refused</pre></div>
+        <div class="api-method" data-q="stop"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> NativeTty::stop(Self) -&gt; Unit <span class="kw">raise</span> <span class="fn">@driver.</span>Refused</pre></div>
+        <div class="api-method" data-q="write"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> NativeTty::write(Self, String) -&gt; Unit <span class="kw">raise</span> <span class="fn">@driver.</span>Refused</pre></div>
       </div>
     </div>
     <div class="api-item" data-q="driver/native run">
@@ -5054,14 +5371,14 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
 }</pre>
       <div class="api-impls">implements <code>@driver.Driver</code></div>
       <div class="api-methods">
-        <div class="api-method" data-q="flush"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> NodeTty::flush(Self) -&gt; Unit <span class="kw">raise</span> <span class="fn">@driver.</span>TtyError</pre></div>
+        <div class="api-method" data-q="flush"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> NodeTty::flush(Self) -&gt; Unit <span class="kw">raise</span> <span class="fn">@driver.</span>Refused</pre></div>
         <div class="api-method" data-q="new"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> NodeTty::new() -&gt; Self</pre></div>
         <div class="api-method" data-q="now"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> NodeTty::now(Self) -&gt; Int32</pre></div>
-        <div class="api-method" data-q="poll"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> NodeTty::poll(Self, Int32) -&gt; Bytes <span class="kw">raise</span> <span class="fn">@driver.</span>TtyError</pre></div>
-        <div class="api-method" data-q="size"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> NodeTty::size(Self) -&gt; <span class="fn">@geom.</span>Size <span class="kw">raise</span> <span class="fn">@driver.</span>TtyError</pre></div>
-        <div class="api-method" data-q="start"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> NodeTty::start(Self) -&gt; Unit <span class="kw">raise</span> <span class="fn">@driver.</span>TtyError</pre></div>
-        <div class="api-method" data-q="stop"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> NodeTty::stop(Self) -&gt; Unit <span class="kw">raise</span> <span class="fn">@driver.</span>TtyError</pre></div>
-        <div class="api-method" data-q="write"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> NodeTty::write(Self, String) -&gt; Unit <span class="kw">raise</span> <span class="fn">@driver.</span>TtyError</pre></div>
+        <div class="api-method" data-q="poll"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> NodeTty::poll(Self, Int32) -&gt; Bytes <span class="kw">raise</span> <span class="fn">@driver.</span>Refused</pre></div>
+        <div class="api-method" data-q="size"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> NodeTty::size(Self) -&gt; <span class="fn">@geom.</span>Size <span class="kw">raise</span> <span class="fn">@driver.</span>Refused</pre></div>
+        <div class="api-method" data-q="start"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> NodeTty::start(Self) -&gt; Unit <span class="kw">raise</span> <span class="fn">@driver.</span>Refused</pre></div>
+        <div class="api-method" data-q="stop"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> NodeTty::stop(Self) -&gt; Unit <span class="kw">raise</span> <span class="fn">@driver.</span>Refused</pre></div>
+        <div class="api-method" data-q="write"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> NodeTty::write(Self, String) -&gt; Unit <span class="kw">raise</span> <span class="fn">@driver.</span>Refused</pre></div>
       </div>
     </div>
     <div class="api-item" data-q="driver/node pump">
