@@ -97,3 +97,34 @@ pub fn select() -> Demo {
     rows=5,
   )
 }
+
+///|
+pub fn slider() -> Demo {
+  Demo::new(
+    "Slider",
+    @app.column(0, [
+      @app.leaf(1, @widget.Slider::new(value=64), box=line(1)),
+      @app.leaf(
+        2,
+        @widget.Slider::new(value=30, low=0, high=50, step=5),
+        box=line(1),
+      ),
+    ]),
+    group=Choice,
+    note="A number chosen along a track: arrows and a page, Home and End, a click on the track, and the wheel.",
+    rows=2,
+  )
+}
+
+///|
+pub fn calendar() -> Demo {
+  Demo::new(
+    "Calendar",
+    @app.column(0, [
+      @app.leaf(1, @widget.Calendar::on(2026, 11, 8), box=line(21)),
+    ]),
+    group=Choice,
+    note="A month as a grid with one day picked out; arrows walk days, Page Up and Page Down walk months.",
+    rows=8,
+  )
+}

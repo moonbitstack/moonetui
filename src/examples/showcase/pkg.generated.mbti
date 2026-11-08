@@ -19,6 +19,8 @@ pub fn borders() -> Demo
 
 pub fn button() -> Demo
 
+pub fn calendar() -> Demo
+
 pub fn chart() -> Demo
 
 pub fn checkbox() -> Demo
@@ -36,6 +38,8 @@ pub fn content_switcher() -> Demo
 pub fn data_table() -> Demo
 
 pub fn demos() -> Array[Demo]
+
+pub fn diff() -> Demo
 
 pub fn digits() -> Demo
 
@@ -55,9 +59,13 @@ pub fn grid() -> Demo
 
 pub fn header() -> Demo
 
+pub fn hex_view() -> Demo
+
 pub fn input() -> Demo
 
 pub fn input_box() -> Demo
+
+pub fn key_panel() -> Demo
 
 pub fn link() -> Demo
 
@@ -81,6 +89,8 @@ pub fn message_box() -> Demo
 
 pub fn option_list() -> Demo
 
+pub fn paginator() -> Demo
+
 pub fn placeholder() -> Demo
 
 pub fn pretty() -> Demo
@@ -98,6 +108,8 @@ pub fn scrollbar() -> Demo
 pub fn select() -> Demo
 
 pub fn selection_list() -> Demo
+
+pub fn slider() -> Demo
 
 pub fn sparkline() -> Demo
 

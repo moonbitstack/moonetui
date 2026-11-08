@@ -177,3 +177,22 @@ pub fn placeholder() -> Demo {
     rows=4,
   )
 }
+
+///|
+pub fn key_panel() -> Demo {
+  let keys = @widget.KeyPanel::new(bindings=[
+    ("ctrl+p", "command palette"),
+    ("ctrl+s", "save"),
+    ("tab", "next field"),
+    ("shift+tab", "field before"),
+    ("esc", "close"),
+    ("?", "this panel"),
+  ])
+  Demo::new(
+    "KeyPanel",
+    @app.column(0, [@app.leaf(1, keys)]),
+    group=Text,
+    note="What the keys do, in columns: a key against its description, drawn and nothing more.",
+    rows=3,
+  )
+}

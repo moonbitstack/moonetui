@@ -7,4 +7,5 @@ import {
   "moonbitstack/moonetui/geom",
   "moonbitstack/moonetui/strip",
   "moonbitstack/moonetui/style",
+  "moonbitstack/moondate",
 }

@@ -150,3 +150,15 @@ pub fn directory_tree() -> Demo {
     rows=6,
   )
 }
+
+///|
+pub fn paginator() -> Demo {
+  let pager = @widget.Paginator::new(page=3, pages=12)
+  Demo::new(
+    "Paginator",
+    @app.column(0, [@app.leaf(1, pager, box=line(1))]),
+    group=Navigation,
+    note="Which page of a longer list is on show; the arrows and a click on a number change it.",
+    rows=1,
+  )
+}

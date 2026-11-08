@@ -12,3 +12,9 @@ import {
   "moonbitstack/moonetui/style",
   "moonbitstack/moonetui/widget",
 }
+
+// The frame tests read a screen back from the escape stream the app writes,
+// which is what a terminal does with it.
+import {
+  "moonbitstack/moonetui/vt",
+} for "test"

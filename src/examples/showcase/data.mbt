@@ -92,3 +92,34 @@ pub fn toast() -> Demo {
     rows=4,
   )
 }
+
+///|
+pub fn hex_view() -> Demo {
+  let bytes = b"GET /index.html HTTP/1.1\r\nHost: moonbitstack\r\n"
+  Demo::new(
+    "HexView",
+    @app.column(0, [@app.leaf(1, @widget.HexView::new(data=bytes))]),
+    group=Data,
+    note="Bytes as a dump reads: the offset, the bytes in hex, and the same bytes as text.",
+    rows=3,
+  )
+}
+
+///|
+pub fn diff() -> Demo {
+  let patch =
+    #|--- a/moon.mod
+    #|+++ b/moon.mod
+    #|@@ -1,3 +1,3 @@
+    #| name = "moonbitstack/moonetui"
+    #|-version = "0.3.4"
+    #|+version = "0.3.5"
+    #| source = "src"
+  Demo::new(
+    "Diff",
+    @app.column(0, [@app.leaf(1, @widget.Diff::of_unified(patch))]),
+    group=Data,
+    note="A unified difference as a reader of patches expects it: marks in the margin, headings picked out.",
+    rows=6,
+  )
+}

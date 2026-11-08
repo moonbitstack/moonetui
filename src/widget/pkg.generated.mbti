@@ -3,6 +3,7 @@ package "moonbitstack/moonetui/widget"
 
 import {
   "moonbitlang/core/debug",
+  "moonbitstack/moondate",
   "moonbitstack/moonetui/event",
   "moonbitstack/moonetui/geom",
   "moonbitstack/moonetui/strip",
@@ -13,6 +14,8 @@ import {
 pub fn align_line(String, Int32, Align, @style.Style) -> @strip.Strip
 
 pub let ascii : Border
+
+pub let calendar_width : Int32
 
 pub fn clip_to(String, Int32) -> String
 
@@ -156,6 +159,29 @@ pub fn Button::render_line(Self, Int32, @geom.Size) -> @strip.Strip
 pub fn Button::set(Self, String) -> Unit
 pub fn Button::text(Self) -> String
 pub impl Widget for Button
+
+#derive(Eq, @debug.Debug)
+pub struct Calendar {
+  mut date : @moondate.Date
+  style : @style.Style
+  title_style : @style.Style
+  weekday_style : @style.Style
+  day_style : @style.Style
+  selected_style : @style.Style
+}
+pub fn Calendar::date(Self) -> @moondate.Date
+pub fn Calendar::equal(Self, Self) -> Bool
+pub fn Calendar::focusable(Self) -> Bool
+pub fn Calendar::handle(Self, Ctx, Msg) -> Bool
+pub fn Calendar::height(Self) -> Int32
+pub fn Calendar::hint(Self, @geom.Size) -> @geom.Size
+pub fn Calendar::new(date? : @moondate.Date, style? : @style.Style, title_style? : @style.Style, weekday_style? : @style.Style, day_style? : @style.Style, selected_style? : @style.Style) -> Self
+pub fn Calendar::not_equal(Self, Self) -> Bool
+pub fn Calendar::on(Int32, Int32, Int32, style? : @style.Style, title_style? : @style.Style, weekday_style? : @style.Style, day_style? : @style.Style, selected_style? : @style.Style) -> Self
+pub fn Calendar::render_line(Self, Int32, @geom.Size) -> @strip.Strip
+pub fn Calendar::set_date(Self, @moondate.Date) -> Unit
+pub fn Calendar::to_repr(Self) -> @debug.Repr
+pub impl Widget for Calendar
 
 pub struct Chart {
   mut datasets : Array[Dataset]
@@ -425,6 +451,46 @@ pub fn DialogKind::style(Self) -> @style.Style
 pub fn DialogKind::to_repr(Self) -> @debug.Repr
 
 #derive(Eq, @debug.Debug)
+pub struct Diff {
+  mut lines : Array[DiffLine]
+  mut offset : Int32
+  mut focused : Bool
+  style : @style.Style
+  added_style : @style.Style
+  removed_style : @style.Style
+  hunk_style : @style.Style
+  header_style : @style.Style
+  meta_style : @style.Style
+}
+pub fn Diff::equal(Self, Self) -> Bool
+pub fn Diff::focusable(Self) -> Bool
+pub fn Diff::handle(Self, Ctx, Msg) -> Bool
+pub fn Diff::hint(Self, @geom.Size) -> @geom.Size
+pub fn Diff::lines(Self) -> Array[DiffLine]
+pub fn Diff::new(lines? : Array[DiffLine], offset? : Int32, style? : @style.Style, added_style? : @style.Style, removed_style? : @style.Style, hunk_style? : @style.Style, header_style? : @style.Style, meta_style? : @style.Style) -> Self
+pub fn Diff::not_equal(Self, Self) -> Bool
+pub fn Diff::of_unified(String, style? : @style.Style, added_style? : @style.Style, removed_style? : @style.Style, hunk_style? : @style.Style, header_style? : @style.Style, meta_style? : @style.Style) -> Self
+pub fn Diff::offset(Self) -> Int32
+pub fn Diff::render_line(Self, Int32, @geom.Size) -> @strip.Strip
+pub fn Diff::set_lines(Self, Array[DiffLine]) -> Unit
+pub fn Diff::set_offset(Self, Int32) -> Unit
+pub fn Diff::stats(Self) -> (Int32, Int32)
+pub fn Diff::to_repr(Self) -> @debug.Repr
+pub impl Widget for Diff
+
+#derive(Eq, @debug.Debug)
+pub(all) struct DiffLine {
+  kind : LineKind
+  text : String
+}
+pub fn DiffLine::equal(Self, Self) -> Bool
+pub fn DiffLine::kind(Self) -> LineKind
+pub fn DiffLine::new(kind? : LineKind, text? : String) -> Self
+pub fn DiffLine::not_equal(Self, Self) -> Bool
+pub fn DiffLine::text(Self) -> String
+pub fn DiffLine::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
 pub struct Digits {
   mut value : String
   style : @style.Style
@@ -591,6 +657,30 @@ pub fn Header::set_note(Self, String) -> Unit
 pub fn Header::time(Self) -> String?
 pub impl Widget for Header
 
+#derive(Eq, @debug.Debug)
+pub struct HexView {
+  data : Bytes
+  mut offset : Int32
+  mut focused : Bool
+  per_row : Int32
+  style : @style.Style
+  offset_style : @style.Style
+  hex_style : @style.Style
+  ascii_style : @style.Style
+}
+pub fn HexView::data(Self) -> Bytes
+pub fn HexView::equal(Self, Self) -> Bool
+pub fn HexView::focusable(Self) -> Bool
+pub fn HexView::handle(Self, Ctx, Msg) -> Bool
+pub fn HexView::hint(Self, @geom.Size) -> @geom.Size
+pub fn HexView::new(data? : Bytes, offset? : Int32, per_row? : Int32, style? : @style.Style, offset_style? : @style.Style, hex_style? : @style.Style, ascii_style? : @style.Style) -> Self
+pub fn HexView::not_equal(Self, Self) -> Bool
+pub fn HexView::offset(Self) -> Int32
+pub fn HexView::render_line(Self, Int32, @geom.Size) -> @strip.Strip
+pub fn HexView::set_offset(Self, Int32) -> Unit
+pub fn HexView::to_repr(Self) -> @debug.Repr
+pub impl Widget for HexView
+
 pub struct Input {
   mut text : String
   mut cursor : Int32
@@ -656,6 +746,40 @@ pub fn Item::new(String, shortcut? : String, checked? : Bool, enabled? : Bool) -
 pub fn Item::not_equal(Self, Self) -> Bool
 pub fn Item::separator() -> Self
 pub fn Item::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
+pub struct KeyPanel {
+  mut bindings : Array[(String, String)]
+  columns : Int32
+  style : @style.Style
+  key_style : @style.Style
+  note_style : @style.Style
+}
+pub fn KeyPanel::bindings(Self) -> Array[(String, String)]
+pub fn KeyPanel::equal(Self, Self) -> Bool
+pub fn KeyPanel::focusable(Self) -> Bool
+pub fn KeyPanel::handle(Self, Ctx, Msg) -> Bool
+pub fn KeyPanel::hint(Self, @geom.Size) -> @geom.Size
+pub fn KeyPanel::new(bindings? : Array[(String, String)], columns? : Int32, style? : @style.Style, key_style? : @style.Style, note_style? : @style.Style) -> Self
+pub fn KeyPanel::not_equal(Self, Self) -> Bool
+pub fn KeyPanel::render_line(Self, Int32, @geom.Size) -> @strip.Strip
+pub fn KeyPanel::rows(Self, Int32) -> Int32
+pub fn KeyPanel::set_bindings(Self, Array[(String, String)]) -> Unit
+pub fn KeyPanel::to_repr(Self) -> @debug.Repr
+pub impl Widget for KeyPanel
+
+#derive(Eq, @debug.Debug)
+pub(all) enum LineKind {
+  Context
+  Added
+  Removed
+  Hunk
+  Header
+  Meta
+}
+pub fn LineKind::equal(Self, Self) -> Bool
+pub fn LineKind::not_equal(Self, Self) -> Bool
+pub fn LineKind::to_repr(Self) -> @debug.Repr
 
 pub struct Link {
   mut text : String
@@ -964,6 +1088,28 @@ pub(all) enum Out {
 pub fn Out::equal(Self, Self) -> Bool
 pub fn Out::not_equal(Self, Self) -> Bool
 pub fn Out::to_repr(Self) -> @debug.Repr
+
+#derive(Eq, @debug.Debug)
+pub struct Paginator {
+  mut page : Int32
+  mut pages : Int32
+  style : @style.Style
+  current_style : @style.Style
+  arrow_style : @style.Style
+}
+pub fn Paginator::equal(Self, Self) -> Bool
+pub fn Paginator::focusable(Self) -> Bool
+pub fn Paginator::handle(Self, Ctx, Msg) -> Bool
+pub fn Paginator::hint(Self, @geom.Size) -> @geom.Size
+pub fn Paginator::new(page? : Int32, pages? : Int32, style? : @style.Style, current_style? : @style.Style, arrow_style? : @style.Style) -> Self
+pub fn Paginator::not_equal(Self, Self) -> Bool
+pub fn Paginator::page(Self) -> Int32
+pub fn Paginator::pages(Self) -> Int32
+pub fn Paginator::render_line(Self, Int32, @geom.Size) -> @strip.Strip
+pub fn Paginator::set_page(Self, Int32) -> Unit
+pub fn Paginator::set_pages(Self, Int32) -> Unit
+pub fn Paginator::to_repr(Self) -> @debug.Repr
+pub impl Widget for Paginator
 
 #derive(Eq, @debug.Debug)
 pub struct Placeholder {
@@ -1276,6 +1422,33 @@ pub fn SelectionList::to_repr(Self) -> @debug.Repr
 pub fn SelectionList::toggle(Self, Int32) -> Unit
 pub fn SelectionList::toggle_all(Self) -> Unit
 pub impl Widget for SelectionList
+
+#derive(Eq, @debug.Debug)
+pub struct Slider {
+  mut value : Int32
+  low : Int32
+  high : Int32
+  step : Int32
+  mut focused : Bool
+  style : @style.Style
+  track_style : @style.Style
+  bar_style : @style.Style
+  thumb_style : @style.Style
+}
+pub fn Slider::bounds(Self) -> (Int32, Int32)
+pub fn Slider::equal(Self, Self) -> Bool
+pub fn Slider::focusable(Self) -> Bool
+pub fn Slider::handle(Self, Ctx, Msg) -> Bool
+pub fn Slider::hint(Self, @geom.Size) -> @geom.Size
+pub fn Slider::new(value? : Int32, low? : Int32, high? : Int32, step? : Int32, style? : @style.Style, track_style? : @style.Style, bar_style? : @style.Style, thumb_style? : @style.Style) -> Self
+pub fn Slider::not_equal(Self, Self) -> Bool
+pub fn Slider::ratio(Self) -> Double
+pub fn Slider::render_line(Self, Int32, @geom.Size) -> @strip.Strip
+pub fn Slider::set_value(Self, Int32) -> Unit
+pub fn Slider::step(Self) -> Int32
+pub fn Slider::to_repr(Self) -> @debug.Repr
+pub fn Slider::value(Self) -> Int32
+pub impl Widget for Slider
 
 #derive(Eq, @debug.Debug)
 pub(all) enum Slot {
