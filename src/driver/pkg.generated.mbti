@@ -33,10 +33,10 @@ pub let leave_alt : String
 
 // Errors
 #derive(@debug.Debug)
-pub(all) suberror TtyError {
+pub(all) suberror Refused {
   Io(String)
 }
-pub fn TtyError::to_repr(Self) -> @debug.Repr
+pub fn Refused::to_repr(Self) -> @debug.Repr
 
 // Types and methods
 pub struct Headless {
@@ -50,29 +50,29 @@ pub struct Headless {
   mut stopped : Bool
 }
 pub fn Headless::clear_output(Self) -> Unit
-pub fn Headless::flush(Self) -> Unit raise TtyError
+pub fn Headless::flush(Self) -> Unit raise Refused
 pub fn Headless::is_running(Self) -> Bool
 pub fn Headless::new(@geom.Size, script? : Array[Bytes], tick? : Int32) -> Self
 pub fn Headless::now(Self) -> Int32
 pub fn Headless::output(Self) -> String
-pub fn Headless::poll(Self, Int32) -> Bytes raise TtyError
+pub fn Headless::poll(Self, Int32) -> Bytes raise Refused
 pub fn Headless::push(Self, Bytes) -> Unit
 pub fn Headless::set_size(Self, @geom.Size) -> Unit
-pub fn Headless::size(Self) -> @geom.Size raise TtyError
-pub fn Headless::start(Self) -> Unit raise TtyError
-pub fn Headless::stop(Self) -> Unit raise TtyError
-pub fn Headless::write(Self, String) -> Unit raise TtyError
+pub fn Headless::size(Self) -> @geom.Size raise Refused
+pub fn Headless::start(Self) -> Unit raise Refused
+pub fn Headless::stop(Self) -> Unit raise Refused
+pub fn Headless::write(Self, String) -> Unit raise Refused
 pub impl Driver for Headless
 
 // Type aliases
 
 // Traits
 pub(open) trait Driver {
-  fn start(Self) -> Unit raise TtyError
-  fn stop(Self) -> Unit raise TtyError
-  fn write(Self, String) -> Unit raise TtyError
-  fn flush(Self) -> Unit raise TtyError
-  fn size(Self) -> @geom.Size raise TtyError
-  fn poll(Self, Int32) -> Bytes raise TtyError
+  fn start(Self) -> Unit raise Refused
+  fn stop(Self) -> Unit raise Refused
+  fn write(Self, String) -> Unit raise Refused
+  fn flush(Self) -> Unit raise Refused
+  fn size(Self) -> @geom.Size raise Refused
+  fn poll(Self, Int32) -> Bytes raise Refused
   fn now(Self) -> Int32
 }
