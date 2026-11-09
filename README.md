@@ -8,7 +8,7 @@ Cell buffer · differential ANSI renderer · incremental key parser · layout ·
 
 [![Check and Test](https://img.shields.io/github/actions/workflow/status/moonbitstack/moonetui/ci.yml?branch=master&label=CI&logo=github)](https://github.com/moonbitstack/moonetui/actions)
 [![Docs](https://img.shields.io/github/actions/workflow/status/moonbitstack/moonetui/docs.yml?branch=master&label=docs&logo=github)](https://moonbitstack.github.io/moonetui/)
-[![mooncakes](https://img.shields.io/badge/mooncakes-0.3.5-7aa2f7)](https://mooncakes.io/docs/#/moonbitstack/moonetui/)
+[![mooncakes](https://img.shields.io/badge/mooncakes-0.3.6-7aa2f7)](https://mooncakes.io/docs/#/moonbitstack/moonetui/)
 [![licence](https://img.shields.io/badge/licence-Apache--2.0-blue)](LICENSE)
 
 <p>

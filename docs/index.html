@@ -31,7 +31,7 @@
       <path class="prompt" d="M15 30L25 38.5L15 47"/>
       <path class="cursor" d="M31.5 46.5H46"/>
     </svg>
-    <span><b>moonetui</b><small>v<span data-fill="version">0.3.5</span> · MoonBit</small></span>
+    <span><b>moonetui</b><small>v<span data-fill="version">0.3.6</span> · MoonBit</small></span>
   </a>
   <nav>
     <a href="#/" class="active"><span class="k">⌂</span>Home</a>
@@ -56,7 +56,7 @@
 <!-- ============================= HOME ============================= -->
 <section class="page" id="page-home">
   <div class="hero">
-    <div class="eyebrow"><span class="dot"></span><span data-fill="version">0.3.5</span> · four backends · <span data-count="widgets">54</span> widgets</div>
+    <div class="eyebrow"><span class="dot"></span><span data-fill="version">0.3.6</span> · four backends · <span data-count="widgets">54</span> widgets</div>
     <h1>Interfaces for the terminal,<br><span class="grad">down to the serial line.</span></h1>
     <p class="tag">moonetui is a terminal UI toolkit for <a href="https://www.moonbitlang.com/">MoonBit</a> — a synchronous, portable core with a cell buffer, a differential ANSI renderer, a CSS-like design system, and widgets that run the same on wasm, on Node, in the browser — and on a plain UART.</p>
     <div class="cta">
@@ -2112,11 +2112,11 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
 <!-- generated:api -->
   <div class="api-tools">
     <input class="api-filter" type="search" placeholder="Filter by name, e.g. Button or render" aria-label="Filter the API">
-    <span class="api-count" data-total="1081">1081 entries</span>
+    <span class="api-count" data-total="1084">1084 entries</span>
   </div>
   <div class="api-index">
     <button type="button" data-pkg="api-geom">geom<span>43</span></button>
-    <button type="button" data-pkg="api-style">style<span>39</span></button>
+    <button type="button" data-pkg="api-style">style<span>42</span></button>
     <button type="button" data-pkg="api-strip">strip<span>24</span></button>
     <button type="button" data-pkg="api-layout">layout<span>26</span></button>
     <button type="button" data-pkg="api-event">event<span>12</span></button>
@@ -2255,6 +2255,16 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
         <div class="api-method" data-q="to_rgb"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Colour::to_rgb(Self) -&gt; (Int32, Int32, Int32)?</pre></div>
       </div>
     </div>
+    <div class="api-item" data-q="style palette">
+      <h4><span class="api-kind type">type</span><code>Palette</code></h4>
+      <pre class="block"><span class="kw">pub</span>(all) <span class="kw">struct</span> Palette {
+  named : Array[(Int32, Int32, Int32)]
+}</pre>
+      <p>The sixteen named colours as whatever paints the cells resolves them, in terminal order: black, red, green, yellow, blue, magenta, cyan and white, then their bright forms. A terminal lets its user choose these; a driver that paints for itself, such as a canvas, takes them from here. An entry left out resolves as the standard table does.</p>
+      <div class="api-methods">
+        <div class="api-method" data-q="rgb"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Palette::rgb(Self, Colour) -&gt; (Int32, Int32, Int32)?</pre><p><code>colour</code> as red, green and blue under this palette, <code>None</code> for the default. The first sixteen of the 256 are the named colours, as in a terminal.</p></div>
+      </div>
+    </div>
     <div class="api-item" data-q="style style">
       <h4><span class="api-kind type">type</span><code>Style</code></h4>
       <pre class="block"><span class="kw">pub</span>(all) <span class="kw">struct</span> Style {
@@ -2326,6 +2336,11 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
     <div class="api-item" data-q="style magenta">
       <h4><span class="api-kind let">let</span><code>magenta</code></h4>
       <pre class="block"><span class="kw">pub</span> <span class="kw">let</span> magenta : Colour</pre>
+    </div>
+    <div class="api-item" data-q="style palette">
+      <h4><span class="api-kind let">let</span><code>palette</code></h4>
+      <pre class="block"><span class="kw">pub</span> <span class="kw">let</span> palette : Palette</pre>
+      <p>The standard table that <code>Colour::to_rgb</code> and the quantisers use, so a driver paints what the rest of the library assumes unless it is told otherwise.</p>
     </div>
     <div class="api-item" data-q="style plain">
       <h4><span class="api-kind let">let</span><code>plain</code></h4>
