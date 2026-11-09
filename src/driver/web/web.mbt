@@ -13,21 +13,28 @@ priv type Host
 struct WebTty {
   host : Host
   grid : @vt.Grid
+  palette : @style.Palette
   mut started : Bool
 }
 
 ///|
 /// A terminal on the canvas whose id is `canvas`, in a `font_px` monospace font,
 /// painting `fg` and `bg` (any CSS colour) where the application leaves the
-/// colours unset.
+/// colours unset, and the sixteen named colours from `palette`.
 pub fn WebTty::new(
   canvas~ : String = "moonetui",
   font_px~ : Int32 = 16,
   fg~ : String = "#d4d4d4",
   bg~ : String = "#1e1e1e",
+  palette~ : @style.Palette = @style.palette,
 ) -> WebTty {
   let host = js_init(canvas, font_px, fg, bg)
-  { host, grid: @vt.Grid::new(js_cols(host), js_rows(host)), started: false, }
+  {
+    host,
+    grid: @vt.Grid::new(js_cols(host), js_rows(host)),
+    palette,
+    started: false,
+  }
 }
 
 ///|
@@ -138,8 +145,8 @@ fn WebTty::paint(self : WebTty) -> Unit {
         width
       },
       cell.text,
-      css(fore),
-      css(back),
+      css(self.palette, fore),
+      css(self.palette, back),
       (if attrs.reverse { 32 } else { 0 }) |
       (if attrs.bold { 1 } else { 0 }) |
       (if attrs.dim { 2 } else { 0 }) |
@@ -153,8 +160,8 @@ fn WebTty::paint(self : WebTty) -> Unit {
 ///|
 /// A colour as CSS; empty for the default, which the page fills with `fg` or
 /// `bg`.
-fn css(colour : @style.Colour) -> String {
-  match colour.to_rgb() {
+fn css(palette : @style.Palette, colour : @style.Colour) -> String {
+  match palette.rgb(colour) {
     None => ""
     Some((r, g, b)) => "rgb(\{r},\{g},\{b})"
   }

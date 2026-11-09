@@ -4,6 +4,7 @@ import {
   "moonbitstack/moonetui/app",
   "moonbitstack/moonetui/driver/web",
   "moonbitstack/moonetui/examples/showcase",
+  "moonbitstack/moonetui/style",
   "moonbitstack/moonetui/widget",
 }
 

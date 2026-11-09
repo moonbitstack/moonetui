@@ -136,7 +136,7 @@ moon test  --target all
 moon fmt && moon info --target all     # the diff must stay clean
 ```
 
-651 tests per backend, the same suite on wasm, wasm-gc, js and native, run on Ubuntu, macOS and Windows in CI. Every widget asserts the rows it draws, and every demo draws in a headless application.
+653 tests per backend, the same suite on wasm, wasm-gc, js and native, run on Ubuntu, macOS and Windows in CI. Every widget asserts the rows it draws, and every demo draws in a headless application.
 
 ## Licence
 

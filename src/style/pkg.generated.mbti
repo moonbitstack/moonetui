@@ -36,6 +36,8 @@ pub let green : Colour
 
 pub let magenta : Colour
 
+pub let palette : Palette
+
 pub let plain : Attrs
 
 pub let red : Colour
@@ -84,6 +86,11 @@ pub fn Colour::to_ansi16(Self) -> Self
 pub fn Colour::to_ansi256(Self) -> Self
 pub fn Colour::to_repr(Self) -> @debug.Repr
 pub fn Colour::to_rgb(Self) -> (Int32, Int32, Int32)?
+
+pub(all) struct Palette {
+  named : Array[(Int32, Int32, Int32)]
+}
+pub fn Palette::rgb(Self, Colour) -> (Int32, Int32, Int32)?
 
 #derive(Eq, @debug.Debug)
 pub(all) struct Style {
