@@ -4,32 +4,44 @@
 
   var root = document.documentElement;
 
+  // A choice lasts the visit; a reload follows the system again.
+  var system = window.matchMedia("(prefers-color-scheme: light)");
+  var reload = performance.getEntriesByType("navigation")[0];
   var saved = null;
   try {
-    saved = localStorage.getItem("moonetui-theme");
+    if (reload && reload.type === "reload") {
+      sessionStorage.removeItem("moonetui-theme");
+    }
+    saved = sessionStorage.getItem("moonetui-theme");
   } catch (e) {
     saved = null;
   }
-  if (saved === "light") {
-    root.setAttribute("data-theme", "light");
+
+  function apply(theme) {
+    if (theme === "light") {
+      root.setAttribute("data-theme", "light");
+    } else {
+      root.removeAttribute("data-theme");
+    }
   }
+
+  apply(saved || (system.matches ? "light" : "dark"));
+  system.addEventListener("change", function () {
+    if (!saved) {
+      apply(system.matches ? "light" : "dark");
+    }
+  });
 
   var toggles = Array.prototype.slice.call(
     document.querySelectorAll(".theme-toggle")
   );
   toggles.forEach(function (toggle) {
     toggle.addEventListener("click", function () {
-      var next = root.getAttribute("data-theme") === "light" ? "dark" : "light";
-      if (next === "light") {
-        root.setAttribute("data-theme", "light");
-      } else {
-        root.removeAttribute("data-theme");
-      }
+      saved = root.getAttribute("data-theme") === "light" ? "dark" : "light";
+      apply(saved);
       try {
-        localStorage.setItem("moonetui-theme", next);
-      } catch (e) {
-        /* choice is a nicety, not a need */
-      }
+        sessionStorage.setItem("moonetui-theme", saved);
+      } catch (e) {}
     });
   });
 
