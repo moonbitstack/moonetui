@@ -1,6 +1,6 @@
 name = "moonbitstack/moonetui"
 
-version = "0.3.4"
+version = "0.3.5"
 
 readme = "README.md"
 
@@ -47,7 +47,7 @@ description = "A terminal UI toolkit for MoonBit: cell buffer, differential ANSI
 source = "src"
 
 import {
-  "moonbitstack/moondate@0.1.5",
-  "moonbitstack/moonucd@0.1.3",
-  "moonbitstack/moonrgba@0.1.2",
+  "moonbitstack/moondate@0.1.6",
+  "moonbitstack/moonucd@0.1.4",
+  "moonbitstack/moonrgba@0.1.3",
 }
