@@ -115,6 +115,7 @@ pub fn demos() -> Array[Demo] {
     menu(),
     command_palette(),
     chart(),
+    canvas(),
     bar_chart(),
     gauge(),
     scrollbar(),

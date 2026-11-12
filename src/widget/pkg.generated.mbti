@@ -183,6 +183,30 @@ pub fn Calendar::set_date(Self, @moondate.Date) -> Unit
 pub fn Calendar::to_repr(Self) -> @debug.Repr
 pub impl Widget for Calendar
 
+pub struct Canvas {
+  mut shapes : Array[Shape]
+  mut x_range : (Double, Double)
+  mut y_range : (Double, Double)
+  style : @style.Style
+  mut dots : Array[Bool]
+  mut dots_width : Int32
+  mut dots_height : Int32
+  mut drawn_width : Int32
+  mut drawn_height : Int32
+}
+pub fn Canvas::draw(Self, Shape) -> Unit
+pub fn Canvas::focusable(Self) -> Bool
+pub fn Canvas::handle(Self, Ctx, Msg) -> Bool
+pub fn Canvas::hint(Self, @geom.Size) -> @geom.Size
+pub fn Canvas::new(shapes? : Array[Shape], x_range? : (Double, Double), y_range? : (Double, Double), style? : @style.Style) -> Self
+pub fn Canvas::render_line(Self, Int32, @geom.Size) -> @strip.Strip
+pub fn Canvas::set_range(Self, x_range~ : (Double, Double), y_range~ : (Double, Double)) -> Unit
+pub fn Canvas::set_shapes(Self, Array[Shape]) -> Unit
+pub fn Canvas::shapes(Self) -> Array[Shape]
+pub fn Canvas::x_range(Self) -> (Double, Double)
+pub fn Canvas::y_range(Self) -> (Double, Double)
+pub impl Widget for Canvas
+
 pub struct Chart {
   mut datasets : Array[Dataset]
   mut x : Axis
@@ -1422,6 +1446,17 @@ pub fn SelectionList::to_repr(Self) -> @debug.Repr
 pub fn SelectionList::toggle(Self, Int32) -> Unit
 pub fn SelectionList::toggle_all(Self) -> Unit
 pub impl Widget for SelectionList
+
+#derive(Eq, @debug.Debug)
+pub(all) enum Shape {
+  Dot(Double, Double)
+  Line(Double, Double, Double, Double)
+  Rect(Double, Double, Double, Double)
+  Circle(Double, Double, Double)
+}
+pub fn Shape::equal(Self, Self) -> Bool
+pub fn Shape::not_equal(Self, Self) -> Bool
+pub fn Shape::to_repr(Self) -> @debug.Repr
 
 #derive(Eq, @debug.Debug)
 pub struct Slider {

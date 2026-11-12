@@ -121,3 +121,32 @@ pub fn scrollbar() -> Demo {
     rows=7,
   )
 }
+
+///|
+pub fn canvas() -> Demo {
+  // One period of a wave, drawn as the segments between its samples, over a
+  // baseline: the plot is in its own coordinates, so the same shapes are a
+  // thumbnail in a narrow column and a full plot here.
+  let shapes : Array[@widget.Shape] = [@widget.Line(0.0, 0.0, 6.283, 0.0)]
+  for step in 0..<96 {
+    let x0 = step.to_double() / 96.0 * 6.283
+    let x1 = (step + 1).to_double() / 96.0 * 6.283
+    shapes.push(@widget.Line(x0, @math.sin(x0), x1, @math.sin(x1)))
+  }
+  for peak in [1.5708, 4.7124] {
+    shapes.push(@widget.Dot(peak, 1.0))
+  }
+  let plot = @widget.Canvas::new(
+    shapes~,
+    x_range=(0.0, 6.283),
+    y_range=(-1.2, 1.2),
+    style=@style.Style::new(fg=@style.cyan),
+  )
+  Demo::new(
+    "Canvas",
+    @app.column(0, [@app.leaf(1, plot)]),
+    group=Chart,
+    note="Braille dots, four rows and two columns per cell: a wave, its peaks and the baseline it crosses.",
+    rows=10,
+  )
+}

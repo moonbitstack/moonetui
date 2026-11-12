@@ -1,6 +1,7 @@
 // Every widget and style as a small live application, shared by the gallery
 // and the documentation.
 import {
+  "moonbitlang/core/math",
   "moonbitlang/core/cmp",
   "moonbitstack/moonetui/app",
   "moonbitstack/moonetui/design",

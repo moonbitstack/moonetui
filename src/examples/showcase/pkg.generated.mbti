@@ -21,6 +21,8 @@ pub fn button() -> Demo
 
 pub fn calendar() -> Demo
 
+pub fn canvas() -> Demo
+
 pub fn chart() -> Demo
 
 pub fn checkbox() -> Demo

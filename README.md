@@ -4,7 +4,7 @@
 
 **`moonetui`** · a terminal UI toolkit for [MoonBit](https://www.moonbitlang.com/)
 
-Cell buffer · differential ANSI renderer · incremental key parser · layout · CSS-like design system · 54 widgets · drivers for terminals, Node, browsers and serial lines
+Cell buffer · differential ANSI renderer · incremental key parser · layout · CSS-like design system · 55 widgets · drivers for terminals, Node, browsers and serial lines
 
 [![Check and Test](https://img.shields.io/github/actions/workflow/status/moonbitstack/moonetui/ci.yml?branch=master&label=CI&logo=github)](https://github.com/moonbitstack/moonetui/actions)
 [![Docs](https://img.shields.io/github/actions/workflow/status/moonbitstack/moonetui/docs.yml?branch=master&label=docs&logo=github)](https://moonbitstack.github.io/moonetui/)
@@ -98,7 +98,7 @@ Its `moon.pkg` imports `app`, `design`, `driver/native`, `layout`, `style` and `
 | Data and notices | `DataTable`, `HexView`, `Diff`, `Markdown`, `Tooltip`, `Toast` |
 | Dialogs | `MessageBox`, `InputBox`, `FileDialog` |
 | Menus and commands | `Menu`, `MenuBar`, `CommandPalette` |
-| Charts and meters | `Chart` (lines and scatter), `BarChart`, `Gauge`, `Scrollbar` |
+| Charts and meters | `Chart` (lines and scatter), `BarChart`, `Gauge`, `Scrollbar`, `Canvas` (Braille dots) |
 | Decoration | `Block` — a frame, title and padding that wraps any widget |
 
 Each one has its keyboard contract, message shape and tests, and a live demo on the [documentation site](https://moonbitstack.github.io/moonetui/#/widgets) beside its source.
@@ -136,7 +136,7 @@ moon test  --target all
 moon fmt && moon info --target all     # the diff must stay clean
 ```
 
-666 tests per backend, the same suite on wasm, wasm-gc, js and native, run on Ubuntu, macOS and Windows in CI. Every widget asserts the rows it draws, and every demo draws in a headless application.
+676 tests per backend, the same suite on wasm, wasm-gc, js and native, run on Ubuntu, macOS and Windows in CI. Every widget asserts the rows it draws, and every demo draws in a headless application.
 
 ## Conformance
 

@@ -56,7 +56,7 @@
 <!-- ============================= HOME ============================= -->
 <section class="page" id="page-home">
   <div class="hero">
-    <div class="eyebrow"><span class="dot"></span><span data-fill="version">0.3.6</span> · four backends · <span data-count="widgets">54</span> widgets</div>
+    <div class="eyebrow"><span class="dot"></span><span data-fill="version">0.3.6</span> · four backends · <span data-count="widgets">55</span> widgets</div>
     <h1>Interfaces for the terminal,<br><span class="grad">down to the serial line.</span></h1>
     <p class="tag">moonetui is a terminal UI toolkit for <a href="https://www.moonbitlang.com/">MoonBit</a> — a synchronous, portable core with a cell buffer, a differential ANSI renderer, a CSS-like design system, and widgets that run the same on wasm, on Node, in the browser — and on a plain UART.</p>
     <div class="cta">
@@ -76,8 +76,8 @@
 
   <div class="stats">
     <div class="stat"><div class="n">4</div><div class="l">backends · wasm, wasm-gc, js, native</div></div>
-    <div class="stat"><div class="n" data-count="tests">666</div><div class="l">tests per backend, all passing</div></div>
-    <div class="stat"><div class="n" data-count="widgets">54</div><div class="l">widgets, from toggles to trees</div></div>
+    <div class="stat"><div class="n" data-count="tests">676</div><div class="l">tests per backend, all passing</div></div>
+    <div class="stat"><div class="n" data-count="widgets">55</div><div class="l">widgets, from toggles to trees</div></div>
     <div class="stat"><div class="n">0</div><div class="l">dependencies · a single pure core</div></div>
   </div>
 
@@ -221,7 +221,7 @@ w.handle(ctx, @widget.Msg::Key(@event.Key::of(Enter)))
   </div>
 
   <h2>Widgets</h2>
-  <p class="lead"><span data-count="widgets">54</span> widgets, each with its own keyboard contract, message shape and rendering. Every card runs its demo from <code class="inline">src/examples/showcase</code> right here: click one and use the keys, and the line under it shows what the widget reports. The code under that is the demo's own source.</p>
+  <p class="lead"><span data-count="widgets">55</span> widgets, each with its own keyboard contract, message shape and rendering. Every card runs its demo from <code class="inline">src/examples/showcase</code> right here: click one and use the keys, and the line under it shows what the widget reports. The code under that is the demo's own source.</p>
   <pre class="block">moon run --target native src/examples/gallery</pre>
 <!-- generated:widgets -->
   <h3>Text and display</h3>
@@ -1520,6 +1520,39 @@ w.handle(ctx, @widget.Msg::Key(@event.Key::of(Enter)))
   )
 }</pre>
   </div>
+  <div class="wcard" id="demo-canvas">
+    <h4><code class="inline">Canvas</code></h4>
+    <p class="wdesc">Braille dots, four rows and two columns per cell: a wave, its peaks and the baseline it crosses.</p>
+    <div class="wlive"><canvas id="live-canvas" data-demo="Canvas" tabindex="0" style="height: 180px"></canvas></div>
+    <div class="wmsg" data-for="live-canvas"></div>
+    <pre class="block wcode"><span class="kw">pub</span> <span class="kw">fn</span> canvas() -&gt; Demo {
+  <span class="cm">// One period of a wave, drawn as the segments between its samples, over a</span>
+  <span class="cm">// baseline: the plot is in its own coordinates, so the same shapes are a</span>
+  <span class="cm">// thumbnail in a narrow column and a full plot here.</span>
+  <span class="kw">let</span> shapes : Array[<span class="fn">@widget.</span>Shape] = [<span class="fn">@widget.</span>Line(0.0, 0.0, 6.283, 0.0)]
+  <span class="kw">for</span> step <span class="kw">in</span> 0..&lt;96 {
+    <span class="kw">let</span> x0 = step.to_double() / 96.0 * 6.283
+    <span class="kw">let</span> x1 = (step + 1).to_double() / 96.0 * 6.283
+    shapes.push(<span class="fn">@widget.</span>Line(x0, <span class="fn">@math.</span>sin(x0), x1, <span class="fn">@math.</span>sin(x1)))
+  }
+  <span class="kw">for</span> peak <span class="kw">in</span> [1.5708, 4.7124] {
+    shapes.push(<span class="fn">@widget.</span>Dot(peak, 1.0))
+  }
+  <span class="kw">let</span> plot = <span class="fn">@widget.</span>Canvas::new(
+    shapes~,
+    x_range=(0.0, 6.283),
+    y_range=(-1.2, 1.2),
+    style=<span class="fn">@style.</span>Style::new(fg=<span class="fn">@style.</span>cyan),
+  )
+  Demo::new(
+    <span class="st">&quot;Canvas&quot;</span>,
+    <span class="fn">@app.</span>column(0, [<span class="fn">@app.</span>leaf(1, plot)]),
+    group=Chart,
+    note=<span class="st">&quot;Braille dots, four rows and two columns per cell: a wave, its peaks and the baseline it crosses.&quot;</span>,
+    rows=10,
+  )
+}</pre>
+  </div>
   <div class="wcard" id="demo-barchart">
     <h4><code class="inline">BarChart</code></h4>
     <p class="wdesc">A column per bar, named along the bottom, the tallest filling the plot unless a scale is given.</p>
@@ -2076,10 +2109,10 @@ priv <span class="kw">struct</span> Swatches {}
   <p class="lead">The same suite on four backends — a regression in one world fails loudly everywhere.</p>
 
   <div class="stats">
-    <div class="stat"><div class="n" data-count="tests">666</div><div class="l">wasm</div></div>
-    <div class="stat"><div class="n" data-count="tests">666</div><div class="l">wasm-gc</div></div>
-    <div class="stat"><div class="n" data-count="tests">666</div><div class="l">js</div></div>
-    <div class="stat"><div class="n" data-count="tests">666</div><div class="l">native</div></div>
+    <div class="stat"><div class="n" data-count="tests">676</div><div class="l">wasm</div></div>
+    <div class="stat"><div class="n" data-count="tests">676</div><div class="l">wasm-gc</div></div>
+    <div class="stat"><div class="n" data-count="tests">676</div><div class="l">js</div></div>
+    <div class="stat"><div class="n" data-count="tests">676</div><div class="l">native</div></div>
   </div>
 
   <h3>Run the suite</h3>
@@ -2112,7 +2145,7 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
 <!-- generated:api -->
   <div class="api-tools">
     <input class="api-filter" type="search" placeholder="Filter by name, e.g. Button or render" aria-label="Filter the API">
-    <span class="api-count" data-total="1084">1084 entries</span>
+    <span class="api-count" data-total="1097">1097 entries</span>
   </div>
   <div class="api-index">
     <button type="button" data-pkg="api-geom">geom<span>43</span></button>
@@ -2124,7 +2157,7 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
     <button type="button" data-pkg="api-vt">vt<span>12</span></button>
     <button type="button" data-pkg="api-comp">comp<span>20</span></button>
     <button type="button" data-pkg="api-design">design<span>56</span></button>
-    <button type="button" data-pkg="api-widget">widget<span>727</span></button>
+    <button type="button" data-pkg="api-widget">widget<span>740</span></button>
     <button type="button" data-pkg="api-app">app<span>56</span></button>
     <button type="button" data-pkg="api-driver">driver<span>28</span></button>
     <button type="button" data-pkg="api-driver-native">driver/native<span>11</span></button>
@@ -3216,6 +3249,36 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
         <div class="api-method" data-q="on"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Calendar::on(Int32, Int32, Int32, style? : <span class="fn">@style.</span>Style, title_style? : <span class="fn">@style.</span>Style, weekday_style? : <span class="fn">@style.</span>Style, day_style? : <span class="fn">@style.</span>Style, selected_style? : <span class="fn">@style.</span>Style) -&gt; Self</pre><p>A calendar on a day given as three numbers, each held to a real one: a builder for callers that know the date rather than hold a <code>Date</code>.</p></div>
         <div class="api-method" data-q="render_line"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Calendar::render_line(Self, Int32, <span class="fn">@geom.</span>Size) -&gt; <span class="fn">@strip.</span>Strip</pre></div>
         <div class="api-method" data-q="set_date"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Calendar::set_date(Self, <span class="fn">@moondate.</span>Date) -&gt; Unit</pre><p>Pick a day out; the month on show follows it.</p></div>
+      </div>
+    </div>
+    <div class="api-item" data-q="widget canvas">
+      <h4><span class="api-kind type">type</span><code>Canvas</code></h4>
+      <pre class="block"><span class="kw">pub</span> <span class="kw">struct</span> Canvas {
+  <span class="kw">mut</span> shapes : Array[Shape]
+  <span class="kw">mut</span> x_range : (Double, Double)
+  <span class="kw">mut</span> y_range : (Double, Double)
+  style : <span class="fn">@style.</span>Style
+  <span class="kw">mut</span> dots : Array[Bool]
+  <span class="kw">mut</span> dots_width : Int32
+  <span class="kw">mut</span> dots_height : Int32
+  <span class="kw">mut</span> drawn_width : Int32
+  <span class="kw">mut</span> drawn_height : Int32
+}</pre>
+      <p>A plot drawn with Braille dots: each cell of the terminal is two dots wide and four tall, which is the finest grid a terminal without images offers.</p>
+      <p>The canvas draws into whatever size the layout gives it, so the same shapes are a thumbnail in a sidebar and a full plot in the main pane. <code>x_range</code> and <code>y_range</code> say what coordinates the shape values are in; <code>y</code> grows upwards, as a plot does, though the rows of a terminal grow down.</p>
+      <div class="api-impls">implements <code>Widget</code></div>
+      <div class="api-methods">
+        <div class="api-method" data-q="draw"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Canvas::draw(Self, Shape) -&gt; Unit</pre><p>Adds one shape to what is already there.</p></div>
+        <div class="api-method" data-q="focusable"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Canvas::focusable(Self) -&gt; Bool</pre></div>
+        <div class="api-method" data-q="handle"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Canvas::handle(Self, Ctx, Msg) -&gt; Bool</pre></div>
+        <div class="api-method" data-q="hint"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Canvas::hint(Self, <span class="fn">@geom.</span>Size) -&gt; <span class="fn">@geom.</span>Size</pre></div>
+        <div class="api-method" data-q="new"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Canvas::new(shapes? : Array[Shape], x_range? : (Double, Double), y_range? : (Double, Double), style? : <span class="fn">@style.</span>Style) -&gt; Self</pre></div>
+        <div class="api-method" data-q="render_line"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Canvas::render_line(Self, Int32, <span class="fn">@geom.</span>Size) -&gt; <span class="fn">@strip.</span>Strip</pre></div>
+        <div class="api-method" data-q="set_range"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Canvas::set_range(Self, x_range~ : (Double, Double), y_range~ : (Double, Double)) -&gt; Unit</pre><p>The coordinates the shapes are read in. <code>y</code> grows upwards.</p></div>
+        <div class="api-method" data-q="set_shapes"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Canvas::set_shapes(Self, Array[Shape]) -&gt; Unit</pre></div>
+        <div class="api-method" data-q="shapes"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Canvas::shapes(Self) -&gt; Array[Shape]</pre></div>
+        <div class="api-method" data-q="x_range"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Canvas::x_range(Self) -&gt; (Double, Double)</pre></div>
+        <div class="api-method" data-q="y_range"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Canvas::y_range(Self) -&gt; (Double, Double)</pre></div>
       </div>
     </div>
     <div class="api-item" data-q="widget chart">
@@ -4574,6 +4637,16 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
         <div class="api-method" data-q="toggle"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> SelectionList::toggle(Self, Int32) -&gt; Unit</pre></div>
         <div class="api-method" data-q="toggle_all"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> SelectionList::toggle_all(Self) -&gt; Unit</pre></div>
       </div>
+    </div>
+    <div class="api-item" data-q="widget shape">
+      <h4><span class="api-kind type">type</span><code>Shape</code></h4>
+      <pre class="block"><span class="kw">pub</span>(all) <span class="kw">enum</span> Shape {
+  Dot(Double, Double)
+  Line(Double, Double, Double, Double)
+  Rect(Double, Double, Double, Double)
+  Circle(Double, Double, Double)
+}</pre>
+      <p>One thing to draw, in the canvas's own coordinates: the range the canvas was given, not rows and columns.</p>
     </div>
     <div class="api-item" data-q="widget slider">
       <h4><span class="api-kind type">type</span><code>Slider</code></h4>

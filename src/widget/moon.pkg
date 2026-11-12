@@ -2,6 +2,7 @@
 // an application.
 import {
   "moonbitlang/core/cmp",
+  "moonbitlang/core/math",
   "moonbitlang/core/string",
   "moonbitstack/moonetui/event",
   "moonbitstack/moonetui/geom",
