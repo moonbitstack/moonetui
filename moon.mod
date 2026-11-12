@@ -47,7 +47,7 @@ description = "A terminal UI toolkit for MoonBit: cell buffer, differential ANSI
 source = "src"
 
 import {
-  "moonbitstack/moondate@0.1.6",
+  "moonbitstack/moondate@0.1.7",
   "moonbitstack/moonucd@0.1.4",
   "moonbitstack/moonrgba@0.1.3",
 }
