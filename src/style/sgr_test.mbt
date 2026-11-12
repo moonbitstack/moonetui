@@ -66,3 +66,26 @@ test "dropping an attribute costs a reset" {
   assert_eq(@style.delta(bold_red, red), esc + "0;31;49m")
   assert_eq(@style.delta(red, bold_red), esc + "1m")
 }
+
+///|
+/// Every attribute reaches the terminal as its own parameter, whether it is
+/// rendered whole or added to a style that lacked it.
+test "each attribute names its own parameter" {
+  let plain = @style.default
+  assert_eq(@style.delta(plain, @style.Style::new(underline=true)), esc + "4m")
+  assert_eq(@style.delta(plain, @style.Style::new(italic=true)), esc + "3m")
+  assert_eq(@style.delta(plain, @style.Style::new(blink=true)), esc + "5m")
+  assert_eq(@style.delta(plain, @style.Style::new(reverse=true)), esc + "7m")
+  assert_eq(@style.delta(plain, @style.Style::new(strike=true)), esc + "9m")
+  assert_eq(@style.delta(plain, @style.Style::new(dim=true)), esc + "2m")
+  let all = @style.Style::new(
+    bold=true,
+    dim=true,
+    italic=true,
+    underline=true,
+    blink=true,
+    reverse=true,
+    strike=true,
+  )
+  assert_eq(@style.render(all), esc + "0;1;2;3;4;5;7;9;39;49m")
+}
