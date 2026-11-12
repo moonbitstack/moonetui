@@ -72,3 +72,24 @@ jobs:
       - name: the code in the docs compiles
         if: ${{ runner.os == 'Linux' }}
         run: python3 scripts/check_snippets.py
+
+      # The vectors hold the width and the splitting of every code point to two references.
+      # Regenerating must not move them; the key vectors are left out because they come from
+      # the machine's terminfo database.
+      - name: the conformance vectors are what their references say
+        if: ${{ runner.os == 'Linux' }}
+        run: |
+          python3 -m pip install --quiet --break-system-packages wcwidth==0.9.4 uniseg==0.10.1 regex==2025.9.18
+          python3 scripts/gen_conformance.py --repo . --only widths,clusters
+          moon fmt
+          git diff --exit-code src/strip/width_vectors_wbtest.mbt src/strip/cluster_vectors_wbtest.mbt
+
+      # The frames the library writes, drawn again by two terminal emulators it has no part
+      # in: what they show has to be what the application meant to show.
+      - name: two terminal emulators draw the frames the library writes
+        if: ${{ runner.os == 'Linux' }}
+        run: |
+          python3 -m pip install --quiet --break-system-packages pyte==0.8.2
+          command -v tmux > /dev/null || sudo apt-get install -y tmux
+          moon test --target native -p moonbitstack/moonetui/app 2>&1 | grep '^interop' > "$RUNNER_TEMP/frames.txt"
+          python3 scripts/verify_terminals.py --in "$RUNNER_TEMP/frames.txt"
