@@ -50,3 +50,17 @@ test "a bar chart takes neither keys nor a click" {
   assert_eq(press(chart, 1, size(10, 5), key(Down)), [])
   assert_eq(press(chart, 1, size(10, 5), mouse(Down, 0, 0)), [])
 }
+
+///|
+test "a chart takes its scale, and a bar its colour, as they are" {
+  let chart = @widget.BarChart::new(
+    bars=[@widget.Bar::new("a", value=2.0)],
+    max=8.0,
+  )
+  assert_eq(chart.scale(), 8.0)
+  assert_eq(@widget.BarChart::new(bars=[]).scale(), 1.0)
+  let cyan = @style.Style::new(fg=@style.cyan)
+  let bar = @widget.Bar::new("a", value=2.0, style=cyan)
+  assert_eq(bar.style is Some(_), true)
+  assert_eq(@widget.Bar::new("a").style is None, true)
+}

@@ -433,7 +433,7 @@ pub fn StatefulTable::new(
   rows~ : Array[Array[String]] = [],
   header~ : Array[String] = [],
   state~ : TableState = TableState::new(),
-  widths~ : Array[Int32]? = None,
+  widths? : Array[Int32],
   style~ : @style.Style = @style.default,
   header_style~ : @style.Style = @style.Style::new(bold=true),
   highlight~ : @style.Style = @style.Style::new(reverse=true),

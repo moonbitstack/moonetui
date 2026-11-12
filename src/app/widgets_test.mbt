@@ -195,7 +195,7 @@ test "a link and a clock answer under the driver" {
   assert_eq(asked(reported, Pressed(id=0)), true)
   let head : &@widget.Widget = @widget.Header::new(
     "moonetui",
-    clock=Some(@widget.Clock::new(hour=1, minute=2, second=3)),
+    clock=@widget.Clock::new(hour=1, minute=2, second=3),
   )
   let (screen, _) = drive(head, @geom.Size::new(20, 1), [])
   assert_eq(screen.contains("01:02:03"), true)

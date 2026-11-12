@@ -40,7 +40,7 @@ pub fn bar_chart() -> Demo {
       @widget.Bar::new(
         "mon",
         value=5.0,
-        style=Some(@style.Style::new(fg=@style.cyan)),
+        style=@style.Style::new(fg=@style.cyan),
       ),
       @widget.Bar::new("tue", value=8.0),
       @widget.Bar::new("wed", value=3.0),

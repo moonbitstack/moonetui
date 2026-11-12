@@ -175,11 +175,9 @@ test "a stateful table takes a click on a cell and on a header" {
 ///|
 test "a stateful table scrolls its rows and keeps the columns it was given" {
   let state = @widget.TableState::new()
-  let table = @widget.StatefulTable::new(
-    rows=[["a"], ["b"], ["c"]],
-    state~,
-    widths=Some([4]),
-  )
+  let table = @widget.StatefulTable::new(rows=[["a"], ["b"], ["c"]], state~, widths=[
+    4,
+  ])
   let w : &@widget.Widget = table
   assert_eq(
     press(
@@ -276,7 +274,7 @@ test "a stateful table keeps the widths it was given" {
     rows=[["a", "b"]],
     header=["one", "two"],
     state~,
-    widths=Some([3, 4]),
+    widths=[3, 4],
   )
   let w : &@widget.Widget = table
   assert_eq(rows(w, size(12, 2)), ["onetwo      ", "a  b        "])
@@ -322,4 +320,12 @@ test "a stateful table with nothing in it is blank and takes no keys" {
     ),
     [@widget.TakeFocus(id=1)],
   )
+}
+
+///|
+test "a stateful table takes its column widths as they are" {
+  let table = @widget.StatefulTable::new(rows=[["abc", "d"]], widths=[2, 4])
+  assert_eq(table.render_line(0, size(6, 1)).text(), "abd   ")
+  let natural = @widget.StatefulTable::new(rows=[["abc", "d"]])
+  assert_eq(natural.render_line(0, size(6, 1)).text().length(), 6)
 }

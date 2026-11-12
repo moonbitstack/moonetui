@@ -124,7 +124,7 @@ pub fn clock() -> Demo {
   let bar = @widget.Header::new(
     "moonetui",
     note="0.3.1",
-    clock=Some(@widget.Clock::new(hour=9, minute=41, second=26)),
+    clock=@widget.Clock::new(hour=9, minute=41, second=26),
   )
   Demo::new(
     "Clock",

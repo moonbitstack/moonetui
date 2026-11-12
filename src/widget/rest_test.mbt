@@ -33,7 +33,7 @@ test "a header keeps a clock beside its note" {
   let head = @widget.Header::new(
     "moonetui",
     note="v1",
-    clock=Some(@widget.Clock::new(hour=12, minute=34, second=56)),
+    clock=@widget.Clock::new(hour=12, minute=34, second=56),
   )
   let w : &@widget.Widget = head
   assert_eq(w.render_line(0, size(20, 1)).text(), "moonetui 12:34:56 v1")

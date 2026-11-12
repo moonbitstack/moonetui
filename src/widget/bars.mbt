@@ -17,7 +17,7 @@ pub struct Header {
 pub fn Header::new(
   title : String,
   note~ : String = "",
-  clock~ : Clock? = None,
+  clock? : Clock,
   style~ : @style.Style = @style.Style::new(reverse=true),
 ) -> Header {
   { title, note, clock, style, }

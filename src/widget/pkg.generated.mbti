@@ -71,7 +71,7 @@ pub(all) struct Bar {
   style : @style.Style?
 }
 pub fn Bar::equal(Self, Self) -> Bool
-pub fn Bar::new(String, value? : Double, style? : @style.Style?) -> Self
+pub fn Bar::new(String, value? : Double, style? : @style.Style) -> Self
 pub fn Bar::not_equal(Self, Self) -> Bool
 pub fn Bar::to_repr(Self) -> @debug.Repr
 
@@ -88,7 +88,7 @@ pub fn BarChart::bars(Self) -> Array[Bar]
 pub fn BarChart::focusable(Self) -> Bool
 pub fn BarChart::handle(Self, Ctx, Msg) -> Bool
 pub fn BarChart::hint(Self, @geom.Size) -> @geom.Size
-pub fn BarChart::new(bars? : Array[Bar], max? : Double?, gap? : Int32, values? : Bool, style? : @style.Style, bar_style? : @style.Style, label_style? : @style.Style) -> Self
+pub fn BarChart::new(bars? : Array[Bar], max? : Double, gap? : Int32, values? : Bool, style? : @style.Style, bar_style? : @style.Style, label_style? : @style.Style) -> Self
 pub fn BarChart::render_line(Self, Int32, @geom.Size) -> @strip.Strip
 pub fn BarChart::scale(Self) -> Double
 pub fn BarChart::set_bars(Self, Array[Bar]) -> Unit
@@ -649,7 +649,7 @@ pub struct Header {
 pub fn Header::focusable(Self) -> Bool
 pub fn Header::handle(Self, Ctx, Msg) -> Bool
 pub fn Header::hint(Self, @geom.Size) -> @geom.Size
-pub fn Header::new(String, note? : String, clock? : Clock?, style? : @style.Style) -> Self
+pub fn Header::new(String, note? : String, clock? : Clock, style? : @style.Style) -> Self
 pub fn Header::render_line(Self, Int32, @geom.Size) -> @strip.Strip
 pub fn Header::set(Self, String) -> Unit
 pub fn Header::set_clock(Self, Clock?) -> Unit
@@ -1520,7 +1520,7 @@ pub fn StatefulTable::columns(Self) -> Int32
 pub fn StatefulTable::focusable(Self) -> Bool
 pub fn StatefulTable::handle(Self, Ctx, Msg) -> Bool
 pub fn StatefulTable::hint(Self, @geom.Size) -> @geom.Size
-pub fn StatefulTable::new(rows? : Array[Array[String]], header? : Array[String], state? : TableState, widths? : Array[Int32]?, style? : @style.Style, header_style? : @style.Style, highlight? : @style.Style, blurred_highlight? : @style.Style, column_highlight? : @style.Style) -> Self
+pub fn StatefulTable::new(rows? : Array[Array[String]], header? : Array[String], state? : TableState, widths? : Array[Int32], style? : @style.Style, header_style? : @style.Style, highlight? : @style.Style, blurred_highlight? : @style.Style, column_highlight? : @style.Style) -> Self
 pub fn StatefulTable::render_line(Self, Int32, @geom.Size) -> @strip.Strip
 pub fn StatefulTable::rows(Self) -> Array[Array[String]]
 pub fn StatefulTable::set_header(Self, Array[String]) -> Unit

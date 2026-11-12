@@ -15,7 +15,7 @@ pub(all) struct Bar {
 pub fn Bar::new(
   label : String,
   value~ : Double = 0.0,
-  style~ : @style.Style? = None,
+  style? : @style.Style,
 ) -> Bar {
   { label, value, style, }
 }
@@ -38,7 +38,7 @@ pub struct BarChart {
 ///|
 pub fn BarChart::new(
   bars~ : Array[Bar] = [],
-  max~ : Double? = None,
+  max? : Double,
   gap~ : Int32 = 1,
   values~ : Bool = false,
   style~ : @style.Style = @style.default,

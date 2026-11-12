@@ -76,7 +76,7 @@
 
   <div class="stats">
     <div class="stat"><div class="n">4</div><div class="l">backends · wasm, wasm-gc, js, native</div></div>
-    <div class="stat"><div class="n" data-count="tests">653</div><div class="l">tests per backend, all passing</div></div>
+    <div class="stat"><div class="n" data-count="tests">666</div><div class="l">tests per backend, all passing</div></div>
     <div class="stat"><div class="n" data-count="widgets">54</div><div class="l">widgets, from toggles to trees</div></div>
     <div class="stat"><div class="n">0</div><div class="l">dependencies · a single pure core</div></div>
   </div>
@@ -285,7 +285,7 @@ w.handle(ctx, @widget.Msg::Key(@event.Key::of(Enter)))
   <span class="kw">let</span> bar = <span class="fn">@widget.</span>Header::new(
     <span class="st">&quot;moonetui&quot;</span>,
     note=<span class="st">&quot;0.3.1&quot;</span>,
-    clock=Some(<span class="fn">@widget.</span>Clock::new(hour=9, minute=41, second=26)),
+    clock=<span class="fn">@widget.</span>Clock::new(hour=9, minute=41, second=26),
   )
   Demo::new(
     <span class="st">&quot;Clock&quot;</span>,
@@ -1531,7 +1531,7 @@ w.handle(ctx, @widget.Msg::Key(@event.Key::of(Enter)))
       <span class="fn">@widget.</span>Bar::new(
         <span class="st">&quot;mon&quot;</span>,
         value=5.0,
-        style=Some(<span class="fn">@style.</span>Style::new(fg=<span class="fn">@style.</span>cyan)),
+        style=<span class="fn">@style.</span>Style::new(fg=<span class="fn">@style.</span>cyan),
       ),
       <span class="fn">@widget.</span>Bar::new(<span class="st">&quot;tue&quot;</span>, value=8.0),
       <span class="fn">@widget.</span>Bar::new(<span class="st">&quot;wed&quot;</span>, value=3.0),
@@ -2076,10 +2076,10 @@ priv <span class="kw">struct</span> Swatches {}
   <p class="lead">The same suite on four backends — a regression in one world fails loudly everywhere.</p>
 
   <div class="stats">
-    <div class="stat"><div class="n" data-count="tests">653</div><div class="l">wasm</div></div>
-    <div class="stat"><div class="n" data-count="tests">653</div><div class="l">wasm-gc</div></div>
-    <div class="stat"><div class="n" data-count="tests">653</div><div class="l">js</div></div>
-    <div class="stat"><div class="n" data-count="tests">653</div><div class="l">native</div></div>
+    <div class="stat"><div class="n" data-count="tests">666</div><div class="l">wasm</div></div>
+    <div class="stat"><div class="n" data-count="tests">666</div><div class="l">wasm-gc</div></div>
+    <div class="stat"><div class="n" data-count="tests">666</div><div class="l">js</div></div>
+    <div class="stat"><div class="n" data-count="tests">666</div><div class="l">native</div></div>
   </div>
 
   <h3>Run the suite</h3>
@@ -3091,7 +3091,7 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
 }</pre>
       <p>One column of a bar chart: what it is called, how tall it stands, and the colour it is drawn in when it has one of its own.</p>
       <div class="api-methods">
-        <div class="api-method" data-q="new"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Bar::new(String, value? : Double, style? : <span class="fn">@style.</span>Style?) -&gt; Self</pre></div>
+        <div class="api-method" data-q="new"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Bar::new(String, value? : Double, style? : <span class="fn">@style.</span>Style) -&gt; Self</pre></div>
       </div>
     </div>
     <div class="api-item" data-q="widget barchart">
@@ -3113,7 +3113,7 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
         <div class="api-method" data-q="focusable"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> BarChart::focusable(Self) -&gt; Bool</pre></div>
         <div class="api-method" data-q="handle"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> BarChart::handle(Self, Ctx, Msg) -&gt; Bool</pre></div>
         <div class="api-method" data-q="hint"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> BarChart::hint(Self, <span class="fn">@geom.</span>Size) -&gt; <span class="fn">@geom.</span>Size</pre></div>
-        <div class="api-method" data-q="new"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> BarChart::new(bars? : Array[Bar], max? : Double?, gap? : Int32, values? : Bool, style? : <span class="fn">@style.</span>Style, bar_style? : <span class="fn">@style.</span>Style, label_style? : <span class="fn">@style.</span>Style) -&gt; Self</pre></div>
+        <div class="api-method" data-q="new"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> BarChart::new(bars? : Array[Bar], max? : Double, gap? : Int32, values? : Bool, style? : <span class="fn">@style.</span>Style, bar_style? : <span class="fn">@style.</span>Style, label_style? : <span class="fn">@style.</span>Style) -&gt; Self</pre></div>
         <div class="api-method" data-q="render_line"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> BarChart::render_line(Self, Int32, <span class="fn">@geom.</span>Size) -&gt; <span class="fn">@strip.</span>Strip</pre></div>
         <div class="api-method" data-q="scale"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> BarChart::scale(Self) -&gt; Double</pre><p>What the tallest column is measured against.</p></div>
         <div class="api-method" data-q="set_bars"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> BarChart::set_bars(Self, Array[Bar]) -&gt; Unit</pre></div>
@@ -3742,7 +3742,7 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
         <div class="api-method" data-q="focusable"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Header::focusable(Self) -&gt; Bool</pre></div>
         <div class="api-method" data-q="handle"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Header::handle(Self, Ctx, Msg) -&gt; Bool</pre></div>
         <div class="api-method" data-q="hint"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Header::hint(Self, <span class="fn">@geom.</span>Size) -&gt; <span class="fn">@geom.</span>Size</pre></div>
-        <div class="api-method" data-q="new"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Header::new(String, note? : String, clock? : Clock?, style? : <span class="fn">@style.</span>Style) -&gt; Self</pre></div>
+        <div class="api-method" data-q="new"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Header::new(String, note? : String, clock? : Clock, style? : <span class="fn">@style.</span>Style) -&gt; Self</pre></div>
         <div class="api-method" data-q="render_line"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Header::render_line(Self, Int32, <span class="fn">@geom.</span>Size) -&gt; <span class="fn">@strip.</span>Strip</pre></div>
         <div class="api-method" data-q="set"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Header::set(Self, String) -&gt; Unit</pre></div>
         <div class="api-method" data-q="set_clock"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Header::set_clock(Self, Clock?) -&gt; Unit</pre><p>Give the bar a clock to keep, or take it away with <code>None</code>.</p></div>
@@ -4684,7 +4684,7 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
         <div class="api-method" data-q="focusable"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> StatefulTable::focusable(Self) -&gt; Bool</pre></div>
         <div class="api-method" data-q="handle"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> StatefulTable::handle(Self, Ctx, Msg) -&gt; Bool</pre></div>
         <div class="api-method" data-q="hint"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> StatefulTable::hint(Self, <span class="fn">@geom.</span>Size) -&gt; <span class="fn">@geom.</span>Size</pre></div>
-        <div class="api-method" data-q="new"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> StatefulTable::new(rows? : Array[Array[String]], header? : Array[String], state? : TableState, widths? : Array[Int32]?, style? : <span class="fn">@style.</span>Style, header_style? : <span class="fn">@style.</span>Style, highlight? : <span class="fn">@style.</span>Style, blurred_highlight? : <span class="fn">@style.</span>Style, column_highlight? : <span class="fn">@style.</span>Style) -&gt; Self</pre></div>
+        <div class="api-method" data-q="new"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> StatefulTable::new(rows? : Array[Array[String]], header? : Array[String], state? : TableState, widths? : Array[Int32], style? : <span class="fn">@style.</span>Style, header_style? : <span class="fn">@style.</span>Style, highlight? : <span class="fn">@style.</span>Style, blurred_highlight? : <span class="fn">@style.</span>Style, column_highlight? : <span class="fn">@style.</span>Style) -&gt; Self</pre></div>
         <div class="api-method" data-q="render_line"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> StatefulTable::render_line(Self, Int32, <span class="fn">@geom.</span>Size) -&gt; <span class="fn">@strip.</span>Strip</pre></div>
         <div class="api-method" data-q="rows"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> StatefulTable::rows(Self) -&gt; Array[Array[String]]</pre></div>
         <div class="api-method" data-q="set_header"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> StatefulTable::set_header(Self, Array[String]) -&gt; Unit</pre></div>

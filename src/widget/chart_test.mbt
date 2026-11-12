@@ -94,7 +94,7 @@ test "a bar chart stands a column for every bar" {
 test "a bar chart holds to a scale it is given" {
   let chart = @widget.BarChart::new(
     bars=[@widget.Bar::new("a", value=2.0), @widget.Bar::new("b", value=4.0)],
-    max=Some(8.0),
+    max=8.0,
     values=true,
   )
   let w : &@widget.Widget = chart
