@@ -166,10 +166,18 @@ fn Parser::step_ss3(self : Parser, out : Array[@event.Event]) -> Int32 {
     0x44 => Some(Left)
     0x48 => Some(Home)
     0x46 => Some(End)
+    0x4D => Some(Enter)
     0x50 => Some(F(1))
     0x51 => Some(F(2))
     0x52 => Some(F(3))
     0x53 => Some(F(4))
+    // A keypad whose function keys are letters rather than numbers.
+    0x74 => Some(F(5))
+    0x75 => Some(F(6))
+    0x76 => Some(F(7))
+    0x6C => Some(F(8))
+    0x77 => Some(F(9))
+    0x78 => Some(F(10))
     _ => None
   }
   if code is Some(c) {
@@ -189,6 +197,39 @@ priv struct Csi {
 
 ///|
 fn Parser::step_csi(self : Parser, out : Array[@event.Event]) -> Int32 {
+  // The Linux console spells F1..F5 as `CSI [ A` up to `CSI [ E`. In ECMA-48
+  // the `[` closes the sequence and the letter is text, so it is read here,
+  // before the scan, and only for the five letters that make it one.
+  if self.pending() >= 3 && self.at(2) == 0x5B {
+    // One more byte decides: five of them make the console's function keys,
+    // anything else leaves the `[` as the end of a sequence, as it always was.
+    if self.pending() < 4 {
+      return 0
+    }
+    match self.at(3) {
+      0x41 => {
+        out.push(Key(@event.Key::of(F(1))))
+        return 4
+      }
+      0x42 => {
+        out.push(Key(@event.Key::of(F(2))))
+        return 4
+      }
+      0x43 => {
+        out.push(Key(@event.Key::of(F(3))))
+        return 4
+      }
+      0x44 => {
+        out.push(Key(@event.Key::of(F(4))))
+        return 4
+      }
+      0x45 => {
+        out.push(Key(@event.Key::of(F(5))))
+        return 4
+      }
+      _ => ()
+    }
+  }
   match self.scan_csi() {
     None =>
       if self.pending() >= MAX_SEQ {

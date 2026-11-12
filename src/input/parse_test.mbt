@@ -352,3 +352,20 @@ test "reset drops whatever was half read" {
   p.idle(out)
   assert_eq(out, plain(Char(0x78)))
 }
+
+///|
+test "the console's function keys and the keypad that names them in letters" {
+  // The Linux console writes F1..F5 after a `[` of its own, which ECMA-48 would
+  // take for the end of the sequence.
+  assert_eq(parse(ascii("\u{1b}[[A")), [Key({ code: F(1), mods: no_mods, })])
+  assert_eq(parse(ascii("\u{1b}[[E")), [Key({ code: F(5), mods: no_mods, })])
+  assert_eq(parse_split(ascii("\u{1b}[[C")), [
+    Key({ code: F(3), mods: no_mods, }),
+  ])
+  // A keypad whose Enter and function keys are letters.
+  assert_eq(parse(ascii("\u{1b}OM")), [Key({ code: Enter, mods: no_mods, })])
+  assert_eq(parse(ascii("\u{1b}Ot")), [Key({ code: F(5), mods: no_mods, })])
+  assert_eq(parse(ascii("\u{1b}Ox")), [Key({ code: F(10), mods: no_mods, })])
+  // A `[` followed by anything else is still the sequence it was, then text.
+  assert_eq(parse(ascii("\u{1b}[[Z")), [Key({ code: Char(90), mods: no_mods, })])
+}
