@@ -136,7 +136,29 @@ moon test  --target all
 moon fmt && moon info --target all     # the diff must stay clean
 ```
 
-653 tests per backend, the same suite on wasm, wasm-gc, js and native, run on Ubuntu, macOS and Windows in CI. Every widget asserts the rows it draws, and every demo draws in a headless application.
+666 tests per backend, the same suite on wasm, wasm-gc, js and native, run on Ubuntu, macOS and Windows in CI. Every widget asserts the rows it draws, and every demo draws in a headless application.
+
+## Conformance
+
+Where something outside this library defines the answer, the answer is checked
+against that definition, and the checks live in the repository: `moon test`
+needs nothing but the toolchain.
+
+| What | Held to | Vectors |
+|:--|:--|:--|
+| Columns per code point | `wcwidth` 0.9.4 against CPython's `unicodedata` read through UAX #11 | every code point these two speak for: 291,782 |
+| Grapheme clusters | two independent implementations of UAX #29, `uniseg` and `regex`, for where a cluster starts, and `wcwidth` for its columns | 48 strings: marks, conjuncts, joiner sequences, flags, keycaps, wide forms |
+| Keys | the terminfo entries of xterm, screen, tmux, the Linux console, rxvt, vt100 and ansi | 168 sequences across eight terminals |
+| Frames | the bytes a frame is drawn with, read back by `pyte` and by `tmux` | 5 frames: attributes, wide characters, joined emoji, widgets, a redraw |
+
+`scripts/gen_conformance.py` writes the three vector files; `scripts/verify_terminals.py` hands the frame bytes to both emulators and compares the screens. Nothing is outstanding: no code point, cluster, key or frame in the vectors disagrees with its references.
+
+Two places where the references disagree with each other, or with the way a
+terminal draws a mark, are recorded in the vectors rather than argued about: a
+code point whose width the two references read differently is written with `-1`
+and not asserted, as is the column count of a string holding a spacing mark,
+whose cell this library draws inside the cluster and wcwidth counts on its own.
+The boundaries of those strings are still held to.
 
 ## Licence
 
