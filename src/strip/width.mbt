@@ -46,6 +46,16 @@ fn ascii_run(text : String) -> Bool {
 /// of its first emoji, and a Variation Selector 16 widens a text-style character to two, as
 /// terminals draw them. A control character takes none.
 pub fn clusters(text : String) -> Array[(Int32, Int32, Int32)] {
+  // A row of blocks or a frame is one cell per unit, and the segmenter is the
+  // most expensive thing in the library: a bar of seventy-eight blocks cost
+  // 690µs through it, which is a frame spent on a bar.
+  if simple_run(text) {
+    let out : Array[(Int32, Int32, Int32)] = []
+    for i in 0..<text.length() {
+      out.push((i, i + 1, 1))
+    }
+    return out
+  }
   let out = []
   if ascii_run(text) {
     for i in 0..<text.length() {
@@ -87,8 +97,26 @@ pub fn prev_cluster(text : String, index : Int32) -> Int32 {
 }
 
 ///|
+/// True when every unit is printable ASCII or a box-drawing or block glyph:
+/// one unit, one cell, no cluster and no width table. Bars, sparklines and
+/// frames are made of those, and asking the tables about them cost 690µs for a
+/// row of seventy-eight blocks against 24 nanoseconds for the same row of
+/// letters — a whole frame, spent on a bar.
+fn simple_run(text : String) -> Bool {
+  let mut i = 0
+  while i < text.length() {
+    let unit = text[i].to_int()
+    if unit < 0x20 || (unit >= 0x7F && (unit < 0x2500 || unit > 0x259F)) {
+      return false
+    }
+    i = i + 1
+  }
+  true
+}
+
+///|
 pub fn str_cells(text : String) -> Int32 {
-  if ascii_run(text) {
+  if simple_run(text) {
     return text.length()
   }
   let mut total = 0
