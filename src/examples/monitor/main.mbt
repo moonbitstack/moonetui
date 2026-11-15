@@ -2,30 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 ///|
-/// The stylesheet: base text colour, a chrome bar, framed panes, and a
-/// heavy border for whatever holds focus.
+/// The monitors wear the examples' sheet: the same frame, the same bar, the
+/// same blue as the rest of the directory.
 fn sheet() -> @design.Stylesheet {
-  let sheet = @design.Stylesheet::new()
-  sheet.add(
-    @design.Sel::new(),
-    @design.Styles::new(text=@style.Style::new(fg=@style.bright_white)),
-  )
-  sheet.add(
-    @design.Sel::new(name="Header"),
-    @design.Styles::new(text=@style.Style::new(bold=true, fg=@style.cyan)),
-  )
-  sheet.add(
-    @design.Sel::new(classes=["framed"]),
-    @design.Styles::new(
-      border=@design.Round,
-      padding=@geom.Spacing::horizontal(1),
-    ),
-  )
-  sheet.add(
-    @design.Sel::new(focus=true),
-    @design.Styles::new(border=@design.Heavy),
-  )
-  sheet
+  @theme.sheet()
 }
 
 ///|

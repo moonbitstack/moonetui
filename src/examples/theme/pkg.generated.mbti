@@ -1,0 +1,37 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "moonbitstack/moonetui/examples/theme"
+
+import {
+  "moonbitstack/moonetui/design",
+  "moonbitstack/moonetui/style",
+  "moonbitstack/moonetui/widget",
+}
+
+// Values
+pub let accent : @style.Colour
+
+pub let accent_alt : @style.Colour
+
+pub let bad : @style.Colour
+
+pub fn footer(Array[(String, String)]) -> @widget.Footer
+
+pub let good : @style.Colour
+
+pub fn header(String, note? : String) -> @widget.Header
+
+pub let ink : @style.Colour
+
+pub let muted : @style.Colour
+
+pub fn sheet() -> @design.Stylesheet
+
+pub let warn : @style.Colour
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits

@@ -2,34 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 ///|
-/// The demo's stylesheet: a header, a framed column, a bottom bar, and the
-/// heavy border that marks the widget with the keyboard.
+/// The demo wears the examples' sheet: the same header, the same frame, the
+/// same bar as every other screen in this directory.
 pub fn sheet() -> @design.Stylesheet {
-  let sheet = @design.Stylesheet::new()
-  sheet.add(
-    @design.Sel::new(),
-    @design.Styles::new(text=@style.Style::new(fg=@style.bright_white)),
-  )
-  sheet.add(
-    @design.Sel::new(name="Header"),
-    @design.Styles::new(text=@style.Style::new(bold=true, fg=@style.cyan)),
-  )
-  sheet.add(
-    @design.Sel::new(classes=["framed"]),
-    @design.Styles::new(
-      border=@design.Round,
-      padding=@geom.Spacing::horizontal(1),
-    ),
-  )
-  sheet.add(
-    @design.Sel::new(focus=true),
-    @design.Styles::new(border=@design.Heavy),
-  )
-  sheet.add(
-    @design.Sel::new(classes=["bar"]),
-    @design.Styles::new(dock=@design.Bottom),
-  )
-  sheet
+  @theme.sheet()
 }
 
 ///|
@@ -71,13 +47,13 @@ pub struct Demo {
 
 ///|
 pub fn Demo::new() -> Demo {
-  let head = @widget.Header::new("moonetui", note="esc · q to quit")
+  let head = @theme.header("moonetui", note="esc · q to quit")
   let list = @widget.ListView::new([
     "alpha", "beta", "gamma", "delta", "epsilon", "中文也对齐",
   ])
   let field = @widget.Input::new(placeholder="type here")
   let bar = @widget.Progress::new(total=100)
-  let foot = @widget.Footer::new([
+  let foot = @theme.footer([
     ("tab", "next"),
     ("up down", "move"),
     ("enter", "choose"),

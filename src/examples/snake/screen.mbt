@@ -2,23 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 ///|
-/// The stylesheet the game is drawn in: a cyan title, a docked bar of keys,
-/// and a heavy border around the playfield.
+/// The game wears the examples' sheet, so its title and its key bar sit where
+/// every other example puts them.
 pub fn sheet() -> @design.Stylesheet {
-  let sheet = @design.Stylesheet::new()
-  sheet.add(
-    @design.Sel::new(),
-    @design.Styles::new(text=@style.Style::new(fg=@style.bright_white)),
-  )
-  sheet.add(
-    @design.Sel::new(name="Header"),
-    @design.Styles::new(text=@style.Style::new(bold=true, fg=@style.cyan)),
-  )
-  sheet.add(
-    @design.Sel::new(classes=["bar"]),
-    @design.Styles::new(dock=@design.Bottom),
-  )
-  sheet
+  @theme.sheet()
 }
 
 ///|
@@ -33,8 +20,8 @@ pub struct Screen {
 ///|
 pub fn Screen::new() -> Screen {
   let board = Board::new()
-  let head = @widget.Header::new("snake", note="arrows turn · space pauses")
-  let foot = @widget.Footer::new([
+  let head = @theme.header("snake", note="arrows turn · space pauses")
+  let foot = @theme.footer([
     ("arrows", "turn"),
     ("space", "pause"),
     ("r", "again"),

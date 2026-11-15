@@ -192,27 +192,21 @@ pub fn Board::cell_at(self : Board, x : Int32, y : Int32) -> Int32 {
 }
 
 ///|
-let frame_style : @style.Style = @style.Style::new(fg=@style.cyan, dim=true)
+let frame_style : @style.Style = @style.Style::new(fg=@theme.accent, dim=true)
 
 ///|
-let head_style : @style.Style = @style.Style::new(
-  fg=@style.bright_green,
-  bold=true,
-)
+let head_style : @style.Style = @style.Style::new(fg=@theme.good, bold=true)
 
 ///|
-let body_style : @style.Style = @style.Style::new(fg=@style.green)
+let body_style : @style.Style = @style.Style::new(fg=@theme.good)
 
 ///|
-let food_style : @style.Style = @style.Style::new(
-  fg=@style.bright_red,
-  bold=true,
-)
+let food_style : @style.Style = @style.Style::new(fg=@theme.bad, bold=true)
 
 ///|
 let banner_style : @style.Style = @style.Style::new(
   fg=@style.black,
-  bg=@style.bright_yellow,
+  bg=@theme.warn,
   bold=true,
 )
 

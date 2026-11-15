@@ -1,0 +1,8 @@
+// The look every example wears: one palette, one sheet, and the two strips a
+// screen has at its edges.
+import {
+  "moonbitstack/moonetui/design",
+  "moonbitstack/moonetui/geom",
+  "moonbitstack/moonetui/style",
+  "moonbitstack/moonetui/widget",
+}

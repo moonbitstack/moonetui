@@ -4,9 +4,9 @@ import {
   "moonbitstack/moonetui/app",
   "moonbitstack/moonetui/design",
   "moonbitstack/moonetui/driver/native",
-  "moonbitstack/moonetui/geom",
   "moonbitstack/moonetui/layout",
   "moonbitstack/moonetui/style",
+  "moonbitstack/moonetui/examples/theme",
   "moonbitstack/moonetui/widget",
 }
 

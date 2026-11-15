@@ -4,15 +4,15 @@
 import {
   "moonbitstack/moonetui/app",
   "moonbitstack/moonetui/design",
-  "moonbitstack/moonetui/geom",
   "moonbitstack/moonetui/layout",
-  "moonbitstack/moonetui/style",
+  "moonbitstack/moonetui/examples/theme",
   "moonbitstack/moonetui/widget",
 }
 
 // The tests drive the demo through a scripted driver and read the frames back.
 import {
   "moonbitstack/moonetui/driver",
+  "moonbitstack/moonetui/geom",
   "moonbitlang/core/encoding/utf8",
   "moonbitlang/core/env",
 } for "test"
