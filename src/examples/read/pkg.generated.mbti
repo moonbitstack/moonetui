@@ -1,0 +1,34 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "moonbitstack/moonetui/examples/read"
+
+import {
+  "moonbitstack/moonetui/app",
+  "moonbitstack/moonetui/design",
+}
+
+// Values
+pub fn sheet() -> @design.Stylesheet
+
+// Errors
+
+// Types and methods
+pub struct Doc {
+  mut top : Int32
+  mut height : Int32
+}
+pub fn Doc::lines() -> Int32
+pub fn Doc::new() -> Self
+pub fn Doc::scroll(Self, Int32) -> Unit
+pub fn Doc::to_end(Self) -> Unit
+pub fn Doc::to_start(Self) -> Unit
+pub fn Doc::top(Self) -> Int32
+
+pub struct Screen {
+  root : @app.Node
+  doc : Doc
+}
+pub fn Screen::new() -> Self
+
+// Type aliases
+
+// Traits
