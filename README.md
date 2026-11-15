@@ -60,6 +60,7 @@ moon run --target native src/examples/boxes/main    # containers, their stats, a
 moon run --target native src/examples/prs/main      # pull requests, checks, a merge
 moon run --target native src/examples/tunes/main    # a player: spectrum, needle, album
 moon run --target native src/examples/drift/main    # a trader on six ports, with a chart
+moon run --target native src/examples/mon/main      # a route, a party, a wild thing in the grass
 moon run --target js src/examples/hello         # under Node
 moon run --target native src/examples/uart      # whole frames of plain text, as a serial line gets them
 moon run --target native dbmux/src/main -- --demo   # a database client, with a SQLite demo database
@@ -170,6 +171,7 @@ Each one has its keyboard contract, message shape and tests, and a live demo on 
 | `examples/prs` | Pull requests with their checks, a card for the chosen one, a merge |
 | `examples/tunes` | A record playing: a spectrum, a needle, the album behind it |
 | `examples/drift` | Six ports on a chart: prices, a hold, fuel, and a logbook |
+| `examples/mon` | A route to walk, a party of three, and fights in the tall grass |
 
 ## Standards
 

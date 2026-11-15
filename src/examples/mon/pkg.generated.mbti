@@ -1,0 +1,69 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "moonbitstack/moonetui/examples/mon"
+
+import {
+  "moonbitstack/moonetui/app",
+  "moonbitstack/moonetui/design",
+}
+
+// Values
+pub const TALL : Int32 = 8
+
+pub const WIDE : Int32 = 20
+
+pub fn sheet() -> @design.Stylesheet
+
+// Errors
+
+// Types and methods
+pub struct Beast {
+  name : String
+  mut level : Int32
+  mut hp : Int32
+  most : Int32
+}
+
+pub struct Field {
+  mut x : Int32
+  mut y : Int32
+  mut steps : Int32
+  party : Array[Beast]
+  mut lead : Int32
+  mut mode : Mode
+  mut enemy : String
+  mut enemy_hp : Int32
+  mut enemy_most : Int32
+  mut turn : Int32
+  mut log : Array[String]
+  mut caught : Int32
+  mut seen : Int32
+  badges : Int32
+  mut potions : Int32
+}
+pub fn Field::flee(Self) -> Unit
+pub fn Field::heal(Self) -> Unit
+pub fn Field::lead_beast(Self) -> Beast
+pub fn Field::new() -> Self
+pub fn Field::rest(Self) -> Unit
+pub fn Field::strike(Self) -> Unit
+pub fn Field::tile(Self, Int32, Int32) -> String
+pub fn Field::walk(Self, Int32, Int32) -> Unit
+
+#derive(Eq)
+pub(all) enum Mode {
+  Walk
+  Fight
+  Won
+}
+pub fn Mode::equal(Self, Self) -> Bool
+pub fn Mode::not_equal(Self, Self) -> Bool
+
+pub struct Screen {
+  root : @app.Node
+  field : Field
+}
+pub fn Screen::new() -> Self
+
+// Type aliases
+
+// Traits
