@@ -109,14 +109,14 @@ jobs:
             cat "$RUNNER_TEMP/app.txt"; exit 1; }
           grep '^interop' "$RUNNER_TEMP/app.txt" > "$RUNNER_TEMP/frames.txt"
 
-          MOONETUI_INTEROP=1 moon test --target native -p moonbitstack/moonetui/examples/dbmux > "$RUNNER_TEMP/demo.txt" 2>&1 || {
-            cat "$RUNNER_TEMP/demo.txt"; exit 1; }
-          grep '^interop' "$RUNNER_TEMP/demo.txt" >> "$RUNNER_TEMP/frames.txt"
-
-          MOONETUI_INTEROP=1 moon test --target native -p moonbitstack/moonetui/examples/snake > "$RUNNER_TEMP/snake.txt" 2>&1 || {
-            cat "$RUNNER_TEMP/snake.txt"; exit 1; }
-          grep '^interop' "$RUNNER_TEMP/snake.txt" >> "$RUNNER_TEMP/frames.txt"
-          grep -c 'tui/' "$RUNNER_TEMP/frames.txt"
+          # Every program under examples that has a frame test: the demo, the
+          # two games and the dashboard.
+          for example in dbmux snake life game2048 pulse; do
+            MOONETUI_INTEROP=1 moon test --target native -p "moonbitstack/moonetui/examples/$example" > "$RUNNER_TEMP/$example.txt" 2>&1 || {
+              cat "$RUNNER_TEMP/$example.txt"; exit 1; }
+            grep '^interop' "$RUNNER_TEMP/$example.txt" >> "$RUNNER_TEMP/frames.txt"
+          done
+          grep -c 'interop' "$RUNNER_TEMP/frames.txt"
 
           python3 scripts/verify_terminals.py --in "$RUNNER_TEMP/frames.txt"
 

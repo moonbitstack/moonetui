@@ -1,0 +1,35 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "moonbitstack/moonetui/examples/pulse"
+
+import {
+  "moonbitstack/moonetui/app",
+  "moonbitstack/moonetui/design",
+}
+
+// Values
+pub fn sheet() -> @design.Stylesheet
+
+// Errors
+
+// Types and methods
+pub struct Pulse {
+  cols : Int32
+  rows : Int32
+  samples : Array[Int32]
+  mut at : Int32
+  mut paused : Bool
+}
+pub fn Pulse::latest(Self) -> Int32
+pub fn Pulse::new(cols? : Int32, rows? : Int32) -> Self
+pub fn Pulse::tick(Self) -> Unit
+pub fn Pulse::toggle(Self) -> Unit
+
+pub struct Screen {
+  root : @app.Node
+  pulse : Pulse
+}
+pub fn Screen::new() -> Self
+
+// Type aliases
+
+// Traits

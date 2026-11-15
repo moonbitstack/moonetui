@@ -1,0 +1,39 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "moonbitstack/moonetui/examples/life"
+
+import {
+  "moonbitstack/moonetui/app",
+  "moonbitstack/moonetui/design",
+}
+
+// Values
+pub fn sheet() -> @design.Stylesheet
+
+// Errors
+
+// Types and methods
+pub struct Field {
+  cols : Int32
+  rows : Int32
+  mut cells : Array[Bool]
+  mut gen : Int32
+  mut running : Bool
+}
+pub fn Field::alive(Self) -> Int32
+pub fn Field::alive_at(Self, Int32, Int32) -> Bool
+pub fn Field::gen(Self) -> Int32
+pub fn Field::new(cols? : Int32, rows? : Int32) -> Self
+pub fn Field::running(Self) -> Bool
+pub fn Field::seed(Self) -> Unit
+pub fn Field::step(Self) -> Unit
+pub fn Field::toggle(Self) -> Unit
+
+pub struct Screen {
+  root : @app.Node
+  field : Field
+}
+pub fn Screen::new() -> Self
+
+// Type aliases
+
+// Traits

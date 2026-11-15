@@ -1,0 +1,43 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "moonbitstack/moonetui/examples/game2048"
+
+import {
+  "moonbitstack/moonetui/app",
+  "moonbitstack/moonetui/design",
+}
+
+// Values
+pub fn sheet() -> @design.Stylesheet
+
+// Errors
+
+// Types and methods
+pub struct Board {
+  grid : Grid
+}
+
+pub struct Grid {
+  mut cells : Array[Int32]
+  mut score : Int32
+  mut over : Bool
+  mut won : Bool
+  mut cursor : Int32
+}
+pub fn Grid::cell(Self, Int32, Int32) -> Int32
+pub fn Grid::fill(Self, Array[Int32]) -> Unit
+pub fn Grid::new() -> Self
+pub fn Grid::over(Self) -> Bool
+pub fn Grid::restart(Self) -> Unit
+pub fn Grid::score(Self) -> Int32
+pub fn Grid::slide(Self, Int32) -> Unit
+pub fn Grid::won(Self) -> Bool
+
+pub struct Screen {
+  root : @app.Node
+  grid : Grid
+}
+pub fn Screen::new() -> Self
+
+// Type aliases
+
+// Traits
