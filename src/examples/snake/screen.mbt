@@ -20,7 +20,10 @@ pub struct Screen {
 ///|
 pub fn Screen::new() -> Screen {
   let board = Board::new()
-  let head = @theme.header("snake", note="arrows turn · space pauses")
+  let head = @theme.header(
+    "snake",
+    note="space starts · arrows turn · esc quits",
+  )
   let foot = @theme.footer([
     ("arrows", "turn"),
     ("space", "pause"),
@@ -29,7 +32,7 @@ pub fn Screen::new() -> Screen {
   ])
   let root = @app.column(0, [
     @app.leaf(1, head, box=@layout.Box::new(extent=Cells(1)), name="Header"),
-    @app.leaf(2, board, box=@layout.Box::new(extent=Cells(board.rows() + 2))),
+    @app.leaf(2, board, box=@layout.Box::new(extent=Frac(1))),
     @app.leaf(3, foot, box=@layout.Box::new(extent=Cells(1)), classes=["bar"]),
   ])
   { root, board, }

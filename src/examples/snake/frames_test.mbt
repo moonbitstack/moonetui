@@ -2,8 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 ///|
-/// The UTF-16 units of `text` as hex, so what this test hands over survives
-/// the trip through a test runner unchanged.
 fn hex16(text : String) -> String {
   let out = StringBuilder()
   let digit = fn(v : Int32) {
@@ -24,8 +22,6 @@ fn hex16(text : String) -> String {
 }
 
 ///|
-/// Whether frames are announced at all: `moon test` prints a report, and CI
-/// sets `MOONETUI_INTEROP` to read the frames themselves.
 fn interop_wanted() -> Bool {
   match @env.get_env_var("MOONETUI_INTEROP") {
     Some(_) => true
@@ -34,8 +30,6 @@ fn interop_wanted() -> Bool {
 }
 
 ///|
-/// Announces one frame of the game: its name, the emulators that can model it,
-/// the bytes written since the game started, and the rows it is meant to show.
 fn announce(
   name : String,
   size : @geom.Size,
@@ -63,8 +57,6 @@ fn announce(
 }
 
 ///|
-/// Draws the screen as it stands and announces it, so two emulators can be
-/// asked what the same bytes show.
 fn shot(
   ui : @app.App[@driver.Headless],
   driver : @driver.Headless,
@@ -80,7 +72,7 @@ fn shot(
 }
 
 ///|
-test "a game is played key by key, and every frame says which" {
+test "a game has a title, a run, sparks, and a score screen" {
   let size = @geom.Size::new(80, 24)
   let screen = @snake.Screen::new()
   let board = screen.board
@@ -92,44 +84,44 @@ test "a game is played key by key, and every frame says which" {
   ui.start()
   total.write_string(driver.output())
   driver.clear_output()
-  announce("snake/00 open", size, total.to_string(), ui.screen())
+  announce("snake/00 title", size, total.to_string(), ui.screen())
+  // A game opens on its title, with no snake on the field.
+  assert_true(board.phase() == @snake.Title)
+  board.start()
   assert_true(board.phase() == @snake.Playing)
   assert_eq(board.length(), 3)
-  // Three cells in the middle, heading right: the apple is four cells ahead.
-  assert_eq(board.head(), (15, 6))
-  assert_eq(board.food_at(), (19, 6))
-  // Two frames of the clock: the head is two cells further right, same length.
-  board.step()
-  board.step()
-  shot(ui, driver, total, "snake/01 moving", size)
-  assert_eq(board.head(), (17, 6))
-  assert_eq(board.length(), 3)
-  // The apple is put where the head will be, so the next frame takes it.
+  assert_eq(board.head(), (23, 8))
+  shot(ui, driver, total, "snake/01 playing", size)
+  // The apple is put where the head will be: eating it throws six sparks.
   let (x, y) = board.head()
   board.place_food(board.cell_at(x + 1, y))
   board.step()
-  shot(ui, driver, total, "snake/02 ate", size)
   assert_eq(board.score(), 1)
-  assert_eq(board.length(), 4)
-  // Pause: the board says so, and the clock no longer moves the snake.
+  assert_eq(board.sparks(), 6)
+  shot(ui, driver, total, "snake/02 ate", size)
+  // The sparks burn out in four frames of the clock.
+  for _ in 0..<4 {
+    board.drift()
+  }
+  assert_eq(board.sparks(), 0)
+  // Paused: the clock stops, and the field says so.
   board.toggle_pause()
-  shot(ui, driver, total, "snake/03 paused", size)
+  let held = board.head()
   board.step()
-  assert_eq(board.head(), (18, 6))
-  assert_true(board.phase() == @snake.Paused)
+  assert_eq(board.head(), held)
+  shot(ui, driver, total, "snake/03 paused", size)
   board.toggle_pause()
-  // Up, into the top wall: the game ends, and the screen says how it ended.
+  // Into the top wall: the run ends, and the score screen names the score.
   board.turn(0)
   for _ in 0..<12 {
     board.step()
   }
-  shot(ui, driver, total, "snake/04 over", size)
   assert_true(board.phase() == @snake.Over)
-  assert_true(board.score() >= 1)
-  // Again: a new game, in the middle, with nothing eaten yet.
-  board.restart()
-  shot(ui, driver, total, "snake/05 again", size)
+  shot(ui, driver, total, "snake/04 over", size)
+  assert_eq(board.best(), 1)
+  // Again, from the score screen.
+  board.start()
   assert_true(board.phase() == @snake.Playing)
   assert_eq(board.score(), 0)
-  assert_eq(board.length(), 3)
+  shot(ui, driver, total, "snake/05 again", size)
 }

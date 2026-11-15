@@ -16,6 +16,7 @@ fn main raise {
   // One step every 110 ms: fast enough to feel alive, slow enough to steer.
   ui.every(110, () => {
     screen.board.step()
+    screen.board.drift()
     ui.refresh()
   })
   @native.run(() => ui.step())

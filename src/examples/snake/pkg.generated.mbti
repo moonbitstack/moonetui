@@ -21,10 +21,14 @@ pub struct Board {
   mut food : Int32
   mut phase : Phase
   mut score : Int32
+  mut best : Int32
   mut cursor : Int32
+  mut sparks : Array[Spark]
 }
+pub fn Board::best(Self) -> Int32
 pub fn Board::cell_at(Self, Int32, Int32) -> Int32
 pub fn Board::cols(Self) -> Int32
+pub fn Board::drift(Self) -> Unit
 pub fn Board::food_at(Self) -> (Int32, Int32)
 pub fn Board::head(Self) -> (Int32, Int32)
 pub fn Board::length(Self) -> Int32
@@ -34,12 +38,15 @@ pub fn Board::place_food(Self, Int32) -> Unit
 pub fn Board::restart(Self) -> Unit
 pub fn Board::rows(Self) -> Int32
 pub fn Board::score(Self) -> Int32
+pub fn Board::sparks(Self) -> Int32
+pub fn Board::start(Self) -> Unit
 pub fn Board::step(Self) -> Unit
 pub fn Board::toggle_pause(Self) -> Unit
 pub fn Board::turn(Self, Int32) -> Unit
 
 #derive(Eq)
 pub(all) enum Phase {
+  Title
   Playing
   Paused
   Over
@@ -52,6 +59,14 @@ pub struct Screen {
   board : Board
 }
 pub fn Screen::new() -> Self
+
+pub(all) struct Spark {
+  x : Double
+  y : Double
+  dx : Double
+  dy : Double
+  mut life : Int32
+}
 
 // Type aliases
 
