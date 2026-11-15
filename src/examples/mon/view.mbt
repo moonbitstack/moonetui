@@ -335,11 +335,7 @@ fn Field::party_row(self : Field, at : Int32, inner : Int32) -> @strip.Strip {
 ///|
 /// The band under the panels: the fight while it lasts, and the last four lines
 /// of what has happened when it does not.
-fn Field::battle_row(
-  self : Field,
-  at : Int32,
-  width : Int32,
-) -> @strip.Strip {
+fn Field::battle_row(self : Field, at : Int32, width : Int32) -> @strip.Strip {
   let inner = width - 2
   let lead = self.party[self.lead]
   if self.mode == Walk {

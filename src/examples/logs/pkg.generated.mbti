@@ -1,0 +1,62 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "moonbitstack/moonetui/examples/logs"
+
+import {
+  "moonbitstack/moonetui/app",
+  "moonbitstack/moonetui/design",
+}
+
+// Values
+pub fn sheet() -> @design.Stylesheet
+
+// Errors
+
+// Types and methods
+#derive(Eq)
+pub(all) enum Level {
+  Info
+  Warn
+  Error
+}
+pub fn Level::equal(Self, Self) -> Bool
+pub fn Level::not_equal(Self, Self) -> Bool
+
+pub struct Line {
+  number : Int32
+  at : String
+  level : Level
+  text : String
+}
+
+pub struct Screen {
+  root : @app.Node
+  tail : Tail
+}
+pub fn Screen::new() -> Self
+
+pub struct Tail {
+  lines : Array[Line]
+  levels : Array[Bool]
+  mut cursor : Int32
+  mut follow : Bool
+  mut typing : Bool
+  mut query : String
+  mut note : String
+}
+pub fn Tail::begin(Self) -> Unit
+pub fn Tail::clear(Self) -> Unit
+pub fn Tail::count(Self, Level) -> Int32
+pub fn Tail::hold(Self) -> Unit
+pub fn Tail::letter(Self, Int32) -> Unit
+pub fn Tail::map_at(Self, Int32, Int32) -> Level?
+pub fn Tail::new() -> Self
+pub fn Tail::next_error(Self) -> Unit
+pub fn Tail::rub(Self) -> Unit
+pub fn Tail::settle(Self) -> Unit
+pub fn Tail::toggle(Self, Int32) -> Unit
+pub fn Tail::visible(Self) -> Array[Int32]
+pub fn Tail::walk(Self, Int32) -> Unit
+
+// Type aliases
+
+// Traits
