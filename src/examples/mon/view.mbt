@@ -339,7 +339,6 @@ fn Field::battle_row(
   self : Field,
   at : Int32,
   width : Int32,
-  height : Int32,
 ) -> @strip.Strip {
   let inner = width - 2
   let lead = self.party[self.lead]
