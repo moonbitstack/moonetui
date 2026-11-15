@@ -1,0 +1,75 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "moonbitstack/moonetui/examples/prs"
+
+import {
+  "moonbitstack/moonetui/app",
+  "moonbitstack/moonetui/design",
+}
+
+// Values
+pub fn sheet() -> @design.Stylesheet
+
+// Errors
+
+// Types and methods
+pub struct Board {
+  pulls : Array[Pull]
+  mut pick : Int32
+  mut open : Bool
+  mut note : String
+  activity : Array[String]
+}
+pub fn Board::count(Self, Review) -> Int32
+pub fn Board::fold(Self) -> Unit
+pub fn Board::merge(Self) -> Unit
+pub fn Board::new() -> Self
+pub fn Board::number_of(Self, Int32) -> Int32
+pub fn Board::open_card(Self) -> Bool
+pub fn Board::pick(Self) -> Int32
+pub fn Board::review_of(Self, Int32) -> Review
+pub fn Board::shift(Self, Int32) -> Unit
+
+#derive(Eq)
+pub(all) enum Check {
+  Pass
+  Pending
+  Fail
+}
+pub fn Check::equal(Self, Self) -> Bool
+pub fn Check::not_equal(Self, Self) -> Bool
+
+pub struct Pull {
+  number : Int32
+  title : String
+  author : String
+  checks : Array[Check]
+  mut review : Review
+  branch : String
+  added : Int32
+  removed : Int32
+  files : Int32
+  commits : Int32
+  comments : Int32
+  age : String
+}
+
+#derive(Eq)
+pub(all) enum Review {
+  Approved
+  Waiting
+  Changes
+  Draft
+  Merged
+}
+pub fn Review::equal(Self, Self) -> Bool
+pub fn Review::not_equal(Self, Self) -> Bool
+
+pub struct Screen {
+  root : @app.Node
+  board : Board
+}
+pub fn Screen::new() -> Self
+
+// Type aliases
+
+// Traits
