@@ -1,0 +1,31 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "moonbitstack/moonetui/examples/files"
+
+import {
+  "moonbitstack/moonetui/app",
+  "moonbitstack/moonetui/design",
+}
+
+// Values
+pub fn sheet() -> @design.Stylesheet
+
+// Errors
+
+// Types and methods
+pub struct Files {
+  path : Array[Int32]
+  mut at : Int32
+}
+pub fn Files::depth(Self) -> Int32
+pub fn Files::new() -> Self
+pub fn Files::selection(Self) -> String
+
+pub struct Screen {
+  root : @app.Node
+  files : Files
+}
+pub fn Screen::new() -> Self
+
+// Type aliases
+
+// Traits
