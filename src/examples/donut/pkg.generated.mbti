@@ -19,6 +19,8 @@ pub struct Donut {
   mut b : Double
   mut paused : Bool
   mut frame : Array[String]
+  mut levels : Array[Int32]
+  mut ghost : Array[Int32]
 }
 pub fn Donut::angle(Self) -> Double
 pub fn Donut::frame(Self) -> Array[String]

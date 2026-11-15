@@ -23,7 +23,10 @@ pub struct Grid {
   mut won : Bool
   mut cursor : Int32
   flashes : Array[Int32]
+  mut started : Bool
+  mut best : Int32
 }
+pub fn Grid::best(Self) -> Int32
 pub fn Grid::cell(Self, Int32, Int32) -> Int32
 pub fn Grid::decay(Self) -> Unit
 pub fn Grid::fill(Self, Array[Int32]) -> Unit
@@ -34,6 +37,8 @@ pub fn Grid::restart(Self) -> Unit
 pub fn Grid::rows(Self) -> Int32
 pub fn Grid::score(Self) -> Int32
 pub fn Grid::slide(Self, Int32) -> Unit
+pub fn Grid::start(Self) -> Unit
+pub fn Grid::started(Self) -> Bool
 pub fn Grid::won(Self) -> Bool
 
 pub struct Screen {

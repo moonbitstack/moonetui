@@ -60,14 +60,18 @@ fn tile(value : Int32, width : Int32, flashing : Bool) -> @strip.Strip {
 }
 
 ///|
+
+///|
 impl @widget.Widget for Board with fn render_line(self, row, size) {
   if row == 4 {
     let word = if self.grid.over() {
-      "over — r"
+      "game over · r"
+    } else if !self.grid.started() {
+      "arrows to play · best " + self.grid.best().to_string()
     } else if self.grid.won() {
-      "2048 — r"
+      "2048 · r"
     } else {
-      "arrows · r"
+      "arrows slide · r restarts"
     }
     return @strip.Strip::of(
       "score " + self.grid.score().to_string() + " · " + word,

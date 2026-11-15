@@ -13,6 +13,8 @@ pub struct Grid {
   // A merge leaves a light on the cell it happened at: three frames of fade,
   // counted down by the clock, so the eye can see what just changed.
   flashes : Array[Int32]
+  mut started : Bool
+  mut best : Int32
 }
 
 ///|
@@ -29,12 +31,39 @@ pub fn Grid::new() -> Grid {
   for _ in 0..<16 {
     flashes.push(0)
   }
-  { cells, score: 0, over: false, won: false, cursor: 5, flashes, }
+  {
+    cells,
+    score: 0,
+    over: false,
+    won: false,
+    cursor: 5,
+    flashes,
+    started: false,
+    best: 0,
+  }
 }
 
 ///|
 pub fn Grid::cell(self : Grid, x : Int32, y : Int32) -> Int32 {
   self.cells[y * 4 + x]
+}
+
+///|
+
+///|
+pub fn Grid::started(self : Grid) -> Bool {
+  self.started
+}
+
+///|
+pub fn Grid::best(self : Grid) -> Int32 {
+  self.best
+}
+
+///|
+/// Open the board: the first slide is the first move, and the title steps aside.
+pub fn Grid::start(self : Grid) -> Unit {
+  self.started = true
 }
 
 ///|
@@ -88,6 +117,7 @@ pub fn Grid::restart(self : Grid) -> Unit {
   self.score = 0
   self.over = false
   self.won = false
+  self.started = true
   for i in 0..<16 {
     self.flashes[i] = 0
   }
@@ -163,6 +193,7 @@ pub fn Grid::slide(self : Grid, dir : Int32) -> Unit {
   if self.over {
     return
   }
+  self.started = true
   let mut moved = false
   for index in 0..<4 {
     let before = line_of(self, dir, index)
@@ -174,6 +205,9 @@ pub fn Grid::slide(self : Grid, dir : Int32) -> Unit {
     }
     if gained > 0 {
       self.score = self.score + gained
+      if self.score > self.best {
+        self.best = self.score
+      }
       // Light the cells the merge landed in.
       for step in 0..<4 {
         if after[step] != 0 && (step == 0 || before[step] != after[step]) {
