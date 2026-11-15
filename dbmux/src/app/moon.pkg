@@ -1,0 +1,10 @@
+// The state machine: what a key does, and what the host then has to run.
+import {
+  "moonbitstack/dbmux/config",
+  "moonbitstack/dbmux/db",
+  "moonbitstack/dbmux/keymap",
+  "moonbitstack/dbmux/sqlkit",
+  "moonbitstack/dbmux/table",
+}
+
+supported_targets = "native"

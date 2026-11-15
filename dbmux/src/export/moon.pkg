@@ -1,0 +1,8 @@
+// A page of a table written as CSV or JSON.
+import {
+  "moonbitlang/core/json",
+  "moonbitstack/moonjson",
+  "moonbitstack/dbmux/table",
+}
+
+supported_targets = "native"

@@ -1,0 +1,7 @@
+// The table model: a page of rows, what the reader changed, and the
+// statements a save runs.
+import {
+  "moonbitstack/dbmux/sqlkit",
+}
+
+supported_targets = "native"

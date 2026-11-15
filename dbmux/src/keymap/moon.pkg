@@ -1,0 +1,9 @@
+// The bindings: every action, its default keys, and a file that changes them.
+import {
+  "moonbitlang/core/json",
+  "moonbitstack/moontoml",
+  "moonbitstack/moonetui/event",
+  "moonbitstack/dbmux/config",
+}
+
+supported_targets = "native"

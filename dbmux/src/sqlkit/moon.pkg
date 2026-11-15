@@ -1,0 +1,4 @@
+// Statement-level helpers: identifier quoting, statement splitting, and the
+// classification that decides whether a run is refused or confirmed.
+
+supported_targets = "native"

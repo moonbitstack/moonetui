@@ -1,0 +1,8 @@
+// The connection file: one [[connection]] per database, read from TOML.
+import {
+  "moonbitlang/core/json",
+  "moonbitstack/moontoml",
+  "moonbitstack/dbmux/sqlkit",
+}
+
+supported_targets = "native"

@@ -1,0 +1,15 @@
+// The live connection: one variant per driver, and the catalog each engine
+// keeps its own way.
+import {
+  "moonbitlang/core/string",
+  "moonbitstack/moondb",
+  "moonbitstack/moonmysql/client",
+  "moonbitstack/moonpostgres",
+  "moonbitstack/moonsqlite",
+  "moonbitstack/moonsqls",
+  "moonbitstack/dbmux/config",
+  "moonbitstack/dbmux/sqlkit",
+  "moonbitstack/dbmux/table",
+}
+
+supported_targets = "native"
