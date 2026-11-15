@@ -1,0 +1,97 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "moonbitstack/moonetui/examples/cards"
+
+import {
+  "moonbitstack/moonetui/app",
+  "moonbitstack/moonetui/design",
+}
+
+// Values
+pub const COLUMNS : Int32 = 7
+
+pub const RANKS : Int32 = 13
+
+pub const SUITS : Int32 = 4
+
+pub fn deal_shape() -> Array[(Int32, Int32)]
+
+pub fn make_deck() -> Array[Card]
+
+pub fn sheet() -> @design.Stylesheet
+
+// Errors
+
+// Types and methods
+pub struct Card {
+  rank : Int32
+  suit : Int32
+  up : Bool
+}
+pub fn Card::face_text(Self) -> String
+pub fn Card::mark(Self) -> String
+pub fn Card::name(Self) -> String
+pub fn Card::new(Int32, Int32, Bool) -> Self
+pub fn Card::rank_text(Self) -> String
+pub fn Card::red(Self) -> Bool
+
+#derive(Eq)
+pub(all) enum Phase {
+  Title
+  Playing
+  Won
+}
+pub fn Phase::equal(Self, Self) -> Bool
+pub fn Phase::not_equal(Self, Self) -> Bool
+
+pub struct Screen {
+  root : @app.Node
+  table : Table
+}
+pub fn Screen::new() -> Self
+
+type Snap
+
+pub struct Table {
+  mut stock : Array[Card]
+  mut waste : Array[Card]
+  mut found : Array[Array[Card]]
+  mut piles : Array[Array[Card]]
+  mut pick : Int32
+  mut depth : Int32
+  mut holding : Bool
+  mut origin : Int32
+  mut hold_from : Int32
+  mut score : Int32
+  mut moves : Int32
+  mut passes : Int32
+  mut clock : Int32
+  mut cheer : Int32
+  mut phase : Phase
+  mut note : String
+  mut history : Array[Snap]
+}
+pub fn Table::accepts(Self, Int32, Card) -> Bool
+pub fn Table::aim(Self, Int32) -> Unit
+pub fn Table::clock(Self) -> Int32
+pub fn Table::deal(Self) -> Unit
+pub fn Table::draw(Self) -> Unit
+pub fn Table::grab(Self) -> Unit
+pub fn Table::holding(Self) -> Bool
+pub fn Table::home(Self) -> Unit
+pub fn Table::home_count(Self) -> Int32
+pub fn Table::jump(Self, Int32) -> Unit
+pub fn Table::lift(Self, Int32) -> Unit
+pub fn Table::moves(Self) -> Int32
+pub fn Table::new() -> Self
+pub fn Table::note(Self) -> String
+pub fn Table::phase(Self) -> Phase
+pub fn Table::pick(Self) -> Int32
+pub fn Table::pile(Self, Int32) -> Array[Card]
+pub fn Table::place(Self) -> Unit
+pub fn Table::score(Self) -> Int32
+pub fn Table::tick(Self, Int32) -> Unit
+pub fn Table::undo(Self) -> Unit
+
+// Type aliases
+
+// Traits
