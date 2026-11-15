@@ -11,14 +11,25 @@ pub struct Field {
   mut cells : Array[Bool]
   mut gen : Int32
   mut running : Bool
+  mut started : Bool
+  mut peak : Int32
 }
 
 ///|
 /// Three figures a reader can recognise: a glider that walks, a blinker that
 /// pulses, and a block that sits still.
-pub fn Field::new(cols~ : Int32 = 46, rows~ : Int32 = 14) -> Field {
-  let field : Field = { cols, rows, cells: [], gen: 0, running: true, }
+pub fn Field::new(cols~ : Int32 = 44, rows~ : Int32 = 14) -> Field {
+  let field : Field = {
+    cols,
+    rows,
+    cells: [],
+    gen: 0,
+    running: false,
+    started: false,
+    peak: 0,
+  }
   field.seed()
+  field.running = false
   field
 }
 
@@ -37,7 +48,6 @@ pub fn Field::seed(self : Field) -> Unit {
   }
   self.cells = cells
   self.gen = 0
-  self.running = true
   // A glider, walking down and right.
   put(self, 2, 2)
   put(self, 3, 3)
@@ -53,11 +63,25 @@ pub fn Field::seed(self : Field) -> Unit {
   put(self, 31, 9)
   put(self, 30, 10)
   put(self, 31, 10)
+  self.peak = self.alive()
+  if self.started {
+    self.running = true
+  }
 }
 
 ///|
 pub fn Field::gen(self : Field) -> Int32 {
   self.gen
+}
+
+///|
+pub fn Field::peak(self : Field) -> Int32 {
+  self.peak
+}
+
+///|
+pub fn Field::started(self : Field) -> Bool {
+  self.started
 }
 
 ///|
@@ -79,6 +103,13 @@ pub fn Field::alive_at(self : Field, x : Int32, y : Int32) -> Bool {
 ///|
 pub fn Field::running(self : Field) -> Bool {
   self.running
+}
+
+///|
+/// Open the field: from here the clock runs and the generations count.
+pub fn Field::start(self : Field) -> Unit {
+  self.started = true
+  self.running = true
 }
 
 ///|
@@ -107,7 +138,7 @@ fn Field::neighbours(self : Field, x : Int32, y : Int32) -> Int32 {
 ///|
 /// One generation. A paused field keeps its cells and its generation count.
 pub fn Field::step(self : Field) -> Unit {
-  if !self.running {
+  if !self.started || !self.running {
     return
   }
   let next : Array[Bool] = []
@@ -120,6 +151,10 @@ pub fn Field::step(self : Field) -> Unit {
   }
   self.cells = next
   self.gen = self.gen + 1
+  let now = self.alive()
+  if now > self.peak {
+    self.peak = now
+  }
 }
 
 ///|
@@ -129,36 +164,100 @@ let alive_style : @style.Style = @style.Style::new(fg=@theme.accent, bold=true)
 let dead_style : @style.Style = @style.Style::new(fg=@theme.muted)
 
 ///|
-let note_style : @style.Style = @style.Style::new(fg=@theme.muted)
+let hud_style : @style.Style = @style.Style::new(fg=@theme.muted)
+
+///|
+let value_style : @style.Style = @style.Style::new(fg=@theme.ink, bold=true)
+
+///|
+let title_style : @style.Style = @style.Style::new(fg=@theme.accent, bold=true)
+
+///|
+let blank_style : @style.Style = @style.Style::new()
+
+///|
+fn centred(text : String, width : Int32, style : @style.Style) -> @strip.Strip {
+  let pad = (width - @strip.str_cells(text)) / 2
+  if pad <= 0 {
+    return @strip.Strip::of(text, style)
+  }
+  @strip.Strip::join([
+    @strip.Strip::blank(pad, blank_style),
+    @strip.Strip::of(text, style),
+  ])
+}
+
+///|
+/// What the field says on the line above it, and on the title, one row each.
+fn Field::scene_line(self : Field, row : Int32) -> (String, @style.Style)? {
+  let middle = self.rows / 2
+  if self.started {
+    return None
+  }
+  if row == middle - 1 {
+    Some(("L I F E", title_style))
+  } else if row == middle + 1 {
+    Some(("space to start", hud_style))
+  } else if row == middle + 2 {
+    Some(("glider · blinker · block", hud_style))
+  } else {
+    None
+  }
+}
 
 ///|
 impl @widget.Widget for Field with fn render_line(self, row, size) {
-  if row == self.rows {
-    let word = if self.running { "running" } else { "paused" }
-    return @strip.Strip::of(
-      "gen " +
-      self.gen.to_string() +
-      " · alive " +
-      self.alive().to_string() +
-      " · " +
-      word,
-      note_style,
-    )
-  }
-  if row < 0 || row >= self.rows {
-    return @strip.Strip::blank(size.width, @style.default)
-  }
-  let parts : Array[@strip.Strip] = []
-  for x in 0..<self.cols {
-    if self.cells[row * self.cols + x] {
-      parts.push(@strip.Strip::of("█", alive_style))
+  if row == 0 {
+    let state = if self.running {
+      "running"
+    } else if self.started {
+      "paused"
     } else {
-      // A faint dot on the dead cells, so an empty field still reads as a grid
-      // rather than as a hole in the screen.
-      parts.push(@strip.Strip::of("·", dead_style))
+      "ready"
+    }
+    return @strip.Strip::join([
+      @strip.Strip::of(" gen ", hud_style),
+      @strip.Strip::of(self.gen.to_string(), value_style),
+      @strip.Strip::of("   alive ", hud_style),
+      @strip.Strip::of(self.alive().to_string(), value_style),
+      @strip.Strip::of("   peak ", hud_style),
+      @strip.Strip::of(self.peak.to_string(), value_style),
+      @strip.Strip::of("   " + state, hud_style),
+    ])
+  }
+  let y = row - 1
+  if y < 0 || y >= self.rows {
+    return @strip.Strip::blank(size.width, blank_style)
+  }
+  let offset = if size.width > self.cols {
+    (size.width - self.cols) / 2
+  } else {
+    0
+  }
+  match self.scene_line(y) {
+    Some((text, style)) =>
+      @strip.Strip::join([
+        @strip.Strip::blank(offset, blank_style),
+        centred(text, self.cols, style),
+      ])
+    None => {
+      let parts : Array[@strip.Strip] = []
+      if offset > 0 {
+        parts.push(@strip.Strip::blank(offset, blank_style))
+      }
+      for x in 0..<self.cols {
+        if !self.started {
+          parts.push(@strip.Strip::blank(1, blank_style))
+        } else if self.cells[y * self.cols + x] {
+          parts.push(@strip.Strip::of("█", alive_style))
+        } else {
+          // A faint dot on the dead cells: an empty field still reads as a grid.
+          parts.push(@strip.Strip::of("·", dead_style))
+        }
+      }
+      @strip.Strip::join(parts)
     }
   }
-  @strip.Strip::join(parts)
 }
 
 ///|
@@ -177,20 +276,27 @@ impl @widget.Widget for Field with fn handle(self, ctx, msg) {
     Key(key) =>
       match key.code {
         Char(32) => {
-          self.toggle()
+          if self.started {
+            self.toggle()
+          } else {
+            self.start()
+          }
           ctx.repaint()
           true
         }
         Char(114) => {
+          self.started = true
+          self.running = true
           self.seed()
           ctx.repaint()
           true
         }
         Char(46) => {
           let was = self.running
+          self.started = true
           self.running = true
           self.step()
-          self.running = was
+          self.running = was && self.running
           ctx.repaint()
           true
         }

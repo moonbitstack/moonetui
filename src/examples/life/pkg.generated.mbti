@@ -18,13 +18,18 @@ pub struct Field {
   mut cells : Array[Bool]
   mut gen : Int32
   mut running : Bool
+  mut started : Bool
+  mut peak : Int32
 }
 pub fn Field::alive(Self) -> Int32
 pub fn Field::alive_at(Self, Int32, Int32) -> Bool
 pub fn Field::gen(Self) -> Int32
 pub fn Field::new(cols? : Int32, rows? : Int32) -> Self
+pub fn Field::peak(Self) -> Int32
 pub fn Field::running(Self) -> Bool
 pub fn Field::seed(Self) -> Unit
+pub fn Field::start(Self) -> Unit
+pub fn Field::started(Self) -> Bool
 pub fn Field::step(Self) -> Unit
 pub fn Field::toggle(Self) -> Unit
 

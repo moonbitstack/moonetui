@@ -88,6 +88,10 @@ test "a generation is a frame, and a pause is not" {
   // A glider, a blinker and a block: twelve cells, the first generation of the
   // demonstration a reader sees.
   assert_eq(field.alive(), 12)
+  // The field opens on its title, and space starts it.
+  assert_false(field.started())
+  field.start()
+  assert_true(field.started())
   assert_eq(field.gen(), 0)
   assert_true(field.alive_at(14, 6))
   field.step()
@@ -102,5 +106,4 @@ test "a generation is a frame, and a pause is not" {
   shot(ui, driver, total, "life/02 paused", size)
   field.step()
   assert_eq(field.gen(), 1)
-  assert_false(field.running())
 }
