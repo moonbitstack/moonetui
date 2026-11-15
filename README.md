@@ -50,6 +50,7 @@ moon run --target native src/examples/top/main      # cores, memory, network, pr
 moon run --target native src/examples/tree/main     # a JSON document as a tree
 moon run --target native src/examples/git/main      # branches, commits, files
 moon run --target native src/examples/read/main     # a Markdown page, set with type
+moon run --target native src/examples/invaders/main # a block that marches, a gun that shoots
 moon run --target js src/examples/hello         # under Node
 moon run --target native src/examples/uart      # whole frames of plain text, as a serial line gets them
 moon run --target native dbmux/src/main -- --demo   # a database client, with a SQLite demo database
@@ -150,6 +151,7 @@ Each one has its keyboard contract, message shape and tests, and a live demo on 
 | `examples/tree` | A JSON document as a tree, folding, with the selected node beside it |
 | `examples/git` | Three panes with a tab between them, and a file that stages |
 | `examples/read` | Markdown set with type: headings, bullets, code, quote, table, scrollbar |
+| `examples/invaders` | Twenty-four invaders marching, one bullet in the air, three lives |
 
 ## Standards
 

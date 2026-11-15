@@ -1,0 +1,56 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "moonbitstack/moonetui/examples/invaders"
+
+import {
+  "moonbitstack/moonetui/app",
+  "moonbitstack/moonetui/design",
+}
+
+// Values
+pub fn sheet() -> @design.Stylesheet
+
+// Errors
+
+// Types and methods
+pub struct Field {
+  cols : Int32
+  rows : Int32
+  mut stage : Stage
+  mut player : Int32
+  mut alive : Array[Bool]
+  mut left : Int32
+  mut dir : Int32
+  mut bullet : (Int32, Int32)?
+  mut score : Int32
+  mut lives : Int32
+  mut slow : Int32
+  mut down : Int32
+}
+pub fn Field::left(Self) -> Int32
+pub fn Field::lives(Self) -> Int32
+pub fn Field::new(cols? : Int32, rows? : Int32) -> Self
+pub fn Field::score(Self) -> Int32
+pub fn Field::shoot(Self) -> Unit
+pub fn Field::stage(Self) -> Stage
+pub fn Field::start(Self) -> Unit
+pub fn Field::steer(Self, Int32) -> Unit
+pub fn Field::step(Self) -> Unit
+
+pub struct Screen {
+  root : @app.Node
+  field : Field
+}
+pub fn Screen::new() -> Self
+
+#derive(Eq)
+pub(all) enum Stage {
+  Title
+  Playing
+  Over
+}
+pub fn Stage::equal(Self, Self) -> Bool
+pub fn Stage::not_equal(Self, Self) -> Bool
+
+// Type aliases
+
+// Traits
