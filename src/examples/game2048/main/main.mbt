@@ -13,6 +13,11 @@ fn main raise {
     quit=[@app.ctrl_c, @app.esc, @app.q],
   )
   ui.start()
+  // The merge light fades on its own clock: three frames and out.
+  ui.every(70, () => {
+    screen.grid.decay()
+    ui.refresh()
+  })
   @native.run(() => ui.step())
   ui.stop()
 }

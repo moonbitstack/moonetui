@@ -44,6 +44,7 @@ moon run --target native src/examples/snake/main    # a game: arrows turn, space
 moon run --target native src/examples/life/main     # Conway's life, a generation a frame
 moon run --target native src/examples/game2048/main # 2048: arrows slide, r restarts
 moon run --target native src/examples/pulse/main    # a dashboard: a window of load
+moon run --target native src/examples/donut/main    # a torus, turning in two axes
 moon run --target js src/examples/hello         # under Node
 moon run --target native src/examples/uart      # whole frames of plain text, as a serial line gets them
 moon run --target native dbmux/src/main -- --demo   # a database client, with a SQLite demo database
@@ -138,6 +139,7 @@ Each one has its keyboard contract, message shape and tests, and a live demo on 
 | `examples/theme` | The look the examples share: one palette, one sheet, the header and key bar every screen wears |
 | `examples/snake` · `examples/life` · `examples/game2048` | Three games, each with the frame test that plays it |
 | `examples/pulse` | A dashboard: a rolling window drawn as a spectrum, a rate, and a hold |
+| `examples/donut` | A torus sampled, turned and shaded into characters, with a z-buffer |
 
 ## Standards
 
@@ -154,7 +156,7 @@ moon test  --target all
 moon fmt && moon info --target all     # the diff must stay clean
 ```
 
-682 tests per backend, the same suite on wasm, wasm-gc, js and native, run on Ubuntu, macOS and Windows in CI. Every widget asserts the rows it draws, and every demo draws in a headless application.
+683 tests per backend, the same suite on wasm, wasm-gc, js and native, run on Ubuntu, macOS and Windows in CI. Every widget asserts the rows it draws, and every demo draws in a headless application.
 
 ## Conformance
 

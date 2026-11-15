@@ -1,0 +1,39 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "moonbitstack/moonetui/examples/donut"
+
+import {
+  "moonbitstack/moonetui/app",
+  "moonbitstack/moonetui/design",
+}
+
+// Values
+pub fn sheet() -> @design.Stylesheet
+
+// Errors
+
+// Types and methods
+pub struct Donut {
+  cols : Int32
+  rows : Int32
+  mut a : Double
+  mut b : Double
+  mut paused : Bool
+  mut frame : Array[String]
+}
+pub fn Donut::angle(Self) -> Double
+pub fn Donut::frame(Self) -> Array[String]
+pub fn Donut::new(cols? : Int32, rows? : Int32) -> Self
+pub fn Donut::paused(Self) -> Bool
+pub fn Donut::rows(Self) -> Int32
+pub fn Donut::spin(Self) -> Unit
+pub fn Donut::toggle(Self) -> Unit
+
+pub struct Screen {
+  root : @app.Node
+  donut : Donut
+}
+pub fn Screen::new() -> Self
+
+// Type aliases
+
+// Traits

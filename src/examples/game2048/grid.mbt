@@ -10,6 +10,9 @@ pub struct Grid {
   mut over : Bool
   mut won : Bool
   mut cursor : Int32
+  // A merge leaves a light on the cell it happened at: three frames of fade,
+  // counted down by the clock, so the eye can see what just changed.
+  flashes : Array[Int32]
 }
 
 ///|
@@ -22,7 +25,11 @@ pub fn Grid::new() -> Grid {
   }
   cells[0] = 2
   cells[3] = 4
-  { cells, score: 0, over: false, won: false, cursor: 5, }
+  let flashes : Array[Int32] = []
+  for _ in 0..<16 {
+    flashes.push(0)
+  }
+  { cells, score: 0, over: false, won: false, cursor: 5, flashes, }
 }
 
 ///|
@@ -33,6 +40,22 @@ pub fn Grid::cell(self : Grid, x : Int32, y : Int32) -> Int32 {
 ///|
 pub fn Grid::score(self : Grid) -> Int32 {
   self.score
+}
+
+///|
+pub fn Grid::flashing(self : Grid, x : Int32, y : Int32) -> Bool {
+  self.flashes[y * 4 + x] > 0
+}
+
+///|
+/// One frame of the fade. The board calls this from its clock; a test calls it
+/// by hand.
+pub fn Grid::decay(self : Grid) -> Unit {
+  for i in 0..<16 {
+    if self.flashes[i] > 0 {
+      self.flashes[i] = self.flashes[i] - 1
+    }
+  }
 }
 
 ///|
@@ -60,6 +83,9 @@ pub fn Grid::restart(self : Grid) -> Unit {
   self.score = 0
   self.over = false
   self.won = false
+  for i in 0..<16 {
+    self.flashes[i] = 0
+  }
 }
 
 ///|
@@ -143,6 +169,12 @@ pub fn Grid::slide(self : Grid, dir : Int32) -> Unit {
     }
     if gained > 0 {
       self.score = self.score + gained
+      // Light the cells the merge landed in.
+      for step in 0..<4 {
+        if after[step] != 0 && (step == 0 || before[step] != after[step]) {
+          self.flashes[index * 4 + step] = 3
+        }
+      }
     }
     write_line(self, dir, index, after)
   }

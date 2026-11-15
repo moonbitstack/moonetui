@@ -34,8 +34,9 @@ fn tile_style(value : Int32) -> @style.Style {
 }
 
 ///|
-/// A number in a cell six columns wide, with the digits in the middle.
-fn tile(value : Int32) -> @strip.Strip {
+/// A number in a cell six columns wide, with the digits in the middle. A cell
+/// that just took a merge is lit, which is the whole animation.
+fn tile(value : Int32, flashing : Bool) -> @strip.Strip {
   if value == 0 {
     return @strip.Strip::of("  ·   ", tile_style(0))
   }
@@ -50,7 +51,12 @@ fn tile(value : Int32) -> @strip.Strip {
   for _ in 0..<right {
     out.write_string(" ")
   }
-  @strip.Strip::of(out.to_string(), tile_style(value))
+  let style = if flashing {
+    @style.Style::new(fg=@style.black, bg=@theme.accent_alt, bold=true)
+  } else {
+    tile_style(value)
+  }
+  @strip.Strip::of(out.to_string(), style)
 }
 
 ///|
@@ -73,7 +79,7 @@ impl @widget.Widget for Board with fn render_line(self, row, size) {
   }
   let parts : Array[@strip.Strip] = []
   for x in 0..<4 {
-    parts.push(tile(self.grid.cell(x, row)))
+    parts.push(tile(self.grid.cell(x, row), self.grid.flashing(x, row)))
   }
   @strip.Strip::join(parts)
 }

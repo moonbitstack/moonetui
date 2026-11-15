@@ -100,6 +100,12 @@ test "a slide moves tiles, a merge scores, and a wall is not a turn" {
   shot(ui, driver, total, "2048/02 merged", size)
   assert_eq(grid.cell(0, 0), 4)
   assert_eq(grid.score(), 4)
+  // The merge leaves a light on the cell, and the clock takes it away.
+  assert_true(grid.flashing(0, 0))
+  grid.decay()
+  grid.decay()
+  grid.decay()
+  assert_false(grid.flashing(0, 0))
   // A slide into a wall that changes nothing is not a turn: no score, no tile.
   let before = grid.score()
   grid.fill([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2])

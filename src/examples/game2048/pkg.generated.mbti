@@ -22,9 +22,12 @@ pub struct Grid {
   mut over : Bool
   mut won : Bool
   mut cursor : Int32
+  flashes : Array[Int32]
 }
 pub fn Grid::cell(Self, Int32, Int32) -> Int32
+pub fn Grid::decay(Self) -> Unit
 pub fn Grid::fill(Self, Array[Int32]) -> Unit
+pub fn Grid::flashing(Self, Int32, Int32) -> Bool
 pub fn Grid::new() -> Self
 pub fn Grid::over(Self) -> Bool
 pub fn Grid::restart(Self) -> Unit
