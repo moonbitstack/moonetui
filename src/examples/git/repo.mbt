@@ -31,7 +31,7 @@ pub fn Repo::new() -> Repo {
       "8d5c2a0  four regions, one page", "3e77b19  miller columns",
     ],
     files: [
-      "src/app/app.mbt", "src/strip/width.mbt", "src/examples/snake/board.mbt", "src/examples/tree/tree.mbt",
+      "src/app/app.mbt", "src/strip/width.mbt", "src/examples/snake/board.mbt", "src/examples/json/doc.mbt",
       "README.md", "CHANGELOG.md",
     ],
     marks: [0, 0, 0, 1, 0, -1],

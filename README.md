@@ -47,7 +47,6 @@ moon run --target native src/examples/pulse/main    # a dashboard: a window of l
 moon run --target native src/examples/donut/main    # a torus, turning in two axes
 moon run --target native src/examples/files/main    # a browser in Miller columns
 moon run --target native src/examples/top/main      # cores, memory, network, processes
-moon run --target native src/examples/tree/main     # a JSON document as a tree
 moon run --target native src/examples/git/main      # branches, commits, files
 moon run --target native src/examples/read/main     # a Markdown page, set with type
 moon run --target native src/examples/invaders/main # a block that marches, a gun that shoots
@@ -62,7 +61,7 @@ moon run --target native src/examples/tunes/main    # a player: spectrum, needle
 moon run --target native src/examples/drift/main    # a trader on six ports, with a chart
 moon run --target native src/examples/mon/main      # a route, a party, a wild thing in the grass
 moon run --target native src/examples/logs/main     # a tail, a level filter, a typed query
-moon run --target native src/examples/json/main     # a document: a path, folds, a query
+moon run --target native src/examples/json/main     # a document as a tree: a path, folds, a query
 moon run --target js src/examples/hello         # under Node
 moon run --target native src/examples/uart      # whole frames of plain text, as a serial line gets them
 moon run --target native dbmux/src/main -- --demo   # a database client, with a SQLite demo database
@@ -160,7 +159,6 @@ Each one has its keyboard contract, message shape and tests, and a live demo on 
 | `examples/donut` | A torus sampled, turned and shaded into characters, with a z-buffer |
 | `examples/files` | Miller columns: where from, what is here, what the selection holds |
 | `examples/top` | Four regions: cores, memory, two network charts, the busiest processes |
-| `examples/tree` | A JSON document as a tree, folding, with the selected node beside it |
 | `examples/git` | Three panes with a tab between them, and a file that stages |
 | `examples/read` | Markdown set with type: headings, bullets, code, quote, table, scrollbar |
 | `examples/invaders` | Twenty-four invaders marching, one bullet in the air, three lives |
@@ -175,7 +173,7 @@ Each one has its keyboard contract, message shape and tests, and a live demo on 
 | `examples/drift` | Six ports on a chart: prices, a hold, fuel, and a logbook |
 | `examples/mon` | A route to walk, a party of three, and fights in the tall grass |
 | `examples/logs` | A log tail: levels to switch off, a typed filter, a map of the file |
-| `examples/json` | A JSON browser: the path to the cursor, folds, a typed query |
+| `examples/json` | A document as a tree beside the node it holds, its path, a typed query |
 
 ## Standards
 

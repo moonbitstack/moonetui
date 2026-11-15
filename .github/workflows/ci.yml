@@ -111,7 +111,7 @@ jobs:
 
           # Every program under examples that has a frame test: the demo, the
           # two games and the dashboard.
-          for example in dbmux snake life game2048 pulse donut files top tree git read invaders blocks sweep sudoku cards board boxes prs tunes drift mon logs json; do
+          for example in dbmux snake life game2048 pulse donut files top git read invaders blocks sweep sudoku cards board boxes prs tunes drift mon logs json; do
             MOONETUI_INTEROP=1 moon test --target native -p "moonbitstack/moonetui/examples/$example" > "$RUNNER_TEMP/$example.txt" 2>&1 || {
               cat "$RUNNER_TEMP/$example.txt"; exit 1; }
             grep '^interop' "$RUNNER_TEMP/$example.txt" >> "$RUNNER_TEMP/frames.txt"

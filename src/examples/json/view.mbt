@@ -242,10 +242,124 @@ impl @widget.Widget for Doc with fn render_line(self, row, size) {
   if row < top || row >= top + rows {
     return @strip.Strip::blank(width, @style.Style::new())
   }
-  if index >= space.length() {
-    return @strip.Strip::blank(width, @style.Style::new())
+  let wide = width > 62
+  let left_w = if wide { 46 } else { width }
+  let line = if index < space.length() {
+    self.row(space[index], left_w)
+  } else {
+    @strip.Strip::blank(left_w, @style.Style::new())
   }
-  self.row(space[index], width)
+  if !wide {
+    return line
+  }
+  return @strip.Strip::join([
+    line,
+    @strip.Strip::blank(1, @style.Style::new()),
+    self.detail_row(row - top, width - left_w - 1, rows),
+  ]).pad_to(width, @style.Style::new())
+}
+
+///|
+/// The pane on the right, carried over from the tree example: what the node
+/// under the cursor is, what it holds, and where it is in the document.
+fn Doc::detail_row(
+  self : Doc,
+  at : Int32,
+  dw : Int32,
+  dh : Int32,
+) -> @strip.Strip {
+  let node = self.at()
+  let inner = dw - 4
+  if at == 0 {
+    let head = "╭─ " + label(node) + " "
+    let fill = dw - 1 - @strip.str_cells(head)
+    return @strip.Strip::join([
+      @strip.Strip::of(head, box_style),
+      @strip.Strip::of(
+        rule(if fill > 0 { fill } else { 0 }) + "╮",
+        frame_style,
+      ),
+    ]).pad_to(dw, @style.Style::new())
+  }
+  if at == dh - 1 {
+    return @strip.Strip::of("╰" + rule(dw - 2) + "╯", frame_style)
+  }
+  if at == 1 {
+    let held = if node.kind == "object" || node.kind == "array" {
+      node.kind + "  ·  " + node.text
+    } else {
+      node.kind
+    }
+    return @strip.Strip::join([
+      @strip.Strip::of("│ ", frame_style),
+      @strip.Strip::of(cut(held, inner), dim).pad_to(inner, @style.Style::new()),
+      @strip.Strip::of(" │", frame_style),
+    ])
+  }
+  if at == dh - 2 {
+    return @strip.Strip::join([
+      @strip.Strip::of("│ ", frame_style),
+      @strip.Strip::of(cut(self.path(), inner), dim).pad_to(
+        inner,
+        @style.Style::new(),
+      ),
+      @strip.Strip::of(" │", frame_style),
+    ])
+  }
+  // The rest is what the node holds: its children, or its own value.
+  let body = if node.kind == "object" || node.kind == "array" {
+    let kids = self.children()
+    let slot = at - 2
+    if slot < kids.length() {
+      let kid = kids[slot]
+      @strip.Strip::join([
+        @strip.Strip::of(cut(kid.key, 14), ink),
+        @strip.Strip::blank(
+          if 14 > @strip.str_cells(kid.key) {
+            14 - @strip.str_cells(kid.key)
+          } else {
+            1
+          },
+          @style.Style::new(),
+        ),
+        @strip.Strip::of(
+          cut(value_text(kid), inner - 15),
+          value_style(kid.kind),
+        ),
+      ]).pad_to(inner, @style.Style::new())
+    } else if slot == kids.length() && kids.length() > 0 {
+      @strip.Strip::of("…", dim).pad_to(inner, @style.Style::new())
+    } else {
+      @strip.Strip::blank(inner, @style.Style::new())
+    }
+  } else if at == 3 {
+    @strip.Strip::of(cut(value_text(node), inner), value_style(node.kind)).pad_to(
+      inner,
+      @style.Style::new(),
+    )
+  } else {
+    @strip.Strip::blank(inner, @style.Style::new())
+  }
+  @strip.Strip::join([
+    @strip.Strip::of("│ ", frame_style),
+    body,
+    @strip.Strip::of(" │", frame_style),
+  ])
+}
+
+///|
+/// The nodes directly under the cursor, in the order they are written.
+fn Doc::children(self : Doc) -> Array[Node] {
+  let out : Array[Node] = []
+  let depth = self.nodes[self.cursor].depth
+  let mut i = self.cursor + 1
+  while i < self.nodes.length() && self.nodes[i].depth > depth {
+    if self.nodes[i].depth == depth + 1 {
+      out.push(self.nodes[i])
+    }
+    i = i + 1
+  }
+  out
 }
 
 ///|
