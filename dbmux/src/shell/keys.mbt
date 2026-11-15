@@ -37,7 +37,7 @@ pub fn State::press(self : State, key : String) -> Array[Command] {
         } else {
           "Run " + self.pending.length().to_string() + " statements? y / n"
         }
-      } else {
+      } else if key == "n" || key == "esc" {
         self.mode = Browse
         self.message = "save cancelled"
       }
@@ -48,7 +48,7 @@ pub fn State::press(self : State, key : String) -> Array[Command] {
           Command::Save(statements=self.pending, expected=self.pending_rows),
         )
         self.message = "saving"
-      } else {
+      } else if key == "n" || key == "esc" {
         self.mode = Browse
         self.message = "save cancelled"
       }
@@ -111,6 +111,16 @@ fn State::press_browse(self : State, key : String) -> Array[Command] {
                 None => ()
               }
             Editor => ()
+          }
+        @keymap.Action::Left =>
+          match self.grid() {
+            Some(grid) => grid.step(0, -1)
+            None => ()
+          }
+        @keymap.Action::Right =>
+          match self.grid() {
+            Some(grid) => grid.step(0, 1)
+            None => ()
           }
         @keymap.Action::OpenTable =>
           match self.tree_row() {

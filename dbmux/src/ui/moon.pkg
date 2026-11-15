@@ -1,0 +1,15 @@
+// The window: a table list, the pane that has the keyboard, and the modal
+// editor inside it.
+import {
+  "moonbitstack/moonetui/app",
+  "moonbitstack/moonetui/geom",
+  "moonbitstack/moonetui/layout",
+  "moonbitstack/moonetui/strip",
+  "moonbitstack/moonetui/style",
+  "moonbitstack/moonetui/widget",
+  "moonbitstack/dbmux/shell",
+  "moonbitstack/dbmux/keymap",
+  "moonbitstack/dbmux/table",
+}
+
+supported_targets = "native"

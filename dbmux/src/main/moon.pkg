@@ -1,0 +1,26 @@
+// The entry point: arguments, a connection, a catalog, and the loop that
+// draws a frame and runs what the keys asked for.
+import {
+  "moonbitlang/async",
+  "moonbitlang/core/env",
+  "moonbitlang/core/string",
+  "moonbitlang/x/fs",
+  "moonbitstack/moonetui/app",
+  "moonbitstack/moonetui/driver",
+  "moonbitstack/moonetui/design",
+  "moonbitstack/moonetui/driver/native",
+  "moonbitstack/moonetui/geom",
+  "moonbitstack/moonetui/style",
+  "moonbitstack/dbmux/shell",
+  "moonbitstack/dbmux/config",
+  "moonbitstack/dbmux/db",
+  "moonbitstack/dbmux/export",
+  "moonbitstack/dbmux/keymap",
+  "moonbitstack/dbmux/sqlkit",
+  "moonbitstack/dbmux/table",
+  "moonbitstack/dbmux/ui",
+}
+
+supported_targets = "native"
+
+pkgtype(kind: "executable")

@@ -45,6 +45,17 @@ jobs:
       - name: moon test (all backends)
         run: moon test --target all
 
+      # The database client is an example with a module of its own: its tests
+      # run with the library's, and this draws a frame of its demo without a
+      # tty, so a screen that panics or an empty grid fails the build.
+      - name: the database client draws its demo
+        if: ${{ runner.os == 'Linux' }}
+        run: |
+          out=$(moon run --target native dbmux/src/main -- --demo --headless --frames 3)
+          echo "$out" | grep -q "main / customers"
+          echo "$out" | grep -q "Ada"
+          echo "$out" | grep -q "tab pane"
+
       - name: lint (fmt and interface are clean)
         run: |
           moon fmt

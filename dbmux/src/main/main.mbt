@@ -1,0 +1,525 @@
+// Copyright 2026 Leo Cheng
+// SPDX-License-Identifier: Apache-2.0
+
+///|
+/// The stylesheet: a chrome bar, framed panes, and a heavy frame around the
+/// pane that has the keyboard.
+fn sheet() -> @design.Stylesheet {
+  let sheet = @design.Stylesheet::new()
+  sheet.add(
+    @design.Sel::new(),
+    @design.Styles::new(text=@style.Style::new(fg=@style.bright_white)),
+  )
+  sheet.add(
+    @design.Sel::new(name="Header"),
+    @design.Styles::new(text=@style.Style::new(bold=true, fg=@style.cyan)),
+  )
+  sheet.add(
+    @design.Sel::new(classes=["framed"]),
+    @design.Styles::new(
+      border=@design.Round,
+      padding=@geom.Spacing::horizontal(1),
+    ),
+  )
+  sheet
+}
+
+///|
+/// A table page from what the grid is showing: its filter, its ordering, its
+/// limit and the page it is on.
+fn query_of(grid : @table.Grid) -> @sqlkit.PageQuery {
+  {
+    schema: grid.page.schema,
+    table: grid.page.table,
+    columns: [],
+    filter: grid.filter,
+    sorts: grid.sorts,
+    limit: grid.limit,
+    offset: grid.offset,
+  }
+}
+
+///|
+/// Load the page the grid asks for, and set its total so the status line can
+/// say how far the reader is.
+async fn load(
+  session : @db.Session,
+  grid : @table.Grid,
+) -> Unit raise @db.Failed {
+  let q = query_of(grid)
+  let page = session.page(q)
+  let total = session.count(q)
+  grid.page = page
+  grid.total = Some(total)
+  grid.changes = Map([])
+  grid.added = []
+  grid.deleted = []
+  let rows = grid.row_count()
+  if grid.cursor_row >= rows && rows > 0 {
+    grid.cursor_row = rows - 1
+  }
+}
+
+///|
+/// A small database to look at with no server and no file: three tables, a
+/// primary key each, and enough rows to page through.
+async fn seed(session : @db.Session) -> Unit raise @db.Failed {
+  let statements = [
+    "create table customers (id integer primary key, name text, city text, joined text)",
+    "create table orders (id integer primary key, customer_id integer, total real, status text, note text)",
+    "create table products (id integer primary key, sku text, price real)", "insert into customers values (1, 'Ada', 'London', '2024-01-04')",
+    "insert into customers values (2, 'Blaise', 'Paris', '2024-02-11')", "insert into customers values (3, 'Grace', 'New York', '2024-03-02')",
+    "insert into orders values (1, 1, 10.5, 'paid', null)", "insert into orders values (2, 2, 7.0, 'open', 'rush')",
+    "insert into orders values (3, 1, 99.9, 'paid', null)", "insert into orders values (4, 3, 42.0, 'refunded', 'damaged box')",
+    "insert into products values (1, 'SKU-1', 3.5)", "insert into products values (2, 'SKU-2', 12.0)",
+  ]
+  for statement in statements {
+    ignore(session.query(statement))
+  }
+}
+
+///|
+/// The first argument that is not a flag, or the empty string.
+fn positional(args : Array[String]) -> String {
+  let mut i = 1
+  while i < args.length() {
+    let arg = args[i]
+    if !arg.has_prefix("--") {
+      return arg
+    }
+    i = i + 1
+  }
+  ""
+}
+
+///|
+/// The value of a flag, or the empty string.
+fn flag(args : Array[String], name : String) -> String {
+  let mut i = 1
+  while i < args.length() {
+    if args[i] == name && i + 1 < args.length() {
+      return args[i + 1]
+    }
+    i = i + 1
+  }
+  ""
+}
+
+///|
+fn has_flag(args : Array[String], name : String) -> Bool {
+  let mut found = false
+  for arg in args {
+    if arg == name {
+      found = true
+    }
+  }
+  found
+}
+
+///|
+async fn main {
+  let args = @env.args()
+  let demo = has_flag(args, "--demo")
+  let target = positional(args)
+  if !demo && target == "" {
+    println("dbmux: a database client")
+    println("")
+    println(
+      "  dbmux --demo                     a SQLite database in memory, with sample rows",
+    )
+    println("  dbmux ./app.db                   a SQLite file")
+    println(
+      "  dbmux postgres://me@host/app     PostgreSQL, MySQL, SQL Server by their URL",
+    )
+    println("")
+    println(
+      "  keys: j k move, s sort, f filter, e edit, C-s save, ? all keys, q quit",
+    )
+    return
+  }
+  // A target that is not a URL and not a file is a name from the connection
+  // file; with no name, the file is read only to say what it holds.
+  let config_path = {
+    let given = flag(args, "--config")
+    if given != "" {
+      Some(given)
+    } else {
+      match @env.get_env_var("DBMUX_CONFIG") {
+        Some(value) => Some(value)
+        None =>
+          if @fs.path_exists("connections.toml") {
+            Some("connections.toml")
+          } else {
+            None
+          }
+      }
+    }
+  }
+  let from_file : Array[@config.Connection] = match config_path {
+    None => []
+    Some(path) => {
+      let text = @fs.read_file_to_string(path) catch { _ => "" }
+      if text == "" {
+        []
+      } else {
+        @config.load(text) catch {
+          @config.Refused(text~) => {
+            println("dbmux: " + text)
+            return
+          }
+        }
+      }
+    }
+  }
+  let named = if target != "" &&
+    !target.contains("://") &&
+    !target.has_suffix(".db") &&
+    !target.has_suffix(".sqlite") &&
+    !target.has_suffix(".sqlite3") {
+    let mut found : @config.Connection? = None
+    for entry in from_file {
+      if entry.name == target {
+        found = Some(entry)
+      }
+    }
+    match found {
+      Some(entry) => Some(entry)
+      None => {
+        if from_file.length() > 0 {
+          println("dbmux: no connection is named " + target + "; the file has:")
+          for entry in from_file {
+            println("  " + entry.name + "  " + entry.engine.name())
+          }
+          return
+        }
+        None
+      }
+    }
+  } else {
+    None
+  }
+  let connection : @config.Connection = if demo {
+    {
+      name: "demo",
+      group: "",
+      engine: @config.Engine::Sqlite,
+      dsn: ":memory:",
+      read_only: false,
+      production: false,
+      password_env: None,
+      delimiter: ":",
+    }
+  } else {
+    match named {
+      Some(entry) => entry
+      None =>
+        @config.of_target(target) catch {
+          @config.Refused(text~) => {
+            println(text)
+            return
+          }
+        }
+    }
+  }
+  let password = match connection.password_env {
+    Some(name) =>
+      match @env.get_env_var(name) {
+        Some(value) => value
+        None => ""
+      }
+    None => ""
+  }
+  let session = @db.Session::open(connection, password) catch {
+    @db.Failed(text~) => {
+      println("dbmux: " + text)
+      return
+    }
+  }
+  if demo {
+    seed(session) catch {
+      @db.Failed(text~) => {
+        println("dbmux: " + text)
+        session.close()
+        return
+      }
+    }
+  }
+  let dialect = match connection.engine.dialect() {
+    Some(d) => d
+    None => {
+      println("dbmux: redis is not wired yet")
+      return
+    }
+  }
+  let state = @shell.State::new(
+    connection.name,
+    connection.engine,
+    dialect,
+    connection.read_only,
+    connection.production,
+    @keymap.Keymap::default(),
+  )
+  let tables = session.tables(None) catch {
+    @db.Failed(text~) => {
+      println("dbmux: " + text)
+      return
+    }
+  }
+  state.set_catalog([], tables)
+  let wanted = flag(args, "--table")
+  let mut opened = false
+  if wanted != "" {
+    for table in tables {
+      if table.name == wanted {
+        let page = session.page({
+          schema: table.schema,
+          table: table.name,
+          columns: [],
+          filter: flag(args, "--where"),
+          sorts: [],
+          limit: 100,
+          offset: 0L,
+        }) catch {
+          @db.Failed(text~) => {
+            println("dbmux: " + text)
+            return
+          }
+        }
+        state.show_page(page)
+        opened = true
+      }
+    }
+  } else if tables.length() > 0 {
+    let first = tables[0]
+    let page = session.page({
+      schema: first.schema,
+      table: first.name,
+      columns: [],
+      filter: "",
+      sorts: [],
+      limit: 100,
+      offset: 0L,
+    }) catch {
+      @db.Failed(text~) => {
+        println("dbmux: " + text)
+        return
+      }
+    }
+    state.show_page(page)
+    opened = true
+  }
+  if !opened {
+    state.message = "no tables; press C-r to run SQL once the editor has some"
+  }
+  let screen = @ui.Screen::new(state)
+  screen.refresh()
+  let headless = has_flag(args, "--headless")
+  let frames = if headless {
+    let text = flag(args, "--frames")
+    match text {
+      "" => 3
+      _ => @string.parse_int(text) catch { _ => 3 }
+    }
+  } else {
+    0
+  }
+  if headless {
+    let head = @driver.Headless::new(@geom.Size::new(110, 32))
+    let keys = flag(args, "--keys")
+    if keys != "" {
+      head.push(keys_to_bytes(keys))
+    }
+    drive(head, screen, session, state, frames)
+  } else {
+    drive(@native.NativeTty::new(), screen, session, state, 0)
+  }
+  session.close()
+}
+
+///|
+/// A key script on the command line: `jj` is two downs, `\e` is escape and
+/// `\x13` is Ctrl-S, so a test can press what a reader presses.
+fn keys_to_bytes(text : String) -> Bytes {
+  let chars = text.to_array()
+  let out : Array[Byte] = []
+  let mut i = 0
+  while i < chars.length() {
+    let c = chars[i]
+    if c == '\\' && i + 1 < chars.length() {
+      let next = chars[i + 1]
+      if next == 'e' {
+        out.push(b'\x1b')
+        i = i + 2
+        continue
+      } else if next == 'x' && i + 3 < chars.length() {
+        let hex = String::from_array([chars[i + 2], chars[i + 3]])
+        let code = @string.parse_int(hex, base=16) catch { _ => 0 }
+        out.push(code.to_byte())
+        i = i + 4
+        continue
+      } else if next == 't' {
+        out.push(b'\t')
+        i = i + 2
+        continue
+      }
+    }
+    out.push(c.to_int().to_byte())
+    i = i + 1
+  }
+  Bytes::from_array(out)
+}
+
+///|
+/// The loop: draw, read a key, run what it asked for. `frames` above zero
+/// means no terminal is attached — the headless driver draws a fixed size and
+/// the loop stops after that many frames, which is how CI checks the screen
+/// without a tty.
+async fn[D : @driver.Driver] drive(
+  driver : D,
+  screen : @ui.Screen,
+  session : @db.Session,
+  state : @shell.State,
+  frames : Int32,
+) -> Unit {
+  let ui = @app.App::new(driver, screen.node(), sheet=sheet())
+  ui.start()
+  // The pane with the keyboard is the fourth leaf; the list is only drawn,
+  // so the keys that open a table are the pane's, not the list's.
+  let mut tries = 0
+  while ui.focused() != 4 && tries < 8 {
+    ui.focus_next(1)
+    tries = tries + 1
+  }
+  let mut alive = true
+  let mut drawn = 0
+  while alive {
+    screen.refresh()
+    ui.refresh()
+    alive = ui.step() catch { _ => false }
+    ignore(ui.drain())
+    for command in screen.bus().take() {
+      match command {
+        @shell.Command::Quit => alive = false
+        @shell.Command::OpenTable(schema~, table~) => {
+          let page = session.page({
+            schema,
+            table,
+            columns: [],
+            filter: "",
+            sorts: [],
+            limit: 100,
+            offset: 0L,
+          }) catch {
+            @db.Failed(text~) => {
+              state.message = text
+              continue
+            }
+          }
+          state.show_page(page)
+          state.message = ""
+        }
+        @shell.Command::Reload =>
+          match state.grid() {
+            Some(grid) =>
+              load(session, grid) catch {
+                @db.Failed(text~) => state.message = text
+              }
+            None => ()
+          }
+        @shell.Command::RunQuery(text~) =>
+          match state.refusal(text) {
+            Some(refusal) => state.message = refusal
+            None => {
+              let pieces = @sqlkit.statements(text, state.dialect)
+              let mut last : @db.Result? = None
+              let mut failure = ""
+              for piece in pieces {
+                let result = session.query(piece) catch {
+                  @db.Failed(text~) => {
+                    failure = text
+                    break
+                  }
+                }
+                last = Some(result)
+              }
+              if failure != "" {
+                state.message = failure
+              } else {
+                match last {
+                  Some(result) =>
+                    if result.columns.length() > 0 {
+                      state.result = Some(result)
+                      state.show_page(
+                        @table.Page::new(
+                          None,
+                          "result",
+                          result.columns,
+                          result.rows,
+                          [],
+                        ),
+                      )
+                      state.message = result.rows.length().to_string() + " rows"
+                    } else {
+                      state.message = result.affected.to_string() +
+                        " rows affected"
+                    }
+                  None => state.message = "nothing to run"
+                }
+              }
+            }
+          }
+        @shell.Command::Save(statements~, expected~) => {
+          let mut saved = false
+          session.run(statements, expected) catch {
+            @db.Failed(text~) => state.message = text
+          }
+          if state.message == "saving" || state.message == "" {
+            saved = true
+          }
+          if saved {
+            state.message = "saved"
+            match state.grid() {
+              Some(grid) => {
+                grid.revert()
+                load(session, grid) catch {
+                  @db.Failed(text~) => state.message = text
+                }
+              }
+              None => ()
+            }
+          }
+        }
+        @shell.Command::ExportCsv(path~) =>
+          match state.grid() {
+            Some(grid) => {
+              let text = @export.csv(grid.visible(), grid.export_rows())
+              @fs.write_string_to_file(path, text) catch {
+                _ => state.message = "could not write " + path
+              }
+              state.message = "wrote " + path
+            }
+            None => ()
+          }
+        @shell.Command::ExportJson(path~) =>
+          match state.grid() {
+            Some(grid) => {
+              let text = @export.json(grid.visible(), grid.export_rows())
+              @fs.write_string_to_file(path, text) catch {
+                _ => state.message = "could not write " + path
+              }
+              state.message = "wrote " + path
+            }
+            None => ()
+          }
+      }
+    }
+    drawn = drawn + 1
+    if frames > 0 && drawn >= frames {
+      alive = false
+    }
+  }
+  if frames > 0 {
+    println(ui.screen().join("\n"))
+  }
+  ui.stop()
+}

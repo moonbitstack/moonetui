@@ -42,7 +42,14 @@ moon run --target native src/examples/monitor   # a complete app: tabs, timers, 
 moon run --target native src/examples/tui       # a styled app in a real terminal
 moon run --target js src/examples/hello         # under Node
 moon run --target native src/examples/uart      # whole frames of plain text, as a serial line gets them
+moon run --target native dbmux/src/main -- --demo   # a database client, with a SQLite demo database
 ```
+
+`dbmux/` is a module beside the library that builds a database client with it:
+a table list, an editable grid, a modal SQL editor, a command palette, and one
+connection per engine. `moon run --target native dbmux/src/main -- --demo`
+opens a SQLite database in memory, so it runs with nothing installed. Its own
+README has the keys and the connection file.
 
 The gallery runs in a browser too: `moon build --target js`, serve the repository root, and open `src/examples/browser/index.html`.
 

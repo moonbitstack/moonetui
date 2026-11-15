@@ -2,8 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 ///|
-fn app_state(read_only : Bool) -> @app.State {
-  @app.State::new(
+fn app_state(read_only : Bool) -> @shell.State {
+  @shell.State::new(
     "local",
     @config.Engine::Sqlite,
     @sqlkit.Dialect::Sqlite,
@@ -39,7 +39,7 @@ test "a read-only connection refuses a write and allows a read" {
 
 ///|
 test "the production mark comes before the read-only one" {
-  let state = @app.State::new(
+  let state = @shell.State::new(
     "prod",
     @config.Engine::Postgres,
     @sqlkit.Dialect::Postgres,
@@ -58,7 +58,7 @@ test "opening a table twice keeps one tab" {
   state.show_page(app_page())
   state.show_page(app_page())
   assert_eq(state.tabs.length(), 1)
-  assert_eq(state.focus, @app.Focus::Grid)
+  assert_eq(state.focus, @shell.Focus::Grid)
 }
 
 ///|
@@ -69,14 +69,14 @@ test "saving previews the statements, and a yes sends them" {
   grid.set_cell(0, "total", @table.Cell::of("11"))
   let commands = state.press("C-s")
   assert_eq(commands.length(), 0)
-  assert_eq(state.mode, @app.Mode::Preview)
+  assert_eq(state.mode, @shell.Mode::Preview)
   assert_eq(
     state.preview.contains("UPDATE \"orders\" SET \"total\" = '11'"),
     true,
   )
   assert_eq(state.preview.contains("1 update"), true)
   ignore(state.press("y"))
-  assert_eq(state.mode, @app.Mode::Confirm)
+  assert_eq(state.mode, @shell.Mode::Confirm)
   let out = state.press("y")
   assert_eq(out.length(), 1)
   match out[0] {
@@ -91,7 +91,7 @@ test "a read-only connection will not even preview a save" {
   state.show_page(app_page())
   state.grid().unwrap().set_cell(0, "total", @table.Cell::of("11"))
   ignore(state.press("C-s"))
-  assert_eq(state.mode, @app.Mode::Browse)
+  assert_eq(state.mode, @shell.Mode::Browse)
   assert_eq(state.message, "this connection is read-only")
 }
 
@@ -108,7 +108,7 @@ test "a filter is typed on the prompt line and becomes the grid's WHERE" {
   let state = app_state(false)
   state.show_page(app_page())
   ignore(state.press("f"))
-  assert_eq(state.mode, @app.Mode::Typing)
+  assert_eq(state.mode, @shell.Mode::Typing)
   for key in ["t", "o", "t", "a", "l", ">", "5"] {
     ignore(state.press(key))
   }
@@ -150,7 +150,7 @@ test "a marked row and an added row reach the save" {
 test "the palette narrows as letters are typed" {
   let state = app_state(false)
   ignore(state.press("C-p"))
-  assert_eq(state.mode, @app.Mode::Palette)
+  assert_eq(state.mode, @shell.Mode::Palette)
   for key in ["s", "a", "v"] {
     ignore(state.press(key))
   }
@@ -163,9 +163,9 @@ test "the palette narrows as letters are typed" {
 test "the help panel is a key away and goes away again" {
   let state = app_state(false)
   ignore(state.press("?"))
-  assert_eq(state.mode, @app.Mode::Help)
+  assert_eq(state.mode, @shell.Mode::Help)
   ignore(state.press("esc"))
-  assert_eq(state.mode, @app.Mode::Browse)
+  assert_eq(state.mode, @shell.Mode::Browse)
 }
 
 ///|

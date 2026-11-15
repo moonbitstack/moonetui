@@ -12,6 +12,7 @@ source = "src"
 
 import {
   "moonbitlang/async@0.22.5",
+  "moonbitlang/x@0.5.7",
   "moonbitstack/moondb@0.3.0",
   "moonbitstack/moonjson@0.5.0",
   "moonbitstack/moonmysql@0.8.0",

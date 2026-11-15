@@ -18,12 +18,33 @@ moved out of the repository without changing the library.
 | `export` | CSV (RFC 4180) and JSON of a page |
 | `keymap` | Every action, its default key, and a TOML file that rebinds them |
 | `db` | One live connection per engine, DSN parsing, and the catalog queries each engine answers its own way |
-| `app` | The state machine: what a key does, what it refuses, and the commands the host has to run |
+| `shell` | The state machine: what a key does, what it refuses, and the commands the host has to run |
+| `ui` | The window: a table list, the pane that has the keyboard, the modal editor, and the dialogs drawn over it |
+| `main` | The entry point: arguments, a connection, a catalog, and the frame loop |
 
 The split is deliberate: everything above `db` is a pure function of data, so
 the behaviour that matters — a read-only connection refusing a write, a save
 that names the row it read, a filter that quotes its value — is tested without
 a database.
+
+## Run it
+
+```
+moon run --target native src/main -- --demo
+moon run --target native src/main -- ./app.db
+moon run --target native src/main -- parts        # a name from connections.toml
+moon run --target native src/main -- "postgres://me@127.0.0.1/app?sslmode=disable"
+```
+
+The connection file is `./connections.toml`, or the file `DBMUX_CONFIG` names,
+or `--config <path>`. A target that is neither a URL nor a file is looked up
+by name in it.
+
+`--demo` builds a SQLite database in memory with three tables, so there is
+something to page through with no server and no file. Add `--table orders` to
+open one table first, `--where "total > 10"` to start filtered, and
+`--headless --frames 3` to draw into a buffer instead of a terminal — that is
+how CI checks the screen without a tty.
 
 ## Configuration
 
@@ -63,6 +84,8 @@ and every write on it is confirmed.
 | `C-p` | the command palette |
 | `?` | the keys that work here |
 | `gt` / `gT` | next / previous tab |
+| `C-r` | run the editor's SQL |
+| `q` | quit |
 
 A keymap file rebinds any of them by action name:
 
@@ -85,8 +108,12 @@ filter = "/"
 
 ## Status
 
-The logic packages and the connection layer are complete and tested
-(`moon test --target native` in this directory). The terminal shell that binds
-them to moonetui's widget tree, the Redis key browser, and the split panes are
-the remaining work; the delivery note in the repository's last commit lists
-them.
+What runs today: a SQLite file or an in-memory demo, opened in a terminal, with
+the table list, the grid, cell edits and the save preview, the modal SQL
+editor, the palette, the key panel, and CSV and JSON export. PostgreSQL, MySQL
+and SQL Server are wired to their drivers through the same `Session`; their
+integration tests need servers, so they run in CI rather than on a laptop.
+
+Not built yet: Redis (key browser and console), split panes, completion and
+query history, and a connection form. The delivery note in the repository's
+last commit lists them in the order they come next.

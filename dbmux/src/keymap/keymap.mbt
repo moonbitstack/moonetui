@@ -4,7 +4,7 @@
 ///|
 /// Everything a key can be asked to do. The list is the command palette's
 /// list too: one name per thing, in the order the help page groups them.
-#derive(Eq)
+#derive(Eq, Debug)
 pub(all) enum Action {
   Quit
   Help
@@ -14,6 +14,8 @@ pub(all) enum Action {
   FocusRight
   Up
   Down
+  Left
+  Right
   PageNext
   PagePrev
   Sort
@@ -41,6 +43,9 @@ pub(all) enum Action {
 pub extend Action with Eq::{equal, not_equal}
 
 ///|
+pub extend Action with Debug::{to_repr}
+
+///|
 pub fn Action::name(self : Action) -> String {
   match self {
     Quit => "quit"
@@ -51,6 +56,8 @@ pub fn Action::name(self : Action) -> String {
     FocusRight => "right pane"
     Up => "up"
     Down => "down"
+    Left => "left"
+    Right => "right"
     PageNext => "next page"
     PagePrev => "previous page"
     Sort => "sort column"
@@ -88,10 +95,13 @@ pub fn Action::parse(text : String) -> Action? {
     ("focus-right", FocusRight),
     ("up", Up),
     ("down", Down),
+    ("left", Left),
+    ("right", Right),
     ("page-next", PageNext),
     ("page-prev", PagePrev),
     ("sort", Sort),
     ("filter", Filter),
+    ("filter-by-cell", FilterCell),
     ("filter-cell", FilterCell),
     ("clear-filter", ClearFilter),
     ("edit-cell", EditCell),
@@ -175,6 +185,8 @@ pub fn Keymap::default() -> Keymap {
     ("C-l", FocusRight),
     ("k", Up),
     ("j", Down),
+    ("h", Left),
+    ("l", Right),
     ("J", PageNext),
     ("K", PagePrev),
     ("s", Sort),

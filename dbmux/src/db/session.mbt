@@ -221,7 +221,7 @@ fn cells_of(rows : Array[@moondb.Row]) -> Array[Array[@table.Cell]] {
       line.push(
         match value {
           @moondb.Value::Null => @table.Cell::none()
-          _ => @table.Cell::of(value.to_string())
+          _ => @table.Cell::of(value_text(value))
         },
       )
       i = i + 1
@@ -229,6 +229,26 @@ fn cells_of(rows : Array[@moondb.Row]) -> Array[Array[@table.Cell]] {
     out.push(line)
   }
   out
+}
+
+///|
+/// A value as the text a cell shows. `Show` would print the constructor —
+/// `Text("Ada")` — which is not what a database client puts in a column.
+pub fn value_text(value : @moondb.Value) -> String {
+  match value {
+    @moondb.Value::Null => ""
+    @moondb.Value::Bool(b) => if b { "true" } else { "false" }
+    @moondb.Value::Int(i) => i.to_string()
+    @moondb.Value::Int64(i) => i.to_string()
+    @moondb.Value::Double(d) => d.to_string()
+    @moondb.Value::Text(s)
+    | @moondb.Value::Time(s)
+    | @moondb.Value::Numeric(s)
+    | @moondb.Value::Json(s) => s
+    @moondb.Value::Blob(b) => "<" + b.length().to_string() + " bytes>"
+    @moondb.Value::Uuid(b) => "<" + b.length().to_string() + " bytes>"
+    @moondb.Value::Array(_) => "<array>"
+  }
 }
 
 ///|
