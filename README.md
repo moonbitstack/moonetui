@@ -56,6 +56,7 @@ moon run --target native src/examples/sweep/main    # mines, flags, and a region
 moon run --target native src/examples/sudoku/main   # nine by nine, a clash marked
 moon run --target native src/examples/cards/main    # Klondike: seven columns, four foundations
 moon run --target native src/examples/board/main    # a dashboard of small panels
+moon run --target native src/examples/boxes/main    # containers, their stats, and a live tail
 moon run --target js src/examples/hello         # under Node
 moon run --target native src/examples/uart      # whole frames of plain text, as a serial line gets them
 moon run --target native dbmux/src/main -- --demo   # a database client, with a SQLite demo database
@@ -162,6 +163,7 @@ Each one has its keyboard contract, message shape and tests, and a live demo on 
 | `examples/sudoku` | Nine by nine: givens that hold, digits that go in, a clash marked |
 | `examples/cards` | Klondike on green felt: a run lifted from a column, a card sent home |
 | `examples/board` | Six framed panels: a big clock, the month, tasks, commits, load, the day |
+| `examples/boxes` | A container client: a list of boxes, one opened, its log running below |
 
 ## Standards
 

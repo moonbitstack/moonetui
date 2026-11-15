@@ -1,0 +1,10 @@
+// `moon run --target native src/examples/boxes/main`.
+import {
+  "moonbitstack/moonetui/app",
+  "moonbitstack/moonetui/driver/native",
+  "moonbitstack/moonetui/examples/boxes",
+}
+
+supported_targets = "native"
+
+pkgtype(kind: "executable")

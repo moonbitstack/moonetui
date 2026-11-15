@@ -1,0 +1,64 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "moonbitstack/moonetui/examples/boxes"
+
+import {
+  "moonbitstack/moonetui/app",
+  "moonbitstack/moonetui/design",
+}
+
+// Values
+pub fn sheet() -> @design.Stylesheet
+
+// Errors
+
+// Types and methods
+pub struct Box {
+  name : String
+  image : String
+  ports : String
+  id : String
+  mut cpu : Int32
+  mut mem : Int32
+  mut state : State
+  mut up : Int32
+  mut logs : Array[(String, String, String)]
+}
+
+pub struct Host {
+  boxes : Array[Box]
+  mut pick : Int32
+  mut beat : Int32
+  mut paused : Bool
+  mut note : String
+}
+pub fn Host::advance(Self) -> Unit
+pub fn Host::logs_of(Self, Int32) -> Int32
+pub fn Host::name_of(Self, Int32) -> String
+pub fn Host::new() -> Self
+pub fn Host::pause(Self) -> Unit
+pub fn Host::pick(Self) -> Int32
+pub fn Host::picked(Self) -> Box
+pub fn Host::restart(Self) -> Unit
+pub fn Host::running(Self) -> Int32
+pub fn Host::shift(Self, Int32) -> Unit
+pub fn Host::state_of(Self, Int32) -> State
+pub fn Host::stop(Self) -> Unit
+
+pub struct Screen {
+  root : @app.Node
+  host : Host
+}
+pub fn Screen::new() -> Self
+
+#derive(Eq)
+pub(all) enum State {
+  Running
+  Restarting
+  Exited
+}
+pub fn State::equal(Self, Self) -> Bool
+pub fn State::not_equal(Self, Self) -> Bool
+
+// Type aliases
+
+// Traits
