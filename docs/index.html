@@ -1846,7 +1846,7 @@ priv <span class="kw">struct</span> Swatches {}
     <div class="wlive"><canvas id="live-docks-and-fractions" data-demo="Docks and fractions" tabindex="0" style="height: 126px"></canvas></div>
     <div class="wmsg" data-for="live-docks-and-fractions"></div>
     <pre class="block wcode"><span class="kw">pub</span> <span class="kw">fn</span> docks() -&gt; Demo {
-  <span class="kw">let</span> sheet = <span class="fn">@design.</span>Stylesheet::new()
+  <span class="kw">let</span> sheet = <span class="fn">@theme.</span>sheet()
   sheet.add(
     <span class="fn">@design.</span>Sel::new(classes=[<span class="st">&quot;pane&quot;</span>]),
     <span class="fn">@design.</span>Styles::new(border=Round),
@@ -1937,7 +1937,7 @@ priv <span class="kw">struct</span> Swatches {}
     <div class="wlive"><canvas id="live-grid" data-demo="Grid" tabindex="0" style="height: 108px"></canvas></div>
     <div class="wmsg" data-for="live-grid"></div>
     <pre class="block wcode"><span class="kw">pub</span> <span class="kw">fn</span> grid() -&gt; Demo {
-  <span class="kw">let</span> sheet = <span class="fn">@design.</span>Stylesheet::new()
+  <span class="kw">let</span> sheet = <span class="fn">@theme.</span>sheet()
   sheet.add(
     <span class="fn">@design.</span>Sel::new(classes=[<span class="st">&quot;cell&quot;</span>]),
     <span class="fn">@design.</span>Styles::new(border=Thin),
@@ -2014,7 +2014,7 @@ priv <span class="kw">struct</span> Swatches {}
     <div class="wlive"><canvas id="live-states" data-demo="States" tabindex="0" style="height: 54px"></canvas></div>
     <div class="wmsg" data-for="live-states"></div>
     <pre class="block wcode"><span class="kw">pub</span> <span class="kw">fn</span> states() -&gt; Demo {
-  <span class="kw">let</span> sheet = <span class="fn">@design.</span>Stylesheet::new()
+  <span class="kw">let</span> sheet = <span class="fn">@theme.</span>sheet()
   sheet.add(
     <span class="fn">@design.</span>Sel::new(classes=[<span class="st">&quot;key&quot;</span>]),
     <span class="fn">@design.</span>Styles::new(border=Round),

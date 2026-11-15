@@ -9,6 +9,7 @@ import {
   "moonbitstack/moonetui/layout",
   "moonbitstack/moonetui/strip",
   "moonbitstack/moonetui/style",
+  "moonbitstack/moonetui/examples/theme",
   "moonbitstack/moonetui/widget",
 }
 

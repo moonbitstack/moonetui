@@ -70,7 +70,7 @@ pub fn Gallery::tree(self : Gallery) -> @app.Node {
 ///|
 /// The frame's rules, then the chosen demo's.
 pub fn Gallery::sheet(self : Gallery) -> @design.Stylesheet {
-  let sheet = @design.Stylesheet::new()
+  let sheet = @theme.sheet()
   sheet.add(
     @design.Sel::new(classes=["menu"]),
     @design.Styles::new(border=Round),

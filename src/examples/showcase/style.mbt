@@ -130,7 +130,7 @@ pub fn text_styles() -> Demo {
 
 ///|
 pub fn docks() -> Demo {
-  let sheet = @design.Stylesheet::new()
+  let sheet = @theme.sheet()
   sheet.add(
     @design.Sel::new(classes=["pane"]),
     @design.Styles::new(border=Round),
@@ -165,7 +165,7 @@ pub fn docks() -> Demo {
 
 ///|
 pub fn grid() -> Demo {
-  let sheet = @design.Stylesheet::new()
+  let sheet = @theme.sheet()
   sheet.add(
     @design.Sel::new(classes=["cell"]),
     @design.Styles::new(border=Thin),
@@ -205,7 +205,7 @@ pub fn grid() -> Demo {
 
 ///|
 pub fn states() -> Demo {
-  let sheet = @design.Stylesheet::new()
+  let sheet = @theme.sheet()
   sheet.add(
     @design.Sel::new(classes=["key"]),
     @design.Styles::new(border=Round),
