@@ -123,12 +123,18 @@ fn State::press_browse(self : State, key : String) -> Array[Command] {
             None => ()
           }
         @keymap.Action::OpenTable =>
-          match self.tree_row() {
-            Some(table) =>
-              out.push(
-                Command::OpenTable(schema=table.schema, table=table.name),
-              )
-            None => self.message = "no table under the cursor"
+          // A Redis keys table opens the key under the cursor; anywhere else
+          // the list's selection opens.
+          match self.redis_key_under_cursor() {
+            Some(name) => out.push(Command::OpenTable(schema=None, table=name))
+            None =>
+              match self.tree_row() {
+                Some(table) =>
+                  out.push(
+                    Command::OpenTable(schema=table.schema, table=table.name),
+                  )
+                None => self.message = "no table under the cursor"
+              }
           }
         @keymap.Action::Reload => out.push(Command::Reload)
         @keymap.Action::Sort =>
@@ -295,6 +301,29 @@ fn State::press_browse(self : State, key : String) -> Array[Command] {
       }
   }
   out
+}
+
+///|
+/// The Redis key under the grid's cursor, as the virtual table that shows it,
+/// or `None` when the grid is not a list of keys.
+pub fn State::redis_key_under_cursor(self : State) -> String? {
+  if !(self.engine is @config.Engine::Redis) {
+    return None
+  }
+  match self.grid() {
+    None => None
+    Some(grid) =>
+      if grid.page.table != "keys" || grid.row_count() == 0 {
+        None
+      } else {
+        let cell = grid.cell(grid.cursor_row, "key")
+        if cell.is_null || cell.text == "" {
+          None
+        } else {
+          Some("key:" + cell.text)
+        }
+      }
+  }
 }
 
 ///|

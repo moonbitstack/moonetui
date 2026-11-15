@@ -19,6 +19,7 @@ moved out of the repository without changing the library.
 | `keymap` | Every action, its default key, and a TOML file that rebinds them |
 | `db` | One live connection per engine, DSN parsing, and the catalog queries each engine answers its own way |
 | `shell` | The state machine: what a key does, what it refuses, and the commands the host has to run |
+| `db` also holds `Redis` | keys by `SCAN`, one key as a table by its type, and a console that flattens any reply into rows |
 | `ui` | The window: a table list, one or two panes with a tab strip each, the modal editor, and the dialogs drawn over it |
 | `main` | The entry point: arguments, a connection, a catalog, and the frame loop |
 
@@ -33,8 +34,15 @@ a database.
 moon run --target native src/main -- --demo
 moon run --target native src/main -- ./app.db
 moon run --target native src/main -- parts        # a name from connections.toml
+moon run --target native src/main -- "redis://127.0.0.1:6379/0"   # Redis keys
 moon run --target native src/main -- "postgres://me@127.0.0.1/app?sslmode=disable"
 ```
+
+Redis opens on the keys: `keys` is a table of every key and its type, `enter`
+opens the one under the cursor as a table of its own — a string is one row, a
+hash two columns, a list its indexes, a set its members, a sorted set its
+scores — and `C-r` in the editor sends any command the way `redis-cli` would.
+Redis values are read-only here; the console is how you change one.
 
 The connection file is `./connections.toml`, or the file `DBMUX_CONFIG` names,
 or `--config <path>`. A target that is neither a URL nor a file is looked up
@@ -118,6 +126,6 @@ editor, the palette, the key panel, and CSV and JSON export. PostgreSQL, MySQL
 and SQL Server are wired to their drivers through the same `Session`; their
 integration tests need servers, so they run in CI rather than on a laptop.
 
-Not built yet: Redis (key browser and console), completion and query history,
-and a connection form. The delivery note in the repository's
+Not built yet: editing Redis values (the console writes), completion and query
+history, and a connection form. The delivery note in the repository's
 last commit lists them in the order they come next.

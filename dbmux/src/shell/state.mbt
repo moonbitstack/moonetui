@@ -362,6 +362,10 @@ pub fn State::tree_row(self : State) -> @db.TableInfo? {
 ///|
 /// The sentence a read-only connection answers a write with.
 pub fn State::refusal(self : State, sql : String) -> String? {
+  // Redis has no SQL to read: its commands are checked where they run.
+  if self.engine is @config.Engine::Redis {
+    return None
+  }
   if self.read_only && @sqlkit.writes(sql, self.dialect) {
     Some("this connection is read-only")
   } else {

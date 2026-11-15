@@ -1,6 +1,10 @@
 // The live connection: one variant per driver, and the catalog each engine
 // keeps its own way.
 import {
+  "moonbitlang/core/encoding/utf8",
+  "moonbitstack/moonredis",
+  "moonbitstack/moonredis/resp",
+  "moonbitstack/moonredis/socket",
   "moonbitlang/core/string",
   "moonbitstack/moondb",
   "moonbitstack/moonmysql/client",

@@ -104,3 +104,57 @@ jobs:
           command -v tmux > /dev/null || sudo apt-get install -y tmux
           moon test --target native -p moonbitstack/moonetui/app 2>&1 | grep '^interop' > "$RUNNER_TEMP/frames.txt"
           python3 scripts/verify_terminals.py --in "$RUNNER_TEMP/frames.txt"
+
+  # The database client, against a real Redis: the keys it lists, the key it
+  # opens and the console it runs are all server answers, not fixtures.
+  database:
+    permissions:
+      contents: read
+    runs-on: ubuntu-26.04
+    services:
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: install moonbit
+        run: |
+          curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash
+          echo "$HOME/.moon/bin" >> $GITHUB_PATH
+
+      - name: post install
+        run: moon update
+
+      - name: seed redis
+        run: |
+          docker exec ${{ job.services.redis.id }} redis-cli set greeting hello
+          docker exec ${{ job.services.redis.id }} redis-cli hset user:1 name Ada city London
+          docker exec ${{ job.services.redis.id }} redis-cli rpush queue a b c
+
+      - name: the client lists the keys and opens one
+        run: |
+          out=$(moon run --target native dbmux/src/main -- "redis://127.0.0.1:6379/0" --headless --frames 3)
+          echo "$out"
+          echo "$out" | grep -q "greeting"
+          echo "$out" | grep -q "hash"
+
+      - name: the client's console runs a command
+        run: |
+          out=$(moon run --target native dbmux/src/main -- "redis://127.0.0.1:6379/0" --headless --frames 10 --keys '\tiHGETALL user:1\x12')
+          echo "$out"
+          echo "$out" | grep -q "Ada"
+          echo "$out" | grep -q "London"
+
+      - name: the client's SQLite demo draws
+        run: |
+          out=$(moon run --target native dbmux/src/main -- --demo --headless --frames 3)
+          echo "$out" | grep -q "customers"

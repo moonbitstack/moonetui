@@ -25,6 +25,19 @@ fn sheet() -> @design.Stylesheet {
 }
 
 ///|
+/// What the window is looking at: a SQL session, or a Redis one. Both answer
+/// the same commands — open, reload, run, save — with what each can do, so the
+/// window itself does not branch on the engine.
+enum Link {
+  Sql(@db.Session)
+  Redis(@db.Redis)
+}
+
+///|
+/// The name of the virtual table that lists Redis keys.
+let keys_table : String = "keys"
+
+///|
 /// A table page from what the grid is showing: its filter, its ordering, its
 /// limit and the page it is on.
 fn query_of(grid : @table.Grid) -> @sqlkit.PageQuery {
@@ -57,6 +70,194 @@ async fn load(
   let rows = grid.row_count()
   if grid.cursor_row >= rows && rows > 0 {
     grid.cursor_row = rows - 1
+  }
+}
+
+///|
+/// The rows of a Redis table: the keys themselves, or one key's value. A key
+/// opens as a table named `key:<name>`, which is what the tab strip shows and
+/// what a reload asks for again.
+async fn redis_page(
+  redis : @db.Redis,
+  table : String,
+) -> @table.Page raise @db.Failed {
+  if table.has_prefix("key:") {
+    let key = table.exact_view(start=4).to_owned()
+    let view = redis.view(key)
+    @table.Page::new(None, table, view.columns, view.rows, [])
+  } else {
+    let pairs = redis.keys("*", 500)
+    let rows : Array[Array[@table.Cell]] = []
+    for (key, kind) in pairs {
+      rows.push([@table.Cell::of(key), @table.Cell::of(kind)])
+    }
+    @table.Page::new(None, keys_table, ["key", "type"], rows, ["key"])
+  }
+}
+
+///|
+/// Open a table in the pane that has the keyboard.
+async fn open_table(
+  link : Link,
+  state : @shell.State,
+  schema : String?,
+  table : String,
+) -> Unit {
+  match link {
+    Sql(session) => {
+      let page = session.page({
+        schema,
+        table,
+        columns: [],
+        filter: "",
+        sorts: [],
+        limit: 100,
+        offset: 0L,
+      }) catch {
+        @db.Failed(text~) => {
+          state.message = text
+          return
+        }
+      }
+      state.show_page(page)
+      state.message = ""
+    }
+    Redis(redis) => {
+      let page = redis_page(redis, table) catch {
+        @db.Failed(text~) => {
+          state.message = text
+          return
+        }
+      }
+      state.show_page(page)
+      state.message = ""
+    }
+  }
+}
+
+///|
+/// Reload the page the active grid is on.
+async fn reload(link : Link, state : @shell.State) -> Unit {
+  match state.grid() {
+    None => ()
+    Some(grid) =>
+      match link {
+        Sql(session) =>
+          load(session, grid) catch {
+            @db.Failed(text~) => state.message = text
+          }
+        Redis(redis) => {
+          let page = redis_page(redis, grid.page.table) catch {
+            @db.Failed(text~) => {
+              state.message = text
+              return
+            }
+          }
+          grid.page = page
+          grid.total = Some(grid.row_count().to_int64())
+          grid.changes = Map([])
+          grid.added = []
+          grid.deleted = []
+        }
+      }
+  }
+}
+
+///|
+/// Run what the editor holds: a script for SQL, one command for Redis. The
+/// last result becomes a tab of its own.
+async fn run(link : Link, state : @shell.State, text : String) -> Unit {
+  match state.refusal(text) {
+    Some(refusal) => state.message = refusal
+    None =>
+      match link {
+        Sql(session) => {
+          let pieces = @sqlkit.statements(text, state.dialect)
+          let mut last : @db.Result? = None
+          let mut failure = ""
+          for piece in pieces {
+            let result = session.query(piece) catch {
+              @db.Failed(text~) => {
+                failure = text
+                break
+              }
+            }
+            last = Some(result)
+          }
+          if failure != "" {
+            state.message = failure
+          } else {
+            match last {
+              Some(result) =>
+                if result.columns.length() > 0 {
+                  state.result = Some(result)
+                  state.show_page(
+                    @table.Page::new(
+                      None,
+                      "result",
+                      result.columns,
+                      result.rows,
+                      [],
+                    ),
+                  )
+                  state.message = result.rows.length().to_string() + " rows"
+                } else {
+                  state.message = result.affected.to_string() + " rows affected"
+                }
+              None => state.message = "nothing to run"
+            }
+          }
+        }
+        Redis(redis) => {
+          let result = redis.command(text) catch {
+            @db.Failed(text~) => {
+              state.message = text
+              return
+            }
+          }
+          state.result = Some(result)
+          state.show_page(
+            @table.Page::new(None, "reply", result.columns, result.rows, []),
+          )
+          state.message = result.rows.length().to_string() + " rows"
+        }
+      }
+  }
+}
+
+///|
+/// Run a save: one transaction for SQL; Redis has no such thing here, and says
+/// so rather than pretend.
+async fn save(
+  link : Link,
+  state : @shell.State,
+  statements : Array[String],
+  expected : Array[Int64],
+) -> Unit {
+  match link {
+    Sql(session) => {
+      let mut saved = true
+      session.run(statements, expected) catch {
+        @db.Failed(text~) => {
+          state.message = text
+          saved = false
+        }
+      }
+      if saved {
+        state.message = "saved"
+        match state.grid() {
+          Some(grid) => {
+            grid.revert()
+            load(session, grid) catch {
+              @db.Failed(text~) => state.message = text
+            }
+          }
+          None => ()
+        }
+      }
+    }
+    Redis(_) =>
+      state.message = "redis values are read-only here; use the console"
   }
 }
 
@@ -131,9 +332,12 @@ async fn main {
     println(
       "  dbmux postgres://me@host/app     PostgreSQL, MySQL, SQL Server by their URL",
     )
+    println(
+      "  dbmux redis://127.0.0.1:6379/0   Redis: the keys, a key's value, a console",
+    )
     println("")
     println(
-      "  keys: j k move, s sort, f filter, e edit, C-s save, ? all keys, q quit",
+      "  keys: j k move, s sort, f filter, e edit, C-s save, C-v split, ? all keys, q quit",
     )
     return
   }
@@ -229,27 +433,9 @@ async fn main {
       }
     None => ""
   }
-  let session = @db.Session::open(connection, password) catch {
-    @db.Failed(text~) => {
-      println("dbmux: " + text)
-      return
-    }
-  }
-  if demo {
-    seed(session) catch {
-      @db.Failed(text~) => {
-        println("dbmux: " + text)
-        session.close()
-        return
-      }
-    }
-  }
   let dialect = match connection.engine.dialect() {
     Some(d) => d
-    None => {
-      println("dbmux: redis is not wired yet")
-      return
-    }
+    None => @sqlkit.Dialect::Sqlite
   }
   let state = @shell.State::new(
     connection.name,
@@ -259,56 +445,59 @@ async fn main {
     connection.production,
     @keymap.Keymap::default(),
   )
-  let tables = session.tables(None) catch {
-    @db.Failed(text~) => {
-      println("dbmux: " + text)
-      return
+  let link = match connection.engine {
+    @config.Engine::Redis => {
+      let redis = @db.Redis::open(connection.dsn, password) catch {
+        @db.Failed(text~) => {
+          println("dbmux: " + text)
+          return
+        }
+      }
+      state.set_catalog([], [
+        { schema: None, name: keys_table, is_view: false, },
+      ])
+      Link::Redis(redis)
     }
-  }
-  state.set_catalog([], tables)
-  let wanted = flag(args, "--table")
-  let mut opened = false
-  if wanted != "" {
-    for table in tables {
-      if table.name == wanted {
-        let page = session.page({
-          schema: table.schema,
-          table: table.name,
-          columns: [],
-          filter: flag(args, "--where"),
-          sorts: [],
-          limit: 100,
-          offset: 0L,
-        }) catch {
+    _ => {
+      let session = @db.Session::open(connection, password) catch {
+        @db.Failed(text~) => {
+          println("dbmux: " + text)
+          return
+        }
+      }
+      if demo {
+        seed(session) catch {
           @db.Failed(text~) => {
             println("dbmux: " + text)
+            session.close()
             return
           }
         }
-        state.show_page(page)
-        opened = true
       }
-    }
-  } else if tables.length() > 0 {
-    let first = tables[0]
-    let page = session.page({
-      schema: first.schema,
-      table: first.name,
-      columns: [],
-      filter: "",
-      sorts: [],
-      limit: 100,
-      offset: 0L,
-    }) catch {
-      @db.Failed(text~) => {
-        println("dbmux: " + text)
-        return
+      let tables = session.tables(None) catch {
+        @db.Failed(text~) => {
+          println("dbmux: " + text)
+          session.close()
+          return
+        }
       }
+      state.set_catalog([], tables)
+      Link::Sql(session)
     }
-    state.show_page(page)
-    opened = true
   }
-  if !opened {
+  let wanted = flag(args, "--table")
+  let first = if wanted != "" {
+    wanted
+  } else {
+    match state.tables {
+      [] => ""
+      [table, ..] => table.name
+    }
+  }
+  if first != "" {
+    open_table(link, state, None, first)
+    state.message = ""
+  } else {
     state.message = "no tables; press C-r to run SQL once the editor has some"
   }
   let screen = @ui.Screen::new(state)
@@ -329,11 +518,14 @@ async fn main {
     if keys != "" {
       head.push(keys_to_bytes(keys))
     }
-    drive(head, screen, session, state, frames)
+    drive(head, screen, link, state, frames)
   } else {
-    drive(@native.NativeTty::new(), screen, session, state, 0)
+    drive(@native.NativeTty::new(), screen, link, state, 0)
   }
-  session.close()
+  match link {
+    Link::Sql(session) => session.close()
+    Link::Redis(_) => ()
+  }
 }
 
 ///|
@@ -377,13 +569,12 @@ fn keys_to_bytes(text : String) -> Bytes {
 async fn[D : @driver.Driver] drive(
   driver : D,
   screen : @ui.Screen,
-  session : @db.Session,
+  link : Link,
   state : @shell.State,
   frames : Int32,
 ) -> Unit {
   let ui = @app.App::new(driver, screen.node(), sheet=sheet())
   ui.start()
-
   let mut alive = true
   let mut drawn = 0
   let mut shown = state.layout
@@ -409,95 +600,12 @@ async fn[D : @driver.Driver] drive(
     for command in screen.bus().take() {
       match command {
         @shell.Command::Quit => alive = false
-        @shell.Command::OpenTable(schema~, table~) => {
-          let page = session.page({
-            schema,
-            table,
-            columns: [],
-            filter: "",
-            sorts: [],
-            limit: 100,
-            offset: 0L,
-          }) catch {
-            @db.Failed(text~) => {
-              state.message = text
-              continue
-            }
-          }
-          state.show_page(page)
-          state.message = ""
-        }
-        @shell.Command::Reload =>
-          match state.grid() {
-            Some(grid) =>
-              load(session, grid) catch {
-                @db.Failed(text~) => state.message = text
-              }
-            None => ()
-          }
-        @shell.Command::RunQuery(text~) =>
-          match state.refusal(text) {
-            Some(refusal) => state.message = refusal
-            None => {
-              let pieces = @sqlkit.statements(text, state.dialect)
-              let mut last : @db.Result? = None
-              let mut failure = ""
-              for piece in pieces {
-                let result = session.query(piece) catch {
-                  @db.Failed(text~) => {
-                    failure = text
-                    break
-                  }
-                }
-                last = Some(result)
-              }
-              if failure != "" {
-                state.message = failure
-              } else {
-                match last {
-                  Some(result) =>
-                    if result.columns.length() > 0 {
-                      state.result = Some(result)
-                      state.show_page(
-                        @table.Page::new(
-                          None,
-                          "result",
-                          result.columns,
-                          result.rows,
-                          [],
-                        ),
-                      )
-                      state.message = result.rows.length().to_string() + " rows"
-                    } else {
-                      state.message = result.affected.to_string() +
-                        " rows affected"
-                    }
-                  None => state.message = "nothing to run"
-                }
-              }
-            }
-          }
-        @shell.Command::Save(statements~, expected~) => {
-          let mut saved = false
-          session.run(statements, expected) catch {
-            @db.Failed(text~) => state.message = text
-          }
-          if state.message == "saving" || state.message == "" {
-            saved = true
-          }
-          if saved {
-            state.message = "saved"
-            match state.grid() {
-              Some(grid) => {
-                grid.revert()
-                load(session, grid) catch {
-                  @db.Failed(text~) => state.message = text
-                }
-              }
-              None => ()
-            }
-          }
-        }
+        @shell.Command::OpenTable(schema~, table~) =>
+          open_table(link, state, schema, table)
+        @shell.Command::Reload => reload(link, state)
+        @shell.Command::RunQuery(text~) => run(link, state, text)
+        @shell.Command::Save(statements~, expected~) =>
+          save(link, state, statements, expected)
         @shell.Command::ExportCsv(path~) =>
           match state.grid() {
             Some(grid) => {
