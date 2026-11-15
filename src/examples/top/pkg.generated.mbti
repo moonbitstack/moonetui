@@ -1,0 +1,32 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "moonbitstack/moonetui/examples/top"
+
+import {
+  "moonbitstack/moonetui/app",
+  "moonbitstack/moonetui/design",
+}
+
+// Values
+pub fn sheet() -> @design.Stylesheet
+
+// Errors
+
+// Types and methods
+pub struct Monitor {
+  mut tick : Int32
+  mut held : Bool
+}
+pub fn Monitor::new() -> Self
+pub fn Monitor::step(Self) -> Unit
+pub fn Monitor::tick(Self) -> Int32
+pub fn Monitor::toggle(Self) -> Unit
+
+pub struct Screen {
+  root : @app.Node
+  monitor : Monitor
+}
+pub fn Screen::new() -> Self
+
+// Type aliases
+
+// Traits

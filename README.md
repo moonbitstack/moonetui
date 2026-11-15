@@ -46,6 +46,7 @@ moon run --target native src/examples/game2048/main # 2048: arrows slide, r rest
 moon run --target native src/examples/pulse/main    # a dashboard: a window of load
 moon run --target native src/examples/donut/main    # a torus, turning in two axes
 moon run --target native src/examples/files/main    # a browser in Miller columns
+moon run --target native src/examples/top/main      # cores, memory, network, processes
 moon run --target js src/examples/hello         # under Node
 moon run --target native src/examples/uart      # whole frames of plain text, as a serial line gets them
 moon run --target native dbmux/src/main -- --demo   # a database client, with a SQLite demo database
@@ -142,6 +143,7 @@ Each one has its keyboard contract, message shape and tests, and a live demo on 
 | `examples/pulse` | A dashboard: a rolling window drawn as a spectrum, a rate, and a hold |
 | `examples/donut` | A torus sampled, turned and shaded into characters, with a z-buffer |
 | `examples/files` | Miller columns: where from, what is here, what the selection holds |
+| `examples/top` | Four regions: cores, memory, two network charts, the busiest processes |
 
 ## Standards
 
