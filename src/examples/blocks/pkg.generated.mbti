@@ -1,0 +1,63 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "moonbitstack/moonetui/examples/blocks"
+
+import {
+  "moonbitstack/moonetui/app",
+  "moonbitstack/moonetui/design",
+}
+
+// Values
+pub const TALL : Int32 = 18
+
+pub const WIDE : Int32 = 10
+
+pub fn sheet() -> @design.Stylesheet
+
+// Errors
+
+// Types and methods
+pub struct Grid {
+  mut stage : Stage
+  mut cells : Array[Int32]
+  mut kind : Int32
+  mut rot : Int32
+  mut px : Int32
+  mut py : Int32
+  mut score : Int32
+  mut lines : Int32
+  mut level : Int32
+  mut beat : Int32
+  mut seed : Int32
+  mut next : Int32
+}
+pub fn Grid::cell(Self, Int32, Int32) -> Int32
+pub fn Grid::drop(Self) -> Unit
+pub fn Grid::fall(Self) -> Unit
+pub fn Grid::level(Self) -> Int32
+pub fn Grid::lines(Self) -> Int32
+pub fn Grid::new() -> Self
+pub fn Grid::piece(Self) -> Array[(Int32, Int32)]
+pub fn Grid::score(Self) -> Int32
+pub fn Grid::shift(Self, Int32) -> Unit
+pub fn Grid::stage(Self) -> Stage
+pub fn Grid::start(Self) -> Unit
+pub fn Grid::turn(Self) -> Unit
+
+pub struct Screen {
+  root : @app.Node
+  grid : Grid
+}
+pub fn Screen::new() -> Self
+
+#derive(Eq)
+pub(all) enum Stage {
+  Title
+  Playing
+  Over
+}
+pub fn Stage::equal(Self, Self) -> Bool
+pub fn Stage::not_equal(Self, Self) -> Bool
+
+// Type aliases
+
+// Traits

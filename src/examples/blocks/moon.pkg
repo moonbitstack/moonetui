@@ -1,0 +1,16 @@
+// Falling blocks: `moon run --target native src/examples/blocks/main`.
+import {
+  "moonbitstack/moonetui/app",
+  "moonbitstack/moonetui/design",
+  "moonbitstack/moonetui/geom",
+  "moonbitstack/moonetui/layout",
+  "moonbitstack/moonetui/strip",
+  "moonbitstack/moonetui/style",
+  "moonbitstack/moonetui/widget",
+  "moonbitstack/moonetui/examples/theme",
+}
+
+import {
+  "moonbitstack/moonetui/driver",
+  "moonbitlang/core/env",
+} for "test"
