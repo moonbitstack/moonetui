@@ -275,15 +275,13 @@ fn State::press_browse(self : State, key : String) -> Array[Command] {
             None => ()
           }
         @keymap.Action::RunQuery => ()
-        @keymap.Action::NextTab =>
-          if self.tabs.length() > 0 {
-            self.tab = (self.tab + 1) % self.tabs.length()
-          }
-        @keymap.Action::PrevTab =>
-          if self.tabs.length() > 0 {
-            self.tab = (self.tab + self.tabs.length() - 1) % self.tabs.length()
-          }
+        @keymap.Action::NextTab => self.next_tab()
+        @keymap.Action::PrevTab => self.prev_tab()
         @keymap.Action::CloseTab => self.close_tab()
+        @keymap.Action::SplitRight => self.split(Layout::SplitVertical)
+        @keymap.Action::SplitDown => self.split(Layout::SplitHorizontal)
+        @keymap.Action::OtherPane => self.other_pane()
+        @keymap.Action::ClosePane => self.unsplit()
         @keymap.Action::PageNext =>
           match self.grid() {
             Some(grid) => if grid.turn_page(true) { out.push(Command::Reload) }

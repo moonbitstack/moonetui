@@ -31,6 +31,7 @@ pub fn Bus::take(self : Bus) -> Array[@shell.Command] {
 /// over either. Every key of the window arrives here, so the state machine —
 /// not the widget tree — decides what a key means.
 pub struct Router {
+  pane : Int32
   state : @shell.State
   bus : Bus
   list : @widget.ListView
@@ -42,8 +43,13 @@ pub struct Router {
 }
 
 ///|
-pub fn Router::new(state : @shell.State, list : @widget.ListView) -> Router {
+pub fn Router::new(
+  pane : Int32,
+  state : @shell.State,
+  list : @widget.ListView,
+) -> Router {
   {
+    pane,
     state,
     bus: Bus::new(),
     list,
@@ -70,7 +76,7 @@ pub fn Router::editor(self : Router) -> Editor {
 /// is a renderer: the cursor and the scroll follow `move_cursor`, and every
 /// edit goes through the state first.
 pub fn Router::sync(self : Router) -> Unit {
-  match self.state.grid() {
+  match self.state.grid_of(self.pane) {
     None => ()
     Some(grid) => {
       let table = @widget.DataTable::new(zebra=true)
@@ -126,7 +132,7 @@ fn column_widths(grid : @table.Grid) -> Array[Int32] {
 ///|
 /// Put the cursor where the state says it is, after a key moved it.
 fn Router::follow(self : Router) -> Unit {
-  match self.state.grid() {
+  match self.state.grid_of(self.pane) {
     None => ()
     Some(grid) => {
       self.table.move_cursor(row=grid.cursor_row, col=grid.cursor_col)
@@ -173,8 +179,7 @@ pub fn Router::press(self : Router, key : String) -> Bool {
   if self.state.focus is @shell.Focus::Tree {
     match key {
       "j" | "down" => {
-        if self.state.tabs.length() >= 0 &&
-          self.state.tree_at + 1 < self.state.tables.length() {
+        if self.state.tree_at + 1 < self.state.tables.length() {
           self.state.tree_at = self.state.tree_at + 1
           self.list.select(self.state.tree_at)
         }
@@ -198,6 +203,38 @@ pub fn Router::press(self : Router, key : String) -> Bool {
 
 ///|
 pub extend Router with @widget.Widget::{focusable, handle, hint, render_line}
+
+///|
+/// The strip of tabs above the pane: every tab of this pane, the showing one
+/// reversed. It takes the first line; the grid starts under it.
+fn Router::tabs_line(self : Router, width : Int32) -> @strip.Strip {
+  let parts : Array[@strip.Strip] = []
+  match self.state.pane_of(self.pane) {
+    None => ()
+    Some(pane) => {
+      let mut i = 0
+      for tab in pane.tabs {
+        let label = " " + (i + 1).to_string() + " " + tab.table + " "
+        let style = if i == pane.tab {
+          @style.Style::new(reverse=true)
+        } else {
+          @style.Style::new(fg=@style.bright_black)
+        }
+        parts.push(@strip.Strip::of(label, style))
+        i = i + 1
+      }
+    }
+  }
+  if parts.length() == 0 {
+    parts.push(
+      @strip.Strip::of(
+        " no tab · enter on a table opens one",
+        @style.Style::new(fg=@style.bright_black),
+      ),
+    )
+  }
+  @strip.Strip::join(parts).pad_to(width, self.style)
+}
 
 ///|
 /// The lines of a dialog: the preview, the confirmation, the keys, or the
@@ -333,20 +370,26 @@ pub impl @widget.Widget for Router with fn handle(self, ctx, msg) {
 
 ///|
 pub impl @widget.Widget for Router with fn render_line(self, index, size) {
+  // Line zero is the pane's tab strip; the grid or the editor starts under it.
+  let body = if index == 0 {
+    @strip.Strip::empty()
+  } else if self.state.focus is @shell.Focus::Editor {
+    self.editor.render_line(index - 1, size, self.style, self.cursor_style)
+  } else {
+    self.table.render_line(index - 1, size)
+  }
   match self.state.mode {
     @shell.Mode::Browse =>
-      if self.state.focus is @shell.Focus::Editor {
-        self.editor.render_line(index, size, self.style, self.cursor_style)
+      if index == 0 {
+        self.tabs_line(size.width)
       } else {
-        self.table.render_line(index, size)
+        body
       }
     @shell.Mode::Typing =>
       if index == 0 {
         self.overlay_line(0, size.width)
-      } else if self.state.focus is @shell.Focus::Editor {
-        self.editor.render_line(index, size, self.style, self.cursor_style)
       } else {
-        self.table.render_line(index, size)
+        body
       }
     _ => self.overlay_line(index, size.width)
   }

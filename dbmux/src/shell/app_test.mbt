@@ -57,7 +57,7 @@ test "opening a table twice keeps one tab" {
   let state = app_state(false)
   state.show_page(app_page())
   state.show_page(app_page())
-  assert_eq(state.tabs.length(), 1)
+  assert_eq(state.panes[0].tabs.length(), 1)
   assert_eq(state.focus, @shell.Focus::Grid)
 }
 
@@ -175,11 +175,11 @@ test "tabs turn and close" {
   state.show_page(
     @table.Page::new(None, "users", ["id"], [[@table.Cell::of("1")]], ["id"]),
   )
-  assert_eq(state.tabs.length(), 2)
+  assert_eq(state.panes[0].tabs.length(), 2)
   ignore(state.press("gt"))
-  assert_eq(state.tab, 0)
+  assert_eq(state.panes[0].tab, 0)
   ignore(state.press("C-w"))
-  assert_eq(state.tabs.length(), 1)
+  assert_eq(state.panes[0].tabs.length(), 1)
 }
 
 ///|
@@ -189,4 +189,76 @@ test "the status line counts what is on screen" {
   assert_eq(state.status(), "1-2 · 2 columns")
   state.grid().unwrap().set_cell(0, "total", @table.Cell::of("11"))
   assert_eq(state.status(), "1-2 · 2 columns · unsaved changes")
+}
+
+///|
+test "a split shows the table on both sides, with a tab each" {
+  let state = app_state(false)
+  state.show_page(app_page())
+  state.split(@shell.Layout::SplitVertical)
+  assert_eq(state.panes.length(), 2)
+  assert_eq(state.layout, @shell.Layout::SplitVertical)
+  assert_eq(state.panes[1].tabs.length(), 1)
+  assert_eq(state.pane_label(1), "orders")
+}
+
+///|
+test "each pane keeps its own tabs" {
+  let state = app_state(false)
+  state.show_page(app_page())
+  state.split(@shell.Layout::SplitVertical)
+  state.other_pane()
+  assert_eq(state.pane, 1)
+  state.show_page(
+    @table.Page::new(None, "users", ["id"], [[@table.Cell::of("1")]], ["id"]),
+  )
+  assert_eq(state.panes[0].tabs.length(), 1)
+  assert_eq(state.panes[1].tabs.length(), 2)
+  assert_eq(state.pane_label(0), "orders")
+  assert_eq(state.pane_label(1), "users")
+}
+
+///|
+test "a second split turns the divider" {
+  let state = app_state(false)
+  state.show_page(app_page())
+  state.split(@shell.Layout::SplitVertical)
+  state.split(@shell.Layout::SplitHorizontal)
+  assert_eq(state.panes.length(), 2)
+  assert_eq(state.layout, @shell.Layout::SplitHorizontal)
+}
+
+///|
+test "closing the split keeps the pane that had the keyboard" {
+  let state = app_state(false)
+  state.show_page(app_page())
+  state.split(@shell.Layout::SplitVertical)
+  state.other_pane()
+  state.unsplit()
+  assert_eq(state.panes.length(), 1)
+  assert_eq(state.pane, 0)
+  assert_eq(state.layout, @shell.Layout::Single)
+  assert_eq(state.panes[0].tabs.length(), 1)
+}
+
+///|
+test "the split is said in the status line" {
+  let state = app_state(false)
+  state.show_page(app_page())
+  state.split(@shell.Layout::SplitVertical)
+  assert_eq(state.status(), "1-2 · 2 columns · 2 panes ⇔")
+}
+
+///|
+test "the split keys reach the state through the keyboard" {
+  let state = app_state(false)
+  state.show_page(app_page())
+  ignore(state.press("C-v"))
+  assert_eq(state.layout, @shell.Layout::SplitVertical)
+  ignore(state.press("C-x"))
+  assert_eq(state.layout, @shell.Layout::SplitHorizontal)
+  ignore(state.press("C-o"))
+  assert_eq(state.pane, 1)
+  ignore(state.press("C-q"))
+  assert_eq(state.layout, @shell.Layout::Single)
 }

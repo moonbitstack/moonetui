@@ -37,6 +37,10 @@ pub(all) enum Action {
   PrevTab
   Reload
   OpenTable
+  SplitRight
+  SplitDown
+  OtherPane
+  ClosePane
 }
 
 ///|
@@ -79,6 +83,10 @@ pub fn Action::name(self : Action) -> String {
     PrevTab => "previous tab"
     Reload => "reload"
     OpenTable => "open table"
+    SplitRight => "split right"
+    SplitDown => "split down"
+    OtherPane => "other pane"
+    ClosePane => "close split"
   }
 }
 
@@ -119,6 +127,10 @@ pub fn Action::parse(text : String) -> Action? {
     ("prev-tab", PrevTab),
     ("reload", Reload),
     ("open-table", OpenTable),
+    ("split-right", SplitRight),
+    ("split-down", SplitDown),
+    ("other-pane", OtherPane),
+    ("close-pane", ClosePane),
   ]
   let mut i = 0
   while i < table.length() {
@@ -208,6 +220,10 @@ pub fn Keymap::default() -> Keymap {
     ("gT", PrevTab),
     ("R", Reload),
     ("enter", OpenTable),
+    ("C-v", SplitRight),
+    ("C-x", SplitDown),
+    ("C-o", OtherPane),
+    ("C-q", ClosePane),
   ])
 }
 

@@ -383,17 +383,26 @@ async fn[D : @driver.Driver] drive(
 ) -> Unit {
   let ui = @app.App::new(driver, screen.node(), sheet=sheet())
   ui.start()
-  // The pane with the keyboard is the fourth leaf; the list is only drawn,
-  // so the keys that open a table are the pane's, not the list's.
-  let mut tries = 0
-  while ui.focused() != 4 && tries < 8 {
-    ui.focus_next(1)
-    tries = tries + 1
-  }
+
   let mut alive = true
   let mut drawn = 0
+  let mut shown = state.layout
   while alive {
     screen.refresh()
+    // A split changes the tree itself, so the root is swapped when the layout
+    // does; everything else is a repaint.
+    if !(state.layout == shown) {
+      ui.swap_root(screen.node())
+      shown = state.layout
+    }
+    // The pane with the keyboard has to be the one the application delivers
+    // keys to; a split moves it, and so does C-o.
+    let want = @ui.pane_id(state.pane)
+    let mut tries = 0
+    while ui.focused() != want && tries < 8 {
+      ui.focus_next(1)
+      tries = tries + 1
+    }
     ui.refresh()
     alive = ui.step() catch { _ => false }
     ignore(ui.drain())

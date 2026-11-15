@@ -58,6 +58,44 @@ pub(all) struct Tab {
 }
 
 ///|
+/// A pane holds tabs, and one of them is the one showing. A window has one
+/// pane until it is split, and then two.
+pub(all) struct Pane {
+  mut tabs : Array[Tab]
+  mut tab : Int32
+}
+
+///|
+pub fn Pane::new() -> Pane {
+  { tabs: [], tab: 0, }
+}
+
+///|
+pub fn Pane::current(self : Pane) -> Tab? {
+  if self.tab < self.tabs.length() {
+    Some(self.tabs[self.tab])
+  } else {
+    None
+  }
+}
+
+///|
+/// How the main area is divided. `Single` is one pane; the two splits put a
+/// second pane beside or below the first.
+#derive(Eq, Debug)
+pub(all) enum Layout {
+  Single
+  SplitVertical
+  SplitHorizontal
+}
+
+///|
+pub extend Layout with Eq::{equal, not_equal}
+
+///|
+pub extend Layout with Debug::{to_repr}
+
+///|
 /// Everything the screen shows and every key does.
 pub(all) struct State {
   connection : String
@@ -68,8 +106,9 @@ pub(all) struct State {
   mut schemas : Array[String]
   mut tables : Array[@db.TableInfo]
   mut tree_at : Int32
-  mut tabs : Array[Tab]
-  mut tab : Int32
+  mut panes : Array[Pane]
+  mut pane : Int32
+  mut layout : Layout
   mut focus : Focus
   mut mode : Mode
   mut message : String
@@ -106,8 +145,9 @@ pub fn State::new(
     schemas: [],
     tables: [],
     tree_at: 0,
-    tabs: [],
-    tab: 0,
+    panes: [Pane::new()],
+    pane: 0,
+    layout: Single,
     focus: Tree,
     mode: Browse,
     message: "",
@@ -128,51 +168,74 @@ pub fn State::new(
 }
 
 ///|
-pub fn State::tab_of(self : State) -> Tab? {
-  if self.tab < self.tabs.length() {
-    Some(self.tabs[self.tab])
+/// The pane the keys go to.
+pub fn State::active(self : State) -> Pane {
+  if self.pane < self.panes.length() {
+    self.panes[self.pane]
+  } else {
+    self.panes[0]
+  }
+}
+
+///|
+/// The tabs of one pane, for drawing both halves of a split.
+pub fn State::pane_of(self : State, index : Int32) -> Pane? {
+  if index < self.panes.length() {
+    Some(self.panes[index])
   } else {
     None
   }
 }
 
 ///|
-pub fn State::current(self : State) -> @table.Grid? {
-  match self.tab_of() {
-    Some(tab) => Some(tab.grid)
+pub fn State::tab_of(self : State) -> Tab? {
+  self.active().current()
+}
+
+///|
+/// The grid of one pane, or of the pane with the keyboard.
+pub fn State::grid_of(self : State, index : Int32) -> @table.Grid? {
+  match self.pane_of(index) {
     None => None
+    Some(pane) =>
+      match pane.current() {
+        Some(tab) => Some(tab.grid)
+        None => None
+      }
   }
 }
 
 ///|
-/// The grid on screen, or a fresh empty one so a key on no tab does nothing.
+/// The grid on screen.
 pub fn State::grid(self : State) -> @table.Grid? {
-  self.current()
+  self.grid_of(self.pane)
 }
 
 ///|
 /// Put a page into the tab that asked for it, or open the tab when it is new.
+/// A split shows the same table in both panes until one of them opens another.
 pub fn State::show_page(self : State, page : @table.Page) -> Unit {
+  let pane = self.active()
   let mut found = -1
   let mut i = 0
-  while i < self.tabs.length() {
-    let tab = self.tabs[i]
+  while i < pane.tabs.length() {
+    let tab = pane.tabs[i]
     if tab.table == page.table && tab.schema == page.schema {
       found = i
     }
     i = i + 1
   }
   if found >= 0 {
-    let tab = self.tabs[found]
+    let tab = pane.tabs[found]
     tab.grid.page = page
     tab.grid.changes = Map([])
     tab.grid.added = []
     tab.grid.deleted = []
-    self.tab = found
+    pane.tab = found
   } else {
     let grid = @table.Grid::new(page)
-    self.tabs.push({ schema: page.schema, table: tab_label(page), grid, })
-    self.tab = self.tabs.length() - 1
+    pane.tabs.push({ schema: page.schema, table: tab_label(page), grid, })
+    pane.tab = pane.tabs.length() - 1
   }
   self.focus = Grid
 }
@@ -188,14 +251,90 @@ fn tab_label(page : @table.Page) -> String {
 
 ///|
 pub fn State::close_tab(self : State) -> Unit {
-  if self.tabs.length() > 0 {
-    ignore(self.tabs.remove(self.tab))
-    if self.tab >= self.tabs.length() && self.tab > 0 {
-      self.tab = self.tabs.length() - 1
+  let pane = self.active()
+  if pane.tabs.length() > 0 {
+    ignore(pane.tabs.remove(pane.tab))
+    if pane.tab >= pane.tabs.length() && pane.tab > 0 {
+      pane.tab = pane.tabs.length() - 1
     }
-    if self.tabs.length() == 0 {
+    if pane.tabs.length() == 0 {
       self.focus = Tree
     }
+  }
+}
+
+///|
+pub fn State::next_tab(self : State) -> Unit {
+  let pane = self.active()
+  if pane.tabs.length() > 0 {
+    pane.tab = (pane.tab + 1) % pane.tabs.length()
+  }
+}
+
+///|
+pub fn State::prev_tab(self : State) -> Unit {
+  let pane = self.active()
+  if pane.tabs.length() > 0 {
+    pane.tab = (pane.tab + pane.tabs.length() - 1) % pane.tabs.length()
+  }
+}
+
+///|
+/// Split the main area, with the table that is showing on both sides. A
+/// second split turns the divider: from side by side to one above the other.
+pub fn State::split(self : State, layout : Layout) -> Unit {
+  if self.layout == layout && self.panes.length() > 1 {
+    return
+  }
+  if self.panes.length() == 1 {
+    let second = Pane::new()
+    match self.active().current() {
+      Some(tab) => {
+        let copy = @table.Grid::new(tab.grid.page)
+        copy.filter = tab.grid.filter
+        copy.sorts = tab.grid.sorts
+        copy.limit = tab.grid.limit
+        copy.offset = tab.grid.offset
+        copy.total = tab.grid.total
+        second.tabs.push({ schema: tab.schema, table: tab.table, grid: copy, })
+      }
+      None => ()
+    }
+    self.panes.push(second)
+  }
+  self.layout = layout
+}
+
+///|
+/// Close the split, keeping the pane that had the keyboard and its tabs.
+pub fn State::unsplit(self : State) -> Unit {
+  if self.panes.length() > 1 {
+    let keep = self.pane
+    let kept = self.panes[keep]
+    self.panes = [kept]
+    self.pane = 0
+  }
+  self.layout = Single
+}
+
+///|
+/// Hand the keyboard to the other pane.
+pub fn State::other_pane(self : State) -> Unit {
+  if self.panes.length() > 1 {
+    self.pane = (self.pane + 1) % self.panes.length()
+  }
+}
+
+///|
+/// The label of each pane for the tab strip: the tab it shows, or nothing.
+pub fn State::pane_label(self : State, index : Int32) -> String {
+  match self.grid_of(index) {
+    Some(grid) =>
+      match grid.page.schema {
+        Some(s) => s + "." + grid.page.table
+        None => grid.page.table
+      }
+    None => "(empty)"
   }
 }
 
@@ -248,16 +387,26 @@ pub fn State::status(self : State) -> String {
   if self.message != "" {
     return self.message
   }
+  let where_ = match self.layout {
+    Single => ""
+    SplitVertical => " · 2 panes ⇔"
+    SplitHorizontal => " · 2 panes ⇕"
+  }
   match self.grid() {
     None =>
-      self.connection + " · " + self.tables.length().to_string() + " tables"
+      self.connection +
+      " · " +
+      self.tables.length().to_string() +
+      " tables" +
+      where_
     Some(grid) => {
       let dirty = if grid.is_dirty() { " · unsaved changes" } else { "" }
       grid.range_text() +
       " · " +
       grid.visible().length().to_string() +
       " columns" +
-      dirty
+      dirty +
+      where_
     }
   }
 }

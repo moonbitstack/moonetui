@@ -19,7 +19,7 @@ moved out of the repository without changing the library.
 | `keymap` | Every action, its default key, and a TOML file that rebinds them |
 | `db` | One live connection per engine, DSN parsing, and the catalog queries each engine answers its own way |
 | `shell` | The state machine: what a key does, what it refuses, and the commands the host has to run |
-| `ui` | The window: a table list, the pane that has the keyboard, the modal editor, and the dialogs drawn over it |
+| `ui` | The window: a table list, one or two panes with a tab strip each, the modal editor, and the dialogs drawn over it |
 | `main` | The entry point: arguments, a connection, a catalog, and the frame loop |
 
 The split is deliberate: everything above `db` is a pure function of data, so
@@ -83,7 +83,10 @@ and every write on it is confirmed.
 | `x` / `X` | export CSV / JSON |
 | `C-p` | the command palette |
 | `?` | the keys that work here |
-| `gt` / `gT` | next / previous tab |
+| `gt` / `gT` | next / previous tab in this pane |
+| `C-v` / `C-x` | split right / split down (the same table on both sides) |
+| `C-o` | hand the keyboard to the other pane |
+| `C-q` | close the split |
 | `C-r` | run the editor's SQL |
 | `q` | quit |
 
@@ -109,11 +112,12 @@ filter = "/"
 ## Status
 
 What runs today: a SQLite file or an in-memory demo, opened in a terminal, with
-the table list, the grid, cell edits and the save preview, the modal SQL
+the table list, one or two panes split side by side or one above the other,
+a tab strip per pane, the grid, cell edits and the save preview, the modal SQL
 editor, the palette, the key panel, and CSV and JSON export. PostgreSQL, MySQL
 and SQL Server are wired to their drivers through the same `Session`; their
 integration tests need servers, so they run in CI rather than on a laptop.
 
-Not built yet: Redis (key browser and console), split panes, completion and
-query history, and a connection form. The delivery note in the repository's
+Not built yet: Redis (key browser and console), completion and query history,
+and a connection form. The delivery note in the repository's
 last commit lists them in the order they come next.
