@@ -17,4 +17,5 @@ import {
 // which is what a terminal does with it.
 import {
   "moonbitstack/moonetui/vt",
+  "moonbitlang/core/env",
 } for "test"

@@ -24,6 +24,18 @@ fn hex16(text : String) -> String {
 }
 
 ///|
+/// Whether the frames are announced at all. `moon test` prints what it was
+/// asked for — a report — and a frame is tens of kilobytes of hex, which is
+/// noise in a terminal that only wanted the count. CI sets `MOONETUI_INTEROP`
+/// and reads the lines from there.
+fn interop_wanted() -> Bool {
+  match @env.get_env_var("MOONETUI_INTEROP") {
+    Some(_) => true
+    None => false
+  }
+}
+
+///|
 /// Announces one frame: its name, the emulators that can model it, the bytes
 /// that draw it, and the rows it is meant to show.
 /// `scripts/verify_terminals.py` draws the same bytes with two terminal
@@ -35,6 +47,9 @@ fn announce(
   stream : String,
   rows : Array[String],
 ) -> Unit {
+  if !interop_wanted() {
+    return
+  }
   let line = StringBuilder()
   line.write_string(
     "interop\t" +

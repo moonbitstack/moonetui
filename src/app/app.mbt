@@ -5,7 +5,7 @@
 pub struct App[D] {
   driver : D
   plain : Bool
-  quit : @event.Key?
+  quit : Array[@event.Key]
   mut root : Node
   parser : @input.Parser
   mut base : @style.Style
@@ -46,7 +46,7 @@ pub fn[D] App::new(
   sheet~ : @design.Stylesheet = @design.Stylesheet::new(),
   fps~ : Int32 = 60,
   plain~ : Bool = false,
-  quit~ : @event.Key? = Some(ctrl_c),
+  quit~ : Array[@event.Key] = [ctrl_c],
 ) -> App[D] {
   {
     driver,
@@ -170,6 +170,16 @@ pub fn[D : @driver.Driver] App::run(self : App[D]) -> Unit raise {
 
   }
   self.stop()
+}
+
+///|
+fn[D] App::quits(self : App[D], key : @event.Key) -> Bool {
+  for quit in self.quit {
+    if quit == key {
+      return true
+    }
+  }
+  false
 }
 
 ///|
@@ -400,12 +410,20 @@ pub fn[D] App::screen(self : App[D]) -> Array[String] {
 fn[D : @driver.Driver] App::dispatch(self : App[D], ev : @event.Event) -> Unit {
   match ev {
     Key(key) => {
-      if self.quit == Some(key) {
+      // ctrl-c leaves whether or not a widget would have taken it: a terminal
+      // program with a key it cannot be interrupted by is a bug.
+      if self.quits(key) && key == ctrl_c {
         self.running = false
         return
       }
       let handled = self.deliver(self.focus, Key(key))
       if !handled {
+        // The other quit keys come after the widget, so escape can close a
+        // dialog before it closes the application.
+        if self.quits(key) {
+          self.running = false
+          return
+        }
         match key.code {
           Tab => self.focus_next(1)
           BackTab => self.focus_next(-1)
@@ -795,11 +813,20 @@ fn[D] App::dress_line(
 
 ///|
 /// The quit key most terminal programs answer to. An application whose text
-/// fields want it for copying passes another, or `None` and quits itself.
+/// fields want it for copying passes another list, or `[]` and quits itself.
 pub let ctrl_c : @event.Key = {
   code: Char(99),
   mods: { ctrl: true, alt: false, shift: false, },
 }
+
+///|
+/// Escape, which readers expect to leave a screen, and which is handed to the
+/// widget under the keyboard first: a dialog closes before the program does.
+pub let esc : @event.Key = @event.Key::of(Escape)
+
+///|
+/// `q`, the other key readers try when they want out.
+pub let q : @event.Key = @event.Key::of(Char(113))
 
 ///|
 fn[D] App::scroll_key(self : App[D], key : @event.Key) -> Bool {

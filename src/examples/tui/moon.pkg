@@ -2,7 +2,7 @@
 import {
   "moonbitstack/moonetui/app",
   "moonbitstack/moonetui/driver/native",
-  "moonbitstack/moonetui/examples/demo",
+  "moonbitstack/moonetui/examples/dbmux",
 }
 
 supported_targets = "native"

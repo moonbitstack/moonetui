@@ -16,7 +16,9 @@ fn main raise {
     @app.leaf(4, bar, box=@layout.Box::new(extent=Cells(1))),
   ])
   let wire = @driver.Headless::new(@geom.Size::new(40, 8))
-  let ui = @app.App::new(wire, tree, plain=true)
+  let ui = @app.App::new(wire, tree, plain=true, quit=[
+    @app.ctrl_c, @app.esc, @app.q,
+  ])
   ui.start()
   let frame = wire.output()
   ui.stop()

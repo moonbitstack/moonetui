@@ -159,18 +159,44 @@ test "the quit key can be another key, or none" {
     bytes([3]),
     bytes([0x11]),
   ])
-  let ui = @app.App::new(
-    tty,
-    tree,
-    quit=Some(@event.Key::with_mods(Char(113), ctrl)),
-  )
+  let ui = @app.App::new(tty, tree, quit=[
+    @event.Key::with_mods(Char(113), ctrl),
+  ])
   ui.start()
   assert_eq(ui.step(), true)
   assert_eq(ui.step(), false)
   let tty = @driver.Headless::new(@geom.Size::new(4, 1), script=[bytes([3])])
-  let ui = @app.App::new(tty, tree, quit=None)
+  let ui = @app.App::new(tty, tree, quit=[])
   ui.start()
   assert_eq(ui.step(), true)
+}
+
+///|
+test "escape and q leave, but a field gets the q first" {
+  let tree = @app.column(0, [@app.leaf(1, @widget.Static::new("x"))])
+  // An escape is held for a moment in case more of a sequence follows, so the
+  // step after it is the one that answers.
+  let tty = @driver.Headless::new(@geom.Size::new(4, 1), script=[
+    bytes([0x1b]),
+    b"",
+  ])
+  let ui = @app.App::new(tty, tree, quit=[@app.esc, @app.q])
+  ui.start()
+  assert_eq(ui.step(), true)
+  assert_eq(ui.step(), false)
+  let tty = @driver.Headless::new(@geom.Size::new(4, 1), script=[bytes([113])])
+  let ui = @app.App::new(tty, tree, quit=[@app.esc, @app.q])
+  ui.start()
+  assert_eq(ui.step(), false)
+  // A text field takes the q before the quit list sees it: typing "q" is not
+  // the same as pressing it at a screen with nothing to type into.
+  let field = @widget.Input::new()
+  let tree = @app.column(0, [@app.leaf(1, field)])
+  let tty = @driver.Headless::new(@geom.Size::new(8, 1), script=[bytes([113])])
+  let ui = @app.App::new(tty, tree, quit=[@app.esc, @app.q])
+  ui.start()
+  assert_eq(ui.step(), true)
+  assert_eq(field.text(), "q")
 }
 
 ///|

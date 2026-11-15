@@ -8,7 +8,9 @@ test "every demo starts, draws something and has a name of its own" {
     assert_eq(names.contains(demo.name), false)
     names.push(demo.name)
     let tty = @driver.Headless::new(@geom.Size::new(60, demo.rows))
-    let ui = @app.App::new(tty, demo.tree, sheet=demo.sheet)
+    let ui = @app.App::new(tty, demo.tree, sheet=demo.sheet, quit=[
+      @app.ctrl_c, @app.esc, @app.q,
+    ])
     for id in demo.disabled {
       ui.disable(id)
     }
@@ -31,7 +33,9 @@ test "every demo starts, draws something and has a name of its own" {
 test "the gallery puts each demo on the stage as the menu moves to it" {
   let gallery = @showcase.Gallery::new()
   let tty = @driver.Headless::new(@geom.Size::new(100, 32))
-  let ui = @app.App::new(tty, gallery.tree(), sheet=gallery.sheet())
+  let ui = @app.App::new(tty, gallery.tree(), sheet=gallery.sheet(), quit=[
+    @app.ctrl_c, @app.esc, @app.q,
+  ])
   gallery.attach(ui)
   ui.start()
   // One screen for the whole run: each frame writes only what changed.

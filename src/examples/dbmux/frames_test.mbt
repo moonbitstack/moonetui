@@ -24,6 +24,18 @@ fn hex16(text : String) -> String {
 }
 
 ///|
+/// Whether the frames are announced at all. `moon test` prints what it was
+/// asked for — a report — and a frame is tens of kilobytes of hex, which is
+/// noise in a terminal that only wanted the count. CI sets `MOONETUI_INTEROP`
+/// and reads the lines from there.
+fn interop_wanted() -> Bool {
+  match @env.get_env_var("MOONETUI_INTEROP") {
+    Some(_) => true
+    None => false
+  }
+}
+
+///|
 /// Announces one frame of the demo: its name, the emulators that can model it,
 /// the bytes written since the demo started, and the rows it is meant to show.
 /// `scripts/verify_terminals.py` replays those bytes in two terminal emulators
@@ -34,6 +46,9 @@ fn announce(
   stream : String,
   rows : Array[String],
 ) -> Unit {
+  if !interop_wanted() {
+    return
+  }
   let line = StringBuilder()
   line.write_string(
     "interop\t" +
@@ -141,7 +156,7 @@ fn steps() -> Array[Step] {
 ///|
 test "the demo answers keys, frame by frame" {
   let size = @geom.Size::new(80, 24)
-  let demo = @demo.Demo::new()
+  let demo = @dbmux.Demo::new()
   // One chunk per key and an empty one after it: a key's frame is drawn on the
   // step after its handler has answered, which is what a reader sees.
   let script : Array[Bytes] = []
@@ -151,7 +166,7 @@ test "the demo answers keys, frame by frame" {
     script.push(b"")
   }
   let driver = @driver.Headless::new(size, script~, tick=16)
-  let ui = @app.App::new(driver, demo.root, sheet=@demo.sheet())
+  let ui = @app.App::new(driver, demo.root, sheet=@dbmux.sheet())
   let total = StringBuilder()
   ui.start()
   total.write_string(driver.output())

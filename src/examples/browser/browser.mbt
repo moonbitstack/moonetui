@@ -26,7 +26,9 @@ pub fn mount(canvas : String, name : String) -> Unit {
     bg=back,
     palette=site,
   )
-  let ui = @app.App::new(tty, demo.tree, sheet=demo.sheet)
+  let ui = @app.App::new(tty, demo.tree, sheet=demo.sheet, quit=[
+    @app.ctrl_c, @app.esc, @app.q,
+  ])
   for id in demo.disabled {
     ui.disable(id)
   }

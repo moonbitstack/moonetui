@@ -76,7 +76,7 @@
 
   <div class="stats">
     <div class="stat"><div class="n">4</div><div class="l">backends · wasm, wasm-gc, js, native</div></div>
-    <div class="stat"><div class="n" data-count="tests">677</div><div class="l">tests per backend, all passing</div></div>
+    <div class="stat"><div class="n" data-count="tests">678</div><div class="l">tests per backend, all passing</div></div>
     <div class="stat"><div class="n" data-count="widgets">55</div><div class="l">widgets, from toggles to trees</div></div>
     <div class="stat"><div class="n">0</div><div class="l">dependencies · a single pure core</div></div>
   </div>
@@ -2109,10 +2109,10 @@ priv <span class="kw">struct</span> Swatches {}
   <p class="lead">The same suite on four backends — a regression in one world fails loudly everywhere.</p>
 
   <div class="stats">
-    <div class="stat"><div class="n" data-count="tests">677</div><div class="l">wasm</div></div>
-    <div class="stat"><div class="n" data-count="tests">677</div><div class="l">wasm-gc</div></div>
-    <div class="stat"><div class="n" data-count="tests">677</div><div class="l">js</div></div>
-    <div class="stat"><div class="n" data-count="tests">677</div><div class="l">native</div></div>
+    <div class="stat"><div class="n" data-count="tests">678</div><div class="l">wasm</div></div>
+    <div class="stat"><div class="n" data-count="tests">678</div><div class="l">wasm-gc</div></div>
+    <div class="stat"><div class="n" data-count="tests">678</div><div class="l">js</div></div>
+    <div class="stat"><div class="n" data-count="tests">678</div><div class="l">native</div></div>
   </div>
 
   <h3>Run the suite</h3>
@@ -2145,7 +2145,7 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
 <!-- generated:api -->
   <div class="api-tools">
     <input class="api-filter" type="search" placeholder="Filter by name, e.g. Button or render" aria-label="Filter the API">
-    <span class="api-count" data-total="1097">1097 entries</span>
+    <span class="api-count" data-total="1099">1099 entries</span>
   </div>
   <div class="api-index">
     <button type="button" data-pkg="api-geom">geom<span>43</span></button>
@@ -2158,7 +2158,7 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
     <button type="button" data-pkg="api-comp">comp<span>20</span></button>
     <button type="button" data-pkg="api-design">design<span>56</span></button>
     <button type="button" data-pkg="api-widget">widget<span>740</span></button>
-    <button type="button" data-pkg="api-app">app<span>56</span></button>
+    <button type="button" data-pkg="api-app">app<span>58</span></button>
     <button type="button" data-pkg="api-driver">driver<span>28</span></button>
     <button type="button" data-pkg="api-driver-native">driver/native<span>11</span></button>
     <button type="button" data-pkg="api-driver-node">driver/node<span>10</span></button>
@@ -5161,7 +5161,7 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
       <pre class="block"><span class="kw">pub</span> <span class="kw">struct</span> App[D] {
   driver : D
   plain : Bool
-  quit : <span class="fn">@event.</span>Key?
+  quit : Array[<span class="fn">@event.</span>Key]
   <span class="kw">mut</span> root : Node
   parser : <span class="fn">@input.</span>Parser
   <span class="kw">mut</span> base : <span class="fn">@style.</span>Style
@@ -5200,7 +5200,7 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
         <div class="api-method" data-q="focused"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span>[D] App::focused(Self[D]) -&gt; Int32</pre></div>
         <div class="api-method" data-q="hovering"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span>[D] App::hovering(Self[D]) -&gt; Int32</pre></div>
         <div class="api-method" data-q="is_disabled"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span>[D] App::is_disabled(Self[D], Int32) -&gt; Bool</pre></div>
-        <div class="api-method" data-q="new"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span>[D] App::new(D, Node, base? : <span class="fn">@style.</span>Style, sheet? : <span class="fn">@design.</span>Stylesheet, fps? : Int32, plain? : Bool, quit? : <span class="fn">@event.</span>Key?) -&gt; Self[D]</pre></div>
+        <div class="api-method" data-q="new"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span>[D] App::new(D, Node, base? : <span class="fn">@style.</span>Style, sheet? : <span class="fn">@design.</span>Stylesheet, fps? : Int32, plain? : Bool, quit? : Array[<span class="fn">@event.</span>Key]) -&gt; Self[D]</pre></div>
         <div class="api-method" data-q="on"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span>[D] App::on(Self[D], (<span class="fn">@widget.</span>Out) -&gt; Bool) -&gt; Unit</pre><p>The app's message hook: every message a widget emits, and every focus or scroll move the app itself reports, passes here first. A handler that answers true claims the message and the built-in behaviour never runs.</p></div>
         <div class="api-method" data-q="pop_screen"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span>[D] App::pop_screen(Self[D]) -&gt; Unit</pre></div>
         <div class="api-method" data-q="post"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span>[D] App::post(Self[D], <span class="fn">@widget.</span>Out) -&gt; Unit</pre><p>Put a message in the stream the app drains from, as if a widget had sent it.</p></div>
@@ -5298,7 +5298,17 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
     <div class="api-item" data-q="app ctrl_c">
       <h4><span class="api-kind let">let</span><code>ctrl_c</code></h4>
       <pre class="block"><span class="kw">pub</span> <span class="kw">let</span> ctrl_c : <span class="fn">@event.</span>Key</pre>
-      <p>The quit key most terminal programs answer to. An application whose text fields want it for copying passes another, or <code>None</code> and quits itself.</p>
+      <p>The quit key most terminal programs answer to. An application whose text fields want it for copying passes another list, or <code>[]</code> and quits itself.</p>
+    </div>
+    <div class="api-item" data-q="app esc">
+      <h4><span class="api-kind let">let</span><code>esc</code></h4>
+      <pre class="block"><span class="kw">pub</span> <span class="kw">let</span> esc : <span class="fn">@event.</span>Key</pre>
+      <p>Escape, which readers expect to leave a screen, and which is handed to the widget under the keyboard first: a dialog closes before the program does.</p>
+    </div>
+    <div class="api-item" data-q="app q">
+      <h4><span class="api-kind let">let</span><code>q</code></h4>
+      <pre class="block"><span class="kw">pub</span> <span class="kw">let</span> q : <span class="fn">@event.</span>Key</pre>
+      <p><code>q</code>, the other key readers try when they want out.</p>
     </div>
     <div class="api-item" data-q="app column">
       <h4><span class="api-kind fn">fn</span><code>column</code></h4>

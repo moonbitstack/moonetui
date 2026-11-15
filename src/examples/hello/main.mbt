@@ -20,7 +20,9 @@ fn main raise {
     @app.leaf(4, foot, box=@layout.Box::new(extent=Cells(1))),
   ])
   let tty = @node.NodeTty::new()
-  let ui = @app.App::new(tty, tree, base=@style.Style::new())
+  let ui = @app.App::new(tty, tree, base=@style.Style::new(), quit=[
+    @app.ctrl_c, @app.esc, @app.q,
+  ])
   ui.start()
   @node.pump(16, () => {
     let alive = ui.step() catch { _ => false }

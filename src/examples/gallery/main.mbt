@@ -8,6 +8,7 @@ fn main raise {
     @native.NativeTty::new(),
     gallery.tree(),
     sheet=gallery.sheet(),
+    quit=[@app.ctrl_c, @app.esc, @app.q],
   )
   gallery.attach(ui)
   ui.start()

@@ -71,7 +71,7 @@ pub struct Demo {
 
 ///|
 pub fn Demo::new() -> Demo {
-  let head = @widget.Header::new("moonetui", note="ctrl-c to quit")
+  let head = @widget.Header::new("moonetui", note="esc · q to quit")
   let list = @widget.ListView::new([
     "alpha", "beta", "gamma", "delta", "epsilon", "中文也对齐",
   ])

@@ -573,7 +573,9 @@ async fn[D : @driver.Driver] drive(
   state : @shell.State,
   frames : Int32,
 ) -> Unit {
-  let ui = @app.App::new(driver, screen.node(), sheet=sheet())
+  let ui = @app.App::new(driver, screen.node(), sheet=sheet(), quit=[
+    @app.ctrl_c, @app.esc, @app.q,
+  ])
   ui.start()
   let mut alive = true
   let mut drawn = 0

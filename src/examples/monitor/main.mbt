@@ -106,7 +106,9 @@ fn main raise {
     @app.leaf(9, foot, box=@layout.Box::new(extent=Cells(1))),
   ])
   let tty = @native.NativeTty::new()
-  let ui = @app.App::new(tty, tree_ui, sheet=sheet())
+  let ui = @app.App::new(tty, tree_ui, sheet=sheet(), quit=[
+    @app.ctrl_c, @app.esc, @app.q,
+  ])
   let mut tick = 0
   // The widgets answer through typed messages; the hook answers back.
   ui.on(report => {

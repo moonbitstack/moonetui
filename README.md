@@ -45,6 +45,10 @@ moon run --target native src/examples/uart      # whole frames of plain text, as
 moon run --target native dbmux/src/main -- --demo   # a database client, with a SQLite demo database
 ```
 
+`src/examples/dbmux/` holds the screen the `tui` example runs, in a package of
+its own: a main package cannot carry tests the checker accepts, and the frame
+tests drive the same tree the example does.
+
 `dbmux/` is a module beside the library that builds a database client with it:
 a table list, an editable grid, a modal SQL editor, a command palette, and one
 connection per engine. `moon run --target native dbmux/src/main -- --demo`
@@ -143,7 +147,7 @@ moon test  --target all
 moon fmt && moon info --target all     # the diff must stay clean
 ```
 
-677 tests per backend, the same suite on wasm, wasm-gc, js and native, run on Ubuntu, macOS and Windows in CI. Every widget asserts the rows it draws, and every demo draws in a headless application.
+678 tests per backend, the same suite on wasm, wasm-gc, js and native, run on Ubuntu, macOS and Windows in CI. Every widget asserts the rows it draws, and every demo draws in a headless application.
 
 ## Conformance
 
@@ -159,7 +163,12 @@ needs nothing but the toolchain.
 | Frames | the bytes a frame is drawn with, read back by `pyte` and by `tmux` | 5 frames: attributes, wide characters, joined emoji, widgets, a redraw |
 | A demo's keys | the screen after each key, read back by `pyte` and by `tmux` | 8 frames: open, tab, two downs, enter, tab, a typed key, ctrl-c |
 
-`scripts/gen_conformance.py` writes the three vector files; `scripts/verify_terminals.py` hands the frame bytes to both emulators and compares the screens. The demo `src/examples/tui` runs lives in `src/examples/demo`, where a test drives the same tree with a scripted driver — tab, two downs, enter, tab, a character, ctrl-c — asserts what each key did to the list, the bar and the field, and announces every frame, so a key that lands on the wrong widget fails `moon test` before an emulator is asked anything. Nothing is outstanding: no code point, cluster, key or frame in the vectors disagrees with its references.
+`scripts/gen_conformance.py` writes the three vector files; `scripts/verify_terminals.py` hands the frame bytes to both emulators and compares the screens. The frame lines are printed only when `MOONETUI_INTEROP` is set, so `moon test` on its own prints a report rather than a screen's worth of hex:
+
+```
+MOONETUI_INTEROP=1 moon test --target native -p moonbitstack/moonetui/app \
+  | grep '^interop' | python3 scripts/verify_terminals.py --in /dev/stdin
+``` The demo `src/examples/tui` runs lives in `src/examples/dbmux`, where a test drives the same tree with a scripted driver — tab, two downs, enter, tab, a character, ctrl-c — asserts what each key did to the list, the bar and the field, and announces every frame, so a key that lands on the wrong widget fails `moon test` before an emulator is asked anything. Nothing is outstanding: no code point, cluster, key or frame in the vectors disagrees with its references.
 
 Two places where the references disagree with each other, or with the way a
 terminal draws a mark, are recorded in the vectors rather than argued about: a
