@@ -1,0 +1,43 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "moonbitstack/moonetui/examples/board"
+
+import {
+  "moonbitstack/moonetui/app",
+  "moonbitstack/moonetui/design",
+}
+
+// Values
+pub const PANELS : Int32 = 6
+
+pub fn sheet() -> @design.Stylesheet
+
+// Errors
+
+// Types and methods
+pub struct Board {
+  done : Array[Bool]
+  mut cursor : Int32
+  mut seconds : Int32
+  mut beat : Int32
+  mut load : Array[Double]
+}
+pub fn Board::brief(Self) -> String
+pub fn Board::clock_text(Self) -> String
+pub fn Board::done_count(Self) -> Int32
+pub fn Board::done_of(Self, Int32) -> Bool
+pub fn Board::new() -> Self
+pub fn Board::refresh(Self) -> Unit
+pub fn Board::seconds_text(Self) -> String
+pub fn Board::shift(Self, Int32) -> Unit
+pub fn Board::tick(Self, Int32) -> Unit
+pub fn Board::toggle(Self) -> Unit
+
+pub struct Screen {
+  root : @app.Node
+  board : Board
+}
+pub fn Screen::new() -> Self
+
+// Type aliases
+
+// Traits
