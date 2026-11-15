@@ -1,0 +1,42 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "moonbitstack/moonetui/examples/tree"
+
+import {
+  "moonbitstack/moonetui/app",
+  "moonbitstack/moonetui/design",
+}
+
+// Values
+pub fn sheet() -> @design.Stylesheet
+
+// Errors
+
+// Types and methods
+pub(all) struct Item {
+  depth : Int32
+  parent : Int32
+  key : String
+  value : String
+  kind : Int32
+}
+
+pub struct Screen {
+  root : @app.Node
+  tree : Tree
+}
+pub fn Screen::new() -> Self
+
+pub struct Tree {
+  entries : Array[Item]
+  folded : Array[Bool]
+  mut at : Int32
+}
+pub fn Tree::new() -> Self
+pub fn Tree::rows_visible(Self) -> Int32
+pub fn Tree::selection(Self) -> String
+pub fn Tree::shift(Self, Int32) -> Unit
+pub fn Tree::toggle(Self) -> Unit
+
+// Type aliases
+
+// Traits
