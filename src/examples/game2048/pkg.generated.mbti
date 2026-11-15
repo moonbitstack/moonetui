@@ -31,6 +31,7 @@ pub fn Grid::flashing(Self, Int32, Int32) -> Bool
 pub fn Grid::new() -> Self
 pub fn Grid::over(Self) -> Bool
 pub fn Grid::restart(Self) -> Unit
+pub fn Grid::rows(Self) -> Int32
 pub fn Grid::score(Self) -> Int32
 pub fn Grid::slide(Self, Int32) -> Unit
 pub fn Grid::won(Self) -> Bool

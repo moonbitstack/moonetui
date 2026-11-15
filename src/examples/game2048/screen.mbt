@@ -14,35 +14,40 @@ pub struct Board {
 }
 
 ///|
-fn tile_style(value : Int32) -> @style.Style {
-  if value == 0 {
-    return @style.Style::new(fg=@theme.muted)
-  }
+/// The block a tile sits on: dark blue at four, hot rose past two hundred and
+/// fifty-six, so the board reads as a board even through a squint.
+fn block_style(value : Int32) -> @style.Style {
   if value <= 4 {
-    return @style.Style::new(fg=@theme.ink)
+    return @style.Style::new(fg=@theme.ink, bg=@style.Rgb(0x2a, 0x2e, 0x44))
   }
   if value <= 16 {
-    return @style.Style::new(fg=@theme.accent, bold=true)
+    return @style.Style::new(fg=@style.black, bg=@theme.accent, bold=true)
   }
   if value <= 64 {
-    return @style.Style::new(fg=@theme.good, bold=true)
+    return @style.Style::new(fg=@style.black, bg=@theme.good, bold=true)
   }
   if value <= 256 {
-    return @style.Style::new(fg=@theme.warn, bold=true)
+    return @style.Style::new(fg=@style.black, bg=@theme.warn, bold=true)
   }
-  @style.Style::new(fg=@theme.bad, bold=true)
+  @style.Style::new(fg=@style.black, bg=@theme.bad, bold=true)
 }
 
 ///|
-/// A number in a cell six columns wide, with the digits in the middle. A cell
-/// that just took a merge is lit, which is the whole animation.
-fn tile(value : Int32, flashing : Bool) -> @strip.Strip {
+/// A number in a cell `width` columns wide, on a block of its own colour: the
+/// bigger the number, the hotter the block. A cell that just took a merge is
+/// lit, which is the whole animation.
+fn tile(value : Int32, width : Int32, flashing : Bool) -> @strip.Strip {
+  let style = if flashing {
+    @style.Style::new(fg=@style.black, bg=@theme.accent_alt, bold=true)
+  } else {
+    block_style(value)
+  }
   if value == 0 {
-    return @strip.Strip::of("  ·   ", tile_style(0))
+    return @strip.Strip::blank(width, @style.Style::new(fg=@theme.muted))
   }
   let text = value.to_string()
-  let left = (6 - text.length()) / 2
-  let right = 6 - text.length() - left
+  let left = (width - text.length()) / 2
+  let right = width - text.length() - left
   let out = StringBuilder()
   for _ in 0..<left {
     out.write_string(" ")
@@ -50,11 +55,6 @@ fn tile(value : Int32, flashing : Bool) -> @strip.Strip {
   out.write_string(text)
   for _ in 0..<right {
     out.write_string(" ")
-  }
-  let style = if flashing {
-    @style.Style::new(fg=@style.black, bg=@theme.accent_alt, bold=true)
-  } else {
-    tile_style(value)
   }
   @strip.Strip::of(out.to_string(), style)
 }
@@ -77,9 +77,11 @@ impl @widget.Widget for Board with fn render_line(self, row, size) {
   if row < 0 || row > 3 {
     return @strip.Strip::blank(size.width, @style.default)
   }
+  // The board takes the width it is given, four tiles across.
+  let across = if size.width >= 4 { size.width / 4 } else { 4 }
   let parts : Array[@strip.Strip] = []
   for x in 0..<4 {
-    parts.push(tile(self.grid.cell(x, row), self.grid.flashing(x, row)))
+    parts.push(tile(self.grid.cell(x, row), across, self.grid.flashing(x, row)))
   }
   @strip.Strip::join(parts)
 }

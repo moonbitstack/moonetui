@@ -24,6 +24,22 @@ pub fn cell_width(code : Int32) -> Int32 {
 }
 
 ///|
+/// True when every unit is printable ASCII: one unit, one cell, and none of the
+/// cluster or width tables are needed. Almost every screen this library draws is
+/// ASCII, and asking the tables about it cost more than drawing it.
+fn ascii_run(text : String) -> Bool {
+  let mut i = 0
+  while i < text.length() {
+    let unit = text[i].to_int()
+    if unit < 0x20 || unit >= 0x7F {
+      return false
+    }
+    i = i + 1
+  }
+  true
+}
+
+///|
 /// The grapheme clusters of `text` with the cells each takes, as `(start, end, cells)` in UTF-16
 /// offsets. A cluster is what a reader sees as one character and a cursor steps over (UAX #29): a
 /// letter with its combining marks, an emoji ZWJ sequence, a flag. A ZWJ sequence takes the cells
@@ -31,6 +47,12 @@ pub fn cell_width(code : Int32) -> Int32 {
 /// terminals draw them. A control character takes none.
 pub fn clusters(text : String) -> Array[(Int32, Int32, Int32)] {
   let out = []
+  if ascii_run(text) {
+    for i in 0..<text.length() {
+      out.push((i, i + 1, 1))
+    }
+    return out
+  }
   let mut i = 0
   while i < text.length() {
     let (_, end) = @segment.grapheme_at(text, i)
@@ -66,6 +88,9 @@ pub fn prev_cluster(text : String, index : Int32) -> Int32 {
 
 ///|
 pub fn str_cells(text : String) -> Int32 {
+  if ascii_run(text) {
+    return text.length()
+  }
   let mut total = 0
   for cluster in clusters(text) {
     total = total + cluster.2
@@ -77,6 +102,9 @@ pub fn str_cells(text : String) -> Int32 {
 pub fn cut_at(text : String, max_cells : Int32) -> Int32 {
   if max_cells <= 0 {
     return 0
+  }
+  if ascii_run(text) {
+    return if text.length() > max_cells { max_cells } else { text.length() }
   }
   let mut used = 0
   for cluster in clusters(text) {
@@ -92,6 +120,9 @@ pub fn cut_at(text : String, max_cells : Int32) -> Int32 {
 ///|
 pub fn cells_before(text : String, index : Int32) -> Int32 {
   let stop = if index > text.length() { text.length() } else { index }
+  if ascii_run(text) {
+    return stop
+  }
   let mut total = 0
   for cluster in clusters(text) {
     let (start, _, cells) = cluster

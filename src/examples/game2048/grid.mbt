@@ -38,6 +38,11 @@ pub fn Grid::cell(self : Grid, x : Int32, y : Int32) -> Int32 {
 }
 
 ///|
+pub fn Grid::rows(_self : Grid) -> Int32 {
+  4
+}
+
+///|
 pub fn Grid::score(self : Grid) -> Int32 {
   self.score
 }
