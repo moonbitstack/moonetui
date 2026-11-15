@@ -1,0 +1,64 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "moonbitstack/moonetui/examples/drift"
+
+import {
+  "moonbitstack/moonetui/app",
+  "moonbitstack/moonetui/design",
+}
+
+// Values
+pub const FUEL : Int32 = 10
+
+pub const GOODS : Int32 = 4
+
+pub const HOLD : Int32 = 20
+
+pub fn price_at(Int32, Int32) -> Int32
+
+pub fn sheet() -> @design.Stylesheet
+
+// Errors
+
+// Types and methods
+pub struct Port {
+  code : String
+  name : String
+  x : Int32
+  y : Int32
+}
+
+pub struct Screen {
+  root : @app.Node
+  ship : Ship
+}
+pub fn Screen::new() -> Self
+
+pub struct Ship {
+  ports : Array[Port]
+  mut here : Int32
+  mut course : Int32
+  mut credits : Int32
+  mut fuel : Int32
+  mut hull : Int32
+  bay : Array[Int32]
+  mut good : Int32
+  mut note : String
+  mut log : Array[String]
+  mut jumps : Int32
+}
+pub fn Ship::buy(Self) -> Unit
+pub fn Ship::cost_to(Self, Int32) -> Int32
+pub fn Ship::held(Self) -> Int32
+pub fn Ship::jump(Self) -> Unit
+pub fn Ship::new() -> Self
+pub fn Ship::patch(Self) -> Unit
+pub fn Ship::pick(Self, Int32) -> Unit
+pub fn Ship::price(Self, Int32) -> Int32
+pub fn Ship::refuel(Self) -> Unit
+pub fn Ship::sell(Self) -> Unit
+pub fn Ship::walk(Self, Int32) -> Unit
+pub fn Ship::wealth(Self) -> Int32
+
+// Type aliases
+
+// Traits
