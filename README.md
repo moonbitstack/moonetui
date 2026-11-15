@@ -132,6 +132,8 @@ Each one has its keyboard contract, message shape and tests, and a live demo on 
 | `@widget` | The widget contract and the inventory |
 | `@app` | The widget tree, focus ring, scroll containers, docks, grids, screens, timers and the frame loop |
 | `@driver/native` · `@driver/node` · `@driver/web` | A real terminal through the C library; Node; a canvas in the browser |
+| `examples/theme` | The look the examples share: one palette, one sheet, the header and key bar every screen wears |
+| `examples/snake` | A game, and the frame test that plays it: `moon run --target native src/examples/snake/main` |
 
 ## Standards
 
