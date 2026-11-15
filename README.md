@@ -39,7 +39,6 @@ moon add moonbitstack/moonetui
 ```
 moon run --target native src/examples/gallery   # every widget and every style, live
 moon run --target native src/examples/monitor   # a complete app: tabs, timers, a command line
-moon run --target native src/examples/tui       # a styled app in a real terminal
 moon run --target native src/examples/snake/main    # a game: arrows turn, space pauses
 moon run --target native src/examples/life/main     # Conway's life, a generation a frame
 moon run --target native src/examples/game2048/main # 2048: arrows slide, r restarts
@@ -212,7 +211,7 @@ needs nothing but the toolchain.
 ```
 MOONETUI_INTEROP=1 moon test --target native -p moonbitstack/moonetui/app \
   | grep '^interop' | python3 scripts/verify_terminals.py --in /dev/stdin
-``` The demo `src/examples/tui` runs lives in `src/examples/dbmux`, where a test drives the same tree with a scripted driver — tab, two downs, enter, tab, a character, ctrl-c — asserts what each key did to the list, the bar and the field, and announces every frame, so a key that lands on the wrong widget fails `moon test` before an emulator is asked anything. Nothing is outstanding: no code point, cluster, key or frame in the vectors disagrees with its references.
+``` The demo `dbmux/src/main` runs lives in `src/examples/dbmux`, where a test drives the same tree with a scripted driver — tab, two downs, enter, tab, a character, ctrl-c — asserts what each key did to the list, the bar and the field, and announces every frame, so a key that lands on the wrong widget fails `moon test` before an emulator is asked anything. Nothing is outstanding: no code point, cluster, key or frame in the vectors disagrees with its references.
 
 Two places where the references disagree with each other, or with the way a
 terminal draws a mark, are recorded in the vectors rather than argued about: a
