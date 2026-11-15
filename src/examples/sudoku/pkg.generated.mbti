@@ -1,0 +1,40 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "moonbitstack/moonetui/examples/sudoku"
+
+import {
+  "moonbitstack/moonetui/app",
+  "moonbitstack/moonetui/design",
+}
+
+// Values
+pub const SIDE : Int32 = 9
+
+pub fn sheet() -> @design.Stylesheet
+
+// Errors
+
+// Types and methods
+pub struct Board {
+  mut cells : Array[Int32]
+  fixed : Array[Bool]
+  mut cx : Int32
+  mut cy : Int32
+  mut stage : Int32
+}
+pub fn Board::cell(Self, Int32, Int32) -> Int32
+pub fn Board::clash(Self, Int32, Int32) -> Bool
+pub fn Board::cursor(Self) -> (Int32, Int32)
+pub fn Board::new() -> Self
+pub fn Board::stage(Self) -> Int32
+pub fn Board::steer(Self, Int32, Int32) -> Unit
+pub fn Board::write(Self, Int32) -> Unit
+
+pub struct Screen {
+  root : @app.Node
+  board : Board
+}
+pub fn Screen::new() -> Self
+
+// Type aliases
+
+// Traits
