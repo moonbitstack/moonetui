@@ -58,6 +58,7 @@ moon run --target native src/examples/cards/main    # Klondike: seven columns, f
 moon run --target native src/examples/board/main    # a dashboard of small panels
 moon run --target native src/examples/boxes/main    # containers, their stats, and a live tail
 moon run --target native src/examples/prs/main      # pull requests, checks, a merge
+moon run --target native src/examples/tunes/main    # a player: spectrum, needle, album
 moon run --target js src/examples/hello         # under Node
 moon run --target native src/examples/uart      # whole frames of plain text, as a serial line gets them
 moon run --target native dbmux/src/main -- --demo   # a database client, with a SQLite demo database
@@ -166,6 +167,7 @@ Each one has its keyboard contract, message shape and tests, and a live demo on 
 | `examples/board` | Six framed panels: a big clock, the month, tasks, commits, load, the day |
 | `examples/boxes` | A container client: a list of boxes, one opened, its log running below |
 | `examples/prs` | Pull requests with their checks, a card for the chosen one, a merge |
+| `examples/tunes` | A record playing: a spectrum, a needle, the album behind it |
 
 ## Standards
 

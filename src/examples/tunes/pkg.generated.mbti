@@ -1,0 +1,49 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "moonbitstack/moonetui/examples/tunes"
+
+import {
+  "moonbitstack/moonetui/app",
+  "moonbitstack/moonetui/design",
+}
+
+// Values
+pub fn sheet() -> @design.Stylesheet
+
+// Errors
+
+// Types and methods
+pub struct Player {
+  tracks : Array[Track]
+  mut pick : Int32
+  mut playing : Bool
+  mut at : Int32
+  mut beat : Int32
+  mut volume : Int32
+}
+pub fn Player::advance(Self, Int32) -> Unit
+pub fn Player::clock(Int32) -> String
+pub fn Player::length_of(Self, Int32) -> Int32
+pub fn Player::loudness(Self, Int32) -> Unit
+pub fn Player::new() -> Self
+pub fn Player::playing(Self) -> Bool
+pub fn Player::position(Self) -> Int32
+pub fn Player::seek(Self, Int32) -> Unit
+pub fn Player::step(Self, Int32) -> Unit
+pub fn Player::title(Self) -> String
+pub fn Player::toggle(Self) -> Unit
+pub fn Player::total(Self) -> Int32
+
+pub struct Screen {
+  root : @app.Node
+  player : Player
+}
+pub fn Screen::new() -> Self
+
+pub struct Track {
+  title : String
+  length : Int32
+}
+
+// Type aliases
+
+// Traits
