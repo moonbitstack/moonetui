@@ -112,6 +112,10 @@ jobs:
           MOONETUI_INTEROP=1 moon test --target native -p moonbitstack/moonetui/examples/dbmux > "$RUNNER_TEMP/demo.txt" 2>&1 || {
             cat "$RUNNER_TEMP/demo.txt"; exit 1; }
           grep '^interop' "$RUNNER_TEMP/demo.txt" >> "$RUNNER_TEMP/frames.txt"
+
+          MOONETUI_INTEROP=1 moon test --target native -p moonbitstack/moonetui/examples/snake > "$RUNNER_TEMP/snake.txt" 2>&1 || {
+            cat "$RUNNER_TEMP/snake.txt"; exit 1; }
+          grep '^interop' "$RUNNER_TEMP/snake.txt" >> "$RUNNER_TEMP/frames.txt"
           grep -c 'tui/' "$RUNNER_TEMP/frames.txt"
 
           python3 scripts/verify_terminals.py --in "$RUNNER_TEMP/frames.txt"

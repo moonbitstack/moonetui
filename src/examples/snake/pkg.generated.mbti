@@ -1,0 +1,58 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "moonbitstack/moonetui/examples/snake"
+
+import {
+  "moonbitstack/moonetui/app",
+  "moonbitstack/moonetui/design",
+}
+
+// Values
+pub fn sheet() -> @design.Stylesheet
+
+// Errors
+
+// Types and methods
+pub struct Board {
+  cols : Int32
+  rows : Int32
+  mut body : Array[Int32]
+  mut dir : Int32
+  mut want : Int32
+  mut food : Int32
+  mut phase : Phase
+  mut score : Int32
+  mut cursor : Int32
+}
+pub fn Board::cell_at(Self, Int32, Int32) -> Int32
+pub fn Board::cols(Self) -> Int32
+pub fn Board::food_at(Self) -> (Int32, Int32)
+pub fn Board::head(Self) -> (Int32, Int32)
+pub fn Board::length(Self) -> Int32
+pub fn Board::new(cols? : Int32, rows? : Int32, cursor? : Int32) -> Self
+pub fn Board::phase(Self) -> Phase
+pub fn Board::place_food(Self, Int32) -> Unit
+pub fn Board::restart(Self) -> Unit
+pub fn Board::rows(Self) -> Int32
+pub fn Board::score(Self) -> Int32
+pub fn Board::step(Self) -> Unit
+pub fn Board::toggle_pause(Self) -> Unit
+pub fn Board::turn(Self, Int32) -> Unit
+
+#derive(Eq)
+pub(all) enum Phase {
+  Playing
+  Paused
+  Over
+}
+pub fn Phase::equal(Self, Self) -> Bool
+pub fn Phase::not_equal(Self, Self) -> Bool
+
+pub struct Screen {
+  root : @app.Node
+  board : Board
+}
+pub fn Screen::new() -> Self
+
+// Type aliases
+
+// Traits

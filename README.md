@@ -40,6 +40,7 @@ moon add moonbitstack/moonetui
 moon run --target native src/examples/gallery   # every widget and every style, live
 moon run --target native src/examples/monitor   # a complete app: tabs, timers, a command line
 moon run --target native src/examples/tui       # a styled app in a real terminal
+moon run --target native src/examples/snake/main # a game: arrows turn, space pauses
 moon run --target js src/examples/hello         # under Node
 moon run --target native src/examples/uart      # whole frames of plain text, as a serial line gets them
 moon run --target native dbmux/src/main -- --demo   # a database client, with a SQLite demo database
@@ -147,7 +148,7 @@ moon test  --target all
 moon fmt && moon info --target all     # the diff must stay clean
 ```
 
-678 tests per backend, the same suite on wasm, wasm-gc, js and native, run on Ubuntu, macOS and Windows in CI. Every widget asserts the rows it draws, and every demo draws in a headless application.
+679 tests per backend, the same suite on wasm, wasm-gc, js and native, run on Ubuntu, macOS and Windows in CI. Every widget asserts the rows it draws, and every demo draws in a headless application.
 
 ## Conformance
 
@@ -162,6 +163,7 @@ needs nothing but the toolchain.
 | Keys | the terminfo entries of xterm, screen, tmux, the Linux console, rxvt, vt100 and ansi | 168 sequences across eight terminals |
 | Frames | the bytes a frame is drawn with, read back by `pyte` and by `tmux` | 5 frames: attributes, wide characters, joined emoji, widgets, a redraw |
 | A demo's keys | the screen after each key, read back by `pyte` and by `tmux` | 8 frames: open, tab, two downs, enter, tab, a typed key, ctrl-c |
+| A game's frames | the screen after each move, read back by `pyte` and by `tmux` | 6 frames: open, moving, ate, paused, over, again |
 
 `scripts/gen_conformance.py` writes the three vector files; `scripts/verify_terminals.py` hands the frame bytes to both emulators and compares the screens. The frame lines are printed only when `MOONETUI_INTEROP` is set, so `moon test` on its own prints a report rather than a screen's worth of hex:
 

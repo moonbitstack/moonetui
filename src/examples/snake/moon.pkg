@@ -1,0 +1,19 @@
+// The game: a grid, a snake, an apple, and the keys that turn it. The
+// executable that plays it is in `main/`, because a main package cannot carry
+// the tests that hold its frames.
+import {
+  "moonbitstack/moonetui/app",
+  "moonbitstack/moonetui/design",
+  "moonbitstack/moonetui/geom",
+  "moonbitstack/moonetui/layout",
+  "moonbitstack/moonetui/strip",
+  "moonbitstack/moonetui/style",
+  "moonbitstack/moonetui/widget",
+}
+
+// The frame test drives the game through a scripted driver and reads the
+// frames back.
+import {
+  "moonbitstack/moonetui/driver",
+  "moonbitlang/core/env",
+} for "test"
