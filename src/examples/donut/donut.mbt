@@ -12,6 +12,8 @@ pub struct Donut {
   mut b : Double
   mut paused : Bool
   mut frame : Array[String]
+  mut levels : Array[Int32]
+  mut ghost : Array[Int32]
 }
 
 ///|
@@ -23,7 +25,16 @@ let shades : Array[String] = [
 
 ///|
 pub fn Donut::new(cols~ : Int32 = 56, rows~ : Int32 = 20) -> Donut {
-  let donut : Donut = { cols, rows, a: 0.0, b: 0.0, paused: false, frame: [], }
+  let donut : Donut = {
+    cols,
+    rows,
+    a: 0.0,
+    b: 0.0,
+    paused: false,
+    frame: [],
+    levels: [],
+    ghost: [],
+  }
   donut.spin()
   donut
 }
@@ -57,7 +68,12 @@ pub fn Donut::spin(self : Donut) -> Unit {
   }
   self.a = self.a + 0.07
   self.b = self.b + 0.03
-  self.frame = self.draw()
+  // What the last frame drew becomes a shadow: the torus leaves a trace of
+  // where it was, which is what makes a turning shape read as turning.
+  self.ghost = self.levels
+  let levels = self.draw()
+  self.levels = levels
+  self.frame = self.to_rows(levels)
 }
 
 ///|
@@ -67,7 +83,7 @@ pub fn Donut::frame(self : Donut) -> Array[String] {
 }
 
 ///|
-fn Donut::draw(self : Donut) -> Array[String] {
+fn Donut::draw(self : Donut) -> Array[Int32] {
   let cells = self.cols * self.rows
   let depth : Array[Double] = []
   let glyph : Array[Int32] = []
@@ -143,15 +159,25 @@ fn Donut::draw(self : Donut) -> Array[String] {
     }
     theta = theta + theta_step
   }
+  glyph
+}
+
+///|
+/// The glyph grid of one frame, as text. A cell the torus missed still shows
+/// the shadow of the frame before, two shades down.
+fn Donut::to_rows(self : Donut, levels : Array[Int32]) -> Array[String] {
   let rows : Array[String] = []
   for y in 0..<self.rows {
     let line = StringBuilder()
     for x in 0..<self.cols {
-      let level = glyph[y * self.cols + x]
-      if level < 0 {
-        line.write_string(" ")
-      } else {
+      let cell = y * self.cols + x
+      let level = levels[cell]
+      if level >= 0 {
         line.write_string(shades[level])
+      } else if cell < self.ghost.length() && self.ghost[cell] > 1 {
+        line.write_string(shades[self.ghost[cell] - 2])
+      } else {
+        line.write_string(" ")
       }
     }
     rows.push(line.to_string())
@@ -199,7 +225,21 @@ impl @widget.Widget for Donut with fn handle(self, ctx, msg) {
 
 ///|
 pub fn sheet() -> @design.Stylesheet {
-  @theme.sheet()
+  // Nothing around the object: a black stage, a line of text, a line of keys.
+  let sheet = @design.Stylesheet::new()
+  sheet.add(
+    @design.Sel::new(),
+    @design.Styles::new(text=@style.Style::new(fg=@theme.ink)),
+  )
+  sheet.add(
+    @design.Sel::new(name="Header"),
+    @design.Styles::new(text=@style.Style::new(fg=@theme.muted)),
+  )
+  sheet.add(
+    @design.Sel::new(classes=["bar"]),
+    @design.Styles::new(dock=@design.Bottom),
+  )
+  sheet
 }
 
 ///|
@@ -215,9 +255,7 @@ pub fn Screen::new() -> Screen {
   let foot = @theme.footer([("space", "hold"), ("esc", "quit")])
   let root = @app.column(0, [
     @app.leaf(1, head, box=@layout.Box::new(extent=Cells(1)), name="Header"),
-    @app.leaf(2, donut, box=@layout.Box::new(extent=Cells(donut.rows)), classes=[
-      "framed",
-    ]),
+    @app.leaf(2, donut, box=@layout.Box::new(extent=Frac(1))),
     @app.leaf(3, foot, box=@layout.Box::new(extent=Cells(1)), classes=["bar"]),
   ])
   { root, donut, }
