@@ -1,0 +1,27 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "moonbitstack/moonetui/examples/demo"
+
+import {
+  "moonbitstack/moonetui/app",
+  "moonbitstack/moonetui/design",
+  "moonbitstack/moonetui/widget",
+}
+
+// Values
+pub fn sheet() -> @design.Stylesheet
+
+// Errors
+
+// Types and methods
+pub struct Demo {
+  root : @app.Node
+  list : @widget.ListView
+  field : @widget.Input
+  bar : @widget.Progress
+}
+pub fn Demo::answer(Self, Array[@widget.Out]) -> Unit
+pub fn Demo::new() -> Self
+
+// Type aliases
+
+// Traits

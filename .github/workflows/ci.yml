@@ -96,13 +96,24 @@ jobs:
           git diff --exit-code src/strip/width_vectors_wbtest.mbt src/strip/cluster_vectors_wbtest.mbt
 
       # The frames the library writes, drawn again by two terminal emulators it has no part
-      # in: what they show has to be what the application meant to show.
+      # in: what they show has to be what the application meant to show. The demo is
+      # checked frame by frame as well, key after key, so an interaction that lands on the
+      # wrong row fails here and not only in a reader's terminal.
       - name: two terminal emulators draw the frames the library writes
         if: ${{ runner.os == 'Linux' }}
         run: |
           python3 -m pip install --quiet --break-system-packages pyte==0.8.2
           command -v tmux > /dev/null || sudo apt-get install -y tmux
-          moon test --target native -p moonbitstack/moonetui/app 2>&1 | grep '^interop' > "$RUNNER_TEMP/frames.txt"
+
+          moon test --target native -p moonbitstack/moonetui/app > "$RUNNER_TEMP/app.txt" 2>&1 || {
+            cat "$RUNNER_TEMP/app.txt"; exit 1; }
+          grep '^interop' "$RUNNER_TEMP/app.txt" > "$RUNNER_TEMP/frames.txt"
+
+          moon test --target native -p moonbitstack/moonetui/examples/demo > "$RUNNER_TEMP/demo.txt" 2>&1 || {
+            cat "$RUNNER_TEMP/demo.txt"; exit 1; }
+          grep '^interop' "$RUNNER_TEMP/demo.txt" >> "$RUNNER_TEMP/frames.txt"
+          grep -c 'tui/' "$RUNNER_TEMP/frames.txt"
+
           python3 scripts/verify_terminals.py --in "$RUNNER_TEMP/frames.txt"
 
   # The database client, against a real Redis: the keys it lists, the key it

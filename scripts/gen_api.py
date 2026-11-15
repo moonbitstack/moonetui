@@ -80,10 +80,17 @@ def interface(path: str) -> pathlib.Path:
     if generated.exists():
         return generated
     target = find(r'supported_targets\s*=\s*"(\w+)"', (pkg / "moon.pkg").read_text(encoding="utf-8")).group(1)
-    built = ROOT / "_build" / target / "debug" / "check" / path / f"{path.split('/')[-1]}.mbti"
-    if not built.exists():
-        raise SystemExit(f"{built} is missing: run moon check --target {target} first")
-    return built
+    # The checker writes the interface under the module's own directory, and
+    # under the bare path on toolchains that keep the older layout.
+    module = find(r'name\s*=\s*"([^"]+)"', (ROOT / "moon.mod").read_text(encoding="utf-8")).group(1)
+    leaf = f"{path.split('/')[-1]}.mbti"
+    check = ROOT / "_build" / target / "debug" / "check"
+    for directory in (check / module / path, check / path):
+        if (directory / leaf).exists():
+            return directory / leaf
+    raise SystemExit(
+        f"{check / module / path / leaf} is missing: run moon check --target {target} first"
+    )
 
 
 # Lines that start a declaration but no pattern above reads: a page missing one

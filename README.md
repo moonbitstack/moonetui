@@ -143,7 +143,7 @@ moon test  --target all
 moon fmt && moon info --target all     # the diff must stay clean
 ```
 
-676 tests per backend, the same suite on wasm, wasm-gc, js and native, run on Ubuntu, macOS and Windows in CI. Every widget asserts the rows it draws, and every demo draws in a headless application.
+677 tests per backend, the same suite on wasm, wasm-gc, js and native, run on Ubuntu, macOS and Windows in CI. Every widget asserts the rows it draws, and every demo draws in a headless application.
 
 ## Conformance
 
@@ -157,8 +157,9 @@ needs nothing but the toolchain.
 | Grapheme clusters | two independent implementations of UAX #29, `uniseg` and `regex`, for where a cluster starts, and `wcwidth` for its columns | 48 strings: marks, conjuncts, joiner sequences, flags, keycaps, wide forms |
 | Keys | the terminfo entries of xterm, screen, tmux, the Linux console, rxvt, vt100 and ansi | 168 sequences across eight terminals |
 | Frames | the bytes a frame is drawn with, read back by `pyte` and by `tmux` | 5 frames: attributes, wide characters, joined emoji, widgets, a redraw |
+| A demo's keys | the screen after each key, read back by `pyte` and by `tmux` | 8 frames: open, tab, two downs, enter, tab, a typed key, ctrl-c |
 
-`scripts/gen_conformance.py` writes the three vector files; `scripts/verify_terminals.py` hands the frame bytes to both emulators and compares the screens. Nothing is outstanding: no code point, cluster, key or frame in the vectors disagrees with its references.
+`scripts/gen_conformance.py` writes the three vector files; `scripts/verify_terminals.py` hands the frame bytes to both emulators and compares the screens. The demo `src/examples/tui` runs lives in `src/examples/demo`, where a test drives the same tree with a scripted driver — tab, two downs, enter, tab, a character, ctrl-c — asserts what each key did to the list, the bar and the field, and announces every frame, so a key that lands on the wrong widget fails `moon test` before an emulator is asked anything. Nothing is outstanding: no code point, cluster, key or frame in the vectors disagrees with its references.
 
 Two places where the references disagree with each other, or with the way a
 terminal draws a mark, are recorded in the vectors rather than argued about: a

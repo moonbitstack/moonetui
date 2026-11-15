@@ -1,12 +1,8 @@
 // A styled application in a real terminal: `moon run --target native src/examples/tui`.
 import {
   "moonbitstack/moonetui/app",
-  "moonbitstack/moonetui/design",
-  "moonbitstack/moonetui/geom",
   "moonbitstack/moonetui/driver/native",
-  "moonbitstack/moonetui/layout",
-  "moonbitstack/moonetui/style",
-  "moonbitstack/moonetui/widget",
+  "moonbitstack/moonetui/examples/demo",
 }
 
 supported_targets = "native"

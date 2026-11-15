@@ -1,0 +1,17 @@
+// The demo the `tui` example runs, in a package of its own: a main package
+// cannot carry tests the checker accepts, and the frame tests are what hold
+// the demo's keys to their frames.
+import {
+  "moonbitstack/moonetui/app",
+  "moonbitstack/moonetui/design",
+  "moonbitstack/moonetui/geom",
+  "moonbitstack/moonetui/layout",
+  "moonbitstack/moonetui/style",
+  "moonbitstack/moonetui/widget",
+}
+
+// The tests drive the demo through a scripted driver and read the frames back.
+import {
+  "moonbitstack/moonetui/driver",
+  "moonbitlang/core/encoding/utf8",
+} for "test"
