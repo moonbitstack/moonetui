@@ -5,7 +5,22 @@
 /// The game wears the examples' sheet, so its title and its key bar sit where
 /// every other example puts them.
 pub fn sheet() -> @design.Stylesheet {
-  @theme.sheet()
+  // A game covers the window: no frame around the field, no focus border, and
+  // a header that stays out of the way.
+  let sheet = @design.Stylesheet::new()
+  sheet.add(
+    @design.Sel::new(),
+    @design.Styles::new(text=@style.Style::new(fg=@theme.ink)),
+  )
+  sheet.add(
+    @design.Sel::new(name="Header"),
+    @design.Styles::new(text=@style.Style::new(fg=@theme.muted)),
+  )
+  sheet.add(
+    @design.Sel::new(classes=["bar"]),
+    @design.Styles::new(dock=@design.Bottom),
+  )
+  sheet
 }
 
 ///|

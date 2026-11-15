@@ -24,6 +24,8 @@ pub struct Board {
   mut best : Int32
   mut cursor : Int32
   mut sparks : Array[Spark]
+  mut ticks : Int32
+  mut flash : Int32
 }
 pub fn Board::best(Self) -> Int32
 pub fn Board::cell_at(Self, Int32, Int32) -> Int32

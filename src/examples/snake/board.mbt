@@ -43,6 +43,8 @@ pub struct Board {
   mut best : Int32
   mut cursor : Int32
   mut sparks : Array[Spark]
+  mut ticks : Int32
+  mut flash : Int32
 }
 
 ///|
@@ -64,6 +66,8 @@ pub fn Board::new(
     best: 0,
     cursor,
     sparks: [],
+    ticks: 0,
+    flash: 0,
   }
 }
 
@@ -165,6 +169,7 @@ pub fn Board::step(self : Board) -> Unit {
   let ny = y + dy
   if nx < 0 || nx >= self.cols || ny < 0 || ny >= self.rows {
     self.phase = Over
+    self.flash = 2
     return
   }
   let next = ny * self.cols + nx
@@ -172,6 +177,7 @@ pub fn Board::step(self : Board) -> Unit {
   let ate = next == self.food
   if self.body.contains(next) && (next != tail || ate) {
     self.phase = Over
+    self.flash = 2
     return
   }
   self.body.insert(0, next)
@@ -185,8 +191,10 @@ pub fn Board::step(self : Board) -> Unit {
   } else {
     ignore(self.body.pop())
   }
+  self.ticks = self.ticks + 1
   if self.length() == self.cols * self.rows {
     self.phase = Over
+    self.flash = 2
   }
 }
 
@@ -224,6 +232,10 @@ pub fn Board::drift(self : Board) -> Unit {
     }
   }
   self.sparks = alive
+  self.ticks = self.ticks + 1
+  if self.flash > 0 {
+    self.flash = self.flash - 1
+  }
 }
 
 ///|
@@ -260,6 +272,14 @@ let tail_style : @style.Style = @style.Style::new(fg=@theme.muted)
 
 ///|
 let food_style : @style.Style = @style.Style::new(fg=@theme.bad, bold=true)
+
+///|
+/// The flash a finished run draws for two frames before the score screen.
+let flash_style : @style.Style = @style.Style::new(
+  fg=@style.black,
+  bg=@theme.bad,
+  bold=true,
+)
 
 ///|
 let spark_style : @style.Style = @style.Style::new(fg=@theme.warn, bold=true)
@@ -323,7 +343,16 @@ fn Board::scene_line(self : Board, row : Int32) -> (String, @style.Style)? {
       }
     Over =>
       if row == middle - 1 {
-        Some(("G A M E   O V E R", over_style))
+        Some(
+          (
+            "G A M E   O V E R",
+            if self.flash > 0 {
+              flash_style
+            } else {
+              over_style
+            },
+          ),
+        )
       } else if row == middle {
         Some(
           (
@@ -397,7 +426,9 @@ impl @widget.Widget for Board with fn render_line(self, row, size) {
         } else if cell == self.body[0] {
           parts.push(@strip.Strip::of("◆", head_style))
         } else if cell == self.food {
-          parts.push(@strip.Strip::of("◎", food_style))
+          // The apple breathes: three glyphs, four frames each.
+          let breath : Array[String] = ["◎", "◉", "○"]
+          parts.push(@strip.Strip::of(breath[self.ticks / 4 % 3], food_style))
         } else if self.spark_at(x, y) {
           parts.push(@strip.Strip::of("*", spark_style))
         } else if self.body.contains(cell) {
