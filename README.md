@@ -15,6 +15,10 @@ Cell buffer · differential ANSI renderer · incremental key parser · layout ·
 <img src="docs/assets/gallery.png" alt="The moonetui gallery in a terminal: a menu of every demo beside the colour demo, with the sixteen named colours, the 256-colour cube, and a true-colour sweep cut down to 256 and to 16 colours." width="880">
 </p>
 
+<p>
+<img src="docs/assets/examples.png" alt="Four of the examples as they render: the Klondike table on green felt, a board of six framed panels with a segment numeral clock reading eighteen thirty, a log tail with a map of the whole file down its edge, and a player with a spectrum and the album under it." width="880">
+</p>
+
 [Documentation, with every widget running live](https://moonbitstack.github.io/moonetui/) · [Report an issue](https://github.com/moonbitstack/moonetui/issues)
 
 </div>
@@ -211,7 +215,16 @@ needs nothing but the toolchain.
 ```
 MOONETUI_INTEROP=1 moon test --target native -p moonbitstack/moonetui/app \
   | grep '^interop' | python3 scripts/verify_terminals.py --in /dev/stdin
-``` The demo `dbmux/src/main` runs lives in `src/examples/dbmux`, where a test drives the same tree with a scripted driver — tab, two downs, enter, tab, a character, ctrl-c — asserts what each key did to the list, the bar and the field, and announces every frame, so a key that lands on the wrong widget fails `moon test` before an emulator is asked anything. Nothing is outstanding: no code point, cluster, key or frame in the vectors disagrees with its references.
+```
+
+`scripts/render_frame.py` turns a frame into a picture — one frame, or a grid of them taken from several examples, since every example announces its frames the same way:
+
+```
+MOONETUI_INTEROP=1 moon test --target native -p moonbitstack/moonetui/examples/board \
+  | grep '^interop' | python3 scripts/render_frame.py --pick board/00 --out board.png
+```
+
+The screen `examples/dbmux` holds is the one `dbmux/src/main` runs: a test drives the same tree with a scripted driver — tab, two downs, enter, tab, a character, ctrl-c — asserts what each key did to the list, the bar and the field, and announces every frame, so a key that lands on the wrong widget fails `moon test` before an emulator is asked anything. Nothing is outstanding: no code point, cluster, key or frame in the vectors disagrees with its references.
 
 Two places where the references disagree with each other, or with the way a
 terminal draws a mark, are recorded in the vectors rather than argued about: a
