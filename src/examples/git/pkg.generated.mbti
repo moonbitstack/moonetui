@@ -1,0 +1,40 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "moonbitstack/moonetui/examples/git"
+
+import {
+  "moonbitstack/moonetui/app",
+  "moonbitstack/moonetui/design",
+}
+
+// Values
+pub fn sheet() -> @design.Stylesheet
+
+// Errors
+
+// Types and methods
+pub struct Repo {
+  branches : Array[String]
+  commits : Array[String]
+  files : Array[String]
+  marks : Array[Int32]
+  cursor : Array[Int32]
+  mut focus : Int32
+  staged : Array[Bool]
+}
+pub fn Repo::focus(Self) -> Int32
+pub fn Repo::new() -> Self
+pub fn Repo::next_pane(Self) -> Unit
+pub fn Repo::selection(Self) -> String
+pub fn Repo::shift(Self, Int32) -> Unit
+pub fn Repo::staged(Self, Int32) -> Bool
+pub fn Repo::toggle(Self) -> Unit
+
+pub struct Screen {
+  root : @app.Node
+  repo : Repo
+}
+pub fn Screen::new() -> Self
+
+// Type aliases
+
+// Traits
