@@ -481,6 +481,29 @@ async fn main {
     connection.production,
     keymap,
   )
+  // The queries run before, from `--history`, `DBMUX_HISTORY`, or `.dbmux_history` at home.
+  let home = match @env.get_env_var("HOME") {
+    Some(h) => Some(h)
+    None => @env.get_env_var("USERPROFILE")
+  }
+  state.history.keep_in(
+    {
+      let given = flag(args, "--history")
+      if given != "" {
+        Some(given)
+      } else {
+        match @env.get_env_var("DBMUX_HISTORY") {
+          Some(value) => Some(value)
+          None => home.map(h => h + "/.dbmux_history")
+        }
+      }
+    },
+  )
+  match state.history.path() {
+    Some(path) if @fs.path_exists(path) =>
+      state.history.load(@fs.read_file_to_string(path) catch { _ => "" })
+    _ => ()
+  }
   let link = match connection.engine {
     @config.Engine::Redis => {
       let redis = @db.Redis::open(connection.dsn, password) catch {
@@ -641,7 +664,15 @@ async fn[D : @driver.Driver] drive(
         @shell.Command::OpenTable(schema~, table~) =>
           open_table(link, state, schema, table)
         @shell.Command::Reload => reload(link, state)
-        @shell.Command::RunQuery(text~) => run(link, state, text)
+        @shell.Command::RunQuery(text~) => {
+          run(link, state, text)
+          state.history.add(text)
+          if state.history.path() is Some(path) {
+            @fs.write_string_to_file(path, state.history.text()) catch {
+              _ => ()
+            }
+          }
+        }
         @shell.Command::Save(statements~, expected~) =>
           save(link, state, statements, expected)
         @shell.Command::ExportCsv(path~) =>

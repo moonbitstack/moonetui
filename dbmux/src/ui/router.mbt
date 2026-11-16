@@ -170,6 +170,19 @@ pub fn Router::press(self : Router, key : String) -> Bool {
     }
     return true
   }
+  // The editor steps through the queries that ran, newest first, and past the newest to empty.
+  if self.state.focus is @shell.Focus::Editor &&
+    (key == "C-up" || key == "C-down") {
+    let step = if key == "C-up" {
+      self.state.history.back()
+    } else {
+      self.state.history.forward()
+    }
+    if step is Some(text) {
+      self.editor.set_text(text)
+    }
+    return true
+  }
   if self.state.focus is @shell.Focus::Editor {
     if self.editor.press(key) {
       return true

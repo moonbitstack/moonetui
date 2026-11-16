@@ -98,7 +98,11 @@ and every write on it is confirmed.
 | `C-o` | hand the keyboard to the other pane |
 | `C-q` | close the split |
 | `C-r` | run the editor's SQL |
+| `C-up` / `C-down` | in the editor, the queries run before, newest first |
 | `q` | quit |
+
+The queries the editor runs are kept in `.dbmux_history` in the home directory, the file
+`DBMUX_HISTORY` names, or `--history <path>`: the newest 500, one block each.
 
 The keys can be rebound in `./keymaps.toml`, the file `DBMUX_KEYMAP` names, or `--keymap
 <path>`. Each line under `[keys]` binds an action, by the name the help panel shows, to one key;

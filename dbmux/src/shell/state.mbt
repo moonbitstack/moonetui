@@ -103,6 +103,7 @@ pub(all) struct State {
   dialect : @sqlkit.Dialect
   read_only : Bool
   production : Bool
+  history : History
   mut schemas : Array[String]
   mut tables : Array[@db.TableInfo]
   mut tree_at : Int32
@@ -142,6 +143,7 @@ pub fn State::new(
     dialect,
     read_only,
     production,
+    history: History::new(),
     schemas: [],
     tables: [],
     tree_at: 0,

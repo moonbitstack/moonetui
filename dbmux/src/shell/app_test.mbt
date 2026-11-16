@@ -314,3 +314,45 @@ test "the columns shown are picked on the prompt line, and a hidden one comes ba
   ignore(state.press("enter"))
   assert_eq(state.grid().unwrap().hidden, [])
 }
+
+///|
+test "the history steps back through the queries that ran, and forward to an empty editor" {
+  let history = @shell.History::new()
+  for q in ["select 1", "select 2", "select 2", "select 3"] {
+    history.add(q)
+  }
+  assert_eq(history.back(), Some("select 3"))
+  assert_eq(history.back(), Some("select 2"))
+  assert_eq(history.back(), Some("select 1"))
+  assert_eq(history.back(), None)
+  assert_eq(history.forward(), Some("select 2"))
+  assert_eq(history.forward(), Some("select 3"))
+  assert_eq(history.forward(), Some(""))
+  assert_eq(history.forward(), None)
+}
+
+///|
+test "the history file is read back as it was written, multi-line queries and all" {
+  let history = @shell.History::new()
+  history.add("select *\n  from orders")
+  history.add("delete from orders where id = 2")
+  let again = @shell.History::new()
+  again.load(history.text())
+  assert_eq(again.back(), Some("delete from orders where id = 2"))
+  assert_eq(again.back(), Some("select *\n  from orders"))
+}
+
+///|
+test "the history keeps the newest queries up to its limit" {
+  let history = @shell.History::new()
+  for i in 0..<(@shell.history_limit + 3) {
+    history.add("select \{i}")
+  }
+  let again = @shell.History::new()
+  again.load(history.text())
+  let mut oldest = ""
+  while again.back() is Some(q) {
+    oldest = q
+  }
+  assert_eq(oldest, "select 3")
+}
