@@ -339,6 +339,7 @@ async fn main {
     println(
       "  keys: j k move, s sort, f filter, e edit, C-s save, C-v split, ? all keys, q quit",
     )
+    println("  files: --config connections.toml, --keymap keymaps.toml")
     return
   }
   // A target that is not a URL and not a file is a name from the connection
@@ -437,13 +438,48 @@ async fn main {
     Some(d) => d
     None => @sqlkit.Dialect::Sqlite
   }
+  // The keymap file is found the way the connection file is: a flag, the environment, then the
+  // working directory. A name it binds that no action has stops here rather than at a dead key.
+  let keymap_path = {
+    let given = flag(args, "--keymap")
+    if given != "" {
+      Some(given)
+    } else {
+      match @env.get_env_var("DBMUX_KEYMAP") {
+        Some(value) => Some(value)
+        None =>
+          if @fs.path_exists("keymaps.toml") {
+            Some("keymaps.toml")
+          } else {
+            None
+          }
+      }
+    }
+  }
+  let keymap = match keymap_path {
+    None => @keymap.Keymap::default()
+    Some(path) => {
+      let text = @fs.read_file_to_string(path) catch {
+        _ => {
+          println("dbmux: cannot read " + path)
+          return
+        }
+      }
+      @keymap.Keymap::default().over(text) catch {
+        @config.Refused(text~) => {
+          println("dbmux: " + path + ": " + text)
+          return
+        }
+      }
+    }
+  }
   let state = @shell.State::new(
     connection.name,
     connection.engine,
     dialect,
     connection.read_only,
     connection.production,
-    @keymap.Keymap::default(),
+    keymap,
   )
   let link = match connection.engine {
     @config.Engine::Redis => {

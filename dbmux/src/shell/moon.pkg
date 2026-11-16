@@ -1,5 +1,6 @@
 // The state machine: what a key does, and what the host then has to run.
 import {
+  "moonbitlang/core/string",
   "moonbitstack/dbmux/config",
   "moonbitstack/dbmux/db",
   "moonbitstack/dbmux/keymap",

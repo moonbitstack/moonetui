@@ -43,6 +43,8 @@ pub fn State::palette_items(self : State) -> Array[String] {
     @keymap.Action::Revert,
     @keymap.Action::Transpose,
     @keymap.Action::Columns,
+    @keymap.Action::PickColumns,
+    @keymap.Action::Limit,
     @keymap.Action::ExportCsv,
     @keymap.Action::ExportJson,
     @keymap.Action::RunQuery,

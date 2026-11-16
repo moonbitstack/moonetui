@@ -2,6 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 ///|
+/// The largest page the LIMIT prompt takes: the rows of one page are all held and drawn.
+pub let max_limit : Int32 = 10000
+
+///|
 /// What the prompt line is asking for.
 #derive(Eq)
 pub(all) enum Prompt {
@@ -268,6 +272,28 @@ fn State::press_browse(self : State, key : String) -> Array[Command] {
               }
             None => ()
           }
+        // The page size and the shown columns are asked on the prompt line, filled with what is
+        // in force so that an edit starts from it.
+        @keymap.Action::Limit =>
+          match self.grid() {
+            Some(grid) => {
+              self.mode = Typing
+              self.prompt = "LIMIT "
+              self.draft = grid.limit.to_string()
+            }
+            None => ()
+          }
+        @keymap.Action::PickColumns =>
+          match self.grid() {
+            Some(grid) => {
+              self.mode = Typing
+              self.prompt = "columns: "
+              self.draft = grid.page.columns
+                .filter(c => !grid.hidden.contains(c))
+                .join(", ")
+            }
+            None => ()
+          }
         @keymap.Action::ExportCsv =>
           match self.grid() {
             Some(grid) =>
@@ -337,6 +363,25 @@ fn State::apply_prompt(self : State, text : String) -> Array[Command] {
         grid.filter = text
         grid.offset = 0L
         out.push(Command::Reload)
+      } else if self.prompt == "LIMIT " {
+        let rows = @string.parse_int(text.trim()) catch { _ => 0 }
+        if rows >= 1 && rows <= max_limit {
+          grid.limit = rows
+          grid.offset = 0L
+          out.push(Command::Reload)
+        } else {
+          self.message = "LIMIT is a number from 1 to \{max_limit}"
+        }
+      } else if self.prompt == "columns: " {
+        // The columns named stay, in the table's own order; the rest are hidden. A name the
+        // table does not have is passed over, and naming none keeps what was shown.
+        let named = text.split(",").map(n => n.trim().to_owned()).collect()
+        let shown = grid.page.columns.filter(c => named.contains(c))
+        if shown.length() == 0 {
+          self.message = "no column of this table was named"
+        } else {
+          grid.hidden = grid.page.columns.filter(c => !shown.contains(c))
+        }
       } else if self.pending.length() == 1 {
         let column = self.pending[0]
         grid.set_cell(grid.cursor_row, column, @table.Cell::of(text))

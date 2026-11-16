@@ -262,3 +262,55 @@ test "the split keys reach the state through the keyboard" {
   ignore(state.press("C-q"))
   assert_eq(state.layout, @shell.Layout::Single)
 }
+
+///|
+/// Clear the prompt's draft and type `text` into it.
+fn type_over(state : @shell.State, text : String) -> Unit {
+  for _ in 0..<state.draft.length() {
+    ignore(state.press("backspace"))
+  }
+  for c in text {
+    ignore(state.press(c.to_string()))
+  }
+}
+
+///|
+test "the page size is asked on the prompt line, and a new one reloads from the start" {
+  let state = app_state(false)
+  state.show_page(app_page())
+  ignore(state.press("L"))
+  assert_eq(state.draft, "100")
+  type_over(state, "25")
+  let out = state.press("enter")
+  assert_eq(state.grid().unwrap().limit, 25)
+  assert_eq(state.grid().unwrap().offset, 0L)
+  assert_true(out[0] is Reload)
+  // Nothing, or more than a page holds, is said and changes nothing.
+  for bad in ["0", "abc", "10001"] {
+    ignore(state.press("L"))
+    type_over(state, bad)
+    assert_eq(state.press("enter").length(), 0)
+    assert_eq(state.grid().unwrap().limit, 25)
+  }
+}
+
+///|
+test "the columns shown are picked on the prompt line, and a hidden one comes back" {
+  let state = app_state(false)
+  state.show_page(app_page())
+  ignore(state.press("C"))
+  assert_eq(state.draft, "id, total")
+  type_over(state, "total")
+  ignore(state.press("enter"))
+  assert_eq(state.grid().unwrap().hidden, ["id"])
+  ignore(state.press("C"))
+  assert_eq(state.draft, "total")
+  type_over(state, "id, total, nope")
+  ignore(state.press("enter"))
+  assert_eq(state.grid().unwrap().hidden, [])
+  // Naming no column of the table keeps what was shown.
+  ignore(state.press("C"))
+  type_over(state, "nope")
+  ignore(state.press("enter"))
+  assert_eq(state.grid().unwrap().hidden, [])
+}

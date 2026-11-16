@@ -29,6 +29,8 @@ pub(all) enum Action {
   Revert
   Transpose
   Columns
+  PickColumns
+  Limit
   ExportCsv
   ExportJson
   RunQuery
@@ -75,6 +77,8 @@ pub fn Action::name(self : Action) -> String {
     Revert => "revert"
     Transpose => "transpose"
     Columns => "columns"
+    PickColumns => "pick columns"
+    Limit => "rows per page"
     ExportCsv => "export CSV"
     ExportJson => "export JSON"
     RunQuery => "run query"
@@ -119,6 +123,8 @@ pub fn Action::parse(text : String) -> Action? {
     ("revert", Revert),
     ("transpose", Transpose),
     ("columns", Columns),
+    ("pick columns", PickColumns),
+    ("rows per page", Limit),
     ("export-csv", ExportCsv),
     ("export-json", ExportJson),
     ("run-query", RunQuery),
@@ -212,6 +218,8 @@ pub fn Keymap::default() -> Keymap {
     ("r", Revert),
     ("t", Transpose),
     ("c", Columns),
+    ("C", PickColumns),
+    ("L", Limit),
     ("x", ExportCsv),
     ("X", ExportJson),
     ("C-r", RunQuery),

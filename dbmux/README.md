@@ -88,6 +88,8 @@ and every write on it is confirmed.
 | `C-s` | save: the statements are shown, then run in one transaction |
 | `r` | take the changes back |
 | `t` / `c` | transpose / hide the column under the cursor |
+| `C` | pick the columns shown, by name, on the prompt line |
+| `L` | rows per page, 1 to 10000 |
 | `x` / `X` | export CSV / JSON |
 | `C-p` | the command palette |
 | `?` | the keys that work here |
@@ -97,6 +99,16 @@ and every write on it is confirmed.
 | `C-q` | close the split |
 | `C-r` | run the editor's SQL |
 | `q` | quit |
+
+The keys can be rebound in `./keymaps.toml`, the file `DBMUX_KEYMAP` names, or `--keymap
+<path>`. Each line under `[keys]` binds an action, by the name the help panel shows, to one key;
+the key it had before is let go, and a name no action has stops dbmux with a message:
+
+```toml
+[keys]
+save = "C-w"
+columns = "h"
+```
 
 A keymap file rebinds any of them by action name:
 
