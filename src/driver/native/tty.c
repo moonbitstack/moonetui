@@ -121,9 +121,19 @@ int32_t moonetui_tty_size(int32_t *out) {
   return 0;
 }
 
+// The performance counter rather than GetTickCount64, which moves in steps of the system
+// timer, about 15.6 ms: against a 16 ms frame, a step that measured 15 waited a whole tick more.
 MOONBIT_FFI_EXPORT
 int32_t moonetui_tty_now(void) {
-  return (int32_t)(GetTickCount64() & 0x7fffffff);
+  static LARGE_INTEGER frequency = {0};
+  LARGE_INTEGER now;
+  if (frequency.QuadPart == 0) {
+    QueryPerformanceFrequency(&frequency);
+  }
+  QueryPerformanceCounter(&now);
+  int64_t ms = now.QuadPart / frequency.QuadPart * 1000 +
+               now.QuadPart % frequency.QuadPart * 1000 / frequency.QuadPart;
+  return (int32_t)(ms & 0x7fffffff);
 }
 
 #else

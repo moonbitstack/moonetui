@@ -155,8 +155,10 @@ pub fn[D : @driver.Driver] App::step(self : App[D]) -> Bool raise {
       }
     None => ()
   }
+  // What input changed is drawn in the same step; the frame interval paces only what timers
+  // and ticks change, so a key press never waits for the next frame.
   let since = now - self.last_frame
-  if self.dirty && (since < 0 || since >= self.frame_ms) {
+  if self.dirty && (events.length() > 0 || since < 0 || since >= self.frame_ms) {
     self.render()
     self.last_frame = now
   }
@@ -767,7 +769,11 @@ fn[D : @driver.Driver] compose(
     if self.plain {
       self.driver.write(@comp.encode_stream(spans))
     } else {
-      self.driver.write(@comp.encode(spans, self.base))
+      // Synchronized output (DEC mode 2026): a terminal that has it shows the frame whole, one
+      // that lacks it ignores the two marks.
+      self.driver.write(
+        "\u{1b}[?2026h" + @comp.encode(spans, self.base) + "\u{1b}[?2026l",
+      )
     }
     self.driver.flush()
   }

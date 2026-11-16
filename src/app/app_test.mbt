@@ -500,3 +500,21 @@ test "a new stylesheet restyles the tree on the next frame" {
   ui.step() |> ignore
   assert_eq(ui.screen()[0], "┌──┐")
 }
+
+///|
+/// A key press is drawn in the step that reads it, even just after a frame: only what timers
+/// change waits for the frame interval.
+test "input is drawn in the step that reads it" {
+  let tty = @driver.Headless::new(@geom.Size::new(20, 3), tick=1)
+  let tree = @app.column(0, [@app.leaf(1, @widget.Input::new())])
+  let ui = @app.App::new(tty, tree, quit=[@app.ctrl_c])
+  ui.start()
+  ignore(ui.step())
+  tty.clear_output()
+  tty.push(b"x")
+  ignore(ui.step())
+  let screen = @vt.Grid::new(20, 3)
+  screen.write(tty.output())
+  assert_true(screen.rows()[0].contains("x"))
+  assert_true(tty.output().has_prefix("\u{1b}[?2026h"))
+}
