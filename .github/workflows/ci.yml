@@ -56,6 +56,12 @@ jobs:
           echo "$out" | grep -q "Ada"
           echo "$out" | grep -q "tab pane"
 
+      # The save's old-value WHERE and the read-only refusal, each broken in turn: the test named
+      # for each has to go red.
+      - name: the database client's two safety checks are pinned by their tests
+        if: ${{ runner.os == 'Linux' }}
+        run: python3 scripts/check_dbmux_mutations.py
+
       - name: lint (fmt and interface are clean)
         run: |
           moon fmt
