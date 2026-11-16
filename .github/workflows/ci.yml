@@ -120,13 +120,45 @@ jobs:
 
           python3 scripts/verify_terminals.py --in "$RUNNER_TEMP/frames.txt"
 
-  # The database client, against a real Redis: the keys it lists, the key it
-  # opens and the console it runs are all server answers, not fixtures.
+  # The database client against real servers — Redis, PostgreSQL, MySQL and SQL
+  # Server: the keys and tables it lists, what it opens and what its console runs
+  # are all server answers, not fixtures.
   database:
     permissions:
       contents: read
     runs-on: ubuntu-26.04
     services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_PASSWORD: dbmux
+          POSTGRES_DB: shop
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 20
+      mysql:
+        image: mysql:8.4
+        env:
+          MYSQL_ROOT_PASSWORD: dbmux
+          MYSQL_DATABASE: shop
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd "mysqladmin ping -h 127.0.0.1 -pdbmux"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 30
+      sqlserver:
+        image: mcr.microsoft.com/mssql/server:2022-latest
+        env:
+          ACCEPT_EULA: "Y"
+          MSSQL_SA_PASSWORD: "Dbmux-pass1"
+        ports:
+          - 1433:1433
       redis:
         image: redis:7-alpine
         ports:
@@ -168,6 +200,30 @@ jobs:
           echo "$out"
           echo "$out" | grep -q "Ada"
           echo "$out" | grep -q "London"
+
+      # One table in each SQL server, so the tree has something of its own to list.
+      - name: seed the SQL servers
+        run: |
+          docker exec ${{ job.services.postgres.id }} psql -U postgres -d shop \
+            -c "create table customers (id int primary key, name text); insert into customers values (1, 'Ada')"
+          docker exec ${{ job.services.mysql.id }} mysql -uroot -pdbmux shop \
+            -e "create table customers (id int primary key, name varchar(40)); insert into customers values (1, 'Ada')"
+          for i in $(seq 60); do
+            docker exec ${{ job.services.sqlserver.id }} /opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -P 'Dbmux-pass1' -Q "select 1" >/dev/null 2>&1 && break
+            sleep 2
+          done
+          docker exec ${{ job.services.sqlserver.id }} /opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -P 'Dbmux-pass1' \
+            -Q "create database shop; exec('use shop; create table customers (id int primary key, name nvarchar(40)); insert into customers values (1, N''Ada'')')"
+
+      - name: the client lists each SQL server's tables and opens one
+        run: |
+          for dsn in "postgres://postgres:dbmux@127.0.0.1:5432/shop" \
+                     "mysql://root:dbmux@127.0.0.1:3306/shop" \
+                     "sqlserver://sa:Dbmux-pass1@127.0.0.1:1433/shop"; do
+            out=$(moon run --target native dbmux/src/main -- "$dsn" --headless --frames 3)
+            echo "$out"
+            echo "$out" | grep -q "customers"
+          done
 
       - name: the client's SQLite demo draws
         run: |
