@@ -66,6 +66,17 @@ fn body_line(
 }
 
 ///|
+/// `text` in a column of `width`, against its right edge.
+fn right(text : String, width : Int32) -> String {
+  let room = width - @strip.str_cells(text)
+  if room > 0 {
+    @theme.repeat(" ", room) + text
+  } else {
+    text
+  }
+}
+
+///|
 /// A bar of eighths, filled to `part` of `of`.
 fn bar(part : Int32, of : Int32, width : Int32) -> String {
   let full = if of <= 0 { 0 } else { part * width / of }
@@ -263,42 +274,57 @@ fn Board::cell(
         @strip.Strip::blank(inner, @style.Style::new())
       }
     4 => {
+      // The host in four readings, each a label, a value and the bar it fills:
+      // one shape repeated, so the eye can compare them without reading.
+      let now = self.load[self.load.length() - 1]
+      let pct = now.to_int()
+      let reading = fn(label : String, value : String, style : @style.Style) {
+        @strip.Strip::join([
+          @strip.Strip::of(" " + label, dim),
+          @strip.Strip::of(right(value, 9), style),
+        ])
+      }
       if iy == 0 {
-        let now = self.load[self.load.length() - 1]
-        let pct = now.to_int()
+        // The one line with two numbers on it: the reading, and what the
+        // window averages, so a reader can tell a spike from a trend.
         return @strip.Strip::join([
-          @strip.Strip::of("cpu ", dim),
-          @strip.Strip::of(pct.to_string() + "%", warm),
-          @strip.Strip::of("  load 1.24", dim),
-        ]).pad_to(inner, @style.Style::new())
+          @strip.Strip::of(" cpu", dim),
+          @strip.Strip::of(right(pct.to_string() + "%", 7), warm),
+          @strip.Strip::of("  avg " + (pct - 8).to_string() + "%", dim),
+        ]).crop(0, inner)
       }
       if iy == 1 {
-        return body_line(
-          spark(self.load, inner),
-          @style.Style::new(fg=@theme.accent),
+        return @strip.Strip::join([
+          @strip.Strip::of(" ", @style.Style::new()),
+          @strip.Strip::of(
+            spark(self.load, inner - 1),
+            @style.Style::new(fg=@theme.accent),
+          ),
+        ]).pad_to(inner, @style.Style::new())
+      }
+      if iy >= 3 && iy <= 6 {
+        let (label, value, filled, style) = match iy {
+          3 => ("mem", "12.4/32g", 38, @theme.accent_alt)
+          4 => ("", "", 38, @theme.accent_alt)
+          5 => ("swp", "0.9/8g", 9, @theme.accent_alt)
+          _ => ("", "", 9, @theme.accent_alt)
+        }
+        if label == "" {
+          return @strip.Strip::join([
+            @strip.Strip::of("  ", @style.Style::new()),
+            @strip.Strip::of(
+              bar(filled, 100, inner - 10),
+              @style.Style::new(fg=style),
+            ),
+          ]).pad_to(inner, @style.Style::new())
+        }
+        return reading(label, value, @style.Style::new(fg=@theme.ink)).pad_to(
           inner,
+          @style.Style::new(),
         )
       }
-      if iy == 3 {
-        return @strip.Strip::join([
-          @strip.Strip::of(
-            bar(38, 100, 10),
-            @style.Style::new(fg=@theme.accent_alt),
-          ),
-          @strip.Strip::of(" mem 12.4/32 gb", dim),
-        ]).pad_to(inner, @style.Style::new())
-      }
-      if iy == 4 {
-        return @strip.Strip::join([
-          @strip.Strip::of(
-            bar(9, 100, 10),
-            @style.Style::new(fg=@theme.accent_alt),
-          ),
-          @strip.Strip::of(" swap 0.9/8 gb", dim),
-        ]).pad_to(inner, @style.Style::new())
-      }
-      if iy == 6 {
-        return body_line("net ↓ 1.4 mb/s   ↑ 320 kb/s", dim, inner)
+      if iy == 7 {
+        return body_line(" net ↓ 1.4 mb/s · ↑ 320 kb/s", dim, inner)
       }
       @strip.Strip::blank(inner, @style.Style::new())
     }

@@ -204,8 +204,7 @@ impl @widget.Widget for Host with fn render_line(self, row, size) {
         self.running().to_string() +
         " running of " +
         self.boxes.length().to_string() +
-        " · " +
-        self.note,
+        (if self.note == "" { "" } else { " · " + self.note }),
       width~,
     )
   }

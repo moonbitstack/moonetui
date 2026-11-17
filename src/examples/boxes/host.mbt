@@ -74,7 +74,7 @@ pub fn Host::new() -> Host {
   for item in boxes {
     item.logs = script(item.name)
   }
-  { boxes, pick: 0, beat: 0, paused: false, note: "r restarts · s stops", }
+  { boxes, pick: 0, beat: 0, paused: false, note: "", }
 }
 
 ///|
@@ -83,10 +83,16 @@ fn script(name : String) -> Array[(String, String, String)] {
   let out : Array[(String, String, String)] = []
   if name == "api-gateway" {
     out.push(("18:29:58", "info", "listening on :8080"))
+    out.push(("18:30:00", "info", "GET /healthz 200 1ms"))
+    out.push(("18:30:01", "info", "cache hit session/9f2c"))
     out.push(("18:30:02", "info", "GET /v1/orders 200 12ms"))
     out.push(("18:30:03", "warn", "retry stripe (1/3) 502"))
     out.push(("18:30:04", "info", "stripe ok, 2 attempts left"))
+    out.push(("18:30:05", "info", "GET /v1/products 200 21ms"))
+    out.push(("18:30:06", "info", "GET /v1/orders/4471 200 9ms"))
+    out.push(("18:30:06", "warn", "slow query 412ms on orders"))
     out.push(("18:30:07", "info", "POST /v1/checkout 201 84ms"))
+    out.push(("18:30:09", "info", "gc pause 3ms"))
   } else if name == "postgres" {
     out.push(("18:29:41", "info", "database system is ready"))
     out.push(("18:30:02", "warn", "checkpoint starting: time"))

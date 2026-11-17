@@ -60,13 +60,23 @@ fn swap(tick : Int32) -> Int32 {
 ///|
 /// One reading of the network, in kilobytes a second, 0 to 8 for the chart.
 fn net(tick : Int32, offset : Int32) -> Int32 {
-  // A chart drawn from before the first tick reads negative indices unless the
-  // remainder is wrapped here rather than at the glyph.
-  let raw = (tick + offset) % 9
-  if raw < 0 {
-    raw + 9
+  // Two waves of different lengths added together: traffic swells and settles,
+  // and a sawtooth reads as a glitch rather than as a chart. The result is a
+  // level from 0 to 7, which is one glyph per column.
+  let slow = triangle(tick + offset, 47)
+  let fast = triangle(tick * 3 + offset, 23)
+  (slow * 7 + fast * 3) / 26
+}
+
+///|
+/// A wave from 0 to `period / 2` and back, for a positive or negative index.
+fn triangle(at : Int32, period : Int32) -> Int32 {
+  let half = period / 2
+  let phase = (at % period + period) % period
+  if phase < half {
+    phase
   } else {
-    raw
+    period - phase
   }
 }
 
@@ -103,7 +113,7 @@ fn repeat(glyph : String, count : Int32) -> String {
 ///|
 fn bars(percent : Int32, width : Int32) -> String {
   let filled = width * percent / 100
-  repeat("█", filled) + repeat("░", width - filled)
+  repeat("█", filled) + repeat("·", width - filled)
 }
 
 ///|
@@ -190,7 +200,9 @@ impl @widget.Widget for Monitor with fn render_line(self, row, size) {
     ])
   }
   let names : Array[String] = [
-    "moonc", "node", "postgres", "redis", "chrome", "kernel_task",
+    "moonc", "node", "postgres", "redis", "chrome", "kernel_task", "WindowServer",
+    "launchd", "sshd", "dockerd", "containerd", "prometheus", "kworker/0:1", "mds_stores",
+    "powerd",
   ]
   let index = body - table_top - 2
   if index >= 0 && index < names.length() {

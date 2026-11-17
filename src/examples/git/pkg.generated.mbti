@@ -20,6 +20,7 @@ pub struct Repo {
   cursor : Array[Int32]
   mut focus : Int32
   staged : Array[Bool]
+  current : Int32
 }
 pub fn Repo::focus(Self) -> Int32
 pub fn Repo::new() -> Self

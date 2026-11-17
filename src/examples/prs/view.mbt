@@ -178,6 +178,16 @@ fn Board::row(self : Board, index : Int32, inner : Int32) -> @strip.Strip {
 }
 
 ///|
+/// `1 comment`, `3 comments`: a count and the word it counts.
+fn plural(count : Int32, word : String) -> String {
+  if count == 1 {
+    count.to_string() + " " + word
+  } else {
+    count.to_string() + " " + word + "s"
+  }
+}
+
+///|
 fn Board::card_line(self : Board, row : Int32, inner : Int32) -> @strip.Strip {
   let pull = self.pulls[self.pick]
   let body = if row == 1 {
@@ -199,12 +209,11 @@ fn Board::card_line(self : Board, row : Int32, inner : Int32) -> @strip.Strip {
       @strip.Strip::of(" -" + pull.removed.to_string(), bad),
       @strip.Strip::of(
         "   " +
-        pull.files.to_string() +
-        " files   " +
-        pull.commits.to_string() +
-        " commits   " +
-        pull.comments.to_string() +
-        " comments",
+        plural(pull.files, "file") +
+        "   " +
+        plural(pull.commits, "commit") +
+        "   " +
+        plural(pull.comments, "comment"),
         dim,
       ),
     ])
@@ -218,7 +227,11 @@ fn Board::card_line(self : Board, row : Int32, inner : Int32) -> @strip.Strip {
       @strip.Strip::of(review_text(pull.review), review_style(pull.review)),
     ])
   }
-  body.pad_to(inner, @style.Style::new())
+  // One cell of air between the border and the words: a card whose text
+  // touches its own edge reads as a table, not a card.
+  @strip.Strip::join([@strip.Strip::of(" ", @style.Style::new()), body])
+  .crop(0, inner)
+  .pad_to(inner, @style.Style::new())
 }
 
 ///|

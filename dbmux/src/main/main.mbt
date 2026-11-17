@@ -291,9 +291,17 @@ async fn seed(session : @db.Session) -> Unit raise @db.Failed {
     "create table orders (id integer primary key, customer_id integer, total real, status text, note text)",
     "create table products (id integer primary key, sku text, price real)", "insert into customers values (1, 'Ada', 'London', '2024-01-04')",
     "insert into customers values (2, 'Blaise', 'Paris', '2024-02-11')", "insert into customers values (3, 'Grace', 'New York', '2024-03-02')",
-    "insert into orders values (1, 1, 10.5, 'paid', null)", "insert into orders values (2, 2, 7.0, 'open', 'rush')",
-    "insert into orders values (3, 1, 99.9, 'paid', null)", "insert into orders values (4, 3, 42.0, 'refunded', 'damaged box')",
+    "insert into customers values (4, 'Edsger', 'Rotterdam', '2024-03-14')", "insert into customers values (5, 'Frances', 'London', '2024-03-27')",
+    "insert into customers values (6, 'Hedy', 'Vienna', '2024-04-02')", "insert into customers values (7, 'Ivan', 'Kyiv', '2024-04-19')",
+    "insert into customers values (8, 'Joan', 'Dublin', '2024-05-06')", "insert into customers values (9, 'Ken', 'Toronto', '2024-05-21')",
+    "insert into customers values (10, 'Lise', 'Berlin', '2024-06-03')", "insert into customers values (11, 'Manuel', 'Lisbon', '2024-06-18')",
+    "insert into customers values (12, 'Noor', 'Amman', '2024-07-01')", "insert into orders values (1, 1, 10.5, 'paid', null)",
+    "insert into orders values (2, 2, 7.0, 'open', 'rush')", "insert into orders values (3, 1, 99.9, 'paid', null)",
+    "insert into orders values (4, 3, 42.0, 'refunded', 'damaged box')", "insert into orders values (5, 5, 18.25, 'paid', null)",
+    "insert into orders values (6, 6, 64.0, 'open', null)", "insert into orders values (7, 9, 3.5, 'paid', 'gift wrap')",
     "insert into products values (1, 'SKU-1', 3.5)", "insert into products values (2, 'SKU-2', 12.0)",
+    "insert into products values (3, 'SKU-3', 24.5)", "insert into products values (4, 'SKU-4', 0.99)",
+    "insert into products values (5, 'SKU-5', 130.0)",
   ]
   for statement in statements {
     ignore(session.query(statement))

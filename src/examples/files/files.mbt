@@ -160,8 +160,12 @@ fn column_row(
   let text = if is_dir[index] { names[index] + "/" } else { names[index] }
   let pad = width - @strip.str_cells(text)
   let line = if pad > 0 { text + repeat(" ", pad) } else { text }
+  // A column the cursor is not in is dimmer than the one it is: the eye reads
+  // where it is before it reads what is there.
   let style = if live && body == cursor {
     @theme.cursor
+  } else if !live {
+    @theme.quiet
   } else if is_dir[index] {
     dir_style
   } else {

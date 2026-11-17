@@ -15,29 +15,36 @@ pub struct Repo {
   cursor : Array[Int32]
   mut focus : Int32
   staged : Array[Bool]
+  /// The branch that has the working copy on it, marked with a dot.
+  current : Int32
 }
 
 ///|
 pub fn Repo::new() -> Repo {
   let staged : Array[Bool] = []
-  for _ in 0..<6 {
+  for _ in 0..<8 {
     staged.push(false)
   }
   {
-    branches: ["main *", "feat/ui", "fix/perf", "chore/deps"],
+    branches: [
+      "main", "feat/ui", "fix/perf", "chore/deps", "release/0.5", "docs/guide",
+    ],
     commits: [
       "a3f9c21  draw the tree, not the list", "7b1e044  a sheet every example wears",
       "c92d38a  ascii stops asking the tables", "1f04b7e  sparks where the snake eats",
-      "8d5c2a0  four regions, one page", "3e77b19  miller columns",
+      "8d5c2a0  four regions, one page", "3e77b19  miller columns", "5d2ab90  a frame redraws what moved",
+      "0c7e4f2  the band every screen wears", "b41c8d3  a log with its own graph",
+      "e9a1705  eight bars, one board",
     ],
     files: [
       "src/app/app.mbt", "src/strip/width.mbt", "src/examples/snake/board.mbt", "src/examples/json/doc.mbt",
-      "README.md", "CHANGELOG.md",
+      "README.md", "CHANGELOG.md", "src/comp/diff.mbt", "docs/index.html",
     ],
-    marks: [0, 0, 0, 1, 0, -1],
+    marks: [0, 0, 0, 1, 0, -1, 0, 0],
     cursor: [0, 0, 0],
     focus: 1,
     staged,
+    current: 0,
   }
 }
 
@@ -140,9 +147,9 @@ fn Repo::row(
   }
   if pane == 2 {
     let mark = match self.marks[index] {
-      -1 => "-"
-      1 => "+"
-      _ => "~"
+      -1 => "D"
+      1 => "A"
+      _ => "M"
     }
     let mark_style = match self.marks[index] {
       1 => add_style
@@ -185,7 +192,7 @@ fn Repo::row(
     let hash_style = if picked {
       ground
     } else if focused {
-      @theme.mark
+      @theme.identifier
     } else {
       @theme.quiet
     }
@@ -205,16 +212,31 @@ fn Repo::row(
     ]).crop(0, width)
   }
   let text = self.branches[index]
+  let current = index == self.current
   let style = if picked {
     ground
+  } else if focused && current {
+    @theme.mark
   } else if focused {
-    @theme.live
+    @theme.body
   } else {
     @theme.quiet
   }
   @strip.Strip::join([
     bar,
-    @strip.Strip::of(@theme.fit(text, width - 2), style),
+    @strip.Strip::of(
+      if current {
+        "● "
+      } else {
+        "  "
+      },
+      if picked {
+        ground
+      } else {
+        @theme.faint_style
+      },
+    ),
+    @strip.Strip::of(@theme.fit(text, width - 4), style),
     @strip.Strip::blank(1, @style.Style::new()),
   ]).crop(0, width)
 }
@@ -249,11 +271,26 @@ impl @widget.Widget for Repo with fn render_line(self, row, size) {
   let body = row - 2
   if body == 0 {
     return @strip.Strip::join([
-      @theme.head("branches", count="4", width=left, active=self.focus == 0),
+      @theme.head(
+        "branches",
+        count=self.branches.length().to_string(),
+        width=left,
+        active=self.focus == 0,
+      ),
       gap(),
-      @theme.head("commits", count="6", width=middle, active=self.focus == 1),
+      @theme.head(
+        "commits",
+        count=self.commits.length().to_string(),
+        width=middle,
+        active=self.focus == 1,
+      ),
       gap(),
-      @theme.head("changes", count="6", width=right, active=self.focus == 2),
+      @theme.head(
+        "changes",
+        count=self.files.length().to_string(),
+        width=right,
+        active=self.focus == 2,
+      ),
     ]).crop(0, width)
   }
   let index = body - 1
