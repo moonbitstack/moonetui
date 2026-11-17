@@ -179,12 +179,15 @@ fn Pulse::headline(self : Pulse) -> @strip.Strip {
 ///|
 impl @widget.Widget for Pulse with fn render_line(self, row, size) {
   let width = size.width
-  if width < 24 {
+  let height = size.height
+  if width < 24 || height < 12 {
     return @strip.Strip::blank(width, @style.default)
   }
-  // The page: one headline, one chart, two gauges, a table, a status line.
+  // The page: one headline, one chart, two gauges, a table, a status line. The
+  // chart is the part that stretches: a window taller than the page adds rows
+  // to the trace, not blank ones under the table.
   let chart_top = 2
-  let chart_rows = 7
+  let chart_rows = if height - 13 > 5 { height - 13 } else { 5 }
   let gauge_top = chart_top + chart_rows + 1
   let table_top = gauge_top + 3
   if row == 0 {
@@ -209,7 +212,7 @@ impl @widget.Widget for Pulse with fn render_line(self, row, size) {
   if row > table_top && row < table_top + 5 {
     return self.table_row(row - table_top - 1, width)
   }
-  if row == self.rows - 1 {
+  if row == height - 1 {
     let state = if self.paused { "held" } else { "live" }
     return @strip.Strip::join([
       @strip.Strip::of(
