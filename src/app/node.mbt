@@ -9,7 +9,7 @@ pub enum Node {
     box~ : @layout.Box,
     name~ : String,
     classes~ : Array[String],
-    styles~ : @design.Styles
+    styles~ : @design.Styles,
   )
   Stack(
     id~ : Int32,
@@ -19,7 +19,7 @@ pub enum Node {
     kids~ : Array[Node],
     name~ : String,
     classes~ : Array[String],
-    styles~ : @design.Styles
+    styles~ : @design.Styles,
   )
   Grid(
     id~ : Int32,
@@ -30,7 +30,7 @@ pub enum Node {
     kids~ : Array[Node],
     name~ : String,
     classes~ : Array[String],
-    styles~ : @design.Styles
+    styles~ : @design.Styles,
   )
   Scroll(
     id~ : Int32,
@@ -40,7 +40,7 @@ pub enum Node {
     bar~ : @style.Style,
     name~ : String,
     classes~ : Array[String],
-    styles~ : @design.Styles
+    styles~ : @design.Styles,
   )
 }
 
