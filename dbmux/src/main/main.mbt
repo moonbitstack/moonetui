@@ -596,7 +596,9 @@ async fn main {
     let head = @driver.Headless::new(@geom.Size::new(110, 32))
     let keys = flag(args, "--keys")
     if keys != "" {
-      head.push(keys_to_bytes(keys))
+      for chunk in keys_to_chunks(keys) {
+        head.push(chunk)
+      }
     }
     drive(head, screen, link, state, frames)
   } else {
@@ -609,8 +611,20 @@ async fn main {
 }
 
 ///|
-/// A key script on the command line: `jj` is two downs, `\e` is escape and
-/// `\x13` is Ctrl-S, so a test can press what a reader presses.
+/// A key script on the command line, in chunks: `jj` is two downs, `\e` is
+/// escape and `\x13` is Ctrl-S, so a test can press what a reader presses, and
+/// `|` ends a chunk. One chunk is read per frame, so a key that opens a table
+/// and a key that acts on the open table are in different chunks.
+fn keys_to_chunks(text : String) -> Array[Bytes] {
+  let out : Array[Bytes] = []
+  for part in text.split("|") {
+    out.push(keys_to_bytes(part.to_owned()))
+  }
+  out
+}
+
+///|
+/// One chunk of a key script, as the bytes a terminal would send.
 fn keys_to_bytes(text : String) -> Bytes {
   let chars = text.to_array()
   let out : Array[Byte] = []
