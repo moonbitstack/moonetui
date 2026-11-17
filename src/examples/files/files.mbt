@@ -169,11 +169,17 @@ fn column_row(
   let pad = width - @strip.str_cells(text)
   let line = if pad > 0 { text + repeat(" ", pad) } else { text }
   let style = if live && body == cursor {
-    picked_style
+    @theme.cursor
   } else if is_dir[index] {
     dir_style
   } else {
     file_style
+  }
+  if live && body == cursor {
+    return @strip.Strip::join([
+      @strip.Strip::of("▌", @theme.marker),
+      @strip.Strip::of(line, style).pad_to(width - 1, style),
+    ]).crop(0, width)
   }
   @strip.Strip::of(line, style)
 }
@@ -186,22 +192,31 @@ impl @widget.Widget for Files with fn render_line(self, row, size) {
     return @strip.Strip::blank(width, @style.default)
   }
   if row == 0 {
-    return @strip.Strip::of(" " + self.trail(), head_style)
-  }
-  if row == height - 1 {
-    return @strip.Strip::of(
-      " ↑↓ move · → enter · ← up · esc quit", head_style,
+    return @theme.band(
+      "moonetui",
+      subject="files",
+      note="moonetui" + self.trail(),
+      width~,
     )
   }
-  // Three columns with a gap between them: where from, what is here, what the
-  // selection holds.
-  let gap = 2
-  let column_width = (width - gap * 2) / 3
+  if row == 1 {
+    return @theme.rule(width~)
+  }
+  if row == height - 1 {
+    return @theme.keys(
+      [("↑↓", "move"), ("→", "enter"), ("←", "up"), ("q", "quit")],
+      width~,
+    )
+  }
+  // Miller columns: where the reader came from, what is here, what the
+  // selection holds. A column that has nothing to show is not drawn, so the
+  // root of a tree is two columns at the left edge and not two columns pushed
+  // along by an empty one.
   let here = self.here()
   let up = if self.path.length() > 0 { parents[here] } else { -2 }
   let rows = children_of(here)
   let picked = if self.at < rows.length() { rows[self.at] } else { -1 }
-  let body = row - 1
+  let body = row - 2
   let left : Array[Int32] = if self.path.length() > 0 {
     children_of(up)
   } else {
@@ -223,18 +238,21 @@ impl @widget.Widget for Files with fn render_line(self, row, size) {
       left_index = i
     }
   }
-  let left_cell = if left_index >= 0 {
-    column_row(left, left_index, column_width, -1, false)
-  } else {
-    @strip.Strip::blank(column_width, dim_style)
+  let columns = if left_index >= 0 { 3 } else { 2 }
+  let gap = 3
+  let column_width = (width - gap * (columns - 1)) / columns
+  let gap_strip = @strip.Strip::join([@strip.Strip::of("│ ", @theme.edge)])
+  let parts : Array[@strip.Strip] = []
+  if left_index >= 0 {
+    parts.push(column_row(left, left_index, column_width, -1, false))
+    parts.push(gap_strip)
   }
-  @strip.Strip::join([
-    left_cell,
-    @strip.Strip::blank(gap, @style.Style::new()),
-    column_row(rows, body, column_width, self.at, true),
-    @strip.Strip::blank(gap, @style.Style::new()),
-    column_row(right, body, column_width, -1, false),
-  ])
+  parts.push(column_row(rows, body, column_width, self.at, true))
+  if columns == 3 || right.length() > 0 {
+    parts.push(gap_strip)
+    parts.push(column_row(right, body, column_width, -1, false))
+  }
+  @strip.Strip::join(parts).crop(0, width).pad_to(width, @style.Style::new())
 }
 
 ///|

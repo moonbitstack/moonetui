@@ -122,26 +122,23 @@ impl @widget.Widget for Monitor with fn render_line(self, row, size) {
   let left_width = width * 44 / 100
   let right_width = width - left_width - 2
   if row == 0 {
-    return @strip.Strip::join([
-      @strip.Strip::of(" top", @style.Style::new(fg=@theme.accent, bold=true)),
-      @strip.Strip::of("  load ", label_style),
-      @strip.Strip::of("0.42 0.31 0.28", value_style),
-      @strip.Strip::of("   uptime ", label_style),
-      @strip.Strip::of((self.tick + 3).to_string() + "s", value_style),
-      @strip.Strip::of(
-        if self.held {
-          "   held"
-        } else {
-          "   live"
-        },
-        label_style,
-      ),
-    ])
+    return @theme.band(
+      "moonetui",
+      subject="top",
+      note="load 0.42 0.31 0.28 · up " +
+        (self.tick + 3).to_string() +
+        "s · " +
+        (if self.held { "held" } else { "live" }),
+      width~,
+    )
+  }
+  if row == 1 {
+    return @theme.rule(width~)
   }
   if row == height - 1 {
-    return @strip.Strip::of(" space holds · esc quits", label_style)
+    return @theme.keys([("space", "hold"), ("q", "quit")], width~)
   }
-  let body = row - 1
+  let body = row - 2
   // The cores, one bar each, down the left.
   if body < 8 {
     let load = core_load(body, self.tick)

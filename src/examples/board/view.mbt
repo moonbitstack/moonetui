@@ -388,26 +388,21 @@ impl @widget.Widget for Board with fn render_line(self, row, size) {
   let width = size.width
   let height = size.height
   if row == 0 {
-    let left = @strip.Strip::of(" ◇ BOARD", title_style)
-    let right = @strip.Strip::of(
-      "sun 15 november 2026  ·  " + self.clock_text() + "  ·  week 46 ",
-      dim,
+    return @theme.band(
+      "moonetui",
+      subject="board",
+      note="sun 15 november 2026 · " + self.clock_text() + " · week 46",
+      width~,
     )
-    let fill = width - left.cell_length() - right.cell_length()
-    return @strip.Strip::join([
-      left,
-      @strip.Strip::blank(if fill > 0 { fill } else { 0 }, @style.Style::new()),
-      right,
-    ]).pad_to(width, @style.Style::new())
   }
   if row == 1 {
-    return @strip.Strip::of(dashes(width), frame_style)
+    return @theme.rule(width~)
   }
   if row == height - 1 {
-    return @strip.Strip::of(
-      cut(" ↑↓ task · space done · r refresh · esc quit", width),
-      dim,
-    ).pad_to(width, @style.Style::new())
+    return @theme.keys(
+      [("↑↓", "task"), ("space", "done"), ("r", "refresh"), ("q", "quit")],
+      width~,
+    )
   }
   let pw = (width - GAP * 2) / 3
   let inner = pw - 2

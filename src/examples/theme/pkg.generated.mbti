@@ -3,6 +3,7 @@ package "moonbitstack/moonetui/examples/theme"
 
 import {
   "moonbitstack/moonetui/design",
+  "moonbitstack/moonetui/strip",
   "moonbitstack/moonetui/style",
   "moonbitstack/moonetui/widget",
 }
@@ -14,17 +15,59 @@ pub let accent_alt : @style.Colour
 
 pub let bad : @style.Colour
 
+pub fn band(String, subject? : String, note? : String, width~ : Int32) -> @strip.Strip
+
+pub let body : @style.Style
+
+pub let cap : @style.Style
+
+pub let cool : @style.Colour
+
+pub let cursor : @style.Style
+
+pub fn divider(height~ : Int32) -> @strip.Strip
+
+pub let edge : @style.Style
+
+pub let faint : @style.Colour
+
+pub let faint_style : @style.Style
+
+pub fn fit(String, Int32) -> String
+
 pub fn footer(Array[(String, String)]) -> @widget.Footer
 
 pub let good : @style.Colour
+
+pub fn head(String, count? : String, width~ : Int32, active? : Bool) -> @strip.Strip
 
 pub fn header(String, note? : String) -> @widget.Header
 
 pub let ink : @style.Colour
 
+pub fn keys(Array[(String, String)], width~ : Int32) -> @strip.Strip
+
+pub let live : @style.Style
+
+pub let mark : @style.Style
+
+pub let marker : @style.Style
+
 pub let muted : @style.Colour
 
+pub let picked : @style.Colour
+
+pub let quiet : @style.Style
+
+pub fn repeat(String, Int32) -> String
+
+pub fn rule(width~ : Int32) -> @strip.Strip
+
 pub fn sheet() -> @design.Stylesheet
+
+pub let surface : @style.Colour
+
+pub let title : @style.Style
 
 pub let warn : @style.Colour
 

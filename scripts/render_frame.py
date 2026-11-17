@@ -184,8 +184,10 @@ def parse_frames(text: str) -> list[dict]:
 
 # DejaVu first: it is the only common monospace that has the lower blocks
 # (`▁▂`), the rings (`◉`) and the sparkles (`✦`) as well as the box drawing.
-# One face only. Bold is drawn by stroking the same face: DejaVu's bold has no
-# box drawing at all, so a second file would put boxes where the bars are.
+# Its bold face has no box drawing, blocks or rings, so a bold cell is drawn in
+# the bold face when the glyph is a letter or a digit and in the plain face when
+# it is a rule, a bar or a mark: stroking the plain face fattens every glyph by
+# a pixel, which runs a heading into the rule drawn in the cell beside it.
 FONTS = [
     "C:/Windows/Fonts/DejaVuSansMono_0.ttf",
     "/usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf",
@@ -194,18 +196,35 @@ FONTS = [
     "/System/Library/Fonts/Menlo.ttc",
 ]
 
+BOLD_FONTS = [
+    "C:/Windows/Fonts/DejaVuSansMono-Bold_0.ttf",
+    "/usr/share/fonts/truetype/dejavu/DejaVuSansMono-Bold.ttf",
+    "C:/Windows/Fonts/CascadiaMono-Bold.ttf",
+    "C:/Windows/Fonts/consolab.ttf",
+    "/System/Library/Fonts/Menlo.ttc",
+]
 
-def load_font(size: int) -> ImageFont.FreeTypeFont:
-    for path in FONTS:
+
+def load_font(size: int, bold: bool = False) -> ImageFont.FreeTypeFont:
+    for path in BOLD_FONTS if bold else FONTS:
         try:
             return ImageFont.truetype(path, size)
         except OSError:
             continue
+    if bold:
+        return load_font(size)
     raise SystemExit("no monospace font found")
+
+
+def in_bold_face(ch: str) -> bool:
+    """Whether the bold face draws this glyph: letters and digits, not rules."""
+    code = ord(ch[0])
+    return code < 0x2000 and not 0x2190 <= code <= 0x21FF
 
 
 def draw_frame(frame: dict, size: int = 17, pad: int = 10, label: str = "") -> Image.Image:
     font = load_font(size)
+    heavy = load_font(size, bold=True)
     cell_w = round(font.getlength("M"))
     cell_h = round(size * 1.34)
     width, height = frame["width"], frame["height"]
@@ -232,10 +251,8 @@ def draw_frame(frame: dict, size: int = 17, pad: int = 10, label: str = "") -> I
             if cell.ch == " ":
                 continue
             fill = cell.fg or (0xC0, 0xCA, 0xF5)
-            if cell.bold:
-                draw.text((px, py), cell.ch, font=font, fill=fill, stroke_width=1, stroke_fill=fill)
-            else:
-                draw.text((px, py), cell.ch, font=font, fill=fill)
+            face = heavy if cell.bold and in_bold_face(cell.ch) else font
+            draw.text((px, py), cell.ch, font=face, fill=fill)
     return image
 
 

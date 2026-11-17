@@ -197,31 +197,25 @@ impl @widget.Widget for Host with fn render_line(self, row, size) {
   let width = size.width
   let height = size.height
   if row == 0 {
-    let left = @strip.Strip::of(" ⬢ CONTAINERS", head_style)
-    let right_text = @strip.Strip::of(
-      "dockerd 27.1  ·  " +
-      self.running().to_string() +
-      " running of " +
-      self.boxes.length().to_string() +
-      "  ·  " +
-      self.note +
-      " ",
-      dim,
+    return @theme.band(
+      "moonetui",
+      subject="boxes",
+      note="dockerd 27.1 · " +
+        self.running().to_string() +
+        " running of " +
+        self.boxes.length().to_string() +
+        " · " +
+        self.note,
+      width~,
     )
-    let fill = width - left.cell_length() - right_text.cell_length()
-    return @strip.Strip::join([
-      left,
-      @strip.Strip::blank(if fill > 0 { fill } else { 0 }, @style.Style::new()),
-      right_text,
-    ]).pad_to(width, @style.Style::new())
   }
   if row == 1 {
     return @strip.Strip::of(rule(width), frame_style)
   }
   if row == height - 1 {
-    return filled(
-      " ↑↓ pick · r restart · s stop · space pause the tail · esc quit",
-      width, dim,
+    return @theme.keys(
+      [("↑↓", "box"), ("enter", "open"), ("space", "stop"), ("q", "quit")],
+      width~,
     )
   }
   let top = 2

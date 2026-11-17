@@ -300,36 +300,35 @@ impl @widget.Widget for Ship with fn render_line(self, row, size) {
   let width = size.width
   let height = size.height
   if row == 0 {
-    let band = @strip.Strip::of(
-      " ◇ DRIFT",
-      @style.Style::new(fg=@theme.accent_alt, bold=true),
+    return @theme.band(
+      "moonetui",
+      subject="drift",
+      note=right(self.credits.to_string(), 6) +
+        " cr · fuel " +
+        self.fuel.to_string() +
+        "/10 · hull " +
+        self.hull.to_string() +
+        "% · hold " +
+        self.held().to_string() +
+        "/20",
+      width~,
     )
-    let stats = @strip.Strip::of(
-      right(self.credits.to_string(), 6) +
-      " cr  ·  fuel " +
-      self.fuel.to_string() +
-      "/10  ·  hull " +
-      self.hull.to_string() +
-      "%  ·  hold " +
-      self.held().to_string() +
-      "/20 ",
-      dim,
-    )
-    let fill = width - band.cell_length() - stats.cell_length()
-    return @strip.Strip::join([
-      band,
-      @strip.Strip::blank(if fill > 0 { fill } else { 0 }, @style.Style::new()),
-      stats,
-    ]).pad_to(width, @style.Style::new())
   }
   if row == 1 {
     return @strip.Strip::of(rule(width), frame_style)
   }
   if row == height - 1 {
-    return @strip.Strip::of(
-      " ↑↓ course · ←→ good · j jump · b buy · s sell · f fuel · x patch · esc quit ",
-      dim,
-    ).pad_to(width, @style.Style::new())
+    return @theme.keys(
+      [
+        ("↑↓", "course"),
+        ("j", "jump"),
+        ("b", "buy"),
+        ("s", "sell"),
+        ("f", "fuel"),
+        ("q", "quit"),
+      ],
+      width~,
+    )
   }
   let panel_h = 9
   let right_w = width - CHART_W - 1

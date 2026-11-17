@@ -226,29 +226,30 @@ impl @widget.Widget for Board with fn render_line(self, row, size) {
   let width = size.width
   let height = size.height
   if row == 0 {
-    let left_text = @strip.Strip::of(" ⬡ PULL REQUESTS", head_style)
-    let right_text = @strip.Strip::of(
-      "moonbitstack/moonetui  ·  " +
-      self.count(Waiting).to_string() +
-      " waiting  ·  " +
-      self.count(Approved).to_string() +
-      " approved ",
-      dim,
+    return @theme.band(
+      "moonetui",
+      subject="prs",
+      note="moonbitstack/moonetui · " +
+        self.count(Waiting).to_string() +
+        " waiting · " +
+        self.count(Approved).to_string() +
+        " approved",
+      width~,
     )
-    let fill = width - left_text.cell_length() - right_text.cell_length()
-    return @strip.Strip::join([
-      left_text,
-      @strip.Strip::blank(if fill > 0 { fill } else { 0 }, @style.Style::new()),
-      right_text,
-    ]).pad_to(width, @style.Style::new())
   }
   if row == 1 {
     return @strip.Strip::of(rule(width), frame_style)
   }
   if row == height - 1 {
-    return @strip.Strip::of(
-      " ↑↓ pick · space fold the card · m merge · esc quit  ", dim,
-    ).pad_to(width, @style.Style::new())
+    return @theme.keys(
+      [
+        ("↑↓", "pull request"),
+        ("m", "merge"),
+        ("tab", "checks"),
+        ("q", "quit"),
+      ],
+      width~,
+    )
   }
   let inner = width - 2
   let list = self.pulls.length()

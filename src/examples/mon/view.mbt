@@ -196,37 +196,28 @@ impl @widget.Widget for Field with fn render_line(self, row, size) {
   let width = size.width
   let height = size.height
   if row == 0 {
-    let band = @strip.Strip::of(
-      " ⬢ MONSTERS",
-      @style.Style::new(fg=@theme.good, bold=true),
+    return @theme.band(
+      "moonetui",
+      subject="mon",
+      note="badges " +
+        self.badges.to_string() +
+        " · seen " +
+        self.seen.to_string() +
+        " · caught " +
+        self.caught.to_string() +
+        " · steps " +
+        self.steps.to_string(),
+      width~,
     )
-    let stats = @strip.Strip::of(
-      "badges " +
-      self.badges.to_string() +
-      "  ·  seen " +
-      self.seen.to_string() +
-      "  ·  caught " +
-      self.caught.to_string() +
-      "  ·  steps " +
-      self.steps.to_string() +
-      " ",
-      dim,
-    )
-    let fill = width - band.cell_length() - stats.cell_length()
-    return @strip.Strip::join([
-      band,
-      @strip.Strip::blank(if fill > 0 { fill } else { 0 }, @style.Style::new()),
-      stats,
-    ]).pad_to(width, @style.Style::new())
   }
   if row == 1 {
     return @strip.Strip::of(rule(width), frame_style)
   }
   if row == height - 1 {
-    return @strip.Strip::of(
-      " arrows walk · space strike · f flee · h potion · 1-3 party · esc quit ",
-      dim,
-    ).pad_to(width, @style.Style::new())
+    return @theme.keys(
+      [("↑↓", "walk"), ("enter", "fight"), ("b", "bag"), ("q", "quit")],
+      width~,
+    )
   }
   let panel_h = 10
   let right_w = width - MAP_W - 1

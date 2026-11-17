@@ -157,19 +157,14 @@ impl @widget.Widget for Doc with fn render_line(self, row, size) {
   let width = size.width
   let height = size.height
   if row == 0 {
-    let band = @strip.Strip::of(" {} JSON", box_style)
-    let stats = @strip.Strip::of(
-      "payload.json  ·  " +
-      self.nodes.length().to_string() +
-      " lines  ·  4.1 kb  ·  utf-8 ",
-      dim,
+    return @theme.band(
+      "moonetui",
+      subject="json",
+      note="payload.json · " +
+        self.nodes.length().to_string() +
+        " lines · 4.1 kb · utf-8",
+      width~,
     )
-    let fill = width - band.cell_length() - stats.cell_length()
-    return @strip.Strip::join([
-      band,
-      @strip.Strip::blank(if fill > 0 { fill } else { 0 }, @style.Style::new()),
-      stats,
-    ]).pad_to(width, @style.Style::new())
   }
   if row == 1 {
     let head = @strip.Strip::of(" path  ", dim)
@@ -201,24 +196,30 @@ impl @widget.Widget for Doc with fn render_line(self, row, size) {
   if row == height - 2 {
     let node = self.at()
     return @strip.Strip::join([
+      @strip.Strip::of(" " + label(node), @theme.quiet),
+      @strip.Strip::of("  ·  " + node.kind, @theme.quiet),
+      @strip.Strip::of("  ·  " + node.text, @theme.body),
       @strip.Strip::of(
-        " " +
-        label(node) +
-        "  ·  " +
-        node.kind +
-        "  ·  " +
-        node.text +
-        "  ·  ",
-        dim,
+        "   " + self.note,
+        if self.typing {
+          @theme.live
+        } else {
+          @theme.quiet
+        },
       ),
-      @strip.Strip::of(self.note, if self.typing { bool_style } else { dim }),
     ]).pad_to(width, @style.Style::new())
   }
   if row == height - 1 {
-    return @strip.Strip::of(
-      " ← fold · ↑↓ move · / find · enter keeps it · esc clears or quits ",
-      dim,
-    ).pad_to(width, @style.Style::new())
+    return @theme.keys(
+      [
+        ("←", "fold"),
+        ("↑↓", "move"),
+        ("/", "find"),
+        ("enter", "keep"),
+        ("q", "quit"),
+      ],
+      width~,
+    )
   }
   let top = 3
   let rows = height - 5

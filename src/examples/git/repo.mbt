@@ -101,54 +101,29 @@ pub fn Repo::toggle(self : Repo) -> Unit {
 }
 
 ///|
-let title_style : @style.Style = @style.Style::new(fg=@theme.muted)
-
-///|
-let head_style : @style.Style = @style.Style::new(fg=@theme.accent, bold=true)
-
-///|
-let live_style : @style.Style = @style.Style::new(fg=@theme.accent_alt)
-
-///|
-let value_style : @style.Style = @style.Style::new(fg=@theme.ink)
-
-///|
-let dim_style : @style.Style = @style.Style::new(fg=@theme.muted)
-
-///|
 let add_style : @style.Style = @style.Style::new(fg=@theme.good)
 
 ///|
 let del_style : @style.Style = @style.Style::new(fg=@theme.bad)
 
 ///|
-let picked_style : @style.Style = @style.Style::new(
-  fg=@style.black,
-  bg=@theme.accent,
-  bold=true,
-)
+let touched_style : @style.Style = @style.Style::new(fg=@theme.warn)
 
 ///|
-fn repeat(glyph : String, count : Int32) -> String {
-  let out = StringBuilder()
-  for _ in 0..<count {
-    out.write_string(glyph)
-  }
-  out.to_string()
+let value_style : @style.Style = @style.Style::new(fg=@theme.ink)
+
+///|
+/// The column between two panes: a hairline with a space after it.
+fn gap() -> @strip.Strip {
+  @strip.Strip::join([
+    @strip.Strip::of("│", @theme.edge),
+    @strip.Strip::blank(1, @style.Style::new()),
+  ])
 }
 
 ///|
-fn fit(text : String, width : Int32) -> String {
-  let cells = @strip.str_cells(text)
-  if cells >= width {
-    return text
-  }
-  text + repeat(" ", width - cells)
-}
-
-///|
-/// One row of one pane: the entry, dimmed when the pane is not focused, filled
-/// when it is the row the cursor is on.
+/// One row of one pane: the entry, dimmed when the pane has no keyboard, and
+/// marked down its left edge when it is the row the cursor is on.
 fn Repo::row(
   self : Repo,
   pane : Int32,
@@ -157,107 +132,129 @@ fn Repo::row(
 ) -> @strip.Strip {
   let focused = self.focus == pane
   let picked = focused && self.cursor[pane] == index
+  let ground = if picked { @theme.cursor } else { value_style }
+  let bar = if picked {
+    @strip.Strip::of("▌", @theme.marker)
+  } else {
+    @strip.Strip::of(" ", @style.Style::new())
+  }
   if pane == 2 {
     let mark = match self.marks[index] {
       -1 => "-"
       1 => "+"
       _ => "~"
     }
-    let mark_style = if self.marks[index] == 1 {
-      add_style
-    } else if self.marks[index] == -1 {
-      del_style
-    } else {
-      dim_style
+    let mark_style = match self.marks[index] {
+      1 => add_style
+      -1 => del_style
+      _ => touched_style
     }
     let staged = if self.staged[index] { "●" } else { "○" }
-    let inner = if width > 4 { width - 4 } else { width }
-    return @strip.Strip::join([
+    let inner = width - 5
+    let body = @strip.Strip::join([
       @strip.Strip::of(
-        " " + staged + " ",
+        staged + " ",
         if self.staged[index] {
           add_style
+        } else if picked {
+          ground
         } else {
-          dim_style
+          @theme.faint_style
         },
       ),
       @strip.Strip::of(mark + " ", mark_style),
       @strip.Strip::of(
-        fit(self.files[index], inner),
+        @theme.fit(self.files[index], inner),
         if picked {
-          picked_style
-        } else {
+          ground
+        } else if focused {
           value_style
+        } else {
+          @theme.quiet
         },
       ),
     ])
+    return @strip.Strip::join([bar, body.pad_to(width - 1, @style.Style::new())]).crop(
+      0, width,
+    )
   }
-  let text = if pane == 0 { self.branches[index] } else { self.commits[index] }
-  let style = if pane == 0 { live_style } else { value_style }
-  @strip.Strip::of(
-    fit(" " + text, width),
-    if picked {
-      picked_style
+  if pane == 1 {
+    let text = self.commits[index]
+    let hash = text[0:7].to_owned()
+    let message = text[9:].to_owned()
+    let hash_style = if picked {
+      ground
     } else if focused {
-      style
+      @theme.mark
     } else {
-      dim_style
-    },
-  )
+      @theme.quiet
+    }
+    let body_style = if picked {
+      ground
+    } else if focused {
+      value_style
+    } else {
+      @theme.quiet
+    }
+    let room = width - 2 - 9
+    return @strip.Strip::join([
+      bar,
+      @strip.Strip::of(hash + "  ", hash_style),
+      @strip.Strip::of(@theme.fit(message, room), body_style),
+      @strip.Strip::blank(1, @style.Style::new()),
+    ]).crop(0, width)
+  }
+  let text = self.branches[index]
+  let style = if picked {
+    ground
+  } else if focused {
+    @theme.live
+  } else {
+    @theme.quiet
+  }
+  @strip.Strip::join([
+    bar,
+    @strip.Strip::of(@theme.fit(text, width - 2), style),
+    @strip.Strip::blank(1, @style.Style::new()),
+  ]).crop(0, width)
 }
 
 ///|
 impl @widget.Widget for Repo with fn render_line(self, row, size) {
   let width = size.width
   let height = size.height
-  if width < 50 {
+  if width < 50 || height < 6 {
     return @strip.Strip::blank(width, @style.default)
   }
   if row == 0 {
-    return @strip.Strip::join([
-      @strip.Strip::of(" git", head_style),
-      @strip.Strip::of("  moonetui · main · 3 ahead", title_style),
-    ])
+    return @theme.band(
+      "moonetui",
+      subject="git",
+      note="main · 3 ahead · clean",
+      width~,
+    )
+  }
+  if row == 1 {
+    return @theme.rule(width~)
   }
   if row == height - 1 {
-    return @strip.Strip::of(
-      " tab pane · ↑↓ move · space stage · esc quit", title_style,
+    return @theme.keys(
+      [("tab", "pane"), ("↑↓", "move"), ("space", "stage"), ("q", "quit")],
+      width~,
     )
   }
   let left = width * 22 / 100
-  let middle = width * 38 / 100
+  let middle = width * 41 / 100
   let right = width - left - middle - 4
-  let body = row - 1
-  // The pane headers sit on the first row of the body.
+  let body = row - 2
   if body == 0 {
     return @strip.Strip::join([
-      @strip.Strip::of(
-        fit(" branches", left),
-        if self.focus == 0 {
-          live_style
-        } else {
-          title_style
-        },
-      ),
-      @strip.Strip::blank(2, @style.Style::new()),
-      @strip.Strip::of(
-        fit(" commits", middle),
-        if self.focus == 1 {
-          live_style
-        } else {
-          title_style
-        },
-      ),
-      @strip.Strip::blank(2, @style.Style::new()),
-      @strip.Strip::of(
-        fit(" files", right),
-        if self.focus == 2 {
-          live_style
-        } else {
-          title_style
-        },
-      ),
-    ])
+      @theme.head("branches", count="4", width=left, active=self.focus == 0),
+      gap(),
+      @theme.head("commits", count="6", width=middle, active=self.focus == 1),
+      gap(),
+      @theme.head("changes", count="6", width=right, active=self.focus == 2),
+    ]).crop(0, width)
   }
   let index = body - 1
   let cell = fn(pane : Int32, pane_width : Int32) {
@@ -269,11 +266,13 @@ impl @widget.Widget for Repo with fn render_line(self, row, size) {
   }
   @strip.Strip::join([
     cell(0, left),
-    @strip.Strip::blank(2, @style.Style::new()),
+    gap(),
     cell(1, middle),
-    @strip.Strip::blank(2, @style.Style::new()),
+    gap(),
     cell(2, right),
   ])
+  .crop(0, width)
+  .pad_to(width, @style.Style::new())
 }
 
 ///|

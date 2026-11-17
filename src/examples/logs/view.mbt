@@ -142,25 +142,17 @@ impl @widget.Widget for Tail with fn render_line(self, row, size) {
   let width = size.width
   let height = size.height
   if row == 0 {
-    let band = @strip.Strip::of(
-      " ▤ LOGS",
-      @style.Style::new(fg=@theme.accent, bold=true),
+    return @theme.band(
+      "moonetui",
+      subject="logs",
+      note="api.log · " +
+        self.lines.length().to_string() +
+        " lines · " +
+        self.count(Error).to_string() +
+        " errors · " +
+        (if self.follow { "tailing" } else { "held" }),
+      width~,
     )
-    let stats = @strip.Strip::of(
-      "api.log  ·  " +
-      self.lines.length().to_string() +
-      " lines  ·  " +
-      self.count(Error).to_string() +
-      " errors  ·  " +
-      (if self.follow { "tailing " } else { "held " }),
-      dim,
-    )
-    let fill = width - band.cell_length() - stats.cell_length()
-    return @strip.Strip::join([
-      band,
-      @strip.Strip::blank(if fill > 0 { fill } else { 0 }, @style.Style::new()),
-      stats,
-    ]).pad_to(width, @style.Style::new())
   }
   if row == 1 {
     return @strip.Strip::of(rule(width), frame_style)
@@ -169,10 +161,17 @@ impl @widget.Widget for Tail with fn render_line(self, row, size) {
     return self.filter_bar(width)
   }
   if row == height - 1 {
-    return @strip.Strip::of(
-      " 1-3 levels · ↑↓ scroll · e next error · space hold · / filter · esc quit ",
-      dim,
-    ).pad_to(width, @style.Style::new())
+    return @theme.keys(
+      [
+        ("1-3", "levels"),
+        ("↑↓", "scroll"),
+        ("e", "error"),
+        ("space", "hold"),
+        ("/", "filter"),
+        ("q", "quit"),
+      ],
+      width~,
+    )
   }
   let top = 2
   let rows = height - 4
