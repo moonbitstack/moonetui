@@ -43,6 +43,8 @@ pub fn head(String, count? : String, width~ : Int32, active? : Bool) -> @strip.S
 
 pub fn header(String, note? : String) -> @widget.Header
 
+pub let identifier : @style.Style
+
 pub let ink : @style.Colour
 
 pub fn keys(Array[(String, String)], width~ : Int32) -> @strip.Strip

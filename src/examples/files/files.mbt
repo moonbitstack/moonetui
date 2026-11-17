@@ -134,14 +134,6 @@ let file_style : @style.Style = @style.Style::new(fg=@theme.ink)
 let dim_style : @style.Style = @style.Style::new(fg=@theme.muted)
 
 ///|
-let picked_style : @style.Style = @style.Style::new(
-  fg=@style.black,
-  bg=@theme.accent,
-  bold=true,
-)
-
-///|
-let head_style : @style.Style = @style.Style::new(fg=@theme.muted)
 
 ///|
 fn repeat(glyph : String, count : Int32) -> String {

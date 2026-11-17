@@ -67,6 +67,10 @@ pub let mark : @style.Style = @style.Style::new(fg=accent, bold=true)
 pub let body : @style.Style = @style.Style::new(fg=ink)
 
 ///|
+/// An identifier: an accent that names a thing without shouting it.
+pub let identifier : @style.Style = @style.Style::new(fg=accent)
+
+///|
 /// A title in the body colour.
 pub let title : @style.Style = @style.Style::new(fg=ink, bold=true)
 

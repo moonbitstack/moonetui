@@ -1,0 +1,68 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "moonbitstack/moonetui/examples/mbtjj"
+
+import {
+  "moonbitstack/moonetui/app",
+  "moonbitstack/moonetui/design",
+}
+
+// Values
+pub fn log() -> Array[Change]
+
+pub fn sheet() -> @design.Stylesheet
+
+// Errors
+
+// Types and methods
+pub(all) struct Change {
+  graph : String
+  node_at : Int32
+  state : State
+  change_id : String
+  commit_id : String
+  author : String
+  date : String
+  parents : String
+  bookmarks : Array[String]
+  description : String
+  stat : String
+  diff : Array[String]
+}
+
+pub struct Repo {
+  changes : Array[Change]
+  mut cursor : Int32
+  filter : StringBuilder
+  mut typing : Bool
+  mut diff : Bool
+  mut ops : Bool
+}
+pub fn Repo::diff(Self) -> Bool
+pub fn Repo::filter(Self) -> String
+pub fn Repo::new() -> Self
+pub fn Repo::ops(Self) -> Bool
+pub fn Repo::pickable(Self) -> Array[Int32]
+pub fn Repo::rows(Self) -> Array[Int32]
+pub fn Repo::selection(Self) -> Change?
+pub fn Repo::set_filter(Self, String) -> Unit
+pub fn Repo::shift(Self, Int32) -> Unit
+pub fn Repo::toggle_diff(Self) -> Unit
+pub fn Repo::toggle_ops(Self) -> Unit
+pub fn Repo::typing(Self) -> Bool
+
+pub struct Screen {
+  root : @app.Node
+  repo : Repo
+}
+pub fn Screen::new() -> Self
+
+pub(all) enum State {
+  Immutable
+  Mutable
+  Working
+  Conflict
+}
+
+// Type aliases
+
+// Traits
