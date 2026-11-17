@@ -57,6 +57,22 @@ fn announce(
 }
 
 ///|
+/// One key, and the frame it draws kept: a stream that loses a frame makes the
+/// screen an emulator replays disagree with the one the application holds, and
+/// the disagreement is the test's, not the application's.
+fn press(
+  ui : @app.App[@driver.Headless],
+  driver : @driver.Headless,
+  total : StringBuilder,
+  text : String,
+) -> Unit raise {
+  driver.push(key(text))
+  ignore(ui.step())
+  total.write_string(driver.output())
+  driver.clear_output()
+}
+
+///|
 fn shot(
   ui : @app.App[@driver.Headless],
   driver : @driver.Headless,
@@ -64,10 +80,10 @@ fn shot(
   name : String,
   size : @geom.Size,
 ) -> Unit raise {
-  driver.clear_output()
   ui.refresh()
   ignore(ui.step())
   total.write_string(driver.output())
+  driver.clear_output()
   announce(name, size, total.to_string(), ui.screen())
 }
 
@@ -115,10 +131,8 @@ test "a jujutsu log: a cursor, a revset, a diff and the operations" {
   assert_eq(first.change_id, "qpvuntsm")
   assert_true(ui.screen()[0].contains("mbtjj"))
   // Two rows down: the log moves, and the change beside it says whose it is.
-  driver.push(key("\u{1b}[B"))
-  ui.step() |> ignore
-  driver.push(key("\u{1b}[B"))
-  ui.step() |> ignore
+  press(ui, driver, total, "\u{1b}[B")
+  press(ui, driver, total, "\u{1b}[B")
   let third = match repo.selection() {
     Some(change) => change
     None => abort("no revision under the cursor")
@@ -126,19 +140,16 @@ test "a jujutsu log: a cursor, a revset, a diff and the operations" {
   assert_eq(third.change_id, "zslqopmn")
   assert_true(screen_text(ui.screen()).contains("zslqopmn"))
   // `d` shows what the change does rather than what it is.
-  driver.push(key("d"))
-  ui.step() |> ignore
+  press(ui, driver, total, "d")
   assert_true(repo.diff())
   assert_true(ui.screen()[2].contains("DIFF"))
   assert_true(screen_text(ui.screen()).contains("merge of 2 revisions"))
   shot(ui, driver, total, "mbtjj/01 diff", size)
   // `/` starts a revset; the letters narrow the log to the revision they name.
-  driver.push(key("/"))
-  ui.step() |> ignore
+  press(ui, driver, total, "/")
   assert_true(repo.typing())
   for letter in ["c", "o", "n", "f"] {
-    driver.push(key(letter))
-    ui.step() |> ignore
+    press(ui, driver, total, letter)
   }
   assert_eq(repo.filter(), "conf")
   assert_eq(repo.pickable().length(), 1)
@@ -150,24 +161,21 @@ test "a jujutsu log: a cursor, a revset, a diff and the operations" {
   assert_true(ui.screen()[0].contains("revset conf"))
   shot(ui, driver, total, "mbtjj/02 revset", size)
   // Escape empties the revset and hands the keyboard back to the log.
-  driver.push(key("\u{1b}"))
   // Escape on its own is the start of a sequence until the terminal says
   // nothing more is coming: one more step with an empty read flushes it.
-  ui.step() |> ignore
-  ui.step() |> ignore
+  press(ui, driver, total, "\u{1b}")
+  press(ui, driver, total, "")
   assert_eq(repo.typing(), false)
   assert_eq(repo.filter(), "")
   assert_eq(repo.pickable().length(), 9)
   // `o` opens the operations the repository has seen.
-  driver.push(key("o"))
-  ui.step() |> ignore
+  press(ui, driver, total, "o")
   assert_true(repo.ops())
   let last = ui.screen()[size.height - 2]
   assert_true(last.contains("18:47"))
   shot(ui, driver, total, "mbtjj/03 operations", size)
   // `q` leaves.
-  driver.push(key("q"))
-  ui.step() |> ignore
+  press(ui, driver, total, "q")
   assert_eq(ui.screen_depth(), 1)
   assert_eq(repo.ops(), true)
 }
