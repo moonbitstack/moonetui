@@ -1,0 +1,20 @@
+// The window and the model. What it reads from `jj` lives beside it, in
+// `jj.mbt`, so the screen can be tested with a log that did not come from a
+// process.
+import {
+  "moonbitlang/async/process",
+  "moonbitlang/core/env",
+  "moonbitstack/moonetui/app",
+  "moonbitstack/moonetui/layout",
+  "moonbitstack/moonetui/design",
+  "moonbitstack/moonetui/geom",
+  "moonbitstack/moonetui/strip",
+  "moonbitstack/moonetui/style",
+  "moonbitstack/moonetui/widget",
+}
+
+supported_targets = "native"
+
+import {
+  "moonbitstack/moonetui/driver",
+} for "test"

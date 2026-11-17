@@ -117,14 +117,51 @@ jobs:
 
           # Every program under examples that has a frame test: the demo, the
           # two games and the dashboard.
-          for example in dbmux snake life game2048 pulse donut files top git read invaders blocks sweep sudoku cards board boxes prs tunes drift mon logs json mbtjj; do
+          for example in dbmux snake life game2048 pulse donut files top git read invaders blocks sweep sudoku cards board boxes prs tunes drift mon logs json; do
             MOONETUI_INTEROP=1 moon test --target native -p "moonbitstack/moonetui/examples/$example" > "$RUNNER_TEMP/$example.txt" 2>&1 || {
               cat "$RUNNER_TEMP/$example.txt"; exit 1; }
             grep '^interop' "$RUNNER_TEMP/$example.txt" >> "$RUNNER_TEMP/frames.txt"
           done
+
+          # The jj client is a program of its own, so its frames are announced by
+          # its own tests.
+          MOONETUI_INTEROP=1 moon test --target native -p moonbitstack/mbtjj > "$RUNNER_TEMP/mbtjj.txt" 2>&1 || {
+            cat "$RUNNER_TEMP/mbtjj.txt"; exit 1; }
+          grep '^interop' "$RUNNER_TEMP/mbtjj.txt" >> "$RUNNER_TEMP/frames.txt"
           grep -c 'interop' "$RUNNER_TEMP/frames.txt"
 
           python3 scripts/verify_terminals.py --in "$RUNNER_TEMP/frames.txt"
+
+      # The jj client against a repository it did not bring with it: jj is
+      # installed from its own release, a repository is made in the runner, and
+      # the window is asked for three frames.
+      - name: the jj client reads a repository
+        if: ${{ runner.os == 'Linux' }}
+        run: |
+          curl -fsSL -o "$RUNNER_TEMP/jj.tar.gz" \
+            https://github.com/jj-vcs/jj/releases/download/v0.47.1/jj-v0.47.1-x86_64-unknown-linux-musl.tar.gz
+          tar xzf "$RUNNER_TEMP/jj.tar.gz" -C "$RUNNER_TEMP" --strip-components=1
+          export PATH="$RUNNER_TEMP:$PATH"
+          export JJ_CONFIG="$RUNNER_TEMP/jjconfig.toml"
+          printf 'user.name = "CI"\nuser.email = "ci@example.com"\n' > "$JJ_CONFIG"
+          repo="$RUNNER_TEMP/repo"
+          mkdir -p "$repo" && cd "$repo"
+          jj git init
+          echo one > a.txt
+          jj describe -m 'feat: a first line'
+          jj new -m 'fix: a second line'
+          echo two >> a.txt
+          jj bookmark create main -r @
+          cd "$GITHUB_WORKSPACE"
+          out=$(moon run --target native mbtjj/src/main -- "$repo" --headless --frames 3)
+          echo "$out"
+          echo "$out" | grep -q "feat: a first line"
+          echo "$out" | grep -q "fix: a second line"
+          echo "$out" | grep -q "main"
+          # A path that is not a repository is refused with jj's own words.
+          if moon run --target native mbtjj/src/main -- "$RUNNER_TEMP" --headless --frames 1; then
+            echo "a directory that is not a repository was accepted"; exit 1
+          fi
 
   # The database client against real servers — Redis, PostgreSQL, MySQL and SQL
   # Server: the keys and tables it lists, what it opens and what its console runs

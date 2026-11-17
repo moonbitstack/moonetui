@@ -65,15 +65,23 @@ moon run --target native src/examples/drift/main    # a trader on six ports, wit
 moon run --target native src/examples/mon/main      # a route, a party, a wild thing in the grass
 moon run --target native src/examples/logs/main     # a tail, a level filter, a typed query
 moon run --target native src/examples/json/main     # a document as a tree: a path, folds, a query
-moon run --target native src/examples/mbtjj/main    # a Jujutsu log: a graph, a change, a revset
 moon run --target js src/examples/hello         # under Node
 moon run --target native src/examples/uart      # whole frames of plain text, as a serial line gets them
 moon run --target native dbmux/src/main -- --demo   # a database client, with a SQLite demo database
+moon run --target native mbtjj/src/main              # a Jujutsu log, read from the repository you run it in
 ```
 
 `src/examples/dbmux/` holds the screen the `tui` example runs, in a package of
 its own: a main package cannot carry tests the checker accepts, and the frame
 tests drive the same tree the example does.
+
+`mbtjj/` is a module beside the library that builds a client for
+[Jujutsu](https://github.com/jj-vcs/jj) with it: the log with its graph, the
+change under the cursor, what it does and the operations the repository has seen.
+It runs `jj` for its answers, so it works on any repository and writes nothing.
+`moon run --target native mbtjj/src/main` opens the one you are in; `--demo`
+shows a captured log where no repository is at hand. Its own README has the keys
+and the options.
 
 `dbmux/` is a module beside the library that builds a database client with it:
 a table list, an editable grid, a modal SQL editor, a command palette, and one
@@ -178,7 +186,6 @@ Each one has its keyboard contract, message shape and tests, and a live demo on 
 | `examples/mon` | A route to walk, a party of three, and fights in the tall grass |
 | `examples/logs` | A log tail: levels to switch off, a typed filter, a map of the file |
 | `examples/json` | A document as a tree beside the node it holds, its path, a typed query |
-| `examples/mbtjj` | A Jujutsu log: the graph, the change under the cursor, its diff, a revset typed key by key |
 
 ## Standards
 
@@ -195,7 +202,7 @@ moon test  --target all
 moon fmt && moon info --target all     # the diff must stay clean
 ```
 
-711 tests per backend, the same suite on wasm, wasm-gc, js and native, run on Ubuntu, macOS and Windows in CI. Every widget asserts the rows it draws, and every demo draws in a headless application.
+710 tests per backend, the same suite on wasm, wasm-gc, js and native, run on Ubuntu, macOS and Windows in CI. Every widget asserts the rows it draws, and every demo draws in a headless application.
 
 ## Conformance
 
