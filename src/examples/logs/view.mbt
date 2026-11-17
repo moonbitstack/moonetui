@@ -129,10 +129,15 @@ fn Tail::row(self : Tail, index : Int32, message : Int32) -> @strip.Strip {
 
 ///|
 fn map_cell(level : Level?) -> @strip.Strip {
+  // A margin note, not a second column of colour: the shade of an error is
+  // darker than the word ERROR beside it, so the map can be read at a glance
+  // without pulling the eye off the line it belongs to.
+  let error : @style.Style = @style.Style::new(fg=@style.Rgb(0x8a, 0x3a, 0x4a))
+  let warn : @style.Style = @style.Style::new(fg=@style.Rgb(0x8a, 0x6c, 0x3a))
   match level {
-    Some(Error) => @strip.Strip::of("█", error_style)
-    Some(Warn) => @strip.Strip::of("▌", warn_style)
-    Some(Info) => @strip.Strip::of("·", number_style)
+    Some(Error) => @strip.Strip::of("▌", error)
+    Some(Warn) => @strip.Strip::of("▏", warn)
+    Some(Info) => @strip.Strip::of("·", @theme.faint_style)
     None => @strip.Strip::of(" ", dim)
   }
 }
