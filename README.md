@@ -16,7 +16,7 @@ Cell buffer · differential ANSI renderer · incremental key parser · layout ·
 </p>
 
 <p>
-<img src="docs/assets/examples.png" alt="Four of the examples as they render: the Klondike table on green felt, a board of six framed panels with a segment numeral clock reading eighteen thirty, a log tail with a map of the whole file down its edge, and a player with a spectrum and the album under it." width="880">
+<img src="docs/assets/examples.png" alt="Four of the examples as they render, each with the title band and key bar they share: a board of six framed panels with a segment numeral clock reading eighteen thirty, a repository in three panes with the row under the cursor lifted, a log tail with a map of the whole file down its edge, and a Jujutsu log with its graph, the change under the cursor and a revset." width="880">
 </p>
 
 [Documentation, with every widget running live](https://moonbitstack.github.io/moonetui/) · [Report an issue](https://github.com/moonbitstack/moonetui/issues)
@@ -28,7 +28,7 @@ Cell buffer · differential ANSI renderer · incremental key parser · layout ·
 | | |
 |:--|:--|
 | **Synchronous core** | No async and no hidden event loop. The host calls one `step()`: poll, parse, dispatch, lay out, compose, diff, write. |
-| **Differential renderer** | Two frames become the spans that changed, and only the escape sequences needed to draw them. |
+| **Differential renderer** | Two frames become the runs of cells that changed, and only the escape sequences needed to draw them. A widget that moved its cursor redraws its own rows and leaves the rest of the screen standing. |
 | **A CSS-like design system** | Selectors over name, id, class and `:focus`, `:hover`, `:disabled`, stacked by specificity and cascade, with inheritance, borders, padding, margins, docks, grid spans and transitions. |
 | **Unicode-aware** | Every line is measured in terminal columns over a generated width table: wide CJK, double-width emoji, combining marks. |
 | **Four backends** | The same code and the same test suite on wasm, wasm-gc, js and native. |
@@ -65,6 +65,7 @@ moon run --target native src/examples/drift/main    # a trader on six ports, wit
 moon run --target native src/examples/mon/main      # a route, a party, a wild thing in the grass
 moon run --target native src/examples/logs/main     # a tail, a level filter, a typed query
 moon run --target native src/examples/json/main     # a document as a tree: a path, folds, a query
+moon run --target native src/examples/mbtjj/main    # a Jujutsu log: a graph, a change, a revset
 moon run --target js src/examples/hello         # under Node
 moon run --target native src/examples/uart      # whole frames of plain text, as a serial line gets them
 moon run --target native dbmux/src/main -- --demo   # a database client, with a SQLite demo database
@@ -177,6 +178,7 @@ Each one has its keyboard contract, message shape and tests, and a live demo on 
 | `examples/mon` | A route to walk, a party of three, and fights in the tall grass |
 | `examples/logs` | A log tail: levels to switch off, a typed filter, a map of the file |
 | `examples/json` | A document as a tree beside the node it holds, its path, a typed query |
+| `examples/mbtjj` | A Jujutsu log: the graph, the change under the cursor, its diff, a revset typed key by key |
 
 ## Standards
 
@@ -193,7 +195,7 @@ moon test  --target all
 moon fmt && moon info --target all     # the diff must stay clean
 ```
 
-701 tests per backend, the same suite on wasm, wasm-gc, js and native, run on Ubuntu, macOS and Windows in CI. Every widget asserts the rows it draws, and every demo draws in a headless application.
+711 tests per backend, the same suite on wasm, wasm-gc, js and native, run on Ubuntu, macOS and Windows in CI. Every widget asserts the rows it draws, and every demo draws in a headless application.
 
 ## Conformance
 

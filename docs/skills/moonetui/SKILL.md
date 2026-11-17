@@ -97,6 +97,21 @@ state.select(0, 2) |> ignore
 assert_eq(list.state().selected(), 0)
 ```
 
+## Redraw only what moved
+
+A frame that changes one widget's state composes that widget's rows and leaves
+the rest of the screen as it stands; a change that restyles or moves the tree
+places it again and redraws the rows its nodes left and the rows they landed on.
+The host only has to say what changed.
+
+```moonbit
+ui.repaint(1)  // the rows the node sits on
+ignore(ui.step())
+assert_eq(ui.screen().length(), 3)
+ui.refresh()   // the whole frame, after a change the host made behind the widget
+ignore(ui.step())
+```
+
 ## Rules that catch people out
 
 - Only the focused widget is offered a key. A widget that moves a choice

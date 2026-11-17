@@ -76,7 +76,7 @@
 
   <div class="stats">
     <div class="stat"><div class="n">4</div><div class="l">backends · wasm, wasm-gc, js, native</div></div>
-    <div class="stat"><div class="n" data-count="tests">701</div><div class="l">tests per backend, all passing</div></div>
+    <div class="stat"><div class="n" data-count="tests">711</div><div class="l">tests per backend, all passing</div></div>
     <div class="stat"><div class="n" data-count="widgets">55</div><div class="l">widgets, from toggles to trees</div></div>
     <div class="stat"><div class="n">0</div><div class="l">dependencies · a single pure core</div></div>
   </div>
@@ -86,7 +86,7 @@
   <div class="grid">
     <div class="card"><div class="ic">⟳</div><h4>Synchronous by design</h4><p>No async, no event loop you can't see. The host drives one <code class="inline">step()</code>: poll, parse, dispatch, lay out, compose, diff, write.</p></div>
     <div class="card"><div class="ic">▚</div><h4>A real design system</h4><p>Selectors, specificity and cascade over name, id and class — the CSS model you already know, applied to the terminal.</p></div>
-    <div class="card"><div class="ic">⇄</div><h4>Differential renderer</h4><p>Two frames become only the spans that changed, then only the escape sequences needed — efficient on any wire.</p></div>
+    <div class="card"><div class="ic">⇄</div><h4>Differential renderer</h4><p>Two frames become only the runs of cells that changed, then only the escape sequences needed. A widget that moved its cursor redraws its own rows: the rest of the screen is left as it stands.</p></div>
     <div class="card"><div class="ic">⌗</div><h4>Unicode-honest</h4><p>A generated width table measures every line: CJK double width, emoji, combining marks. Padding is never a guess.</p></div>
     <div class="card"><div class="ic">▤</div><h4>Layout that adds up</h4><p>Fixed, percentage, auto and fractional sizes along an axis, plus a grid with spans and gutters — integer division that loses no column.</p></div>
     <div class="card"><div class="ic">✓</div><h4>Tested on four backends</h4><p>The same suite runs on wasm, wasm-gc, js and native, so a regression in one world fails loudly everywhere.</p></div>
@@ -130,6 +130,9 @@ moon run --target native src/examples/monitor
 
 <span class="cm"># the database client, in a real terminal, Unix or Windows</span>
 moon run --target native dbmux/src/main -- --demo
+
+<span class="cm"># a Jujutsu log: the graph, a change, a diff, and a revset typed key by key</span>
+moon run --target native src/examples/mbtjj/main
 
 <span class="cm"># under Node</span>
 moon run --target js src/examples/hello
@@ -178,8 +181,8 @@ w.handle(ctx, @widget.Msg::Key(@event.Key::of(Enter)))
     <li><strong>parse</strong> — <code class="inline">@input</code> turns the byte stream into events: CSI and SS3 sequences, modifiers, SGR mouse, bracketed paste, UTF-8 split across reads.</li>
     <li><strong>dispatch</strong> — the app walks the focus ring and hands each event to a widget; widgets answer with typed messages.</li>
     <li><strong>lay out</strong> — <code class="inline">@layout</code> and the design system place boxes along an axis or on the grid.</li>
-    <li><strong>compose</strong> — <code class="inline">@comp</code> turns placements into composed rows of styled cells.</li>
-    <li><strong>diff</strong> — consecutive screens become only the spans that changed.</li>
+    <li><strong>compose</strong> — <code class="inline">@comp</code> turns placements into composed rows of styled cells. A frame that only damaged part of the screen composes those rows, on the placements the last frame left behind.</li>
+    <li><strong>diff</strong> — consecutive screens become only the runs of cells that changed, each reached with one cursor move.</li>
     <li><strong>write</strong> — <code class="inline">@style</code> renders the changed styles as differential SGR sequences, and the driver writes them.</li>
   </ul>
 
@@ -2109,10 +2112,10 @@ priv <span class="kw">struct</span> Swatches {}
   <p class="lead">The same suite on four backends — a regression in one world fails loudly everywhere.</p>
 
   <div class="stats">
-    <div class="stat"><div class="n" data-count="tests">701</div><div class="l">wasm</div></div>
-    <div class="stat"><div class="n" data-count="tests">701</div><div class="l">wasm-gc</div></div>
-    <div class="stat"><div class="n" data-count="tests">701</div><div class="l">js</div></div>
-    <div class="stat"><div class="n" data-count="tests">701</div><div class="l">native</div></div>
+    <div class="stat"><div class="n" data-count="tests">711</div><div class="l">wasm</div></div>
+    <div class="stat"><div class="n" data-count="tests">711</div><div class="l">wasm-gc</div></div>
+    <div class="stat"><div class="n" data-count="tests">711</div><div class="l">js</div></div>
+    <div class="stat"><div class="n" data-count="tests">711</div><div class="l">native</div></div>
   </div>
 
   <h3>Run the suite</h3>
@@ -2145,7 +2148,7 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
 <!-- generated:api -->
   <div class="api-tools">
     <input class="api-filter" type="search" placeholder="Filter by name, e.g. Button or render" aria-label="Filter the API">
-    <span class="api-count" data-total="1099">1099 entries</span>
+    <span class="api-count" data-total="1102">1102 entries</span>
   </div>
   <div class="api-index">
     <button type="button" data-pkg="api-geom">geom<span>43</span></button>
@@ -2155,10 +2158,10 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
     <button type="button" data-pkg="api-event">event<span>12</span></button>
     <button type="button" data-pkg="api-input">input<span>6</span></button>
     <button type="button" data-pkg="api-vt">vt<span>12</span></button>
-    <button type="button" data-pkg="api-comp">comp<span>20</span></button>
+    <button type="button" data-pkg="api-comp">comp<span>21</span></button>
     <button type="button" data-pkg="api-design">design<span>56</span></button>
     <button type="button" data-pkg="api-widget">widget<span>740</span></button>
-    <button type="button" data-pkg="api-app">app<span>58</span></button>
+    <button type="button" data-pkg="api-app">app<span>60</span></button>
     <button type="button" data-pkg="api-driver">driver<span>28</span></button>
     <button type="button" data-pkg="api-driver-native">driver/native<span>11</span></button>
     <button type="button" data-pkg="api-driver-node">driver/node<span>10</span></button>
@@ -2791,6 +2794,12 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
     <div class="api-item" data-q="comp diff">
       <h4><span class="api-kind fn">fn</span><code>diff</code></h4>
       <pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> diff(Array[<span class="fn">@strip.</span>Strip], Array[<span class="fn">@strip.</span>Strip], base? : <span class="fn">@style.</span>Style) -&gt; Array[Span]</pre>
+      <p>The spans that turn one screen into the next: one per run of changed cells, so a row with two changes far apart is written as two short spans rather than as everything between them.</p>
+    </div>
+    <div class="api-item" data-q="comp diff_rows">
+      <h4><span class="api-kind fn">fn</span><code>diff_rows</code></h4>
+      <pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> diff_rows(Array[<span class="fn">@strip.</span>Strip], Array[<span class="fn">@strip.</span>Strip], over? : Array[Int32], base? : <span class="fn">@style.</span>Style) -&gt; Array[Span]</pre>
+      <p><code>diff</code> over the rows named, for a frame that only redrew part of the screen: rows outside the list are taken as unchanged.</p>
     </div>
     <div class="api-item" data-q="comp encode">
       <h4><span class="api-kind fn">fn</span><code>encode</code></h4>
@@ -5177,11 +5186,16 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
   screens : Array[Screen]
   <span class="kw">mut</span> anims : Map[Int32, Anim]
   <span class="kw">mut</span> prev_bare : Map[Int32, <span class="fn">@geom.</span>Region]
+  <span class="kw">mut</span> prev_rects : Map[Int32, <span class="fn">@geom.</span>Region]
   <span class="kw">mut</span> size : <span class="fn">@geom.</span>Size
   <span class="kw">mut</span> focus : Int32
   <span class="kw">mut</span> hover : Int32
   off : Array[Int32]
   <span class="kw">mut</span> prev : Array[<span class="fn">@strip.</span>Strip]
+  <span class="kw">mut</span> scene : <span class="fn">@comp.</span>Scene
+  damage : Array[Int32]
+  <span class="kw">mut</span> wiped : Bool
+  <span class="kw">mut</span> layout : Bool
   <span class="kw">mut</span> dirty : Bool
   <span class="kw">mut</span> running : Bool
   <span class="kw">mut</span> last_frame : Int32
@@ -5207,7 +5221,9 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
         <div class="api-method" data-q="push_screen"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span>[D] App::push_screen(Self[D], Node) -&gt; Unit</pre><p>Cover the screen with a new tree: the one showing, and where its focus sits, is pushed down and comes back when popped.</p></div>
         <div class="api-method" data-q="quit"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span>[D] App::quit(Self[D]) -&gt; Unit</pre></div>
         <div class="api-method" data-q="rect_of"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span>[D] App::rect_of(Self[D], Int32) -&gt; <span class="fn">@geom.</span>Region</pre></div>
-        <div class="api-method" data-q="refresh"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span>[D] App::refresh(Self[D]) -&gt; Unit</pre></div>
+        <div class="api-method" data-q="refresh"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span>[D] App::refresh(Self[D]) -&gt; Unit</pre><p>Draw the next frame whole. A host calls this after changing a widget behind its back; a widget that answers a key asks for its own rows instead.</p></div>
+        <div class="api-method" data-q="repaint"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span>[D] App::repaint(Self[D], Int32) -&gt; Unit</pre><p>Compose again the rows the node sits on, on the placements the last frame left behind. This is the cheap frame: a list that moved its cursor redraws its own rows and leaves the rest of the screen as it stands.</p></div>
+        <div class="api-method" data-q="repaint_region"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span>[D] App::repaint_region(Self[D], <span class="fn">@geom.</span>Region) -&gt; Unit</pre><p>Compose again the rows a part of the screen covers, for a host that has no node to name.</p></div>
         <div class="api-method" data-q="run"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span>[D : <span class="fn">@driver.</span>Driver] App::run(Self[D]) -&gt; Unit <span class="kw">raise</span></pre></div>
         <div class="api-method" data-q="screen"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span>[D] App::screen(Self[D]) -&gt; Array[String]</pre></div>
         <div class="api-method" data-q="screen_depth"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span>[D] App::screen_depth(Self[D]) -&gt; Int32</pre></div>
