@@ -231,7 +231,41 @@ jobs:
             echo "$out" | grep -q "customers"
           done
 
-      - name: the client's SQLite demo draws
+      # The keys a reader presses: enter opens the only table, `l` moves to the
+      # name column, `e` edits it, three rub-outs clear "Ada", enter applies,
+      # C-s previews and two yesses save, `x` writes the page out as CSV.
+      - name: the client changes a cell on each SQL server and exports the page
+        run: |
+          for dsn in "postgres://postgres:dbmux@127.0.0.1:5432/shop" \
+                     "mysql://root:dbmux@127.0.0.1:3306/shop" \
+                     "sqlserver://sa:Dbmux-pass1@127.0.0.1:1433/shop"; do
+            out=$(moon run --target native dbmux/src/main -- "$dsn" --headless \
+              --frames 24 --keys '\x0dle\x7f\x7f\x7fAda L\x0d\x13yyx')
+            echo "$out"
+            test -f customers.csv || { echo "no export for $dsn"; exit 1; }
+            head -3 customers.csv
+            grep -q "Ada L" customers.csv
+            rm -f customers.csv
+          done
+
+      - name: the servers hold what the client wrote
+        run: |
+          docker exec ${{ job.services.postgres.id }} psql -U postgres -d shop \
+            -tAc "select name from customers where id = 1" | grep -q "Ada L"
+          docker exec ${{ job.services.mysql.id }} mysql -uroot -pdbmux shop -N -e \
+            "select name from customers where id = 1" | grep -q "Ada L"
+          docker exec ${{ job.services.sqlserver.id }} \
+            /opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -P 'Dbmux-pass1' \
+            -d shop -h -1 -Q "set nocount on; select name from customers where id = 1" \
+            | grep -q "Ada L"
+
+      - name: the client's SQLite demo draws, changes a cell and exports
         run: |
           out=$(moon run --target native dbmux/src/main -- --demo --headless --frames 3)
           echo "$out" | grep -q "customers"
+          out=$(moon run --target native dbmux/src/main -- --demo --headless \
+            --frames 24 --keys '\x0dle\x7f\x7f\x7fAda L\x0d\x13yyx')
+          echo "$out" | grep -q "wrote customers.csv"
+          test -f customers.csv
+          grep -q "Ada L" customers.csv
+          rm -f customers.csv
