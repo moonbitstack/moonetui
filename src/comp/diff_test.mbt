@@ -61,3 +61,32 @@ test "a full repaint is one span per row" {
   assert_eq(spans[1].y, 1)
   assert_eq(spans[1].x, 0)
 }
+
+///|
+test "two changes far apart on a row are drawn as two short spans" {
+  let before = [@strip.Strip::of("aaaaaaaaaaaaaaaaaaaa", plain)]
+  let after = [@strip.Strip::of("AaaaaaaaaaaaaaaaaaaB", plain)]
+  let spans = @comp.diff(before, after)
+  assert_eq(spans.length(), 2)
+  assert_eq((spans[0].x, spans[0].line.text()), (0, "A"))
+  assert_eq((spans[1].x, spans[1].line.text()), (19, "B"))
+}
+
+///|
+test "changes a cursor move apart ride one span" {
+  let before = [@strip.Strip::of("abcdef", plain)]
+  let after = [@strip.Strip::of("aXcdeY", plain)]
+  let spans = @comp.diff(before, after)
+  assert_eq(spans.length(), 1)
+  assert_eq((spans[0].x, spans[0].line.text()), (1, "XcdeY"))
+}
+
+///|
+test "a frame that names its rows diffs only those" {
+  let before = [@strip.Strip::of("one", plain), @strip.Strip::of("two", plain)]
+  let after = [@strip.Strip::of("ONE", plain), @strip.Strip::of("TWO", plain)]
+  assert_eq(@comp.diff_rows(before, after, over=[1]).length(), 1)
+  let spans = @comp.diff_rows(before, after, over=[1])
+  assert_eq(spans[0].y, 1)
+  assert_eq(spans[0].line.text(), "TWO")
+}

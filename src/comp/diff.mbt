@@ -10,19 +10,51 @@ pub(all) struct Span {
 }
 
 ///|
+/// Two cells this far apart are cheaper to reach with a second cursor move
+/// than to redraw across: a cursor move is eight bytes, a cell is one or more.
+const RUN_GAP : Int32 = 8
+
+///|
+/// The spans that turn one screen into the next: one per run of changed cells,
+/// so a row with two changes far apart is written as two short spans rather
+/// than as everything between them.
 pub fn diff(
   prev : Array[@strip.Strip],
   next : Array[@strip.Strip],
   base~ : @style.Style = @style.default,
 ) -> Array[Span] {
+  diff_rows(prev, next, base~)
+}
+
+///|
+/// `diff` over the rows named, for a frame that only redrew part of the
+/// screen: rows outside the list are taken as unchanged.
+pub fn diff_rows(
+  prev : Array[@strip.Strip],
+  next : Array[@strip.Strip],
+  over? : Array[Int32],
+  base~ : @style.Style = @style.default,
+) -> Array[Span] {
+  let rows = match over {
+    Some(list) => list
+    None => {
+      let all : Array[Int32] = []
+      for y in 0..<next.length() {
+        all.push(y)
+      }
+      all
+    }
+  }
   let spans : Array[Span] = []
-  for y in 0..<next.length() {
+  for y in rows {
+    if y < 0 || y >= next.length() {
+      continue
+    }
     let before = if y < prev.length() { cells(prev[y]) } else { [] }
     let after = padded(cells(next[y]), before.length(), base)
-    match span_of(before, after) {
-      None => ()
-      Some((from, to)) =>
-        spans.push({ y, x: from, line: line_of(after[from:to], base), })
+    for run in changed_runs(before, after) {
+      let (from, to) = run
+      spans.push({ y, x: from, line: line_of(after[from:to], base), })
     }
   }
   spans
@@ -53,32 +85,50 @@ pub fn full(next : Array[@strip.Strip]) -> Array[Span] {
 }
 
 ///|
-fn span_of(before : Array[Cell], after : Array[Cell]) -> (Int32, Int32)? {
+/// The runs of changed cells in one row, each wide enough for a whole wide
+/// character: a run never begins or ends in the middle of one.
+fn changed_runs(
+  before : Array[Cell],
+  after : Array[Cell],
+) -> Array[(Int32, Int32)] {
   let width = if after.length() > before.length() {
     after.length()
   } else {
     before.length()
   }
+  let runs : Array[(Int32, Int32)] = []
   let mut from = -1
   let mut to = -1
   for x in 0..<width {
-    if cell_at(before, x) != cell_at(after, x) {
-      if from < 0 {
-        from = x
-      }
-      to = x + 1
+    if cell_at(before, x) == cell_at(after, x) {
+      continue
     }
+    if from >= 0 && x - to >= RUN_GAP {
+      runs.push(whole(from, to, after))
+      from = -1
+    }
+    if from < 0 {
+      from = x
+    }
+    to = x + 1
   }
-  if from < 0 {
-    return None
+  if from >= 0 {
+    runs.push(whole(from, to, after))
   }
-  if from > 0 && after.length() > from && after[from].continuation {
-    from = from - 1
+  runs
+}
+
+///|
+fn whole(from : Int32, to : Int32, after : Array[Cell]) -> (Int32, Int32) {
+  let mut first = from
+  let mut last = to
+  if first > 0 && after.length() > first && after[first].continuation {
+    first = first - 1
   }
-  if to < after.length() && after[to].continuation {
-    to = to + 1
+  if last < after.length() && after[last].continuation {
+    last = last + 1
   }
-  Some((from, if to > after.length() { after.length() } else { to }))
+  (first, if last > after.length() { after.length() } else { last })
 }
 
 ///|

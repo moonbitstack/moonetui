@@ -21,11 +21,22 @@ pub struct App[D] {
   screens : Array[Screen]
   mut anims : Map[Int32, Anim]
   mut prev_bare : Map[Int32, @geom.Region]
+  /// Where the last frame put each node, to find what a relayout moved.
+  mut prev_rects : Map[Int32, @geom.Region]
   mut size : @geom.Size
   mut focus : Int32
   mut hover : Int32
   off : Array[Int32]
   mut prev : Array[@strip.Strip]
+  /// The placements of the last frame, kept so a frame that redraws part of
+  /// the screen can compose those rows without placing the tree again.
+  mut scene : @comp.Scene
+  /// Rows to compose again before the next frame is written.
+  damage : Array[Int32]
+  /// The next frame is drawn whole, whatever the damage says.
+  mut wiped : Bool
+  /// The tree has to be placed again before the next frame.
+  mut layout : Bool
   mut dirty : Bool
   mut running : Bool
   mut last_frame : Int32
@@ -71,11 +82,16 @@ pub fn[D] App::new(
     screens: [],
     anims: Map([]),
     prev_bare: Map([]),
+    prev_rects: Map([]),
     size: @geom.Size::new(80, 24),
     focus: -1,
     hover: -1,
     off: [],
     prev: [],
+    scene: @comp.Scene::new(@geom.Size::new(80, 24)),
+    damage: [],
+    wiped: true,
+    layout: true,
     dirty: true,
     running: false,
     last_frame: 0,
@@ -98,6 +114,7 @@ pub fn[D : @driver.Driver] App::start(self : App[D]) -> Unit raise {
   self.dirty = true
   self.prev = []
   self.focus_next(1)
+  self.wipe()
   self.render()
   self.last_frame = self.driver.now()
   self.ticked = self.last_frame
@@ -151,7 +168,7 @@ pub fn[D : @driver.Driver] App::step(self : App[D]) -> Bool raise {
         self.size = size
         self.pending_resize = None
         self.prev = []
-        self.dirty = true
+        self.wipe()
       }
     None => ()
   }
@@ -200,11 +217,6 @@ pub fn[D] App::drain(self : App[D]) -> Array[@widget.Out] {
 }
 
 ///|
-pub fn[D] App::refresh(self : App[D]) -> Unit {
-  self.dirty = true
-}
-
-///|
 pub fn[D] App::focused(self : App[D]) -> Int32 {
   self.focus
 }
@@ -223,7 +235,7 @@ pub fn[D] App::disable(self : App[D], id : Int32) -> Unit {
     if self.focus == id {
       self.focus_next(1)
     }
-    self.dirty = true
+    self.wipe()
   }
 }
 
@@ -240,7 +252,7 @@ pub fn[D] App::enable(self : App[D], id : Int32) -> Unit {
     for own in kept {
       self.off.push(own)
     }
-    self.dirty = true
+    self.wipe()
   }
 }
 
@@ -295,7 +307,7 @@ pub fn[D : @driver.Driver] App::after(
 /// Restyle the whole tree with another stylesheet, as a theme switch does.
 pub fn[D] App::set_sheet(self : App[D], sheet : @design.Stylesheet) -> Unit {
   self.sheet = sheet
-  self.dirty = true
+  self.wipe()
 }
 
 ///|
@@ -304,7 +316,7 @@ pub fn[D] App::set_sheet(self : App[D], sheet : @design.Stylesheet) -> Unit {
 pub fn[D] App::set_theme(self : App[D], theme : @design.Theme) -> Unit {
   self.base = theme.base()
   self.sheet = theme.sheet()
-  self.dirty = true
+  self.wipe()
 }
 
 ///|
@@ -312,7 +324,7 @@ pub fn[D] App::set_theme(self : App[D], theme : @design.Theme) -> Unit {
 /// frame loop redraws on the next step.
 pub fn[D] App::swap_root(self : App[D], root : Node) -> Unit {
   self.root = root
-  self.dirty = true
+  self.wipe()
 }
 
 ///|
@@ -326,7 +338,7 @@ pub fn[D] App::push_screen(self : App[D], root : Node) -> Unit {
   self.prev_bare = Map([])
   self.anims = Map([])
   self.focus_next(1)
-  self.dirty = true
+  self.wipe()
 }
 
 ///|
@@ -339,7 +351,7 @@ pub fn[D] App::pop_screen(self : App[D]) -> Unit {
       self.prev_bare = Map([])
       self.anims = Map([])
       self.give_focus(screen.focus)
-      self.dirty = true
+      self.wipe()
     }
     None => ()
   }
@@ -477,7 +489,7 @@ fn[D] App::track_hover(self : App[D], x : Int32, y : Int32) -> Unit {
   }
   if found != self.hover {
     self.hover = found
-    self.dirty = true
+    self.wipe()
   }
 }
 
@@ -523,7 +535,7 @@ fn[D] App::act(self : App[D], out : @widget.Out) -> Unit {
     }
   }
   match out {
-    Repaint(..) => self.dirty = true
+    Repaint(id~) => self.repaint(id)
     TakeFocus(id~) => self.give_focus(id)
     Quit => self.running = false
     _ => self.inbox.push(out)
@@ -544,7 +556,10 @@ fn[D] App::give_focus(self : App[D], id : Int32) -> Unit {
   self.deliver(id, Focus(true)) |> ignore
   self.inbox.push(Focused(id~))
   self.ensure_visible(id)
-  self.dirty = true
+  if old >= 0 {
+    self.touch(old)
+  }
+  self.touch(id)
 }
 
 ///|
@@ -604,70 +619,6 @@ fn[D] App::theme(self : App[D]) -> Theme {
     disabled=self.off,
     base=self.base,
   )
-}
-
-///|
-fn[D : @driver.Driver] App::render(self : App[D]) -> Unit raise {
-  let screen = @geom.Region::new(0, 0, self.size.width, self.size.height)
-  let scene = @comp.Scene::new(self.size)
-  self.rects.clear()
-  self.bare.clear()
-  self.views.clear()
-  self.styled.clear()
-  let theme = self.theme()
-  self.root.place(
-    screen,
-    screen,
-    scene,
-    self.rects,
-    styled=self.styled,
-    theme~,
-    inherited=self.base,
-    views=self.views,
-    bare=self.bare,
-  )
-  let now = self.driver.now()
-  let targets : Map[Int32, @geom.Region] = Map([])
-  for id, rect in self.bare {
-    targets[id] = rect
-  }
-  self.update_anims(targets, now)
-  if self.anims.length() > 0 {
-    // A node that asked for a transition is shown gliding to its new place:
-    // place once more, moved back by how far the glide still has to go.
-    let offsets : Map[Int32, @geom.Offset] = Map([])
-    for id, anim in self.anims {
-      let shown = anim.at(now)
-      offsets[id] = { x: shown.x - anim.to.x, y: shown.y - anim.to.y, }
-    }
-    let moved = @comp.Scene::new(self.size)
-    let rects : Map[Int32, @geom.Region] = Map([])
-    let bare : Map[Int32, @geom.Region] = Map([])
-    let views : Map[Int32, View] = Map([])
-    let styled : Map[Int32, @design.Resolved] = Map([])
-    self.root.place(
-      screen,
-      screen,
-      moved,
-      rects,
-      styled~,
-      theme~,
-      inherited=self.base,
-      views~,
-      bare~,
-      offsets~,
-    )
-    self.rects = rects
-    self.bare = bare
-    self.views = views
-    self.styled = styled
-    compose(moved, self)
-    self.dirty = true
-  } else {
-    compose(scene, self)
-  }
-  self.prev_bare = targets
-  self.dirty = self.anims.length() > 0
 }
 
 ///|
@@ -734,90 +685,6 @@ fn[D] App::update_anims(
 }
 
 ///|
-fn[D : @driver.Driver] compose(
-  scene : @comp.Scene,
-  self : App[D],
-) -> Unit raise {
-  let rows = scene.compose(
-    fn(id, line) {
-      match self.views.get(id) {
-        Some(view) =>
-          match self.styled.get(id) {
-            Some(res) => self.bar_line(id, line, res, view)
-            None => @strip.Strip::empty()
-          }
-        None =>
-          match self.styled.get(id) {
-            Some(res) => self.dress_line(id, line, res)
-            None =>
-              match self.root.find(id) {
-                Some(widget) =>
-                  widget.render_line(line, self.bare_of(id).size())
-                None => @strip.Strip::empty()
-              }
-          }
-      }
-    },
-    self.base,
-  )
-  let spans = if self.plain || self.prev.length() != rows.length() {
-    @comp.full(rows)
-  } else {
-    @comp.diff(self.prev, rows, base=self.base)
-  }
-  if spans.length() > 0 {
-    if self.plain {
-      self.driver.write(@comp.encode_stream(spans))
-    } else {
-      // Synchronized output (DEC mode 2026): a terminal that has it shows the frame whole, one
-      // that lacks it ignores the two marks.
-      self.driver.write(
-        "\u{1b}[?2026h" + @comp.encode(spans, self.base) + "\u{1b}[?2026l",
-      )
-    }
-    self.driver.flush()
-  }
-  self.prev = rows
-}
-
-///|
-fn[D] App::dress_line(
-  self : App[D],
-  id : Int32,
-  line : Int32,
-  res : @design.Resolved,
-) -> @strip.Strip {
-  let rect = self.bare_of(id)
-  let decor : @design.Decor = {
-    border: res.border,
-    style: res.text,
-    size: rect.size(),
-  }
-  match self.root.find(id) {
-    None => decor.line(line)
-    Some(widget) => {
-      let ring = match res.border {
-        @design.Off => 0
-        _ => 1
-      }
-      let size = rect.size()
-      let inner = @geom.Size::new(
-        at_least_zero(size.width - 2 * ring - res.padding.width()),
-        at_least_zero(size.height - 2 * ring - res.padding.height()),
-      )
-      let content_row = line - ring - res.padding.top
-      let content : @strip.Strip? = if content_row >= 0 &&
-        content_row < inner.height {
-        Some(widget.render_line(content_row, inner).apply(res.text))
-      } else {
-        None
-      }
-      decor.frame_line(res.padding, line, content)
-    }
-  }
-}
-
-///|
 /// The quit key most terminal programs answer to. An application whose text
 /// fields want it for copying passes another list, or `[]` and quits itself.
 pub let ctrl_c : @event.Key = {
@@ -854,7 +721,7 @@ fn[D] App::scroll_key(self : App[D], key : @event.Key) -> Bool {
     _ => false
   }
   if moved {
-    self.dirty = true
+    self.touch(host)
     self.inbox.push(Scrolled(id=host, x=state.x, y=state.y))
   }
   moved
@@ -903,7 +770,7 @@ fn[D] App::wheel(self : App[D], mouse : @event.Mouse) -> Unit {
   match self.views.get(host) {
     Some(view) =>
       if view.state.scroll_by(dx~, dy~) {
-        self.dirty = true
+        self.touch(host)
         self.inbox.push(Scrolled(id=host, x=view.state.x, y=view.state.y))
       }
     None => ()
@@ -953,82 +820,8 @@ fn[D] App::ensure_visible(self : App[D], id : Int32) -> Unit {
       moved = state.scroll_to(x=right - state.vw) || moved
     }
     if moved {
-      self.dirty = true
+      self.touch(host)
     }
     target = host
   }
-}
-
-///|
-fn[D] App::bar_line(
-  self : App[D],
-  id : Int32,
-  line : Int32,
-  res : @design.Resolved,
-  view : View,
-) -> @strip.Strip {
-  let rect = self.bare_of(id)
-  let state = view.state
-  let decor : @design.Decor = {
-    border: res.border,
-    style: res.text,
-    size: rect.size(),
-  }
-  let ring = match res.border {
-    @design.Off => 0
-    _ => 1
-  }
-  let size = rect.size()
-  let inner = @geom.Size::new(
-    at_least_zero(size.width - 2 * ring - res.padding.width()),
-    at_least_zero(size.height - 2 * ring - res.padding.height()),
-  )
-  let row = line - ring - res.padding.top
-  let content : @strip.Strip? = if row < 0 ||
-    row >= inner.height ||
-    inner.width <= 0 ||
-    inner.height <= 0 {
-    None
-  } else {
-    let mut strip = @strip.Strip::blank(inner.width, res.text)
-    if view.hbar && row == inner.height - 1 {
-      let span = int_max(1, state.vw * state.vw / state.cw)
-      let left = if state.max_x() == 0 {
-        0
-      } else {
-        state.x * (state.vw - span) / state.max_x()
-      }
-      strip = @strip.Strip::join([
-        @strip.Strip::blank(left, res.text),
-        @strip.Strip::of(repeat_glyph("█", span), view.bar),
-        @strip.Strip::blank(inner.width - left - span, res.text),
-      ])
-    }
-    if view.vbar && row < state.vh {
-      let span = int_max(1, state.vh * state.vh / state.ch)
-      let top = if state.max_y() == 0 {
-        0
-      } else {
-        state.y * (state.vh - span) / state.max_y()
-      }
-      let thumb = top <= row && row < top + span
-      strip = @strip.Strip::join([
-        strip.crop(0, inner.width - 1),
-        @strip.Strip::of(
-          if thumb {
-            "█"
-          } else {
-            "░"
-          },
-          if thumb {
-            view.bar
-          } else {
-            res.text
-          },
-        ),
-      ])
-    }
-    Some(strip)
-  }
-  decor.frame_line(res.padding, line, content)
 }

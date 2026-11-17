@@ -17,6 +17,8 @@ pub fn cursor_to(Int32, Int32) -> String
 
 pub fn diff(Array[@strip.Strip], Array[@strip.Strip], base? : @style.Style) -> Array[Span]
 
+pub fn diff_rows(Array[@strip.Strip], Array[@strip.Strip], over? : Array[Int32], base? : @style.Style) -> Array[Span]
+
 pub fn encode(Array[Span], @style.Style) -> String
 
 pub fn encode_stream(Array[Span]) -> String

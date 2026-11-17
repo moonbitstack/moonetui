@@ -66,11 +66,16 @@ pub struct App[D] {
   screens : Array[Screen]
   mut anims : Map[Int32, Anim]
   mut prev_bare : Map[Int32, @geom.Region]
+  mut prev_rects : Map[Int32, @geom.Region]
   mut size : @geom.Size
   mut focus : Int32
   mut hover : Int32
   off : Array[Int32]
   mut prev : Array[@strip.Strip]
+  mut scene : @comp.Scene
+  damage : Array[Int32]
+  mut wiped : Bool
+  mut layout : Bool
   mut dirty : Bool
   mut running : Bool
   mut last_frame : Int32
@@ -96,6 +101,8 @@ pub fn[D] App::push_screen(Self[D], Node) -> Unit
 pub fn[D] App::quit(Self[D]) -> Unit
 pub fn[D] App::rect_of(Self[D], Int32) -> @geom.Region
 pub fn[D] App::refresh(Self[D]) -> Unit
+pub fn[D] App::repaint(Self[D], Int32) -> Unit
+pub fn[D] App::repaint_region(Self[D], @geom.Region) -> Unit
 pub fn[D : @driver.Driver] App::run(Self[D]) -> Unit raise
 pub fn[D] App::screen(Self[D]) -> Array[String]
 pub fn[D] App::screen_depth(Self[D]) -> Int32
