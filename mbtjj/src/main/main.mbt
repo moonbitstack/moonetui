@@ -89,9 +89,9 @@ async fn main {
     screen.open(revset~)
     if screen.rows().length() == 0 {
       // jj said why, or there is nothing to show. Either way there is nothing
-      // to draw, so say it on the terminal and leave.
+      // to draw: say it, and leave with a code a script can read.
       println("mbtjj: " + screen.status())
-      return
+      @env.exit(1)
     }
   }
   // A terminal when there is one, a fixed screen when there is not: the same
