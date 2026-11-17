@@ -124,6 +124,35 @@ pub fn param(params : String, key : String) -> String {
 }
 
 ///|
+/// The value of a two-digit hex escape, or `-1` when the text is not one.
+/// Written out rather than parsed from the string so the client builds on every
+/// toolchain this repository is opened with.
+pub fn hex_code(text : String) -> Int32 {
+  if text.length() != 2 {
+    return -1
+  }
+  let high = hex_digit(text[0].to_int())
+  let low = hex_digit(text[1].to_int())
+  if high < 0 || low < 0 {
+    return -1
+  }
+  high * 16 + low
+}
+
+///|
+fn hex_digit(code : Int32) -> Int32 {
+  if code >= 48 && code <= 57 {
+    code - 48
+  } else if code >= 97 && code <= 102 {
+    code - 87
+  } else if code >= 65 && code <= 70 {
+    code - 55
+  } else {
+    -1
+  }
+}
+
+///|
 /// A user name or password with its `%xx` escapes taken back out, so a
 /// password with `@` or `/` in it survives the URL.
 pub fn percent_decode(text : String) -> String {
@@ -136,7 +165,7 @@ pub fn percent_decode(text : String) -> String {
   while i < chars.length() {
     if chars[i] == '%' && i + 2 < chars.length() {
       let hex = String::from_array([chars[i + 1], chars[i + 2]])
-      let code = @string.parse_int(hex, base=16) catch { _ => -1 }
+      let code = hex_code(hex)
       if code >= 0 {
         buf.write_char(code.unsafe_to_char())
         i = i + 3

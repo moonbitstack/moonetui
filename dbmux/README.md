@@ -71,6 +71,10 @@ password_env = "APP_PASSWORD"
 read_only = true
 ```
 
+A password is taken from `password_env` when it is set, and from the DSN when it
+is not: `postgres://app:secret@127.0.0.1:5432/app` connects with `secret`, which is
+what makes a URL copied from another client work.
+
 A production connection is read-only unless the file says `read_only = false`,
 and every write on it is confirmed.
 

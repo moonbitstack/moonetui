@@ -604,7 +604,7 @@ fn keys_to_bytes(text : String) -> Bytes {
         continue
       } else if next == 'x' && i + 3 < chars.length() {
         let hex = String::from_array([chars[i + 2], chars[i + 3]])
-        let code = @string.parse_int(hex, base=16) catch { _ => 0 }
+        let code = @db.hex_code(hex)
         out.push(code.to_byte())
         i = i + 4
         continue

@@ -52,3 +52,18 @@ test "a nil reply is a NULL cell, not an empty string" {
   let result = @db.reply_rows(@resp.RespValue::Null)
   assert_eq(result.rows[0][0].is_null, true)
 }
+
+///|
+test "a password in the DSN is used when the caller holds none" {
+  let endpoint = @db.Endpoint::{
+    host: "127.0.0.1",
+    port: 5432,
+    user: "postgres",
+    password: "dbmux",
+    database: "shop",
+    path: "",
+    ssl: "",
+  }
+  assert_eq(@db.secret_of("", endpoint), "dbmux")
+  assert_eq(@db.secret_of("from-env", endpoint), "from-env")
+}

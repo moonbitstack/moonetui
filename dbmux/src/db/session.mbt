@@ -56,6 +56,19 @@ pub struct Session {
 }
 
 ///|
+/// The password a connection is opened with: the one the caller holds — from
+/// `password_env`, a prompt or a command — or the one written in the DSN.
+/// `password_env` is for a secret the caller would rather not write down, not a
+/// rule that one cannot: a DSN a reader pastes from another client has to work.
+pub fn secret_of(caller : String, endpoint : Endpoint) -> String {
+  if caller != "" {
+    caller
+  } else {
+    endpoint.password
+  }
+}
+
+///|
 /// Open the connection the file named. The password is passed in rather than
 /// read here, so where it comes from — the DSN, the environment, a command —
 /// stays the caller's decision.
@@ -70,6 +83,7 @@ pub async fn Session::open(
     Some(d) => d
     None => raise Failed(text="redis speaks no SQL")
   }
+  let secret = secret_of(password, endpoint)
   let backend = match conn.engine {
     @config.Engine::Sqlite =>
       Backend::Sqlite(
@@ -83,7 +97,7 @@ pub async fn Session::open(
           endpoint.host,
           endpoint.port,
           endpoint.user,
-          password,
+          secret,
           endpoint.database,
         ) catch {
           e => raise Failed(text=driver_text(e))
@@ -95,7 +109,7 @@ pub async fn Session::open(
           endpoint.host,
           endpoint.port,
           endpoint.user,
-          password,
+          secret,
           endpoint.database,
         ) catch {
           e => raise Failed(text=driver_text(e))
@@ -107,7 +121,7 @@ pub async fn Session::open(
           endpoint.host,
           endpoint.port,
           endpoint.user,
-          password,
+          secret,
           endpoint.database,
         ) catch {
           e => raise Failed(text=driver_text(e))
