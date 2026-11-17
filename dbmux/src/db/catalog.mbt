@@ -54,9 +54,13 @@ pub fn columns_sql(
       @sqlkit.Dialect::Sqlite.literal(table) +
       ")"
     @config.Engine::Postgres => {
-      let owner = "table_name = " + @sqlkit.Dialect::Postgres.literal(table)
+      // Every column of the outer query is named: the primary-key subquery
+      // beside it carries a `table_name` of its own, and an unqualified one is
+      // ambiguous to the server.
+      let owner = "c.table_name = " + @sqlkit.Dialect::Postgres.literal(table)
       let schema_clause = match schema {
-        Some(s) => " AND table_schema = " + @sqlkit.Dialect::Postgres.literal(s)
+        Some(s) =>
+          " AND c.table_schema = " + @sqlkit.Dialect::Postgres.literal(s)
         None => ""
       }
       // The key is a separate question: a column is in it when its name is in

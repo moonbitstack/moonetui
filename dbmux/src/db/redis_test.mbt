@@ -67,3 +67,18 @@ test "a password in the DSN is used when the caller holds none" {
   assert_eq(@db.secret_of("", endpoint), "dbmux")
   assert_eq(@db.secret_of("from-env", endpoint), "from-env")
 }
+
+///|
+test "every column of the columns query is named, so the key subquery cannot shadow it" {
+  let sql = @db.columns_sql(
+    @config.Engine::Postgres,
+    Some("public"),
+    "customers",
+  )
+  // The primary-key subquery beside the outer query has a `table_name` of its
+  // own; an unqualified one is ambiguous to the server (42702).
+  assert_eq(sql.contains("WHERE table_name = "), false)
+  assert_eq(sql.contains("AND table_schema = "), false)
+  assert_eq(sql.contains("c.table_name = 'customers'"), true)
+  assert_eq(sql.contains("c.table_schema = 'public'"), true)
+}
