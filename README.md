@@ -67,27 +67,31 @@ moon run --target native src/examples/logs/main     # a tail, a level filter, a 
 moon run --target native src/examples/json/main     # a document as a tree: a path, folds, a query
 moon run --target js src/examples/hello         # under Node
 moon run --target native src/examples/uart      # whole frames of plain text, as a serial line gets them
-moon run --target native dbmux/src/main -- --demo   # a database client, with a SQLite demo database
-moon run --target native mbtjj/src/main              # a Jujutsu log, read from the repository you run it in
+moon run --target native examples/dbmux/src/main -- --demo   # a database client, with a SQLite demo database
+moon run --target native examples/mbtjj/src/main             # a Jujutsu client, read from the repository you run it in
 ```
 
 `src/examples/dbmux/` holds the screen the `tui` example runs, in a package of
 its own: a main package cannot carry tests the checker accepts, and the frame
 tests drive the same tree the example does.
 
-`mbtjj/` is a module beside the library that builds a client for
-[Jujutsu](https://github.com/jj-vcs/jj) with it: the log with its graph, the
-change under the cursor, what it does and the operations the repository has seen.
-It runs `jj` for its answers, so it works on any repository and writes nothing.
-`moon run --target native mbtjj/src/main` opens the one you are in; `--demo`
-shows a captured log where no repository is at hand. Its own README has the keys
-and the options.
+`examples/` holds two programs, each a module of its own:
 
-`dbmux/` is a module beside the library that builds a database client with it:
-a table list, an editable grid, a modal SQL editor, a command palette, and one
-connection per engine. `moon run --target native dbmux/src/main -- --demo`
-opens a SQLite database in memory, so it runs with nothing installed. Its own
-README has the keys and the connection file.
+- **`examples/mbtjj/`** — a client for [Jujutsu](https://github.com/jj-vcs/jj):
+  the log with its graph, the change under the cursor, what it does and the
+  operations the repository has seen. It runs `jj` for its answers, so it works
+  on any repository and writes nothing. `moon run --target native
+  examples/mbtjj/src/main` opens the one you are in; `--demo` shows a captured
+  log where no repository is at hand.
+- **`examples/dbmux/`** — a database client: a table list, an editable grid, a
+  modal SQL editor, a command palette, and one connection per engine.
+  `moon run --target native examples/dbmux/src/main -- --demo` opens a SQLite
+  database in memory, so it runs with nothing installed.
+
+Both are examples in the sense that matters — nothing in them reaches past what
+this library publishes, so any part of them can be copied into a program of your
+own — and both do the real thing, against a real repository and real servers.
+Each has its own README with the keys, the options and what it does not do.
 
 The gallery runs in a browser too: `moon build --target js`, serve the repository root, and open `src/examples/browser/index.html`.
 
@@ -233,7 +237,7 @@ MOONETUI_INTEROP=1 moon test --target native -p moonbitstack/moonetui/examples/b
   | grep '^interop' | python3 scripts/render_frame.py --pick board/00 --out board.png
 ```
 
-The screen `examples/dbmux` holds is the one `dbmux/src/main` runs: a test drives the same tree with a scripted driver — tab, two downs, enter, tab, a character, ctrl-c — asserts what each key did to the list, the bar and the field, and announces every frame, so a key that lands on the wrong widget fails `moon test` before an emulator is asked anything. Nothing is outstanding: no code point, cluster, key or frame in the vectors disagrees with its references.
+The screen `src/examples/dbmux` holds is the one `examples/dbmux/src/main` runs: a test drives the same tree with a scripted driver — tab, two downs, enter, tab, a character, ctrl-c — asserts what each key did to the list, the bar and the field, and announces every frame, so a key that lands on the wrong widget fails `moon test` before an emulator is asked anything. Nothing is outstanding: no code point, cluster, key or frame in the vectors disagrees with its references.
 
 Two places where the references disagree with each other, or with the way a
 terminal draws a mark, are recorded in the vectors rather than argued about: a

@@ -17,7 +17,7 @@ import tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-SRC = ROOT / "dbmux" / "src"
+SRC = ROOT / "examples" / "dbmux" / "src"
 PACKAGES = ["moonbitstack/dbmux/table", "moonbitstack/dbmux/shell"]
 
 # (file, what it says, what it is changed to, what the change is, a test that must go red)

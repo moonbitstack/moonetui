@@ -51,7 +51,7 @@ jobs:
       - name: the database client draws its demo
         if: ${{ runner.os == 'Linux' }}
         run: |
-          out=$(moon run --target native dbmux/src/main -- --demo --headless --frames 3)
+          out=$(moon run --target native examples/dbmux/src/main -- --demo --headless --frames 3)
           echo "$out" | grep -q "main / customers"
           echo "$out" | grep -q "Ada"
           echo "$out" | grep -q "tab pane"
@@ -153,13 +153,13 @@ jobs:
           echo two >> a.txt
           jj bookmark create main -r @
           cd "$GITHUB_WORKSPACE"
-          out=$(moon run --target native mbtjj/src/main -- "$repo" --headless --frames 3)
+          out=$(moon run --target native examples/mbtjj/src/main -- "$repo" --headless --frames 3)
           echo "$out"
           echo "$out" | grep -q "feat: a first line"
           echo "$out" | grep -q "fix: a second line"
           echo "$out" | grep -q "main"
           # A path that is not a repository is refused with jj's own words.
-          if moon run --target native mbtjj/src/main -- "$RUNNER_TEMP" --headless --frames 1; then
+          if moon run --target native examples/mbtjj/src/main -- "$RUNNER_TEMP" --headless --frames 1; then
             echo "a directory that is not a repository was accepted"; exit 1
           fi
 
@@ -232,14 +232,14 @@ jobs:
 
       - name: the client lists the keys and opens one
         run: |
-          out=$(moon run --target native dbmux/src/main -- "redis://127.0.0.1:6379/0" --headless --frames 3)
+          out=$(moon run --target native examples/dbmux/src/main -- "redis://127.0.0.1:6379/0" --headless --frames 3)
           echo "$out"
           echo "$out" | grep -q "greeting"
           echo "$out" | grep -q "hash"
 
       - name: the client's console runs a command
         run: |
-          out=$(moon run --target native dbmux/src/main -- "redis://127.0.0.1:6379/0" --headless --frames 10 --keys '\tiHGETALL user:1\x12')
+          out=$(moon run --target native examples/dbmux/src/main -- "redis://127.0.0.1:6379/0" --headless --frames 10 --keys '\tiHGETALL user:1\x12')
           echo "$out"
           echo "$out" | grep -q "Ada"
           echo "$out" | grep -q "London"
@@ -263,7 +263,7 @@ jobs:
           for dsn in "postgres://postgres:dbmux@127.0.0.1:5432/shop" \
                      "mysql://root:dbmux@127.0.0.1:3306/shop" \
                      "sqlserver://sa:Dbmux-pass1@127.0.0.1:1433/shop"; do
-            out=$(moon run --target native dbmux/src/main -- "$dsn" --headless --frames 3)
+            out=$(moon run --target native examples/dbmux/src/main -- "$dsn" --headless --frames 3)
             echo "$out"
             echo "$out" | grep -q "customers"
           done
@@ -277,7 +277,7 @@ jobs:
           for dsn in "postgres://postgres:dbmux@127.0.0.1:5432/shop" \
                      "mysql://root:dbmux@127.0.0.1:3306/shop" \
                      "sqlserver://sa:Dbmux-pass1@127.0.0.1:1433/shop"; do
-            out=$(moon run --target native dbmux/src/main -- "$dsn" --headless \
+            out=$(moon run --target native examples/dbmux/src/main -- "$dsn" --headless \
               --frames 24 --keys '\x0d|l|e|\x7f\x7f\x7fAda L\x0d|\x13|y|y|x')
             echo "$out"
             test -f customers.csv || { echo "no export for $dsn"; exit 1; }
@@ -299,9 +299,9 @@ jobs:
 
       - name: the client's SQLite demo draws, changes a cell and exports
         run: |
-          out=$(moon run --target native dbmux/src/main -- --demo --headless --frames 3)
+          out=$(moon run --target native examples/dbmux/src/main -- --demo --headless --frames 3)
           echo "$out" | grep -q "customers"
-          out=$(moon run --target native dbmux/src/main -- --demo --headless \
+          out=$(moon run --target native examples/dbmux/src/main -- --demo --headless \
             --frames 24 --keys '\x0d|l|e|\x7f\x7f\x7fAda L\x0d|\x13|y|y|x')
           echo "$out" | grep -q "wrote customers.csv"
           test -f customers.csv

@@ -22,11 +22,11 @@ src/
 From the workspace that holds this directory:
 
 ```
-moon run --target native mbtjj/src/main                  # the repository here
-moon run --target native mbtjj/src/main -- ~/code/app    # the repository there
+moon run --target native examples/mbtjj/src/main           # the repository here
+moon run --target native examples/mbtjj/src/main -- ~/code/app  # the repository there
 ```
 
-From inside `mbtjj/`:
+From inside `examples/mbtjj/`:
 
 ```
 moon run --target native src/main
