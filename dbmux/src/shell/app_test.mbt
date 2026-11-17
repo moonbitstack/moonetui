@@ -356,3 +356,64 @@ test "the history keeps the newest queries up to its limit" {
   }
   assert_eq(oldest, "select 3")
 }
+
+///|
+test "a redis hash cell is saved as the command its type deserves" {
+  let state = @shell.State::new(
+    "cache",
+    @config.Engine::Redis,
+    @sqlkit.Dialect::Postgres,
+    false,
+    false,
+    @keymap.Keymap::default(),
+  )
+  state.show_page(
+    @table.Page::new(
+      None,
+      "user:1",
+      ["field", "value"],
+      [[@table.Cell::of("name"), @table.Cell::of("Ada")]],
+      [],
+    ),
+  )
+  let grid = state.grid().unwrap()
+  grid.set_cell(0, "value", @table.Cell::of("Ada Lovelace"))
+  ignore(state.press("C-s"))
+  assert_eq(state.mode, @shell.Mode::Preview)
+  ignore(state.press("y"))
+  assert_eq(state.mode, @shell.Mode::Confirm)
+  let sent = state.press("y")
+  assert_eq(sent.length(), 1)
+  let statements = match sent[0] {
+    @shell.Command::Save(statements~, ..) => statements
+    _ => abort("a save was expected")
+  }
+  assert_eq(statements, ["HSET user:1 name \"Ada Lovelace\""])
+}
+
+///|
+test "a redis list has nothing to set, and the save says so" {
+  let state = @shell.State::new(
+    "cache",
+    @config.Engine::Redis,
+    @sqlkit.Dialect::Postgres,
+    false,
+    false,
+    @keymap.Keymap::default(),
+  )
+  state.show_page(
+    @table.Page::new(
+      None,
+      "queue",
+      ["index", "value"],
+      [[@table.Cell::of("0"), @table.Cell::of("a")]],
+      [],
+    ),
+  )
+  let grid = state.grid().unwrap()
+  grid.set_cell(0, "value", @table.Cell::of("b"))
+  let commands = state.press("C-s")
+  assert_eq(commands.length(), 0)
+  assert_eq(state.mode, @shell.Mode::Browse)
+  assert_eq(state.message.contains("console"), true)
+}

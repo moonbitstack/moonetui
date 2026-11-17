@@ -203,3 +203,73 @@ test "reverting takes the changes back and leaves the page" {
   assert_eq(grid.cell(0, "total").text, "10.50")
   assert_eq(grid.row_count(), 2)
 }
+
+///|
+/// A grid over one page, as the client builds it.
+fn plan_grid(page : @table.Page) -> @table.Grid {
+  @table.Grid::new(page)
+}
+
+///|
+test "a changed hash field is one HSET, a marked row one HDEL" {
+  let page = @table.Page::new(
+    None,
+    "user:1",
+    ["field", "value"],
+    [
+      [@table.Cell::of("name"), @table.Cell::of("Ada")],
+      [@table.Cell::of("city"), @table.Cell::of("London")],
+    ],
+    [],
+  )
+  let grid = plan_grid(page)
+  grid.set_cell(0, "value", @table.Cell::of("Ada Lovelace"))
+  grid.toggle_delete(1)
+  let plan = @table.redis_plan(grid) catch {
+    @table.Refused(text~) => abort(text)
+  }
+  assert_eq(plan.statements, [
+    "HSET user:1 name \"Ada Lovelace\"", "HDEL user:1 city",
+  ])
+  assert_eq(plan.updates, 1)
+  assert_eq(plan.deletes, 1)
+}
+
+///|
+test "a value with a space is quoted, and one with both quotes is refused" {
+  let page = @table.Page::new(
+    None,
+    "greeting",
+    ["value"],
+    [[@table.Cell::of("hello")]],
+    [],
+  )
+  let grid = plan_grid(page)
+  grid.set_cell(0, "value", @table.Cell::of("hello there"))
+  let plan = @table.redis_plan(grid) catch {
+    @table.Refused(text~) => abort(text)
+  }
+  assert_eq(plan.statements, ["SET greeting \"hello there\""])
+  grid.set_cell(0, "value", @table.Cell::of("both \" and ' here"))
+  let refused = Ok(@table.redis_plan(grid)) catch {
+    @table.Refused(text~) => Err(text)
+  }
+  assert_eq(refused is Err(_), true)
+}
+
+///|
+test "a list has no cell to set, and says so" {
+  let page = @table.Page::new(
+    None,
+    "queue",
+    ["index", "value"],
+    [[@table.Cell::of("0"), @table.Cell::of("a")]],
+    [],
+  )
+  let grid = plan_grid(page)
+  grid.set_cell(0, "value", @table.Cell::of("b"))
+  let refused = Ok(@table.redis_plan(grid)) catch {
+    @table.Refused(text~) => Err(text)
+  }
+  assert_eq(refused is Err(_), true)
+}

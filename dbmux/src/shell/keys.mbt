@@ -225,9 +225,17 @@ fn State::press_browse(self : State, key : String) -> Array[Command] {
               } else if !grid.is_dirty() {
                 self.message = "nothing to save"
               } else {
+                // A Redis key is not a table: what a change means depends on
+                // the type it holds, and `redis_plan` writes the command.
                 match
-                  (Ok(@table.plan(grid, self.dialect)) catch {
-                    @table.Refused(text~) => Err(text)
+                  (if self.engine is @config.Engine::Redis {
+                    Ok(@table.redis_plan(grid)) catch {
+                      @table.Refused(text~) => Err(text)
+                    }
+                  } else {
+                    Ok(@table.plan(grid, self.dialect)) catch {
+                      @table.Refused(text~) => Err(text)
+                    }
                   }) {
                   Ok(plan) => {
                     self.pending = plan.statements

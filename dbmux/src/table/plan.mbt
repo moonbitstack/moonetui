@@ -123,3 +123,77 @@ pub fn Grid::predicates(
     out
   }
 }
+
+///|
+/// A word as the console line reads it back: bare when it has nothing a shell
+/// would split on, and in quotes when it has. A value holding both kinds of
+/// quote cannot be written on that line, so it is refused rather than sent
+/// half of itself.
+fn quoted(text : String) -> String raise Refused {
+  if !text.contains_char(' ') &&
+    !text.contains_char('"') &&
+    !text.contains_char('\'') {
+    return text
+  }
+  if !text.contains_char('"') {
+    return "\"" + text + "\""
+  }
+  if !text.contains_char('\'') {
+    return "'" + text + "'"
+  }
+  raise Refused(
+    text="a value with both kinds of quote cannot be sent from this line",
+  )
+}
+
+///|
+/// The commands a save runs on a Redis key. A key holds no rows to update, so
+/// what a change means depends on its type: a string is `SET` and `DEL`, a hash
+/// is `HSET` and `HDEL` of the field the row names. A list, a set and a sorted
+/// set have no cell to set, and say so instead of writing something else.
+pub fn redis_plan(grid : Grid) -> SavePlan raise Refused {
+  let key = grid.page.table
+  let columns = grid.page.columns
+  let statements : Array[String] = []
+  let mut updates = 0
+  let mut deletes = 0
+  if columns.contains("field") {
+    for row in 0..<grid.page.rows.length() {
+      let field = quoted(grid.cell(row, "field").text)
+      let name = quoted(key)
+      if grid.is_marked(row) {
+        statements.push("HDEL " + name + " " + field)
+        deletes = deletes + 1
+        continue
+      }
+      let now = grid.cell(row, "value").text
+      let was = grid.original(row, "value").text
+      if now != was {
+        statements.push("HSET " + name + " " + field + " " + quoted(now))
+        updates = updates + 1
+      }
+    }
+  } else if columns.contains("index") ||
+    columns.contains("member") ||
+    columns.contains("score") {
+    raise Refused(
+      text="a " +
+        grid.page.table +
+        " is a list or a set: change it on the console",
+    )
+  } else {
+    let name = quoted(key)
+    if grid.is_marked(0) {
+      statements.push("DEL " + name)
+      deletes = 1
+    } else if grid.page.rows.length() > 0 {
+      let now = grid.cell(0, "value").text
+      let was = grid.original(0, "value").text
+      if now != was {
+        statements.push("SET " + name + " " + quoted(now))
+        updates = 1
+      }
+    }
+  }
+  { statements, updates, inserts: 0, deletes, }
+}

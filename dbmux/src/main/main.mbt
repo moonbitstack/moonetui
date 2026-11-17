@@ -256,8 +256,29 @@ async fn save(
         }
       }
     }
-    Redis(_) =>
-      state.message = "redis values are read-only here; use the console"
+    Redis(redis) => {
+      let mut saved = true
+      for statement in statements {
+        let outcome = Ok(redis.command(statement)) catch {
+          @db.Failed(text~) => Err(text)
+        }
+        match outcome {
+          Ok(_) => ()
+          Err(text) => {
+            state.message = text
+            saved = false
+          }
+        }
+      }
+      if saved {
+        match state.grid() {
+          Some(grid) => grid.revert()
+          None => ()
+        }
+        reload(link, state)
+        state.message = "saved"
+      }
+    }
   }
 }
 

@@ -38,6 +38,11 @@ moon run --target native src/main -- "redis://127.0.0.1:6379/0"   # Redis keys
 moon run --target native src/main -- "postgres://me@127.0.0.1/app?sslmode=disable"
 ```
 
+A Redis key is a table too, shaped by the type it holds, and a save writes it:
+a changed hash field is one `HSET`, a marked one `HDEL`, a string is `SET`, and a
+list, a set or a sorted set has no cell to set — the client says so and leaves
+those to the console.
+
 Redis opens on the keys: `keys` is a table of every key and its type, `enter`
 opens the one under the cursor as a table of its own — a string is one row, a
 hash two columns, a list its indexes, a set its members, a sorted set its
@@ -87,8 +92,8 @@ and every write on it is confirmed.
 | `s` | sort by the column under the cursor, through ascending, descending and off |
 | `f` | type a WHERE |
 | `F` | filter by the cell under the cursor |
-| `e` | edit the cell |
-| `a` / `d` | add a row / mark one for deletion |
+| `e` | edit the cell; on a Redis hash, the field's value, and on a string, the key's |
+| `a` / `d` | add a row / mark one for deletion (on a Redis hash, `d` marks the field for `HDEL`) |
 | `C-s` | save: the statements are shown, then run in one transaction |
 | `r` | take the changes back |
 | `t` / `c` | transpose / hide the column under the cursor |
