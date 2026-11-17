@@ -183,6 +183,26 @@ pub fn Router::press(self : Router, key : String) -> Bool {
     }
     return true
   }
+  // `C-n` offers what the word at the cursor could become: the tables the
+  // connection lists, the columns of the table that is open, and SQL's own
+  // words. What is typed next narrows it; enter takes the chosen one.
+  if self.state.focus is @shell.Focus::Editor && key == "C-n" {
+    let (at, word) = @sqlkit.word_before(
+      self.editor.text(),
+      self.editor.offset(),
+    )
+    let tables : Array[String] = []
+    for info in self.state.tables {
+      tables.push(info.name)
+    }
+    let columns : Array[String] = match self.state.grid() {
+      Some(grid) => grid.visible()
+      None => []
+    }
+    let offers = @sqlkit.complete(word, tables~, columns~)
+    self.editor.offer(offers, at)
+    return true
+  }
   if self.state.focus is @shell.Focus::Editor {
     if self.editor.press(key) {
       return true
@@ -387,7 +407,11 @@ pub impl @widget.Widget for Router with fn render_line(self, index, size) {
   let body = if index == 0 {
     @strip.Strip::empty()
   } else if self.state.focus is @shell.Focus::Editor {
-    self.editor.render_line(index - 1, size, self.style, self.cursor_style)
+    if index == size.height - 1 && self.editor.offers().length() > 0 {
+      self.editor.offer_line(size.width)
+    } else {
+      self.editor.render_line(index - 1, size, self.style, self.cursor_style)
+    }
   } else {
     self.table.render_line(index - 1, size)
   }

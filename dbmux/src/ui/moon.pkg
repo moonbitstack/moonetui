@@ -8,6 +8,7 @@ import {
   "moonbitstack/moonetui/style",
   "moonbitstack/moonetui/widget",
   "moonbitstack/dbmux/shell",
+  "moonbitstack/dbmux/sqlkit",
   "moonbitstack/dbmux/keymap",
   "moonbitstack/dbmux/table",
 }

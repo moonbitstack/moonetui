@@ -119,6 +119,7 @@ pub fn Screen::refresh(self : Screen) -> Unit {
     ("C-p", "palette"),
     ("?", "keys"),
     ("C-r", "run"),
+    ("C-n", "complete"),
     ("C-s", "save"),
     ("C-v", "split"),
     ("C-o", "pane"),

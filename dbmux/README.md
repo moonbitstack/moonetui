@@ -98,8 +98,14 @@ and every write on it is confirmed.
 | `C-o` | hand the keyboard to the other pane |
 | `C-q` | close the split |
 | `C-r` | run the editor's SQL |
+| `C-n` | in the editor, complete the word at the cursor: tables, columns, and SQL's own words |
 | `C-up` / `C-down` | in the editor, the queries run before, newest first |
 | `q` | quit |
+
+A completion is offered for the word the cursor is at the end of — the tables the
+connection lists, the columns of the table that is open, and the words a query is
+written with. `C-n` and `C-p` walk the list, `enter` or `tab` takes the one that is
+chosen, and any other key closes the list and does its own work.
 
 The queries the editor runs are kept in `.dbmux_history` in the home directory, the file
 `DBMUX_HISTORY` names, or `--history <path>`: the newest 500, one block each.

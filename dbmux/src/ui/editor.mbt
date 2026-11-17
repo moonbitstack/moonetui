@@ -27,6 +27,10 @@ pub struct Editor {
   mut yank : Array[String]
   undo : Array[(Array[String], Int32, Int32)]
   mut message : String
+  /// What the word under the cursor could become, and where that word starts.
+  offers : Array[@sqlkit.Candidate]
+  mut offer_at : Int32
+  mut offer_pick : Int32
 }
 
 ///|
@@ -40,6 +44,9 @@ pub fn Editor::new() -> Editor {
     yank: [],
     undo: [],
     message: "",
+    offers: [],
+    offer_at: 0,
+    offer_pick: 0,
   }
 }
 
@@ -129,6 +136,32 @@ pub fn Editor::press(self : Editor, key : String) -> Bool {
 
 ///|
 fn Editor::press_insert(self : Editor, key : String) -> Bool {
+  // An offer takes the keys that choose from it, and any other key closes it
+  // and then does its own work, so typing never has to be paused to dismiss a
+  // popup that a reader has moved on from.
+  if self.offers.length() > 0 {
+    if key == "C-n" || key == "down" {
+      if self.offer_pick + 1 < self.offers.length() {
+        self.offer_pick = self.offer_pick + 1
+      }
+      return true
+    }
+    if key == "C-p" || key == "up" {
+      if self.offer_pick > 0 {
+        self.offer_pick = self.offer_pick - 1
+      }
+      return true
+    }
+    if key == "enter" || key == "tab" {
+      self.accept_offer()
+      return true
+    }
+    if key == "esc" {
+      self.offers.clear()
+      return true
+    }
+    self.offers.clear()
+  }
   if key == "esc" {
     self.mode = Normal
     if self.col > 0 {
@@ -169,6 +202,102 @@ fn Editor::press_insert(self : Editor, key : String) -> Bool {
   } else {
     false
   }
+}
+
+///|
+/// Where the cursor is in the buffer as one number, which is what a word is
+/// looked up against.
+pub fn Editor::offset(self : Editor) -> Int32 {
+  let mut at = 0
+  for i in 0..<self.row {
+    if i < self.lines.length() {
+      at = at + self.lines[i].length() + 1
+    }
+  }
+  at + self.col
+}
+
+///|
+/// Offer what the word at `at` could become. An empty list closes the popup.
+pub fn Editor::offer(
+  self : Editor,
+  offers : Array[@sqlkit.Candidate],
+  at : Int32,
+) -> Unit {
+  self.offers.clear()
+  for offer in offers {
+    self.offers.push(offer)
+  }
+  self.offer_at = at
+  self.offer_pick = 0
+}
+
+///|
+pub fn Editor::offers(self : Editor) -> Array[@sqlkit.Candidate] {
+  self.offers
+}
+
+///|
+pub fn Editor::offer_at(self : Editor) -> Int32 {
+  self.offer_at
+}
+
+///|
+pub fn Editor::offer_pick(self : Editor) -> Int32 {
+  self.offer_pick
+}
+
+///|
+pub fn Editor::close_offers(self : Editor) -> Unit {
+  self.offers.clear()
+}
+
+///|
+/// Take the chosen word: the word the cursor is in is replaced by it, and the
+/// cursor lands after it so the next key types on.
+pub fn Editor::accept_offer(self : Editor) -> Unit {
+  if self.offers.length() == 0 {
+    return
+  }
+  let pick = if self.offer_pick < self.offers.length() {
+    self.offers[self.offer_pick].text
+  } else {
+    ""
+  }
+  if pick != "" {
+    self.remember()
+    let chars = self.line_chars()
+    let head = slice_text(chars, 0, self.offer_at)
+    let tail = slice_text(chars, self.col, chars.length())
+    self.lines[self.row] = head + pick + tail
+    self.col = self.offer_at + pick.length()
+  }
+  self.offers.clear()
+}
+
+///|
+/// The offers, as one row under the query: the chosen one reversed, the rest
+/// with the letter that says where each came from.
+pub fn Editor::offer_line(self : Editor, width : Int32) -> @strip.Strip {
+  let plain = @style.Style::new(fg=@style.bright_black)
+  let taken = @style.Style::new(fg=@style.black, bg=@style.cyan)
+  let parts : Array[@strip.Strip] = [@strip.Strip::of(" ▸ ", plain)]
+  for i in 0..<self.offers.length() {
+    let offer = self.offers[i]
+    let style = if i == self.offer_pick { taken } else { plain }
+    parts.push(
+      @strip.Strip::of(
+        if i == self.offer_pick {
+          " " + offer.text + " "
+        } else {
+          offer.text
+        },
+        style,
+      ),
+    )
+    parts.push(@strip.Strip::of(" ", plain))
+  }
+  @strip.Strip::join(parts).crop(0, width).pad_to(width, plain)
 }
 
 ///|

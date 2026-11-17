@@ -262,3 +262,56 @@ test "inserts and deletes are built from the same pieces" {
     "DELETE FROM \"t\" WHERE \"id\" = '3'",
   )
 }
+
+///|
+test "a word ends where the cursor is, and starts at the run before it" {
+  assert_eq(@sqlkit.word_before("select * from ord", 17), (14, "ord"))
+  assert_eq(@sqlkit.word_before("select ", 7), (7, ""))
+  // A quoted name is not a word: the popup never breaks `"order lines"`.
+  assert_eq(@sqlkit.word_before("select \"order", 13), (8, "order"))
+}
+
+///|
+test "a completion names what it came from, shortest first" {
+  let offers = @sqlkit.complete("ord", tables=["orders", "order_items"], columns=[
+    "order_id",
+  ])
+  let texts : Array[String] = []
+  for offer in offers {
+    texts.push(offer.text)
+  }
+  // The keyword is the shortest, then the table, then the column, then the
+  // longer table: what a reader typed most of comes first.
+  assert_eq(texts, ["ORDER", "orders", "order_id", "order_items"])
+  assert_eq(offers[0].letter(), "k")
+  assert_eq(offers[1].letter(), "t")
+  assert_eq(offers[2].letter(), "c")
+}
+
+///|
+test "a word matches whatever the case, and a word the same is not offered" {
+  let offers = @sqlkit.complete("SEL")
+  assert_eq(offers.length() > 0, true)
+  assert_eq(offers[0].text, "SELECT")
+  // `select` is already typed, so it is not a completion of itself.
+  let exact = @sqlkit.complete("select", tables=["select"])
+  for offer in exact {
+    assert_eq(offer.text.to_lower(), "select")
+  }
+  // Nothing typed offers nothing: a list of every word is not a completion.
+  assert_eq(@sqlkit.complete("").length(), 0)
+}
+
+///|
+test "a name is offered once even when two sources have it" {
+  let offers = @sqlkit.complete("cust", tables=["customers"], columns=[
+    "customers",
+  ])
+  let mut count = 0
+  for offer in offers {
+    if offer.text == "customers" {
+      count = count + 1
+    }
+  }
+  assert_eq(count, 1)
+}
