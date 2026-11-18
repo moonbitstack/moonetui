@@ -57,6 +57,22 @@ test "markdown scrolls through long documents" {
 }
 
 ///|
+test "markdown's end shows the last page, not the last line alone" {
+  let mut doc = ""
+  for i in 0..<12 {
+    if i > 0 {
+      doc = doc + "\n\n"
+    }
+    doc = doc + "para \{i}"
+  }
+  let md : &@widget.Widget = @widget.Markdown::new(doc)
+  let at = size(10, 3)
+  ignore(rows(md, at))
+  ignore(press(md, 8, at, key(End)))
+  assert_eq(rows(md, at), ["para 10   ", "          ", "para 11   "])
+}
+
+///|
 test "markdown wraps paragraphs at spaces and keeps styles across the break" {
   let md = @widget.Markdown::new("one **two three four** five")
   let w : &@widget.Widget = md
@@ -140,4 +156,16 @@ test "markdown code spans keep their insides literal, and a lone star is a star"
   let line = w.render_line(0, size(40, 1))
   assert_eq(line.text().trim_end(), "a*b*c and x ` y but 2 * 3 * 4")
   assert_eq(line.segs.iter().all(seg => !seg.style.attrs.italic), true)
+}
+
+///|
+test "a heading keeps its own colour over the body's" {
+  let md : &@widget.Widget = @widget.Markdown::new(
+    "## Title\n\nbody",
+    style=@style.Style::new(fg=@style.white),
+    heading_style=@style.Style::new(fg=@style.blue, bold=true),
+  )
+  let at = size(10, 3)
+  assert_eq(md.render_line(0, at).segs[0].style.fg, @style.blue)
+  assert_eq(md.render_line(2, at).segs[0].style.fg, @style.white)
 }

@@ -739,7 +739,7 @@ fn Markdown::lay_table(
     }
     widths[i] = wide
   }
-  let head_style = self.heading_style.merge(self.style)
+  let head_style = self.style.merge(self.heading_style)
   let head_pieces : Array[@strip.Strip] = []
   for i in 0..<span {
     if i > 0 {
@@ -841,7 +841,7 @@ fn Markdown::lay(self : Markdown, width : Int32) -> Unit {
         } else {
           self.heading_style
         }
-        out.append(md_wrap(text, safe, style.merge(self.style)))
+        out.append(md_wrap(text, safe, self.style.merge(style)))
       }
       MDParagraph(text) => out.append(md_wrap(text, safe, self.style))
       MDQuote(text) =>
@@ -934,9 +934,13 @@ pub impl Widget for Markdown with fn focusable(_self) {
 ///|
 fn Markdown::scroll_by(self : Markdown, ctx : Ctx, lines : Int32) -> Unit {
   let count = self.laid.length()
+  // The last page ends on the last line: once a height is known, scrolling stops
+  // with the document filling the view rather than one line at the top of it.
+  let page = if self.seen > 0 { self.seen } else { 1 }
+  let most = if count > page { count - page } else { 0 }
   let mut next = self.offset_y + lines
-  if next > count - 1 {
-    next = count - 1
+  if next > most {
+    next = most
   }
   if next < 0 {
     next = 0
