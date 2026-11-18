@@ -239,6 +239,23 @@ def load_wide(size: int) -> ImageFont.FreeTypeFont | None:
     return None
 
 
+def block(ch: str, px: int, py: int, w: int, h: int) -> list[int] | None:
+    """The rectangle a block element covers: a terminal fills the whole cell
+    with these, where a font's glyph stops short of the line height."""
+    code = ord(ch[0])
+    if 0x2581 <= code <= 0x2588:
+        top = py + h - round(h * (code - 0x2580) / 8)
+        return [px, top, px + w - 1, py + h - 1]
+    if code == 0x2580:
+        return [px, py, px + w - 1, py + h // 2 - 1]
+    if 0x2589 <= code <= 0x258F:
+        right = px + round(w * (0x2590 - code) / 8)
+        return [px, py, right - 1, py + h - 1]
+    if code == 0x2590:
+        return [px + w // 2, py, px + w - 1, py + h - 1]
+    return None
+
+
 def in_bold_face(ch: str) -> bool:
     """Whether the bold face draws this glyph: letters and digits, not rules."""
     code = ord(ch[0])
@@ -278,6 +295,10 @@ def draw_frame(frame: dict, size: int = 17, pad: int = 10, label: str = "") -> I
             face = heavy if cell.bold and in_bold_face(cell.ch) else font
             if wide is not None and unicodedata.east_asian_width(cell.ch) in ("W", "F"):
                 face = wide
+            box = block(cell.ch, px, py, cell_w, cell_h)
+            if box is not None:
+                draw.rectangle(box, fill=fill)
+                continue
             draw.text((px, py), cell.ch, font=face, fill=fill)
     return image
 
