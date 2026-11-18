@@ -2148,7 +2148,7 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
 <!-- generated:api -->
   <div class="api-tools">
     <input class="api-filter" type="search" placeholder="Filter by name, e.g. Button or render" aria-label="Filter the API">
-    <span class="api-count" data-total="1102">1102 entries</span>
+    <span class="api-count" data-total="1103">1103 entries</span>
   </div>
   <div class="api-index">
     <button type="button" data-pkg="api-geom">geom<span>43</span></button>
@@ -2160,7 +2160,7 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
     <button type="button" data-pkg="api-vt">vt<span>12</span></button>
     <button type="button" data-pkg="api-comp">comp<span>21</span></button>
     <button type="button" data-pkg="api-design">design<span>56</span></button>
-    <button type="button" data-pkg="api-widget">widget<span>740</span></button>
+    <button type="button" data-pkg="api-widget">widget<span>741</span></button>
     <button type="button" data-pkg="api-app">app<span>60</span></button>
     <button type="button" data-pkg="api-driver">driver<span>28</span></button>
     <button type="button" data-pkg="api-driver-native">driver/native<span>11</span></button>
@@ -4837,6 +4837,7 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
         <div class="api-method" data-q="activate"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> TabbedContent::activate(Self, Int32) -&gt; Unit</pre></div>
         <div class="api-method" data-q="active"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> TabbedContent::active(Self) -&gt; Int32</pre></div>
         <div class="api-method" data-q="focusable"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> TabbedContent::focusable(Self) -&gt; Bool</pre></div>
+        <div class="api-method" data-q="from_tabs"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> TabbedContent::from_tabs(Tabs, Array[&amp;Widget]) -&gt; Self</pre><p>Tabbed content over a tab bar built by the caller, for a bar styled other than <code>Tabs::new</code>'s defaults. Pane <code>i</code> shows under tab <code>i</code>.</p></div>
         <div class="api-method" data-q="handle"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> TabbedContent::handle(Self, Ctx, Msg) -&gt; Bool</pre></div>
         <div class="api-method" data-q="hint"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> TabbedContent::hint(Self, <span class="fn">@geom.</span>Size) -&gt; <span class="fn">@geom.</span>Size</pre></div>
         <div class="api-method" data-q="new"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> TabbedContent::new(labels? : Array[String], panes? : Array[&amp;Widget], active? : Int32) -&gt; Self</pre></div>
