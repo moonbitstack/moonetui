@@ -7,92 +7,113 @@ pub fn sheet() -> @design.Stylesheet {
 }
 
 ///|
-/// The board as a widget: four rows of tiles, each six columns wide, and a line
-/// under them that says the score.
+/// The board as a widget: four by four tiles, each seven columns and three rows,
+/// one cell apart on a ground of their own.
 pub struct Board {
   grid : Grid
 }
 
 ///|
-/// The block a tile sits on: dark blue at four, hot rose past two hundred and
-/// fifty-six, so the board reads as a board even through a squint.
+/// Columns and rows of one tile.
+const TILE_W : Int32 = 7
+
+///|
+const TILE_H : Int32 = 3
+
+///|
+/// The board's width and height: four tiles and the gaps around them.
+pub const BOARD_W : Int32 = 4 * TILE_W + 5
+
+///|
+pub const BOARD_H : Int32 = 4 * TILE_H + 5
+
+///|
+let board_ground : @style.Style = @style.Style::new(bg=@theme.surface)
+
+///|
+/// The block a tile sits on, warming as the number doubles: a raised slot when
+/// empty, then the accent, the second accent, green, amber and rose.
 fn block_style(value : Int32) -> @style.Style {
+  let dark = @style.Rgb(0x10, 0x14, 0x1f)
+  if value == 0 {
+    return @style.Style::new(fg=@theme.faint, bg=@style.Rgb(0x22, 0x29, 0x3a))
+  }
   if value <= 4 {
-    return @style.Style::new(fg=@theme.ink, bg=@style.Rgb(0x2a, 0x2e, 0x44))
+    return @style.Style::new(
+      fg=@theme.ink,
+      bg=@style.Rgb(0x34, 0x3d, 0x55),
+      bold=true,
+    )
   }
   if value <= 16 {
-    return @style.Style::new(fg=@style.black, bg=@theme.accent, bold=true)
+    return @style.Style::new(fg=dark, bg=@theme.accent, bold=true)
   }
   if value <= 64 {
-    return @style.Style::new(fg=@style.black, bg=@theme.good, bold=true)
+    return @style.Style::new(fg=dark, bg=@theme.accent_alt, bold=true)
   }
   if value <= 256 {
-    return @style.Style::new(fg=@style.black, bg=@theme.warn, bold=true)
+    return @style.Style::new(fg=dark, bg=@theme.good, bold=true)
   }
-  @style.Style::new(fg=@style.black, bg=@theme.bad, bold=true)
+  if value <= 1024 {
+    return @style.Style::new(fg=dark, bg=@theme.warn, bold=true)
+  }
+  @style.Style::new(fg=dark, bg=@theme.bad, bold=true)
 }
 
 ///|
-/// A number in a cell `width` columns wide, on a block of its own colour: the
-/// bigger the number, the hotter the block. A cell that just took a merge is
-/// lit, which is the whole animation.
-fn tile(value : Int32, width : Int32, flashing : Bool) -> @strip.Strip {
-  let style = if flashing {
-    @style.Style::new(fg=@style.black, bg=@theme.accent_alt, bold=true)
+/// One row of a tile: the number on the middle row, centred, the rest of the
+/// block plain. A tile that just took a merge is lit, which is the animation.
+fn tile_row(value : Int32, line : Int32, flashing : Bool) -> @strip.Strip {
+  let style = if flashing && value > 0 {
+    @style.Style::new(fg=@theme.surface, bg=@theme.cool, bold=true)
   } else {
     block_style(value)
   }
-  if value == 0 {
-    return @strip.Strip::blank(width, @style.Style::new(fg=@theme.muted))
+  let text = if line == TILE_H / 2 && value > 0 {
+    value.to_string()
+  } else {
+    ""
   }
-  let text = value.to_string()
-  let left = (width - text.length()) / 2
-  let right = width - text.length() - left
-  let out = StringBuilder()
-  for _ in 0..<left {
-    out.write_string(" ")
-  }
-  out.write_string(text)
-  for _ in 0..<right {
-    out.write_string(" ")
-  }
-  @strip.Strip::of(out.to_string(), style)
+  let used = text.length()
+  let left = (TILE_W - used) / 2
+  @strip.Strip::of(
+    @theme.repeat(" ", left) + text + @theme.repeat(" ", TILE_W - used - left),
+    style,
+  )
 }
 
 ///|
-
-///|
 impl @widget.Widget for Board with fn render_line(self, row, size) {
-  if row == 4 {
-    let word = if self.grid.over() {
-      "game over · r"
-    } else if !self.grid.started() {
-      "arrows to play · best " + self.grid.best().to_string()
-    } else if self.grid.won() {
-      "2048 · r"
-    } else {
-      "arrows slide · r restarts"
+  let width = size.width
+  let top = if size.height > BOARD_H { (size.height - BOARD_H) / 2 } else { 0 }
+  let at = row - top
+  if at < 0 || at >= BOARD_H {
+    return @strip.Strip::blank(width, @style.default)
+  }
+  let left = if width > BOARD_W { (width - BOARD_W) / 2 } else { 0 }
+  // Every fourth row from the top edge is a gap; the rows between are tiles.
+  let band = (at - 1) / (TILE_H + 1)
+  let line = (at - 1) % (TILE_H + 1)
+  let body = if at == 0 || line == TILE_H || band >= 4 {
+    @strip.Strip::blank(BOARD_W, board_ground)
+  } else {
+    let parts = [@strip.Strip::blank(1, board_ground)]
+    for x in 0..<4 {
+      parts.push(
+        tile_row(self.grid.cell(x, band), line, self.grid.flashing(x, band)),
+      )
+      parts.push(@strip.Strip::blank(1, board_ground))
     }
-    return @strip.Strip::of(
-      "score " + self.grid.score().to_string() + " · " + word,
-      @style.Style::new(fg=@theme.muted),
-    )
+    @strip.Strip::join(parts)
   }
-  if row < 0 || row > 3 {
-    return @strip.Strip::blank(size.width, @style.default)
-  }
-  // The board takes the width it is given, four tiles across.
-  let across = if size.width >= 4 { size.width / 4 } else { 4 }
-  let parts : Array[@strip.Strip] = []
-  for x in 0..<4 {
-    parts.push(tile(self.grid.cell(x, row), across, self.grid.flashing(x, row)))
-  }
-  @strip.Strip::join(parts)
+  @strip.Strip::join([@strip.Strip::blank(left, @style.default), body]).pad_to(
+    width, @style.default,
+  )
 }
 
 ///|
 impl @widget.Widget for Board with fn hint(_self, _size) {
-  @geom.Size::new(24, 5)
+  @geom.Size::new(BOARD_W, BOARD_H)
 }
 
 ///|
@@ -146,18 +167,23 @@ pub struct Screen {
 pub fn Screen::new() -> Screen {
   let grid = Grid::new()
   let board : Board = { grid, }
-  let head = @theme.header("2048", note="arrows slide · r restarts")
-  let foot = @theme.footer([
-    ("arrows", "slide"),
-    ("r", "restart"),
-    ("esc", "quit"),
-  ])
+  let band = @theme.line(width => {
+    let note = if grid.over() {
+      "game over · score \{grid.score()}"
+    } else if grid.won() {
+      "2048 · score \{grid.score()}"
+    } else {
+      "score \{grid.score()} · best \{grid.best()}"
+    }
+    @theme.band("moonetui", subject="2048", note~, width~)
+  })
+  let keys = @theme.line(width => {
+    @theme.keys([("arrows", "slide"), ("r", "restart"), ("q", "quit")], width~)
+  })
   let root = @app.column(0, [
-    @app.leaf(1, head, box=@layout.Box::new(extent=Cells(1)), name="Header"),
-    @app.leaf(2, board, box=@layout.Box::new(extent=Cells(5)), classes=[
-      "framed",
-    ]),
-    @app.leaf(3, foot, box=@layout.Box::new(extent=Cells(1)), classes=["bar"]),
+    @app.leaf(1, band, box=@layout.Box::new(extent=Cells(1))),
+    @app.leaf(2, board, box=@layout.Box::new(extent=Frac(1))),
+    @app.leaf(3, keys, box=@layout.Box::new(extent=Cells(1))),
   ])
   { root, grid, }
 }

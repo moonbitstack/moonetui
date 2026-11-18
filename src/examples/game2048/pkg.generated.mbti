@@ -7,6 +7,10 @@ import {
 }
 
 // Values
+pub const BOARD_H : Int32 = 17
+
+pub const BOARD_W : Int32 = 33
+
 pub fn sheet() -> @design.Stylesheet
 
 // Errors
