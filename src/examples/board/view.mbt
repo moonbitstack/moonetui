@@ -50,8 +50,11 @@ let done_style : @style.Style = @style.Style::new(fg=@theme.muted)
 fn cut(text : String, width : Int32) -> String {
   if @strip.str_cells(text) <= width {
     text
-  } else {
+  } else if width <= 1 {
     text[0:@strip.cut_at(text, width)].to_owned()
+  } else {
+    // A cut says so: the last cell is an ellipsis, not half a word.
+    text[0:@strip.cut_at(text, width - 1)].to_owned() + "…"
   }
 }
 
@@ -233,11 +236,7 @@ fn Board::cell(
         return @strip.Strip::blank(inner, @style.Style::new())
       }
       if iy == 4 {
-        return body_line(
-          "sun 15 nov 2026 · :" + self.seconds_text(),
-          ink,
-          inner,
-        )
+        return body_line("sun 15 nov · " + self.clock_text(), ink, inner)
       }
       if iy == 5 {
         return body_line("tokyo 18:30 · ny 04:30", dim, inner)
@@ -266,7 +265,7 @@ fn Board::cell(
         @strip.Strip::join([
           dot,
           @strip.Strip::of(hash + " ", dim),
-          @strip.Strip::of(cut(subject, inner - 9), ink),
+          @strip.Strip::of(cut(subject, inner - 10), ink),
         ]).pad_to(inner, @style.Style::new())
       } else if iy == 6 {
         body_line("6 today · 1 to push", dim, inner)
@@ -288,10 +287,12 @@ fn Board::cell(
         // The one line with two numbers on it: the reading, and what the
         // window averages, so a reader can tell a spike from a trend.
         return @strip.Strip::join([
-          @strip.Strip::of(" cpu", dim),
-          @strip.Strip::of(right(pct.to_string() + "%", 7), warm),
-          @strip.Strip::of("  avg " + (pct - 8).to_string() + "%", dim),
-        ]).crop(0, inner)
+            @strip.Strip::of(" cpu", dim),
+            @strip.Strip::of(right(pct.to_string() + "%", 7), warm),
+            @strip.Strip::of("  avg " + (pct - 8).to_string() + "%", dim),
+          ])
+          .crop(0, inner)
+          .pad_to(inner, @style.Style::new())
       }
       if iy == 1 {
         return @strip.Strip::join([
@@ -324,7 +325,7 @@ fn Board::cell(
         )
       }
       if iy == 7 {
-        return body_line(" net ↓ 1.4 mb/s · ↑ 320 kb/s", dim, inner)
+        return body_line(" net ↓ 1.4  ↑ 0.3 mb/s", dim, inner)
       }
       @strip.Strip::blank(inner, @style.Style::new())
     }
