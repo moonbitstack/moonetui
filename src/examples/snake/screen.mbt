@@ -36,7 +36,13 @@ pub struct Screen {
 pub fn Screen::new() -> Screen {
   let board = Board::new()
   let head = @theme.line(width => {
-    @theme.band("moonetui", subject="snake", note="space starts", width~)
+    let note = match board.phase() {
+      Title => "space starts"
+      Playing => "eat, grow, keep off the walls"
+      Paused => "paused"
+      Over => "game over"
+    }
+    @theme.band("moonetui", subject="snake", note~, width~)
   })
   let foot = @theme.line(width => {
     @theme.keys(

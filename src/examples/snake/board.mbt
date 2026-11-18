@@ -400,24 +400,41 @@ impl @widget.Widget for Board with fn render_line(self, row, size) {
   if row == 0 {
     return self.hud()
   }
-  let y = row - 1
-  if y < 0 || y >= self.rows {
+  // The field is centred in the width it is given, framed so the walls show, and
+  // a scene's words sit on top of it: a title covers the field rather than
+  // squeezing it.
+  let at = row - 1
+  if at < 0 || at > self.rows + 1 {
     return @strip.Strip::blank(width, blank_style)
   }
-  // The field is centred in the width it is given, and a scene's words sit on
-  // top of it: a title covers the field rather than squeezing it.
-  let offset = if width > self.cols { (width - self.cols) / 2 } else { 0 }
+  let offset = if width > self.cols + 2 {
+    (width - self.cols - 2) / 2
+  } else {
+    0
+  }
+  let frame = @style.Style::new(fg=@theme.faint)
+  let body = if at == 0 {
+    @strip.Strip::of("╭" + @theme.repeat("─", self.cols) + "╮", frame)
+  } else if at == self.rows + 1 {
+    @strip.Strip::of("╰" + @theme.repeat("─", self.cols) + "╯", frame)
+  } else {
+    @strip.Strip::join([
+      @strip.Strip::of("│", frame),
+      self.field_row(at - 1),
+      @strip.Strip::of("│", frame),
+    ])
+  }
+  @strip.Strip::join([@strip.Strip::blank(offset, blank_style), body])
+}
+
+///|
+/// Row `y` of the field: a scene's words, or the snake, the apple and the
+/// sparks where they are.
+fn Board::field_row(self : Board, y : Int32) -> @strip.Strip {
   match self.scene_line(y) {
-    Some((text, style)) =>
-      @strip.Strip::join([
-        @strip.Strip::blank(offset, blank_style),
-        centred(text, self.cols, style),
-      ])
+    Some((text, style)) => centred(text, self.cols, style)
     None => {
       let parts : Array[@strip.Strip] = []
-      if offset > 0 {
-        parts.push(@strip.Strip::blank(offset, blank_style))
-      }
       for x in 0..<self.cols {
         let cell = self.cell_at(x, y)
         if self.phase == Title {
@@ -448,7 +465,7 @@ impl @widget.Widget for Board with fn render_line(self, row, size) {
 
 ///|
 impl @widget.Widget for Board with fn hint(self, _size) {
-  @geom.Size::new(self.cols, self.rows + 1)
+  @geom.Size::new(self.cols + 2, self.rows + 3)
 }
 
 ///|
