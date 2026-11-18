@@ -24,6 +24,7 @@ from __future__ import annotations
 import argparse
 import binascii
 import sys
+import unicodedata
 
 from PIL import Image, ImageDraw, ImageFont
 
@@ -148,13 +149,17 @@ def replay(stream: str, width: int, height: int) -> list[list[Cell]]:
         elif ch == "\r":
             col = 0
         elif ch >= " ":
-            if 0 <= row < height and 0 <= col < width:
-                cell = grid[row][col]
-                cell.ch = ch
-                cell.fg = fg
-                cell.bg = bg
-                cell.bold = bold
-            col += 1
+            # A wide character takes two cells, as a terminal gives it; the second
+            # keeps the colours and draws nothing of its own.
+            span = 2 if unicodedata.east_asian_width(ch) in ("W", "F") else 1
+            for k in range(span):
+                if 0 <= row < height and 0 <= col + k < width:
+                    cell = grid[row][col + k]
+                    cell.ch = ch if k == 0 else ""
+                    cell.fg = fg
+                    cell.bg = bg
+                    cell.bold = bold
+            col += span
         i += 1
     return grid
 
@@ -196,6 +201,15 @@ FONTS = [
     "/System/Library/Fonts/Menlo.ttc",
 ]
 
+# Wide characters, which the monospace faces above do not carry.
+WIDE_FONTS = [
+    "C:/Windows/Fonts/msyh.ttc",
+    "C:/Windows/Fonts/simhei.ttf",
+    "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc",
+    "/usr/share/fonts/truetype/noto/NotoSansCJK-Regular.ttc",
+    "/System/Library/Fonts/PingFang.ttc",
+]
+
 BOLD_FONTS = [
     "C:/Windows/Fonts/DejaVuSansMono-Bold_0.ttf",
     "/usr/share/fonts/truetype/dejavu/DejaVuSansMono-Bold.ttf",
@@ -216,6 +230,15 @@ def load_font(size: int, bold: bool = False) -> ImageFont.FreeTypeFont:
     raise SystemExit("no monospace font found")
 
 
+def load_wide(size: int) -> ImageFont.FreeTypeFont | None:
+    for path in WIDE_FONTS:
+        try:
+            return ImageFont.truetype(path, size)
+        except OSError:
+            continue
+    return None
+
+
 def in_bold_face(ch: str) -> bool:
     """Whether the bold face draws this glyph: letters and digits, not rules."""
     code = ord(ch[0])
@@ -225,6 +248,7 @@ def in_bold_face(ch: str) -> bool:
 def draw_frame(frame: dict, size: int = 17, pad: int = 10, label: str = "") -> Image.Image:
     font = load_font(size)
     heavy = load_font(size, bold=True)
+    wide = load_wide(size)
     cell_w = round(font.getlength("M"))
     cell_h = round(size * 1.34)
     width, height = frame["width"], frame["height"]
@@ -248,10 +272,12 @@ def draw_frame(frame: dict, size: int = 17, pad: int = 10, label: str = "") -> I
                 draw.rectangle(
                     [px, py, px + cell_w - 1, py + cell_h - 1], fill=cell.bg
                 )
-            if cell.ch == " ":
+            if cell.ch in (" ", ""):
                 continue
             fill = cell.fg or (0xC0, 0xCA, 0xF5)
             face = heavy if cell.bold and in_bold_face(cell.ch) else font
+            if wide is not None and unicodedata.east_asian_width(cell.ch) in ("W", "F"):
+                face = wide
             draw.text((px, py), cell.ch, font=face, fill=fill)
     return image
 
