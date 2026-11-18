@@ -9,6 +9,10 @@ import {
 // Values
 pub const SIZE : Int32 = 10
 
+pub const TALL : Int32 = 12
+
+pub const WIDE : Int32 = 32
+
 pub fn sheet() -> @design.Stylesheet
 
 // Errors
@@ -26,6 +30,7 @@ pub struct Field {
 }
 pub fn Field::cursor(Self) -> (Int32, Int32)
 pub fn Field::flagged(Self, Int32, Int32) -> Bool
+pub fn Field::left(Self) -> Int32
 pub fn Field::new() -> Self
 pub fn Field::opened(Self) -> Int32
 pub fn Field::reveal(Self) -> Unit

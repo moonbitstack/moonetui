@@ -192,117 +192,103 @@ fn Field::check(self : Field) -> Unit {
 }
 
 ///|
-let hidden_style : @style.Style = @style.Style::new(fg=@theme.muted)
-
-///|
-let cursor_style : @style.Style = @style.Style::new(
-  fg=@style.black,
-  bg=@theme.accent,
-  bold=true,
-)
-
-///|
-let flag_style : @style.Style = @style.Style::new(fg=@theme.warn, bold=true)
-
-///|
-let mine_style : @style.Style = @style.Style::new(fg=@theme.bad, bold=true)
-
-///|
-let hud_style : @style.Style = @style.Style::new(fg=@theme.muted)
+/// A covered cell is raised and an opened one sunk, each in two shades laid as a
+/// checkerboard, so the grid reads without a single line drawn between cells.
+fn ground(x : Int32, y : Int32, open : Bool) -> @style.Colour {
+  let even = (x + y) % 2 == 0
+  match (open, even) {
+    (false, true) => @style.Rgb(0x2a, 0x33, 0x48)
+    (false, false) => @style.Rgb(0x24, 0x2c, 0x3f)
+    (true, true) => @style.Rgb(0x12, 0x17, 0x22)
+    (true, false) => @style.Rgb(0x15, 0x1b, 0x27)
+  }
+}
 
 ///|
 /// The colour of a number: one and two calm, three to five warm, six and up hot.
-fn number_style(count : Int32) -> @style.Style {
+fn number_colour(count : Int32) -> @style.Colour {
   if count <= 2 {
-    @style.Style::new(fg=@theme.accent, bold=true)
+    @theme.accent
   } else if count <= 5 {
-    @style.Style::new(fg=@theme.warn, bold=true)
+    @theme.warn
   } else {
-    @style.Style::new(fg=@theme.bad, bold=true)
+    @theme.bad
   }
 }
 
 ///|
+/// One cell, three columns wide: its glyph centred on its ground, or on the
+/// accent when the cursor is on it.
 fn Field::cell(self : Field, x : Int32, y : Int32) -> @strip.Strip {
   let index = y * SIZE + x
-  let here = x == self.cx && y == self.cy
-  if self.stage == Over && self.mine[index] {
-    return @strip.Strip::of("✳ ", mine_style)
+  let open = self.open[index]
+  let (glyph, fg) = if self.stage == Over && self.mine[index] {
+    ("✳", @theme.bad)
+  } else if self.flag[index] {
+    ("⚑", @theme.warn)
+  } else if !open {
+    (" ", @theme.muted)
+  } else if self.around[index] == 0 {
+    (" ", @theme.faint)
+  } else {
+    (self.around[index].to_string(), number_colour(self.around[index]))
   }
-  if self.flag[index] {
-    return @strip.Strip::of("⚑ ", flag_style)
+  let style = if x == self.cx && y == self.cy {
+    @style.Style::new(fg=@theme.surface, bg=@theme.accent, bold=true)
+  } else {
+    @style.Style::new(fg~, bg=ground(x, y, open), bold=true)
   }
-  if !self.open[index] {
-    return @strip.Strip::of(
-      "█ ",
-      if here {
-        cursor_style
-      } else {
-        hidden_style
-      },
-    )
-  }
-  let count = self.around[index]
-  if count == 0 {
-    return @strip.Strip::of(
-      "· ",
-      if here {
-        cursor_style
-      } else {
-        hidden_style
-      },
-    )
-  }
-  @strip.Strip::of(
-    count.to_string() + " ",
-    if here {
-      cursor_style
-    } else {
-      number_style(count)
-    },
-  )
+  @strip.Strip::of(" " + glyph + " ", style)
 }
+
+///|
+/// How many mines are not yet flagged.
+pub fn Field::left(self : Field) -> Int32 {
+  mines_at.length() - self.flag.iter().filter(on => on).count()
+}
+
+///|
+/// The rows the field takes: a frame above and below the ten rows of cells.
+pub const TALL : Int32 = SIZE + 2
+
+///|
+/// The columns: three to a cell and a frame on either side.
+pub const WIDE : Int32 = SIZE * 3 + 2
+
+///|
+let frame_style : @style.Style = @style.Style::new(fg=@theme.faint)
 
 ///|
 impl @widget.Widget for Field with fn render_line(self, row, size) {
   let width = size.width
-  if row == 0 {
-    let flags : Array[Bool] = self.flag
-    let mut placed = 0
-    for on in flags {
-      if on {
-        placed = placed + 1
-      }
-    }
-    let word = match self.stage {
-      Playing =>
-        "mines " +
-        (mines_at.length() - placed).to_string() +
-        " · space reveal · f flag"
-      Won => "cleared · r to play again"
-      Over => "boom · r to play again"
-    }
-    return @strip.Strip::of(" " + word, hud_style)
-  }
-  let y = row - 1
-  if y < 0 || y >= SIZE {
+  let top = if size.height > TALL { (size.height - TALL) / 2 } else { 0 }
+  let at = row - top
+  if at < 0 || at >= TALL {
     return @strip.Strip::blank(width, @style.Style::new())
   }
-  let box = SIZE * 2
-  let offset = if width > box { (width - box) / 2 } else { 0 }
-  let parts : Array[@strip.Strip] = []
-  if offset > 0 {
-    parts.push(@strip.Strip::blank(offset, @style.Style::new()))
+  let inner = SIZE * 3
+  let body = if at == 0 {
+    @strip.Strip::of("╭" + @theme.repeat("─", inner) + "╮", frame_style)
+  } else if at == TALL - 1 {
+    @strip.Strip::of("╰" + @theme.repeat("─", inner) + "╯", frame_style)
+  } else {
+    let parts = [@strip.Strip::of("│", frame_style)]
+    for x in 0..<SIZE {
+      parts.push(self.cell(x, at - 1))
+    }
+    parts.push(@strip.Strip::of("│", frame_style))
+    @strip.Strip::join(parts)
   }
-  for x in 0..<SIZE {
-    parts.push(self.cell(x, y))
-  }
-  @strip.Strip::join(parts)
+  let left = if width > WIDE { (width - WIDE) / 2 } else { 0 }
+  @strip.Strip::join([@strip.Strip::blank(left, @style.Style::new()), body]).pad_to(
+    width,
+    @style.Style::new(),
+  )
 }
 
 ///|
 impl @widget.Widget for Field with fn hint(_self, _size) {
-  @geom.Size::new(SIZE * 2, SIZE + 1)
+  @geom.Size::new(WIDE, TALL)
 }
 
 ///|
@@ -378,8 +364,30 @@ pub struct Screen {
 ///|
 pub fn Screen::new() -> Screen {
   let field = Field::new()
+  let band = @theme.line(width => {
+    let note = match field.stage() {
+      Playing => "\{field.left()} mines left"
+      Won => "cleared"
+      Over => "boom"
+    }
+    @theme.band("moonetui", subject="sweep", note~, width~)
+  })
+  let keys = @theme.line(width => {
+    @theme.keys(
+      [
+        ("arrows", "move"),
+        ("space", "reveal"),
+        ("f", "flag"),
+        ("r", "again"),
+        ("q", "quit"),
+      ],
+      width~,
+    )
+  })
   let root = @app.column(0, [
-    @app.leaf(1, field, box=@layout.Box::new(extent=Frac(1))),
+    @app.leaf(1, band, box=@layout.Box::new(extent=Cells(1))),
+    @app.leaf(2, field, box=@layout.Box::new(extent=Frac(1))),
+    @app.leaf(3, keys, box=@layout.Box::new(extent=Cells(1))),
   ])
   { root, field, }
 }
