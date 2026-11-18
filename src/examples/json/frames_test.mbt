@@ -97,6 +97,7 @@ test "a path is read off the cursor, a key folds, and a query greys the rest" {
   doc.fold()
   assert_false(doc.at().open)
   assert_eq(doc.visible().length(), 25 - 3)
+  assert_true(doc.note.has_prefix("folded "))
   shot(ui, driver, total, "json/01 folded", size)
   doc.fold()
   assert_eq(doc.visible().length(), 25)
@@ -119,6 +120,6 @@ test "a path is read off the cursor, a key folds, and a query greys the rest" {
   assert_eq(doc.cursor, 0)
   doc.walk(1)
   doc.fold()
-  assert_true(doc.note.length() > 0)
+  assert_true(doc.note.has_suffix("nothing to fold"))
   shot(ui, driver, total, "json/04 leaf", size)
 }

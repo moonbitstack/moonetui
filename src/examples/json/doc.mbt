@@ -68,13 +68,7 @@ pub struct Doc {
 
 ///|
 pub fn Doc::new() -> Doc {
-  {
-    nodes: outline(),
-    cursor: 0,
-    typing: false,
-    query: "",
-    note: "← folds · / finds · esc quits",
-  }
+  { nodes: outline(), cursor: 0, typing: false, query: "", note: "", }
 }
 
 ///|
@@ -113,7 +107,7 @@ pub fn Doc::fold(self : Doc) -> Unit {
   } else {
     self.note = label(node) + " is a " + node.kind + ", nothing to fold"
   }
-  self.settle()
+  self.typing = false
 }
 
 ///|
@@ -240,7 +234,7 @@ pub fn Doc::rub(self : Doc) -> Unit {
 pub fn Doc::settle(self : Doc) -> Unit {
   self.typing = false
   if self.query.length() == 0 {
-    self.note = "← folds · / finds · esc quits"
+    self.note = ""
   } else {
     self.note = "finding " + self.query
   }

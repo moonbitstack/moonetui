@@ -123,7 +123,7 @@ fn Doc::row(self : Doc, index : Int32, width : Int32) -> @strip.Strip {
     1
   }
   let room = width - used - gap
-  @strip.Strip::join([
+  let line = @strip.Strip::join([
     @strip.Strip::blank(node.depth * 2, @style.Style::new()),
     @strip.Strip::of(marker, if lit { box_style } else { dim }),
     @strip.Strip::of(
@@ -149,7 +149,13 @@ fn Doc::row(self : Doc, index : Int32, width : Int32) -> @strip.Strip {
         dim
       },
     ),
-  ]).pad_to(width, if here { picked } else { @style.Style::new() })
+  ]).pad_to(width, @style.Style::new())
+  // The cursor's band runs under the key and the value too, not only after them.
+  if here {
+    line.apply(picked)
+  } else {
+    line
+  }
 }
 
 ///|
