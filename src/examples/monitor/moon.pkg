@@ -1,15 +1,15 @@
-// A service monitor with tabs, timers and a command line:
-// `moon run --target native src/examples/monitor`.
+// A service monitor with tabs, timers and a command line; `main` runs it.
 import {
   "moonbitstack/moonetui/app",
   "moonbitstack/moonetui/design",
-  "moonbitstack/moonetui/driver/native",
   "moonbitstack/moonetui/layout",
   "moonbitstack/moonetui/style",
   "moonbitstack/moonetui/examples/theme",
   "moonbitstack/moonetui/widget",
 }
 
-supported_targets = "native"
-
-pkgtype(kind: "executable")
+import {
+  "moonbitstack/moonetui/driver",
+  "moonbitstack/moonetui/geom",
+  "moonbitstack/moonetui/examples/frames",
+} for "test"

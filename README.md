@@ -42,7 +42,7 @@ moon add moonbitstack/moonetui
 
 ```
 moon run --target native src/examples/gallery   # every widget and every style, live
-moon run --target native src/examples/monitor   # a complete app: tabs, timers, a command line
+moon run --target native src/examples/monitor/main   # a complete app: tabs, timers, a command line
 moon run --target native src/examples/tui/main      # the starter: a list, a log, a bar and a field
 moon run --target native src/examples/snake/main    # a game: arrows turn, space pauses
 moon run --target native src/examples/life/main     # Conway's life, a generation a frame
@@ -207,7 +207,7 @@ moon test  --target all
 moon fmt && moon info --target all     # the diff must stay clean
 ```
 
-712 tests per backend, the same suite on wasm, wasm-gc, js and native, run on Ubuntu, macOS and Windows in CI. Every widget asserts the rows it draws, and every demo draws in a headless application.
+715 tests per backend, the same suite on wasm, wasm-gc, js and native, run on Ubuntu, macOS and Windows in CI. Every widget asserts the rows it draws, and every demo draws in a headless application.
 
 ## Conformance
 
