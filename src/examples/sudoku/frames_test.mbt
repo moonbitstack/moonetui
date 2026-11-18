@@ -85,6 +85,15 @@ test "the givens hold, a digit goes in, and a clash is marked" {
   total.write_string(driver.output())
   driver.clear_output()
   announce("sudoku/00 open", size, total.to_string(), ui.screen())
+  // The grid is whole: thirteen rows from the top border to the bottom one, each
+  // as wide as the others, with the boxes' thick rules where the boxes meet.
+  let grid = ui
+    .screen()
+    .filter(row => row.contains("┃") || row.contains("━"))
+  assert_eq(grid.length(), @sudoku.GRID)
+  let widths = grid.map(row => row.trim().length())
+  assert_true(widths.iter().all(w => w == @sudoku.SPAN))
+  assert_eq(grid.filter(row => row.contains("╋")).length(), 2)
   assert_eq(board.cursor(), (2, 0))
   assert_eq(board.cell(0, 0), 5)
   // A blank takes a digit; a given does not move.

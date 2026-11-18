@@ -139,13 +139,10 @@ let picked_style : @style.Style = @style.Style::new(
 let grid_style : @style.Style = @style.Style::new(fg=@theme.muted)
 
 ///|
-let hud_style : @style.Style = @style.Style::new(fg=@theme.muted)
-
-///|
 fn Board::drawn(self : Board, x : Int32, y : Int32) -> @strip.Strip {
   let value = self.cells[y * SIDE + x]
   let here = x == self.cx && y == self.cy
-  let text = if value == 0 { "  " } else { value.to_string() + " " }
+  let text = if value == 0 { "   " } else { " " + value.to_string() + " " }
   if self.clash(x, y) {
     return @strip.Strip::of(text, bad_style)
   }
@@ -163,15 +160,39 @@ fn Board::drawn(self : Board, x : Int32, y : Int32) -> @strip.Strip {
 }
 
 ///|
-/// The thin and thick rules of the nine by nine: a bar between boxes.
+/// The rows the grid takes: a border at top and bottom, a thick rule between
+/// boxes, and the nine rows of cells.
+pub const GRID : Int32 = SIDE + 4
+
+///|
+/// Each cell is three columns wide with a bar before it, and one bar closes the
+/// row: thick bars between boxes, thin ones inside them.
+pub const SPAN : Int32 = SIDE * 4 + 1
+
+///|
+/// A horizontal rule: `left`, then a run of three under each cell, with `thin`
+/// where a cell meets a cell and `thick` where a box meets a box, then `right`.
+fn rule(left : String, thin : String, thick : String, right : String) -> String {
+  let out = StringBuilder()
+  out.write_string(left)
+  for x in 0..<SIDE {
+    if x > 0 {
+      out.write_string(if x % 3 == 0 { thick } else { thin })
+    }
+    out.write_string("━━━")
+  }
+  out.write_string(right)
+  out.to_string()
+}
+
+///|
+/// One row of cells: each digit centred in its three columns.
 fn Board::row_text(self : Board, y : Int32) -> @strip.Strip {
   let parts : Array[@strip.Strip] = []
   for x in 0..<SIDE {
-    if x % 3 == 0 {
-      parts.push(@strip.Strip::of("┃", grid_style))
-    } else {
-      parts.push(@strip.Strip::of("│", grid_style))
-    }
+    parts.push(
+      @strip.Strip::of(if x % 3 == 0 { "┃" } else { "│" }, grid_style),
+    )
     parts.push(self.drawn(x, y))
   }
   parts.push(@strip.Strip::of("┃", grid_style))
@@ -179,44 +200,34 @@ fn Board::row_text(self : Board, y : Int32) -> @strip.Strip {
 }
 
 ///|
+/// What row `at` of the grid holds, counted from its top border.
+fn Board::grid_line(self : Board, at : Int32) -> @strip.Strip {
+  match at {
+    0 => @strip.Strip::of(rule("┏", "┯", "┳", "┓"), grid_style)
+    4 | 8 => @strip.Strip::of(rule("┣", "┿", "╋", "┫"), grid_style)
+    12 => @strip.Strip::of(rule("┗", "┷", "┻", "┛"), grid_style)
+    _ => self.row_text(at - 1 - at / 4)
+  }
+}
+
+///|
 impl @widget.Widget for Board with fn render_line(self, row, size) {
   let width = size.width
-  if row == 0 {
-    let word = if self.stage == 1 {
-      "solved · r to start again"
-    } else {
-      "arrows move · 1–9 write · 0 clears · r resets"
-    }
-    return @strip.Strip::of(" " + word, hud_style)
-  }
-  let body = row - 1
-  let box = SIDE * 3 + 1
-  let offset = if width > box { (width - box) / 2 } else { 0 }
-  let parts : Array[@strip.Strip] = []
-  if offset > 0 {
-    parts.push(@strip.Strip::blank(offset, @style.Style::new()))
-  }
-  // A thick rule between the boxes, three times over.
-  if body == 3 || body == 6 {
-    parts.push(
-      @strip.Strip::of(
-        "┣" + "━━━" + "╋" + "━━━" + "╋" + "━━━" + "┫",
-        grid_style,
-      ),
-    )
-    return @strip.Strip::join(parts)
-  }
-  let y = if body < 3 { body } else if body < 7 { body - 1 } else { body - 2 }
-  if y < 0 || y >= SIDE {
+  let top = if size.height > GRID { (size.height - GRID) / 2 } else { 0 }
+  let at = row - top
+  if at < 0 || at >= GRID {
     return @strip.Strip::blank(width, @style.Style::new())
   }
-  parts.push(self.row_text(y))
-  @strip.Strip::join(parts)
+  let left = if width > SPAN { (width - SPAN) / 2 } else { 0 }
+  @strip.Strip::join([
+    @strip.Strip::blank(left, @style.Style::new()),
+    self.grid_line(at),
+  ]).pad_to(width, @style.Style::new())
 }
 
 ///|
 impl @widget.Widget for Board with fn hint(_self, _size) {
-  @geom.Size::new(SIDE * 3 + 1, SIDE + 3)
+  @geom.Size::new(SPAN, GRID)
 }
 
 ///|
@@ -287,10 +298,38 @@ pub struct Screen {
 }
 
 ///|
+/// How many cells are still empty.
+pub fn Board::left(self : Board) -> Int32 {
+  self.cells.iter().filter(v => v == 0).count()
+}
+
+///|
 pub fn Screen::new() -> Screen {
   let board = Board::new()
+  let band = @theme.line(width => {
+    let note = if board.stage() == 1 {
+      "solved"
+    } else {
+      "\{board.left()} to fill"
+    }
+    @theme.band("moonetui", subject="sudoku", note~, width~)
+  })
+  let keys = @theme.line(width => {
+    @theme.keys(
+      [
+        ("arrows", "move"),
+        ("1–9", "write"),
+        ("0", "clear"),
+        ("r", "reset"),
+        ("q", "quit"),
+      ],
+      width~,
+    )
+  })
   let root = @app.column(0, [
-    @app.leaf(1, board, box=@layout.Box::new(extent=Frac(1))),
+    @app.leaf(1, band, box=@layout.Box::new(extent=Cells(1))),
+    @app.leaf(2, board, box=@layout.Box::new(extent=Frac(1))),
+    @app.leaf(3, keys, box=@layout.Box::new(extent=Cells(1))),
   ])
   { root, board, }
 }

@@ -7,7 +7,11 @@ import {
 }
 
 // Values
+pub const GRID : Int32 = 13
+
 pub const SIDE : Int32 = 9
+
+pub const SPAN : Int32 = 37
 
 pub fn sheet() -> @design.Stylesheet
 
@@ -24,6 +28,7 @@ pub struct Board {
 pub fn Board::cell(Self, Int32, Int32) -> Int32
 pub fn Board::clash(Self, Int32, Int32) -> Bool
 pub fn Board::cursor(Self) -> (Int32, Int32)
+pub fn Board::left(Self) -> Int32
 pub fn Board::new() -> Self
 pub fn Board::stage(Self) -> Int32
 pub fn Board::steer(Self, Int32, Int32) -> Unit
