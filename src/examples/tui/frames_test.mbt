@@ -2,71 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 ///|
-/// The UTF-16 units of `text` as hex, so what this test hands over survives the
-/// trip through a test runner unchanged.
-fn hex16(text : String) -> String {
-  let out = StringBuilder()
-  let digit = fn(v : Int32) {
-    if v < 10 {
-      (48 + v).unsafe_to_char()
-    } else {
-      (97 + v - 10).unsafe_to_char()
-    }
-  }
-  for i in 0..<text.length() {
-    let unit = text[i].to_int()
-    out.write_char(digit(unit / 0x1000 % 16))
-    out.write_char(digit(unit / 0x100 % 16))
-    out.write_char(digit(unit / 0x10 % 16))
-    out.write_char(digit(unit % 16))
-  }
-  out.to_string()
-}
-
-///|
-/// Whether the frames are announced at all. `moon test` prints what it was
-/// asked for — a report — and a frame is tens of kilobytes of hex, which is
-/// noise in a terminal that only wanted the count. CI sets `MOONETUI_INTEROP`
-/// and reads the lines from there.
-fn interop_wanted() -> Bool {
-  match @env.get_env_var("MOONETUI_INTEROP") {
-    Some(_) => true
-    None => false
-  }
-}
-
-///|
-/// Announces one frame of the demo: its name, the emulators that can model it,
-/// the bytes written since the demo started, and the rows it is meant to show.
-/// `scripts/verify_terminals.py` replays those bytes in two terminal emulators
-/// this repository has no part in; what they show has to be these rows.
-fn announce(
-  name : String,
-  size : @geom.Size,
-  stream : String,
-  rows : Array[String],
-) -> Unit {
-  if !interop_wanted() {
-    return
-  }
-  let line = StringBuilder()
-  line.write_string(
-    "interop\t" +
-    name +
-    "\tpyte,tmux\t" +
-    size.width.to_string() +
-    "\t" +
-    size.height.to_string() +
-    "\t" +
-    hex16(stream),
-  )
-  for row in rows {
-    line.write_string("\t" + hex16(row))
-  }
-  println(line.to_string())
-}
-
-///|
 /// One key of the demo's script, and what the demo must show once it has
 /// answered: the widget with the keyboard, the list's row, the bar's percent,
 /// the field's text, and whether the loop is still alive.
@@ -171,7 +106,7 @@ test "the demo answers keys, frame by frame" {
   ui.start()
   total.write_string(driver.output())
   driver.clear_output()
-  announce("tui/00 open", size, total.to_string(), ui.screen())
+  @frames.announce("tui/00 open", size, total.to_string(), ui.screen())
   assert_eq(ui.focused(), 6)
   assert_eq(demo.list.index(), 0)
   let mut alive = true
@@ -187,7 +122,7 @@ test "the demo answers keys, frame by frame" {
     total.write_string(driver.output())
     // Every frame is announced with the rows the demo means to show, so two
     // terminal emulators can be asked what the same bytes show.
-    announce(step.name, size, total.to_string(), ui.screen())
+    @frames.announce(step.name, size, total.to_string(), ui.screen())
     assert_eq(ui.focused(), step.focus)
     assert_eq(demo.list.index(), step.index)
     assert_eq(demo.bar.percent(), step.percent)

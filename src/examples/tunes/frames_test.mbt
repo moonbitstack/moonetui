@@ -2,61 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 ///|
-fn hex16(text : String) -> String {
-  let out = StringBuilder()
-  let digit = fn(v : Int32) {
-    if v < 10 {
-      (48 + v).unsafe_to_char()
-    } else {
-      (97 + v - 10).unsafe_to_char()
-    }
-  }
-  for i in 0..<text.length() {
-    let unit = text[i].to_int()
-    out.write_char(digit(unit / 0x1000 % 16))
-    out.write_char(digit(unit / 0x100 % 16))
-    out.write_char(digit(unit / 0x10 % 16))
-    out.write_char(digit(unit % 16))
-  }
-  out.to_string()
-}
-
-///|
-fn interop_wanted() -> Bool {
-  match @env.get_env_var("MOONETUI_INTEROP") {
-    Some(_) => true
-    None => false
-  }
-}
-
-///|
-fn announce(
-  name : String,
-  size : @geom.Size,
-  stream : String,
-  rows : Array[String],
-) -> Unit {
-  if !interop_wanted() {
-    return
-  }
-  let line = StringBuilder()
-  line.write_string(
-    "interop\t" +
-    name +
-    "\tpyte,tmux\t" +
-    size.width.to_string() +
-    "\t" +
-    size.height.to_string() +
-    "\t" +
-    hex16(stream),
-  )
-  for row in rows {
-    line.write_string("\t" + hex16(row))
-  }
-  println(line.to_string())
-}
-
-///|
 fn shot(
   ui : @app.App[@driver.Headless],
   driver : @driver.Headless,
@@ -68,7 +13,7 @@ fn shot(
   ui.refresh()
   ignore(ui.step())
   total.write_string(driver.output())
-  announce(name, size, total.to_string(), ui.screen())
+  @frames.announce(name, size, total.to_string(), ui.screen())
 }
 
 ///|
@@ -84,7 +29,7 @@ test "a needle moves, a pause holds it, and the end of a track is the next" {
   ui.start()
   total.write_string(driver.output())
   driver.clear_output()
-  announce("tunes/00 open", size, total.to_string(), ui.screen())
+  @frames.announce("tunes/00 open", size, total.to_string(), ui.screen())
   assert_true(player.playing())
   assert_eq(player.position(), 161)
   assert_eq(player.title(), "Aerial")

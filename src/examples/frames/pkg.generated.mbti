@@ -1,0 +1,17 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "moonbitstack/moonetui/examples/frames"
+
+import {
+  "moonbitstack/moonetui/geom",
+}
+
+// Values
+pub fn announce(String, @geom.Size, String, Array[String]) -> Unit
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits

@@ -16,5 +16,5 @@ import {
 // frames back.
 import {
   "moonbitstack/moonetui/driver",
-  "moonbitlang/core/env",
+  "moonbitstack/moonetui/examples/frames",
 } for "test"

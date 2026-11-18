@@ -11,5 +11,5 @@ import {
 import {
   "moonbitstack/moonetui/driver",
   "moonbitstack/moonetui/geom",
-  "moonbitlang/core/env",
+  "moonbitstack/moonetui/examples/frames",
 } for "test"

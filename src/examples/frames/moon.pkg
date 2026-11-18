@@ -1,0 +1,5 @@
+// The frame lines the example tests announce for `scripts/verify_terminals.py`.
+import {
+  "moonbitstack/moonetui/geom",
+  "moonbitlang/core/env",
+}
