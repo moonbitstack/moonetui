@@ -64,13 +64,15 @@ def cube256(n: int) -> tuple[int, int, int]:
 
 
 class Cell:
-    __slots__ = ("ch", "fg", "bg", "bold")
+    __slots__ = ("ch", "fg", "bg", "bold", "dim", "reverse")
 
     def __init__(self) -> None:
         self.ch = " "
         self.fg = None
         self.bg = None
         self.bold = False
+        self.dim = False
+        self.reverse = False
 
 
 def replay(stream: str, width: int, height: int) -> list[list[Cell]]:
@@ -78,6 +80,8 @@ def replay(stream: str, width: int, height: int) -> list[list[Cell]]:
     fg = None
     bg = None
     bold = False
+    dim = False
+    reverse = False
     row = 0
     col = 0
     i = 0
@@ -105,11 +109,17 @@ def replay(stream: str, width: int, height: int) -> list[list[Cell]]:
                     p = params[k]
                     if p == 0:
                         fg = bg = None
-                        bold = False
+                        bold = dim = reverse = False
                     elif p == 1:
                         bold = True
+                    elif p == 2:
+                        dim = True
                     elif p == 22:
-                        bold = False
+                        bold = dim = False
+                    elif p == 7:
+                        reverse = True
+                    elif p == 27:
+                        reverse = False
                     elif 30 <= p <= 37:
                         fg = BASIC[p - 30]
                     elif 90 <= p <= 97:
@@ -159,6 +169,8 @@ def replay(stream: str, width: int, height: int) -> list[list[Cell]]:
                     cell.fg = fg
                     cell.bg = bg
                     cell.bold = bold
+                    cell.dim = dim
+                    cell.reverse = reverse
             col += span
         i += 1
     return grid
@@ -262,6 +274,23 @@ def in_bold_face(ch: str) -> bool:
     return code < 0x2000 and not 0x2190 <= code <= 0x21FF
 
 
+INK = (0xC0, 0xCA, 0xF5)
+PAPER = (0x0B, 0x0E, 0x14)
+
+
+def colours(cell: Cell) -> tuple[tuple[int, int, int], tuple[int, int, int] | None]:
+    """The ink and the paper a terminal shows for a cell: dim halves the ink
+    towards the paper, reverse swaps the two."""
+    ink = cell.fg or INK
+    paper = cell.bg
+    if cell.dim:
+        under = paper or PAPER
+        ink = tuple((a + b) // 2 for a, b in zip(ink, under))
+    if cell.reverse:
+        return (paper or PAPER), ink
+    return ink, paper
+
+
 def draw_frame(frame: dict, size: int = 17, pad: int = 10, label: str = "") -> Image.Image:
     font = load_font(size)
     heavy = load_font(size, bold=True)
@@ -274,7 +303,7 @@ def draw_frame(frame: dict, size: int = 17, pad: int = 10, label: str = "") -> I
     image = Image.new(
         "RGB",
         (width * cell_w + pad * 2, height * cell_h + pad * 2 + label_h),
-        (0x0B, 0x0E, 0x14),
+        PAPER,
     )
     draw = ImageDraw.Draw(image)
     if label:
@@ -285,13 +314,13 @@ def draw_frame(frame: dict, size: int = 17, pad: int = 10, label: str = "") -> I
             cell = grid[y][x]
             px = pad + x * cell_w
             py = top + y * cell_h
-            if cell.bg:
+            fill, back = colours(cell)
+            if back is not None:
                 draw.rectangle(
-                    [px, py, px + cell_w - 1, py + cell_h - 1], fill=cell.bg
+                    [px, py, px + cell_w - 1, py + cell_h - 1], fill=back
                 )
             if cell.ch in (" ", ""):
                 continue
-            fill = cell.fg or (0xC0, 0xCA, 0xF5)
             face = heavy if cell.bold and in_bold_face(cell.ch) else font
             if wide is not None and unicodedata.east_asian_width(cell.ch) in ("W", "F"):
                 face = wide
