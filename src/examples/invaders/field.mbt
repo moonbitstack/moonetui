@@ -194,30 +194,103 @@ pub fn Field::steer(self : Field, step : Int32) -> Unit {
 }
 
 ///|
+let frame_style : @style.Style = @style.Style::new(fg=@theme.faint)
+
+///|
+/// A line written across the middle of the field for the title or the end of
+/// the game, or `None` on every other row.
+fn Field::words(self : Field, y : Int32) -> (String, @style.Style)? {
+  let middle = self.rows / 2
+  match self.stage {
+    Title =>
+      if y == middle - 1 {
+        Some(
+          ("I N V A D E R S", @style.Style::new(fg=@theme.accent, bold=true)),
+        )
+      } else if y == middle + 1 {
+        Some(("space to play", @style.Style::new(fg=@theme.muted)))
+      } else {
+        None
+      }
+    Over =>
+      if y == middle - 1 {
+        Some(("game over", @style.Style::new(fg=@theme.bad, bold=true)))
+      } else if y == middle + 1 {
+        Some(("r to play again", @style.Style::new(fg=@theme.muted)))
+      } else {
+        None
+      }
+    Playing => None
+  }
+}
+
+///|
+/// Row `y` of the field between its side rails.
+fn Field::inside(self : Field, y : Int32) -> @strip.Strip {
+  match self.words(y) {
+    Some((text, style)) => {
+      let used = @strip.str_cells(text)
+      let left = if self.cols > used { (self.cols - used) / 2 } else { 0 }
+      @strip.Strip::join([
+        @strip.Strip::blank(left, @style.Style::new()),
+        @strip.Strip::of(text, style),
+      ]).pad_to(self.cols, @style.Style::new())
+    }
+    None => {
+      let parts : Array[@strip.Strip] = []
+      for x in 0..<self.cols {
+        parts.push(self.cell(x, y))
+      }
+      @strip.Strip::join(parts)
+    }
+  }
+}
+
+///|
 impl @widget.Widget for Field with fn render_line(self, row, size) {
   let width = size.width
-  if row == 0 {
-    let word = match self.stage {
-      Title => "space to play"
-      Playing => "score " + self.score.to_string()
-      Over => "game over · r to play again"
-    }
-    return @strip.Strip::of(" " + word, @style.Style::new(fg=@theme.muted))
-  }
-  let y = row - 1
-  if y < 0 || y >= self.rows {
+  let tall = self.rows + 3
+  let top = if size.height > tall { (size.height - tall) / 2 } else { 0 }
+  let at = row - top
+  if at < 0 || at >= tall {
     return @strip.Strip::blank(width, @style.Style::new())
   }
-  let offset = if width > self.cols { (width - self.cols) / 2 } else { 0 }
-  let parts : Array[@strip.Strip] = []
-  if offset > 0 {
-    parts.push(@strip.Strip::blank(offset, @style.Style::new()))
+  let body = if at == 0 {
+    @strip.Strip::of(
+      "╭" + @theme.repeat("─", self.cols) + "╮",
+      frame_style,
+    )
+  } else if at == tall - 1 {
+    @strip.Strip::of(
+      "╰" + @theme.repeat("─", self.cols) + "╯",
+      frame_style,
+    )
+  } else if at == tall - 2 {
+    @strip.Strip::of(
+      "│" + @theme.repeat("┈", self.cols) + "│",
+      frame_style,
+    )
+  } else {
+    @strip.Strip::join([
+      @strip.Strip::of("│", frame_style),
+      self.inside(at - 1),
+      @strip.Strip::of("│", frame_style),
+    ])
   }
-  for x in 0..<self.cols {
-    parts.push(self.cell(x, y))
-  }
-  @strip.Strip::join(parts)
+  let wide = self.cols + 2
+  let left = if width > wide { (width - wide) / 2 } else { 0 }
+  @strip.Strip::join([@strip.Strip::blank(left, @style.Style::new()), body]).pad_to(
+    width,
+    @style.Style::new(),
+  )
 }
+
+///|
+/// The colour of an invader by its row: the back row the rarest, the front the
+/// coolest.
+let ranks : Array[@style.Colour] = [
+  @theme.accent_alt, @theme.accent, @theme.cool,
+]
 
 ///|
 fn Field::cell(self : Field, x : Int32, y : Int32) -> @strip.Strip {
@@ -234,14 +307,21 @@ fn Field::cell(self : Field, x : Int32, y : Int32) -> @strip.Strip {
       }
     None => ()
   }
+  // The block marches in two poses, one for each step it takes.
+  let pose = self.left % 2 == 0
   for i in 0..<24 {
     if self.alive[i] {
       let (ex, ey) = self.spot(i)
       if ey == y && (ex == x || ex + 1 == x) {
-        let glyph = if y / 2 % 2 == 0 { "▼" } else { "▽" }
+        let glyph = match (pose, ex == x) {
+          (true, true) => "◢"
+          (true, false) => "◣"
+          (false, true) => "◥"
+          (false, false) => "◤"
+        }
         return @strip.Strip::of(
           glyph,
-          @style.Style::new(fg=@theme.bad, bold=true),
+          @style.Style::new(fg=ranks[i / 8 % 3], bold=true),
         )
       }
     }
@@ -254,7 +334,7 @@ fn Field::cell(self : Field, x : Int32, y : Int32) -> @strip.Strip {
 
 ///|
 impl @widget.Widget for Field with fn hint(self, _size) {
-  @geom.Size::new(self.cols, self.rows + 1)
+  @geom.Size::new(self.cols + 2, self.rows + 3)
 }
 
 ///|
@@ -311,8 +391,24 @@ pub struct Screen {
 ///|
 pub fn Screen::new() -> Screen {
   let field = Field::new()
+  let band = @theme.line(width => {
+    let note = match field.stage {
+      Title => "space to play"
+      Playing => "score \{field.score} · lives \{field.lives}"
+      Over => "game over · score \{field.score}"
+    }
+    @theme.band("moonetui", subject="invaders", note~, width~)
+  })
+  let keys = @theme.line(width => {
+    @theme.keys(
+      [("←→", "move"), ("space", "fire"), ("r", "again"), ("q", "quit")],
+      width~,
+    )
+  })
   let root = @app.column(0, [
-    @app.leaf(1, field, box=@layout.Box::new(extent=Frac(1))),
+    @app.leaf(1, band, box=@layout.Box::new(extent=Cells(1))),
+    @app.leaf(2, field, box=@layout.Box::new(extent=Frac(1))),
+    @app.leaf(3, keys, box=@layout.Box::new(extent=Cells(1))),
   ])
   { root, field, }
 }
