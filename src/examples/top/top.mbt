@@ -111,9 +111,14 @@ fn repeat(glyph : String, count : Int32) -> String {
 }
 
 ///|
-fn bars(percent : Int32, width : Int32) -> String {
+/// A meter as a thin line: the reading in its colour, the rest as a hairline,
+/// so meters on neighbouring rows stay apart.
+fn bars(percent : Int32, width : Int32, style : @style.Style) -> @strip.Strip {
   let filled = width * percent / 100
-  repeat("█", filled) + repeat("·", width - filled)
+  @strip.Strip::join([
+    @strip.Strip::of(repeat("━", filled), style),
+    @strip.Strip::of(repeat("─", width - filled), @theme.edge),
+  ])
 }
 
 ///|
@@ -154,7 +159,7 @@ impl @widget.Widget for Monitor with fn render_line(self, row, size) {
     let load = core_load(body, self.tick)
     let left = @strip.Strip::join([
       @strip.Strip::of(" cpu" + body.to_string() + " ", label_style),
-      @strip.Strip::of(bars(load, left_width - 12), cpu_style),
+      bars(load, left_width - 12, cpu_style),
       @strip.Strip::of(" " + load.to_string() + "%", label_style),
     ])
     // The right side puts memory, swap and the two network charts beside them.
@@ -162,7 +167,7 @@ impl @widget.Widget for Monitor with fn render_line(self, row, size) {
       0 =>
         @strip.Strip::join([
           @strip.Strip::of(" mem ", label_style),
-          @strip.Strip::of(bars(memory(self.tick), right_width - 8), mem_style),
+          bars(memory(self.tick), right_width - 8, mem_style),
           @strip.Strip::of(
             " " + memory(self.tick).to_string() + "%",
             label_style,
@@ -171,13 +176,13 @@ impl @widget.Widget for Monitor with fn render_line(self, row, size) {
       1 =>
         @strip.Strip::join([
           @strip.Strip::of(" swp ", label_style),
-          @strip.Strip::of(bars(swap(self.tick), right_width - 8), swp_style),
+          bars(swap(self.tick), right_width - 8, swp_style),
           @strip.Strip::of(" " + swap(self.tick).to_string() + "%", label_style),
         ])
       2 =>
         @strip.Strip::join([
-          @strip.Strip::of(" net up ", label_style),
-          @strip.Strip::of(self.chart(right_width - 12, 0), net_style),
+          @strip.Strip::of(" net up   ", label_style),
+          @strip.Strip::of(self.chart(right_width - 14, 0), net_style),
         ])
       3 =>
         @strip.Strip::join([
@@ -217,14 +222,7 @@ impl @widget.Widget for Monitor with fn render_line(self, row, size) {
       @strip.Strip::of(pad(names[index], 15), value_style),
       @strip.Strip::of(pad(load.to_string() + "%", 5), style),
       @strip.Strip::of(pad(mem.to_string() + "%", 5), label_style),
-      @strip.Strip::of(
-        bars(load, 20),
-        if load > 70 {
-          hot_style
-        } else {
-          cpu_style
-        },
-      ),
+      bars(load, 20, if load > 70 { hot_style } else { cpu_style }),
     ])
   }
   @strip.Strip::blank(width, @style.default)
