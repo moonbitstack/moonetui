@@ -38,9 +38,17 @@ test "the gallery puts each demo on the stage as the menu moves to it" {
   ])
   gallery.attach(ui)
   ui.start()
-  // One screen for the whole run: each frame writes only what changed.
+  // One screen for the whole run: each frame writes only what changed. The
+  // opening frame and the first demo of each group go to the terminal check.
   let screen = @vt.Grid::new(100, 32)
+  let total = StringBuilder()
+  let size = @geom.Size::new(100, 32)
   let demos = @showcase.demos()
+  total.write_string(tty.output())
+  screen.write(tty.output())
+  tty.clear_output()
+  @frames.announce("gallery/00 open", size, total.to_string(), ui.screen())
+  let mut shots = 1
   for i in 1..<demos.length() {
     tty.push(b"\x1b[B")
     ignore(ui.step())
@@ -48,8 +56,23 @@ test "the gallery puts each demo on the stage as the menu moves to it" {
       gallery.react(ui, out)
     }
     ignore(ui.step())
+    total.write_string(tty.output())
     screen.write(tty.output())
     tty.clear_output()
+    if demos[i].group != demos[i - 1].group {
+      let at = if shots < 10 {
+        "0" + shots.to_string()
+      } else {
+        shots.to_string()
+      }
+      @frames.announce(
+        "gallery/" + at + " " + demos[i].name.to_lower(),
+        size,
+        total.to_string(),
+        ui.screen(),
+      )
+      shots = shots + 1
+    }
     assert_eq(gallery.at, i, msg=demos[i].name)
     let text = Array::makei(32, y => {
       Array::makei(100, x => screen.at(x, y).text).join("")

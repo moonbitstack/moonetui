@@ -35,7 +35,14 @@ pub fn Gallery::tree(self : Gallery) -> @app.Node {
   @app.column(10_000, [
     @app.leaf(
       10_001,
-      @widget.Header::new("moonetui gallery", note=demo.group.title() + " "),
+      @theme.line(width => {
+        @theme.band(
+          "moonetui",
+          subject="gallery",
+          note=demo.group.title(),
+          width~,
+        )
+      }),
       box=line(1),
     ),
     @app.row(10_002, [
@@ -57,11 +64,12 @@ pub fn Gallery::tree(self : Gallery) -> @app.Node {
     ]),
     @app.leaf(
       10_006,
-      @widget.Footer::new([
-        ("tab", "move focus"),
-        ("up down", "choose a demo"),
-        ("ctrl-c", "quit"),
-      ]),
+      @theme.line(width => {
+        @theme.keys(
+          [("↑↓", "demo"), ("tab", "focus"), ("q", "quit")],
+          width~,
+        )
+      }),
       box=line(1),
     ),
   ])
@@ -73,7 +81,7 @@ pub fn Gallery::sheet(self : Gallery) -> @design.Stylesheet {
   let sheet = @theme.sheet()
   sheet.add(
     @design.Sel::new(classes=["menu"]),
-    @design.Styles::new(border=Round),
+    @design.Styles::new(border=Round, padding=@geom.Spacing::horizontal(1)),
   )
   sheet.add(
     @design.Sel::new(classes=["menu"], focus=true),
