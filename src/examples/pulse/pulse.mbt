@@ -94,9 +94,6 @@ let faint : @style.Style = @style.Style::new(fg=@theme.muted)
 let line_style : @style.Style = @style.Style::new(fg=@theme.accent)
 
 ///|
-let area_style : @style.Style = @style.Style::new(fg=@theme.muted)
-
-///|
 let good_style : @style.Style = @style.Style::new(fg=@theme.good, bold=true)
 
 ///|
@@ -127,7 +124,7 @@ fn grouped(value : Int32) -> String {
 }
 
 ///|
-/// A horizontal gauge: filled cells, empty cells, and the reading.
+/// A horizontal gauge: the filled length, the rest, and the reading.
 fn gauge(
   label : String,
   percent : Int32,
@@ -138,8 +135,8 @@ fn gauge(
   let parts : Array[@strip.Strip] = [
     @strip.Strip::of(label, faint),
     @strip.Strip::of(" ", faint),
-    @strip.Strip::of(repeat("█", filled), style),
-    @strip.Strip::of(repeat("░", width - filled), area_style),
+    @strip.Strip::of(repeat("━", filled), style),
+    @strip.Strip::of(repeat("─", width - filled), @theme.edge),
     @strip.Strip::of(" " + percent.to_string() + "%", ink),
   ]
   @strip.Strip::join(parts)
@@ -239,8 +236,9 @@ fn Pulse::chart_row(
   total : Int32,
   width : Int32,
 ) -> @strip.Strip {
-  // A y axis on the left, then the window: the line where the reading is, a
-  // shade under it so the shape reads at a glance.
+  // A y axis on the left, then the window as a filled area. Each column is
+  // measured in eighths of a row, so the top cell of a column is a partial
+  // block and the trace climbs by an eighth rather than by a whole row.
   let axis = 6
   let span = width - axis - 1
   let most = self.top()
@@ -256,15 +254,23 @@ fn Pulse::chart_row(
     ""
   }
   let pad = 5 - label.length()
+  let tick = if offset == rows - 1 {
+    "└"
+  } else if label != "" {
+    "┤"
+  } else {
+    "│"
+  }
   let parts : Array[@strip.Strip] = [
     @strip.Strip::of(repeat(" ", if pad > 0 { pad } else { 0 }) + label, faint),
-    @strip.Strip::of(if offset == rows - 1 { "└" } else { "┤" }, faint),
+    @strip.Strip::of(tick, faint),
   ]
   let offset_in_window = if self.samples.length() > span {
     self.samples.length() - span
   } else {
     0
   }
+  let out = StringBuilder()
   for x in 0..<span {
     let index = x + offset_in_window
     let value = if index < self.samples.length() {
@@ -272,16 +278,19 @@ fn Pulse::chart_row(
     } else {
       0
     }
-    let y = if most == 0 { 0 } else { value * (rows - 1) / most }
-    if y == level {
-      parts.push(@strip.Strip::of("─", line_style))
-    } else if y < level {
-      parts.push(@strip.Strip::of("░", area_style))
-    } else {
-      parts.push(@strip.Strip::of(" ", faint))
-    }
+    let eighths = if most == 0 { 0 } else { value * rows * 8 / most }
+    let here = eighths - level * 8
+    out.write_string(
+      eighth(if here < 0 { 0 } else if here > 8 { 8 } else { here }),
+    )
   }
+  parts.push(@strip.Strip::of(out.to_string(), line_style))
   @strip.Strip::join(parts)
+}
+
+///|
+fn eighth(filled : Int32) -> String {
+  [" ", "▁", "▂", "▃", "▄", "▅", "▆", "▇", "█"][filled]
 }
 
 ///|
@@ -304,8 +313,8 @@ fn Pulse::table_row(
   @strip.Strip::join([
     @strip.Strip::of(" " + names[index], ink),
     @strip.Strip::of(repeat(" ", 20 - names[index].length()), faint),
-    @strip.Strip::of(repeat("█", share), style),
-    @strip.Strip::of(repeat("░", bar_width - share), area_style),
+    @strip.Strip::of(repeat("━", share), style),
+    @strip.Strip::of(repeat("─", bar_width - share), @theme.edge),
     @strip.Strip::of("  " + counts[index].to_string(), ink),
     @strip.Strip::of("  " + times[index], faint),
   ])
