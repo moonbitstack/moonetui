@@ -226,3 +226,17 @@ test "a scrollbar with nothing to scroll has no thumb" {
   let empty = @widget.Scrollbar::new()
   assert_eq(empty.thumb(5), (0, 0))
 }
+
+///|
+test "a chart's numbered axis reads high at the top and low at the bottom" {
+  let chart = @widget.Chart::new(
+    datasets=[@widget.Dataset::new("a", [(0.0, 0.0), (1.0, 6.0)])],
+    y=@widget.Axis::new(bounds=@widget.Bounds::new(low=0.0, high=6.0)),
+  )
+  let w : &@widget.Widget = chart
+  let marks = rows(w, size(20, 8))
+    .map(line => line.trim_start().to_owned())
+    .filter(line => line.length() > 0 && line[0] >= '0' && line[0] <= '9')
+  assert_eq(marks[0].has_prefix("6"), true)
+  assert_eq(marks[marks.length() - 1].has_prefix("0"), true)
+}

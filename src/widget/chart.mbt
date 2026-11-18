@@ -391,7 +391,7 @@ fn Chart::y_label(self : Chart, at : Int32, height : Int32) -> String {
   } else {
     1.0
   }
-  let value = bounds.high - (bounds.high - bounds.low) * part
+  let value = bounds.low + (bounds.high - bounds.low) * part
   trim_double(value)
 }
 
