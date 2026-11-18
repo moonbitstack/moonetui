@@ -72,10 +72,9 @@ fn shot(
 }
 
 ///|
-test "a page scrolls, and stops at the ends" {
-  let size = @geom.Size::new(88, 18)
+test "the page scrolls to its end and back, and the band and key bar stay put" {
+  let size = @geom.Size::new(88, 20)
   let screen = @read.Screen::new()
-  let doc = screen.doc
   let driver = @driver.Headless::new(size, tick=16)
   let ui = @app.App::new(driver, screen.root, sheet=@read.sheet(), quit=[
     @app.ctrl_c, @app.esc, @app.q,
@@ -85,13 +84,20 @@ test "a page scrolls, and stops at the ends" {
   total.write_string(driver.output())
   driver.clear_output()
   announce("read/00 open", size, total.to_string(), ui.screen())
-  assert_eq(doc.top(), 0)
-  // Past the end: the page stops where the last line ends, not in white space.
-  doc.scroll(100)
+  let opening = ui.screen()
+  assert_true(opening[0].contains("read"))
+  assert_true(opening[2].contains("moonetui"))
+  assert_true(opening[size.height - 1].contains("quit"))
+  // A table whose columns line up: the widget lays it out, the pipes are gone.
+  driver.push(b"[F")
   shot(ui, driver, total, "read/01 end", size)
-  assert_true(doc.top() > 0)
-  assert_true(doc.top() < @read.Doc::lines())
-  doc.to_start()
-  doc.scroll(-5)
-  assert_eq(doc.top(), 0)
+  let end = ui.screen()
+  assert_true(end[0] == opening[0])
+  assert_true(end[size.height - 1] == opening[size.height - 1])
+  assert_true(end[2] != opening[2])
+  assert_true(end.iter().any(row => row.contains("charts")))
+  assert_false(end.iter().any(row => row.contains("|:--")))
+  driver.push(b"[H")
+  shot(ui, driver, total, "read/02 back", size)
+  assert_eq(ui.screen(), opening)
 }
