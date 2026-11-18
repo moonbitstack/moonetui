@@ -257,3 +257,35 @@ pub fn header(title : String, note~ : String = "") -> @widget.Header {
 pub fn footer(keys : Array[(String, String)]) -> @widget.Footer {
   @widget.Footer::new(keys)
 }
+
+///|
+priv struct Line {
+  draw : (Int32) -> @strip.Strip
+}
+
+///|
+impl @widget.Widget for Line with fn render_line(self, _row, size) {
+  (self.draw)(size.width)
+}
+
+///|
+impl @widget.Widget for Line with fn hint(_self, size) {
+  @geom.Size::new(size.width, 1)
+}
+
+///|
+impl @widget.Widget for Line with fn handle(_self, _ctx, _msg) {
+  false
+}
+
+///|
+impl @widget.Widget for Line with fn focusable(_self) {
+  false
+}
+
+///|
+/// One row drawn by a function of its width: how a screen mounts the band or
+/// the key bar as a node of its own.
+pub fn line(draw : (Int32) -> @strip.Strip) -> &@widget.Widget {
+  Line::{ draw, }
+}

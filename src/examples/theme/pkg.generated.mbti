@@ -49,6 +49,8 @@ pub let ink : @style.Colour
 
 pub fn keys(Array[(String, String)], width~ : Int32) -> @strip.Strip
 
+pub fn line((Int32) -> @strip.Strip) -> &@widget.Widget
+
 pub let live : @style.Style
 
 pub let mark : @style.Style
