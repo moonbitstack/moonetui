@@ -29,17 +29,19 @@ pub struct Screen {
 ///|
 pub fn Screen::new() -> Screen {
   let field = Field::new()
-  let head = @theme.header("life", note="space pauses · r reseeds · . steps")
-  let foot = @theme.footer([
-    ("space", "pause"),
-    ("r", "reseed"),
-    (".", "step"),
-    ("esc", "quit"),
-  ])
+  let head = @theme.line(width => {
+    @theme.band("moonetui", subject="life", note="Conway's game", width~)
+  })
+  let foot = @theme.line(width => {
+    @theme.keys(
+      [("space", "pause"), ("r", "reseed"), (".", "step"), ("q", "quit")],
+      width~,
+    )
+  })
   let root = @app.column(0, [
-    @app.leaf(1, head, box=@layout.Box::new(extent=Cells(1)), name="Header"),
+    @app.leaf(1, head, box=@layout.Box::new(extent=Cells(1))),
     @app.leaf(2, field, box=@layout.Box::new(extent=Frac(1))),
-    @app.leaf(3, foot, box=@layout.Box::new(extent=Cells(1)), classes=["bar"]),
+    @app.leaf(3, foot, box=@layout.Box::new(extent=Cells(1))),
   ])
   { root, field, }
 }

@@ -35,20 +35,19 @@ pub struct Screen {
 ///|
 pub fn Screen::new() -> Screen {
   let board = Board::new()
-  let head = @theme.header(
-    "snake",
-    note="space starts · arrows turn · esc quits",
-  )
-  let foot = @theme.footer([
-    ("arrows", "turn"),
-    ("space", "pause"),
-    ("r", "again"),
-    ("esc", "quit"),
-  ])
+  let head = @theme.line(width => {
+    @theme.band("moonetui", subject="snake", note="space starts", width~)
+  })
+  let foot = @theme.line(width => {
+    @theme.keys(
+      [("arrows", "turn"), ("space", "pause"), ("r", "again"), ("q", "quit")],
+      width~,
+    )
+  })
   let root = @app.column(0, [
-    @app.leaf(1, head, box=@layout.Box::new(extent=Cells(1)), name="Header"),
+    @app.leaf(1, head, box=@layout.Box::new(extent=Cells(1))),
     @app.leaf(2, board, box=@layout.Box::new(extent=Frac(1))),
-    @app.leaf(3, foot, box=@layout.Box::new(extent=Cells(1)), classes=["bar"]),
+    @app.leaf(3, foot, box=@layout.Box::new(extent=Cells(1))),
   ])
   { root, board, }
 }

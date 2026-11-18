@@ -251,12 +251,16 @@ pub struct Screen {
 ///|
 pub fn Screen::new() -> Screen {
   let donut = Donut::new()
-  let head = @theme.header("donut", note="a torus, turning · space holds")
-  let foot = @theme.footer([("space", "hold"), ("esc", "quit")])
+  let head = @theme.line(width => {
+    @theme.band("moonetui", subject="donut", note="a torus, turning", width~)
+  })
+  let foot = @theme.line(width => {
+    @theme.keys([("space", "hold"), ("q", "quit")], width~)
+  })
   let root = @app.column(0, [
-    @app.leaf(1, head, box=@layout.Box::new(extent=Cells(1)), name="Header"),
+    @app.leaf(1, head, box=@layout.Box::new(extent=Cells(1))),
     @app.leaf(2, donut, box=@layout.Box::new(extent=Frac(1))),
-    @app.leaf(3, foot, box=@layout.Box::new(extent=Cells(1)), classes=["bar"]),
+    @app.leaf(3, foot, box=@layout.Box::new(extent=Cells(1))),
   ])
   { root, donut, }
 }
