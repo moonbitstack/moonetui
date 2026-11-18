@@ -277,9 +277,6 @@ let palette : Array[@style.Style] = [
 ]
 
 ///|
-let hud_style : @style.Style = @style.Style::new(fg=@theme.muted)
-
-///|
 fn Grid::colour(self : Grid, value : Int32) -> @style.Style {
   ignore(self)
   if value <= 0 {
@@ -289,58 +286,163 @@ fn Grid::colour(self : Grid, value : Int32) -> @style.Style {
 }
 
 ///|
+/// The rows the board takes: the well's frame above and below its rows.
+pub const ROWS : Int32 = TALL + 2
+
+///|
+/// The columns: the well two columns to a cell inside its frame, a gutter, and
+/// the panel beside it.
+pub const COLS : Int32 = WIDE * 2 + 2 + 3 + PANEL
+
+///|
+const PANEL : Int32 = 12
+
+///|
+let frame_style : @style.Style = @style.Style::new(fg=@theme.faint)
+
+///|
+let label_style : @style.Style = @style.Style::new(fg=@theme.muted)
+
+///|
+let value_style : @style.Style = @style.Style::new(fg=@theme.ink, bold=true)
+
+///|
+/// What the piece under the cursor, a settled block or the empty well shows at
+/// a cell.
+fn Grid::block(self : Grid, x : Int32, y : Int32) -> @strip.Strip {
+  let piece = if self.stage == Title { [] } else { self.piece() }
+  if piece.iter().any(cell => cell == (x, y)) {
+    return @strip.Strip::of("██", self.colour(self.kind + 1))
+  }
+  let value = self.cells[y * WIDE + x]
+  if value > 0 {
+    @strip.Strip::of("██", self.colour(value))
+  } else {
+    @strip.Strip::of(" ·", ghost_style)
+  }
+}
+
+///|
+/// The well's row `y`, or a line of the title or the end of the game written
+/// across it.
+fn Grid::well(self : Grid, y : Int32) -> @strip.Strip {
+  let middle = TALL / 2
+  let words = match self.stage {
+    Title =>
+      if y == middle - 1 {
+        Some(("B L O C K S", @style.Style::new(fg=@theme.accent, bold=true)))
+      } else if y == middle + 1 {
+        Some(("space to play", label_style))
+      } else {
+        None
+      }
+    Over =>
+      if y == middle - 1 {
+        Some(("game over", @style.Style::new(fg=@theme.bad, bold=true)))
+      } else if y == middle + 1 {
+        Some(("r to play again", label_style))
+      } else {
+        None
+      }
+    Playing => None
+  }
+  match words {
+    Some((text, style)) => {
+      let room = WIDE * 2
+      let used = @strip.str_cells(text)
+      let left = if room > used { (room - used) / 2 } else { 0 }
+      @strip.Strip::join([
+        @strip.Strip::blank(left, @style.Style::new()),
+        @strip.Strip::of(text, style),
+      ]).pad_to(room, @style.Style::new())
+    }
+    None => {
+      let parts : Array[@strip.Strip] = []
+      for x in 0..<WIDE {
+        parts.push(self.block(x, y))
+      }
+      @strip.Strip::join(parts)
+    }
+  }
+}
+
+///|
+/// The panel beside the well: the next piece, then the score, the lines and the
+/// level, each a muted label over its value.
+fn Grid::panel(self : Grid, at : Int32) -> @strip.Strip {
+  let label = (text : String) => @strip.Strip::of(text, label_style)
+  let value = (n : Int32) => @strip.Strip::of(n.to_string(), value_style)
+  let next = shape(self.next)
+  let preview = (y : Int32) => {
+    let parts : Array[@strip.Strip] = []
+    for x in 0..<4 {
+      parts.push(
+        if next.iter().any(cell => cell == (x, y)) {
+          @strip.Strip::of("██", palette[self.next % 7])
+        } else {
+          @strip.Strip::blank(2, @style.Style::new())
+        },
+      )
+    }
+    @strip.Strip::join(parts)
+  }
+  let line = match at {
+    1 => label("next")
+    3 =>
+      if self.stage == Title {
+        @strip.Strip::blank(0, @style.Style::new())
+      } else {
+        preview(0)
+      }
+    4 =>
+      if self.stage == Title {
+        @strip.Strip::blank(0, @style.Style::new())
+      } else {
+        preview(1)
+      }
+    7 => label("score")
+    8 => value(self.score)
+    10 => label("lines")
+    11 => value(self.lines)
+    13 => label("level")
+    14 => value(self.level)
+    _ => @strip.Strip::blank(0, @style.Style::new())
+  }
+  line.pad_to(PANEL, @style.Style::new())
+}
+
+///|
 impl @widget.Widget for Grid with fn render_line(self, row, size) {
   let width = size.width
-  if row == 0 {
-    let word = match self.stage {
-      Title => "space to play"
-      Playing =>
-        "score " +
-        self.score.to_string() +
-        " · lines " +
-        self.lines.to_string() +
-        " · level " +
-        self.level.to_string()
-      Over => "game over · r to play again"
-    }
-    return @strip.Strip::of(" " + word, hud_style)
-  }
-  let y = row - 1
-  if y < 0 || y >= TALL {
+  let top = if size.height > ROWS { (size.height - ROWS) / 2 } else { 0 }
+  let at = row - top
+  if at < 0 || at >= ROWS {
     return @strip.Strip::blank(width, @style.Style::new())
   }
-  let box = WIDE * 2
-  let offset = if width > box { (width - box) / 2 } else { 0 }
-  let parts : Array[@strip.Strip] = []
-  if offset > 0 {
-    parts.push(@strip.Strip::blank(offset, @style.Style::new()))
+  let inner = WIDE * 2
+  let well = if at == 0 {
+    @strip.Strip::of("╭" + @theme.repeat("─", inner) + "╮", frame_style)
+  } else if at == ROWS - 1 {
+    @strip.Strip::of("╰" + @theme.repeat("─", inner) + "╯", frame_style)
+  } else {
+    @strip.Strip::join([
+      @strip.Strip::of("│", frame_style),
+      self.well(at - 1),
+      @strip.Strip::of("│", frame_style),
+    ])
   }
-  let piece = if self.stage == Title { [] } else { self.piece() }
-  for x in 0..<WIDE {
-    let value = self.cells[y * WIDE + x]
-    let mut in_piece = false
-    let mut piece_kind = 0
-    for cell in piece {
-      let (px, py) = cell
-      if px == x && py == y {
-        in_piece = true
-        piece_kind = self.kind + 1
-      }
-    }
-    if in_piece {
-      parts.push(@strip.Strip::of("██", self.colour(piece_kind)))
-    } else if value > 0 {
-      parts.push(@strip.Strip::of("██", self.colour(value)))
-    } else {
-      parts.push(@strip.Strip::of("  ", ghost_style))
-    }
-  }
-  @strip.Strip::join(parts)
+  let left = if width > COLS { (width - COLS) / 2 } else { 0 }
+  @strip.Strip::join([
+    @strip.Strip::blank(left, @style.Style::new()),
+    well,
+    @strip.Strip::blank(3, @style.Style::new()),
+    self.panel(at),
+  ]).pad_to(width, @style.Style::new())
 }
 
 ///|
 impl @widget.Widget for Grid with fn hint(_self, _size) {
-  @geom.Size::new(WIDE * 2, TALL + 1)
+  @geom.Size::new(COLS, ROWS)
 }
 
 ///|
@@ -407,8 +509,30 @@ pub struct Screen {
 ///|
 pub fn Screen::new() -> Screen {
   let grid = Grid::new()
+  let band = @theme.line(width => {
+    let note = match grid.stage() {
+      Title => "space to play"
+      Playing => "level \{grid.level()}"
+      Over => "game over"
+    }
+    @theme.band("moonetui", subject="blocks", note~, width~)
+  })
+  let keys = @theme.line(width => {
+    @theme.keys(
+      [
+        ("←→", "move"),
+        ("↑", "turn"),
+        ("↓ space", "drop"),
+        ("r", "again"),
+        ("q", "quit"),
+      ],
+      width~,
+    )
+  })
   let root = @app.column(0, [
-    @app.leaf(1, grid, box=@layout.Box::new(extent=Frac(1))),
+    @app.leaf(1, band, box=@layout.Box::new(extent=Cells(1))),
+    @app.leaf(2, grid, box=@layout.Box::new(extent=Frac(1))),
+    @app.leaf(3, keys, box=@layout.Box::new(extent=Cells(1))),
   ])
   { root, grid, }
 }

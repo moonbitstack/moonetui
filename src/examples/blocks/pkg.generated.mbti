@@ -7,6 +7,10 @@ import {
 }
 
 // Values
+pub const COLS : Int32 = 37
+
+pub const ROWS : Int32 = 20
+
 pub const TALL : Int32 = 18
 
 pub const WIDE : Int32 = 10
