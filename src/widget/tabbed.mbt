@@ -17,6 +17,16 @@ pub fn TabbedContent::new(
 }
 
 ///|
+/// Tabbed content over a tab bar built by the caller, for a bar styled other
+/// than `Tabs::new`'s defaults. Pane `i` shows under tab `i`.
+pub fn TabbedContent::from_tabs(
+  tabs : Tabs,
+  panes : Array[&Widget],
+) -> TabbedContent {
+  { tabs, panes, }
+}
+
+///|
 pub fn TabbedContent::active(self : TabbedContent) -> Int32 {
   self.tabs.active()
 }

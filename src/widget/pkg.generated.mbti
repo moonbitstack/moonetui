@@ -1619,6 +1619,7 @@ pub struct TabbedContent {
 pub fn TabbedContent::activate(Self, Int32) -> Unit
 pub fn TabbedContent::active(Self) -> Int32
 pub fn TabbedContent::focusable(Self) -> Bool
+pub fn TabbedContent::from_tabs(Tabs, Array[&Widget]) -> Self
 pub fn TabbedContent::handle(Self, Ctx, Msg) -> Bool
 pub fn TabbedContent::hint(Self, @geom.Size) -> @geom.Size
 pub fn TabbedContent::new(labels? : Array[String], panes? : Array[&Widget], active? : Int32) -> Self

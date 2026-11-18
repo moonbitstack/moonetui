@@ -107,3 +107,24 @@ test "a focused tabbed content hands focus to the pane a click switches to" {
   ignore(press(w, 1, at, mouse(Down, 1, 0)))
   assert_eq(rows(w, at)[2], focused_a)
 }
+
+///|
+test "tabbed content keeps the styles of a tab bar it is given" {
+  let lit = @style.Style::new(fg=@style.blue)
+  let tabs = @widget.Tabs::new(labels=["one", "two"], bar_highlight=lit)
+  let box = @widget.TabbedContent::from_tabs(tabs, [
+    @widget.Static::new("AAA"),
+    @widget.Static::new("BBB"),
+  ])
+  let w : &@widget.Widget = box
+  assert_eq(rows(w, size(10, 3))[2], "AAA       ")
+  let bar = w.render_line(1, size(10, 1))
+  assert_true(bar.segs.iter().any(seg => seg.style == lit))
+  let plain = @widget.TabbedContent::new(labels=["one", "two"], panes=[
+    @widget.Static::new("AAA"),
+  ])
+  let other : &@widget.Widget = plain
+  assert_false(
+    other.render_line(1, size(10, 1)).segs.iter().any(seg => seg.style == lit),
+  )
+}
