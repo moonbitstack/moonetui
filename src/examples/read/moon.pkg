@@ -2,9 +2,7 @@
 import {
   "moonbitstack/moonetui/app",
   "moonbitstack/moonetui/design",
-  "moonbitstack/moonetui/geom",
   "moonbitstack/moonetui/layout",
-  "moonbitstack/moonetui/strip",
   "moonbitstack/moonetui/style",
   "moonbitstack/moonetui/widget",
   "moonbitstack/moonetui/examples/theme",
@@ -12,5 +10,6 @@ import {
 
 import {
   "moonbitstack/moonetui/driver",
+  "moonbitstack/moonetui/geom",
   "moonbitlang/core/env",
 } for "test"

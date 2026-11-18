@@ -72,33 +72,6 @@ pub fn page() -> @widget.Markdown {
 }
 
 ///|
-/// One row drawn by a function of the width: the band at the top, the key bar
-/// at the foot.
-priv struct Row {
-  draw : (Int32) -> @strip.Strip
-}
-
-///|
-impl @widget.Widget for Row with fn render_line(self, _row, size) {
-  (self.draw)(size.width)
-}
-
-///|
-impl @widget.Widget for Row with fn hint(_self, size) {
-  @geom.Size::new(size.width, 1)
-}
-
-///|
-impl @widget.Widget for Row with fn handle(_self, _ctx, _msg) {
-  false
-}
-
-///|
-impl @widget.Widget for Row with fn focusable(_self) {
-  false
-}
-
-///|
 pub fn sheet() -> @design.Stylesheet {
   @theme.sheet()
 }
@@ -112,24 +85,20 @@ pub struct Screen {
 ///|
 pub fn Screen::new() -> Screen {
   let page = page()
-  let band : Row = {
-    draw: width => {
-      @theme.band("moonetui", subject="read", note="README.md", width~)
-    },
-  }
-  let keys : Row = {
-    draw: width => {
-      @theme.keys(
-        [
-          ("↑↓", "line"),
-          ("pgup pgdn", "page"),
-          ("home end", "ends"),
-          ("q", "quit"),
-        ],
-        width~,
-      )
-    },
-  }
+  let band = @theme.line(width => {
+    @theme.band("moonetui", subject="read", note="README.md", width~)
+  })
+  let keys = @theme.line(width => {
+    @theme.keys(
+      [
+        ("↑↓", "line"),
+        ("pgup pgdn", "page"),
+        ("home end", "ends"),
+        ("q", "quit"),
+      ],
+      width~,
+    )
+  })
   let root = @app.column(0, [
     @app.leaf(1, band, box=@layout.Box::new(extent=Cells(1))),
     @app.leaf(
