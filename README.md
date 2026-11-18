@@ -43,6 +43,7 @@ moon add moonbitstack/moonetui
 ```
 moon run --target native src/examples/gallery   # every widget and every style, live
 moon run --target native src/examples/monitor   # a complete app: tabs, timers, a command line
+moon run --target native src/examples/tui/main      # the starter: a list, a log, a bar and a field
 moon run --target native src/examples/snake/main    # a game: arrows turn, space pauses
 moon run --target native src/examples/life/main     # Conway's life, a generation a frame
 moon run --target native src/examples/game2048/main # 2048: arrows slide, r restarts
@@ -71,9 +72,9 @@ moon run --target native examples/dbmux/src/main -- --demo   # a database client
 moon run --target native examples/mbtjj/src/main             # a Jujutsu client, read from the repository you run it in
 ```
 
-`src/examples/dbmux/` holds the screen the `tui` example runs, in a package of
-its own: a main package cannot carry tests the checker accepts, and the frame
-tests drive the same tree the example does.
+`src/examples/tui/` holds the starter screen and `src/examples/tui/main` runs it:
+a main package cannot carry tests the checker accepts, so the frame tests drive
+the same tree from the package beside it.
 
 `examples/` holds two programs, each a module of its own:
 

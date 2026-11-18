@@ -1,5 +1,5 @@
 // Generated using `moon info`, DON'T EDIT IT
-package "moonbitstack/moonetui/examples/dbmux"
+package "moonbitstack/moonetui/examples/tui"
 
 import {
   "moonbitstack/moonetui/app",

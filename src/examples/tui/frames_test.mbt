@@ -156,7 +156,7 @@ fn steps() -> Array[Step] {
 ///|
 test "the demo answers keys, frame by frame" {
   let size = @geom.Size::new(80, 24)
-  let demo = @dbmux.Demo::new()
+  let demo = @tui.Demo::new()
   // One chunk per key and an empty one after it: a key's frame is drawn on the
   // step after its handler has answered, which is what a reader sees.
   let script : Array[Bytes] = []
@@ -166,7 +166,7 @@ test "the demo answers keys, frame by frame" {
     script.push(b"")
   }
   let driver = @driver.Headless::new(size, script~, tick=16)
-  let ui = @app.App::new(driver, demo.root, sheet=@dbmux.sheet())
+  let ui = @app.App::new(driver, demo.root, sheet=@tui.sheet())
   let total = StringBuilder()
   ui.start()
   total.write_string(driver.output())

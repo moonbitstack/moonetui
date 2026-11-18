@@ -31,6 +31,8 @@ fn dial(bar : @widget.Progress, field : @widget.Input) -> @app.Node {
     ],
     cols=2,
     gutter=1,
+    box=@layout.Box::new(extent=Cells(5)),
+    classes=["framed"],
   )
 }
 
@@ -47,26 +49,39 @@ pub struct Demo {
 
 ///|
 pub fn Demo::new() -> Demo {
-  let head = @theme.header("moonetui", note="esc · q to quit")
+  let head = @theme.line(width => {
+    @theme.band(
+      "moonetui",
+      subject="tui",
+      note="a list, a log, a bar and a field",
+      width~,
+    )
+  })
   let list = @widget.ListView::new([
     "alpha", "beta", "gamma", "delta", "epsilon", "中文也对齐",
   ])
   let field = @widget.Input::new(placeholder="type here")
   let bar = @widget.Progress::new(total=100)
-  let foot = @theme.footer([
-    ("tab", "next"),
-    ("up down", "move"),
-    ("enter", "choose"),
-    ("wheel", "scroll"),
-  ])
+  let foot = @theme.line(width => {
+    @theme.keys(
+      [
+        ("tab", "next"),
+        ("↑↓", "move"),
+        ("enter", "choose"),
+        ("wheel", "scroll"),
+        ("q", "quit"),
+      ],
+      width~,
+    )
+  })
   bar.set(35)
   let root = @app.column(0, [
-    @app.leaf(1, head, box=@layout.Box::new(extent=Cells(1)), name="Header"),
+    @app.leaf(1, head, box=@layout.Box::new(extent=Cells(1))),
     @app.scroll(6, pane(list), box=@layout.Box::new(extent=Frac(1)), classes=[
       "framed",
     ]),
     dial(bar, field),
-    @app.leaf(5, foot, box=@layout.Box::new(extent=Cells(1)), classes=["bar"]),
+    @app.leaf(5, foot, box=@layout.Box::new(extent=Cells(1))),
   ])
   { root, list, field, bar, }
 }
