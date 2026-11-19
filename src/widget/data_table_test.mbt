@@ -311,3 +311,28 @@ test "data table scrolls a page with the wheel" {
   assert_eq(press(w, 1, at, mouse(ScrollUp, 0, 0)), [])
   assert_eq(press(w, 1, at, mouse(Up, 0, 0)), [])
 }
+
+///|
+test "data table draws a coloured cursor over a striped row" {
+  let ground = @style.Rgb(0x7a, 0xa2, 0xf7)
+  let table = @widget.DataTable::new(
+    show_row_labels=false,
+    zebra=true,
+    cursor_style=@style.Style::new(bg=ground),
+    even_style=@style.Style::new(bg=@style.Rgb(0x12, 0x17, 0x22)),
+    odd_style=@style.Style::new(bg=@style.Rgb(0x30, 0x30, 0x30)),
+  )
+  ignore(table.add_column("Name"))
+  ignore(table.add_row(["Paul"]))
+  ignore(table.add_row(["Jessica"]))
+  let w : &@widget.Widget = table
+  for row in 1..<=2 {
+    table.move_cursor(row=row - 1, col=0)
+    let line = w.render_line(row, size(12, 3))
+    assert_true(
+      line.segs
+      .iter()
+      .any(seg => seg.text.contains("a") && seg.style.bg == ground),
+    )
+  }
+}

@@ -383,6 +383,8 @@ fn DataTable::cell_hits(
 }
 
 ///|
+/// The style of one cell: the row's own, with the cursor or the hover laid over
+/// it, so a cursor with a colour of its own is not hidden by a striped row.
 fn DataTable::cell_style(
   self : DataTable,
   row : Int32,
@@ -391,11 +393,11 @@ fn DataTable::cell_style(
 ) -> @style.Style {
   if self.show_cursor &&
     self.cell_hits(row, col, self.cursor_row, self.cursor_col) {
-    return self.cursor_style.merge(base)
+    return base.merge(self.cursor_style)
   }
   if self.hover_row >= 0 &&
     self.cell_hits(row, col, self.hover_row, self.hover_col) {
-    return self.hover_style.merge(base)
+    return base.merge(self.hover_style)
   }
   base
 }
@@ -478,7 +480,7 @@ pub impl Widget for DataTable with fn render_line(self, row, size) {
       let style = if self.cursor_type == Column &&
         self.show_cursor &&
         i == self.cursor_col {
-        self.cursor_style.merge(self.header_style)
+        self.header_style.merge(self.cursor_style)
       } else {
         self.header_style
       }
