@@ -76,3 +76,22 @@ test "every action has a name and can be parsed back" {
     assert_eq(@keymap.Action::parse(action.name()), Some(action))
   }
 }
+
+///|
+test "a keymap file sets the editor's carets, and names the one it does not know" {
+  let keymap = @keymap.Keymap::default().over(
+    "[caret]\nnormal = \"underline\"\nblink = false\n",
+  )
+  assert_eq(keymap.caret_normal, @widget.Underline(blink=false))
+  assert_eq(keymap.caret_insert, @widget.Bar(blink=false))
+  let kept = @keymap.Keymap::default().over("[keys]\nsave = \"C-w\"\n")
+  assert_eq(kept.caret_normal, @widget.Block(blink=true))
+  let refused = try
+    @keymap.Keymap::default().over("[caret]\ninsert = \"beam\"\n")
+  catch {
+    _ => true
+  } noraise {
+    _ => false
+  }
+  assert_true(refused)
+}

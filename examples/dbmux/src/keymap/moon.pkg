@@ -3,6 +3,7 @@ import {
   "moonbitlang/core/json",
   "moonbitstack/moontoml",
   "moonbitstack/moonetui/event",
+  "moonbitstack/moonetui/widget",
   "moonbitstack/dbmux/config",
 }
 

@@ -129,12 +129,15 @@ save = "C-w"
 columns = "h"
 ```
 
-A keymap file rebinds any of them by action name:
+The editor's cursor is the terminal's own, and `[caret]` picks its shape for each of the
+editor's modes: `terminal` keeps the one the terminal is set to, `block`, `underline` and `bar`
+are the three it can draw, and `blink` applies to both. Vim's pair is the default:
 
 ```toml
-[keys]
-save = "C-w"
-filter = "/"
+[caret]
+normal = "block"
+insert = "bar"
+blink = true
 ```
 
 ## Safety

@@ -2,29 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 ///|
-/// The stylesheet: a chrome bar, framed panes, and a heavy frame around the
-/// pane that has the keyboard.
-fn sheet() -> @design.Stylesheet {
-  let sheet = @design.Stylesheet::new()
-  sheet.add(
-    @design.Sel::new(),
-    @design.Styles::new(text=@style.Style::new(fg=@style.bright_white)),
-  )
-  sheet.add(
-    @design.Sel::new(name="Header"),
-    @design.Styles::new(text=@style.Style::new(bold=true, fg=@style.cyan)),
-  )
-  sheet.add(
-    @design.Sel::new(classes=["framed"]),
-    @design.Styles::new(
-      border=@design.Round,
-      padding=@geom.Spacing::horizontal(1),
-    ),
-  )
-  sheet
-}
-
-///|
 /// What the window is looking at: a SQL session, or a Redis one. Both answer
 /// the same commands — open, reload, run, save — with what each can do, so the
 /// window itself does not branch on the engine.
@@ -675,7 +652,7 @@ async fn[D : @driver.Driver] drive(
   state : @shell.State,
   frames : Int32,
 ) -> Unit {
-  let ui = @app.App::new(driver, screen.node(), sheet=sheet(), quit=[
+  let ui = @app.App::new(driver, screen.node(), sheet=@ui.sheet(), quit=[
     @app.ctrl_c, @app.esc, @app.q,
   ])
   ui.start()

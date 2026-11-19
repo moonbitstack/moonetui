@@ -17,4 +17,5 @@ supported_targets = "native"
 
 import {
   "moonbitstack/moonetui/driver",
+  "moonbitstack/moonetui/examples/frames",
 } for "test"

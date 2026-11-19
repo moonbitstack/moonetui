@@ -34,7 +34,6 @@ pub struct Router {
   pane : Int32
   state : @shell.State
   bus : Bus
-  list : @widget.ListView
   mut table : @widget.DataTable
   editor : Editor
   style : @style.Style
@@ -43,21 +42,16 @@ pub struct Router {
 }
 
 ///|
-pub fn Router::new(
-  pane : Int32,
-  state : @shell.State,
-  list : @widget.ListView,
-) -> Router {
+pub fn Router::new(pane : Int32, state : @shell.State) -> Router {
   {
     pane,
     state,
     bus: Bus::new(),
-    list,
-    table: @widget.DataTable::new(zebra=true),
+    table: grid_table(active=false),
     editor: Editor::new(),
-    style: @style.Style::new(fg=@style.bright_white),
-    cursor_style: @style.Style::new(reverse=true),
-    dim_style: @style.Style::new(fg=@style.bright_black),
+    style: body,
+    cursor_style: cursor,
+    dim_style: quiet,
   }
 }
 
@@ -79,13 +73,18 @@ pub fn Router::sync(self : Router) -> Unit {
   match self.state.grid_of(self.pane) {
     None => ()
     Some(grid) => {
-      let table = @widget.DataTable::new(zebra=true)
+      let table = grid_table(active=self.has_keys())
       let widths = column_widths(grid)
       let mut at = 0
       for column in grid.visible() {
         let mark = grid.sort_mark(column)
         let label = if mark == "" { column } else { column + " " + mark }
-        ignore(table.add_column(label, width=widths[at]))
+        let align : @widget.Align = if numeric(grid, column) {
+          Right
+        } else {
+          Left
+        }
+        ignore(table.add_column(label, width=widths[at], align~))
         at = at + 1
       }
       for row in 0..<grid.row_count() {
@@ -130,14 +129,52 @@ fn column_widths(grid : @table.Grid) -> Array[Int32] {
 }
 
 ///|
+/// Whether this pane is the one the keys go to, with the grid in front.
+fn Router::has_keys(self : Router) -> Bool {
+  self.state.pane == self.pane && self.state.focus is @shell.Focus::Grid
+}
+
+///|
+/// A column every value of which on this page is a number reads from the
+/// right, so the digits of a total line up.
+fn numeric(grid : @table.Grid, column : String) -> Bool {
+  let mut seen = false
+  for row in 0..<grid.row_count() {
+    let cell = grid.cell(row, column)
+    if cell.is_null || cell.text == "" {
+      continue
+    }
+    if !is_number(cell.text) {
+      return false
+    }
+    seen = true
+  }
+  seen
+}
+
+///|
+fn is_number(text : String) -> Bool {
+  let mut digits = 0
+  let mut at = 0
+  for c in text {
+    match c {
+      '0'..<='9' => digits = digits + 1
+      '-' | '+' if at == 0 => ()
+      '.' | ',' | '_' => ()
+      _ => return false
+    }
+    at = at + 1
+  }
+  digits > 0
+}
+
+///|
 /// Put the cursor where the state says it is, after a key moved it.
 fn Router::follow(self : Router) -> Unit {
   match self.state.grid_of(self.pane) {
     None => ()
-    Some(grid) => {
+    Some(grid) =>
       self.table.move_cursor(row=grid.cursor_row, col=grid.cursor_col)
-      self.list.select(self.state.tree_at)
-    }
   }
 }
 
@@ -214,14 +251,12 @@ pub fn Router::press(self : Router, key : String) -> Bool {
       "j" | "down" => {
         if self.state.tree_at + 1 < self.state.tables.length() {
           self.state.tree_at = self.state.tree_at + 1
-          self.list.select(self.state.tree_at)
         }
         return true
       }
       "k" | "up" => {
         if self.state.tree_at > 0 {
           self.state.tree_at = self.state.tree_at - 1
-          self.list.select(self.state.tree_at)
         }
         return true
       }
@@ -238,40 +273,58 @@ pub fn Router::press(self : Router, key : String) -> Bool {
 pub extend Router with @widget.Widget::{focusable, handle, hint, render_line}
 
 ///|
-/// The strip of tabs above the pane: every tab of this pane, the showing one
-/// reversed. It takes the first line; the grid starts under it.
+/// The head of the pane: its tabs, the showing one raised, a hairline to the
+/// edge, and how many rows the page holds. The pane with the keys raises its
+/// tab in the accent.
 fn Router::tabs_line(self : Router, width : Int32) -> @strip.Strip {
-  let parts : Array[@strip.Strip] = []
+  let segs : Array[@strip.Seg] = []
+  let active = self.state.pane == self.pane
+  let mut rows = ""
   match self.state.pane_of(self.pane) {
     None => ()
     Some(pane) => {
       let mut i = 0
       for tab in pane.tabs {
         let label = " " + (i + 1).to_string() + " " + tab.table + " "
-        let style = if i == pane.tab {
-          @style.Style::new(reverse=true)
+        let style = if i != pane.tab {
+          quiet
+        } else if active {
+          cursor
         } else {
-          @style.Style::new(fg=@style.bright_black)
+          picked
         }
-        parts.push(@strip.Strip::of(label, style))
+        segs.push(@strip.Seg::new(label, style))
+        segs.push(@strip.Seg::new(" ", body))
         i = i + 1
       }
     }
   }
-  if parts.length() == 0 {
-    parts.push(
-      @strip.Strip::of(
-        " no tab · enter on a table opens one",
-        @style.Style::new(fg=@style.bright_black),
-      ),
+  match self.state.grid_of(self.pane) {
+    Some(grid) => rows = " " + grid.row_count().to_string() + " rows"
+    None => ()
+  }
+  if segs.length() == 0 {
+    segs.push(
+      @strip.Seg::new("no table open · enter on a table opens one ", quiet),
     )
   }
-  @strip.Strip::join(parts).pad_to(width, self.style)
+  let lead = @strip.Strip::from_segs(segs)
+  let tally = @strip.Strip::of(rows, dim)
+  let room = width -
+    @strip.str_cells(lead.text()) -
+    @strip.str_cells(tally.text())
+  @strip.Strip::join([
+    lead,
+    @strip.Strip::of("─".repeat(@cmp.maximum(0, room)), look.fg(Border)),
+    tally,
+  ])
+  .crop(0, width)
+  .pad_to(width, self.style)
 }
 
 ///|
 /// The lines of a dialog: the preview, the confirmation, the keys, or the
-/// palette. Returned as strips so the pane can draw them like any other line.
+/// palette, each under a head of its own and drawn like any other line.
 fn Router::overlay_line(
   self : Router,
   index : Int32,
@@ -280,76 +333,148 @@ fn Router::overlay_line(
   let lines : Array[@strip.Strip] = []
   match self.state.mode {
     @shell.Mode::Preview => {
+      let statements = self.state.preview.split("\n").to_array()
       lines.push(
-        @strip.Strip::of("Save", @style.Style::new(bold=true, fg=@style.yellow)),
-      )
-      for line in self.state.preview.split("\n") {
-        let line = line.to_owned()
-        lines.push(@strip.Strip::of(line, self.style))
-      }
-      lines.push(
-        @strip.Strip::of("y runs it, any other key cancels", self.dim_style),
-      )
-    }
-    @shell.Mode::Confirm =>
-      lines.push(
-        @strip.Strip::of(
-          self.state.confirm,
-          @style.Style::new(bold=true, fg=@style.red),
+        head(
+          "save",
+          count=statements.length().to_string() + " statements",
+          width~,
+          active=true,
+          tone=look.warning,
         ),
       )
-    @shell.Mode::Help => {
-      lines.push(
-        @strip.Strip::of("Keys", @style.Style::new(bold=true, fg=@style.cyan)),
-      )
-      for (key, action) in self.state.keymap.rows() {
-        lines.push(
-          @strip.Strip::of("  " + pad_right(key, 10) + action, self.style),
-        )
+      lines.push(@strip.Strip::empty())
+      for line in statements {
+        lines.push(@strip.Strip::of(" " + line.to_owned(), self.style))
       }
-      lines.push(@strip.Strip::of("esc closes", self.dim_style))
+      lines.push(@strip.Strip::empty())
+      lines.push(hint([("y", "run them"), ("any other key", "cancel")]))
+    }
+    @shell.Mode::Confirm => {
+      lines.push(head("confirm", width~, active=true, tone=look.error))
+      lines.push(@strip.Strip::empty())
+      lines.push(
+        @strip.Strip::of(
+          " " + self.state.confirm,
+          @style.Style::new(fg=look.error, bold=true),
+        ),
+      )
+    }
+    @shell.Mode::Help => {
+      let rows = self.state.keymap.rows()
+      lines.push(
+        head("keys", count=rows.length().to_string(), width~, active=true),
+      )
+      lines.push(@strip.Strip::empty())
+      // Two columns once the pane is wide enough, so the list fits a terminal.
+      let half = if width >= 64 {
+        (rows.length() + 1) / 2
+      } else {
+        rows.length()
+      }
+      for i in 0..<half {
+        let parts = [key_row(rows[i])]
+        if half < rows.length() && i + half < rows.length() {
+          parts.push(@strip.Strip::of("    ", self.style))
+          parts.push(key_row(rows[i + half]))
+        }
+        lines.push(@strip.Strip::join(parts))
+      }
+      lines.push(@strip.Strip::empty())
+      lines.push(hint([("esc", "close")]))
     }
     @shell.Mode::Palette => {
+      let matches = self.state.palette_matches()
       lines.push(
-        @strip.Strip::of(
-          "> " + self.state.palette_query,
-          @style.Style::new(bold=true, fg=@style.cyan),
+        head(
+          "command palette",
+          count=matches.length().to_string(),
+          width~,
+          active=true,
         ),
       )
-      let matches = self.state.palette_matches()
+      lines.push(
+        @strip.Strip::join([
+          @strip.Strip::of(
+            " › ",
+            @style.Style::new(fg=look.primary, bold=true),
+          ),
+          @strip.Strip::of(self.state.palette_query, self.style),
+        ]),
+      )
+      lines.push(@strip.Strip::empty())
       let mut i = 0
       for item in matches {
         if i > 12 {
           break
         }
-        let mark = if i == self.state.palette_pick { "> " } else { "  " }
         lines.push(
-          @strip.Strip::of(
-            mark + item,
-            if i == self.state.palette_pick {
-              @style.Style::new(reverse=true)
-            } else {
-              self.style
-            },
-          ),
+          if i == self.state.palette_pick {
+            @strip.Strip::join([
+              @strip.Strip::of(
+                "▌",
+                @style.Style::new(fg=look.primary, bg=look.panel),
+              ),
+              @strip.Strip::of(" " + item, picked).pad_to(
+                @cmp.minimum(width - 1, 40),
+                picked,
+              ),
+            ])
+          } else {
+            @strip.Strip::of("  " + item, self.style)
+          },
         )
         i = i + 1
       }
+      lines.push(@strip.Strip::empty())
+      lines.push(
+        hint([("↑↓", "choose"), ("enter", "run"), ("esc", "close")]),
+      )
     }
     @shell.Mode::Typing =>
       lines.push(
-        @strip.Strip::of(
-          self.state.prompt + self.state.draft + "▏",
-          self.style,
-        ),
+        @strip.Strip::join([
+          @strip.Strip::of(
+            self.state.prompt,
+            @style.Style::new(fg=look.primary, bold=true),
+          ),
+          @strip.Strip::of(self.state.draft, self.style),
+        ]),
       )
     @shell.Mode::Browse => ()
   }
   if index < lines.length() {
-    lines[index].pad_to(width, self.style)
+    lines[index].crop(0, width).pad_to(width, self.style)
   } else {
     @strip.Strip::blank(width, self.style)
   }
+}
+
+///|
+/// One key of the help: the key in the accent, what it does beside it.
+fn key_row(row : (String, String)) -> @strip.Strip {
+  let (key, action) = row
+  @strip.Strip::join([
+    @strip.Strip::of(
+      " " + pad_right(key, 8),
+      @style.Style::new(fg=look.primary, bold=true),
+    ),
+    @strip.Strip::of(pad_right(action, 22), body),
+  ])
+}
+
+///|
+/// The keys a dialog answers, in the muted line under it.
+fn hint(pairs : Array[(String, String)]) -> @strip.Strip {
+  let parts : Array[@strip.Strip] = [@strip.Strip::of(" ", quiet)]
+  for pair in pairs {
+    let (key, meaning) = pair
+    parts.push(
+      @strip.Strip::of(key, @style.Style::new(fg=look.text, bold=true)),
+    )
+    parts.push(@strip.Strip::of(" " + meaning + "   ", quiet))
+  }
+  @strip.Strip::join(parts)
 }
 
 ///|
@@ -410,7 +535,7 @@ pub impl @widget.Widget for Router with fn render_line(self, index, size) {
     if index == size.height - 1 && self.editor.offers().length() > 0 {
       self.editor.offer_line(size.width)
     } else {
-      self.editor.render_line(index - 1, size, self.style, self.cursor_style)
+      self.editor.render_line(index - 1, size, self.style)
     }
   } else {
     self.table.render_line(index - 1, size)
@@ -430,4 +555,39 @@ pub impl @widget.Widget for Router with fn render_line(self, index, size) {
       }
     _ => self.overlay_line(index, size.width)
   }
+}
+
+///|
+/// The terminal's cursor goes where the reader types: the prompt on the head
+/// line, the palette's query under its head, or the editor, in the shape the
+/// keymap gives each of the editor's modes.
+pub impl @widget.Widget for Router with fn caret(self, size) {
+  if self.state.pane != self.pane {
+    return None
+  }
+  let keymap = self.state.keymap
+  let (x, y, caret) = match self.state.mode {
+    @shell.Mode::Typing =>
+      (
+        @strip.str_cells(self.state.prompt) + @strip.str_cells(self.state.draft),
+        0,
+        keymap.caret_insert,
+      )
+    @shell.Mode::Palette =>
+      (3 + @strip.str_cells(self.state.palette_query), 1, keymap.caret_insert)
+    @shell.Mode::Browse if self.state.focus is @shell.Focus::Editor => {
+      let (x, row) = self.editor.spot()
+      let caret = if self.editor.mode is Insert {
+        keymap.caret_insert
+      } else {
+        keymap.caret_normal
+      }
+      (x, row + 1, caret)
+    }
+    _ => return None
+  }
+  if x >= size.width || y >= size.height {
+    return None
+  }
+  Some(({ x, y, }, caret))
 }

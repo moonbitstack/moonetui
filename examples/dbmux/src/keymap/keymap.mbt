@@ -188,6 +188,9 @@ pub fn key_text(key : @event.Key) -> String {
 /// says on top of that.
 pub(all) struct Keymap {
   keys : Map[String, Action]
+  /// The terminal's cursor in the editor's normal mode, and in insert.
+  caret_normal : @widget.Caret
+  caret_insert : @widget.Caret
 }
 
 ///|
@@ -236,13 +239,18 @@ pub fn Keymap::default() -> Keymap {
 }
 
 ///|
-pub fn Keymap::new(bindings : Array[(String, Action)]) -> Keymap {
+/// Vim's carets by default: a block over the character in normal mode, a bar
+/// between characters in insert, both blinking.
+pub fn Keymap::new(
+  bindings : Array[(String, Action)],
+  caret_normal~ : @widget.Caret = Block(blink=true),
+  caret_insert~ : @widget.Caret = Bar(blink=true),
+) -> Keymap {
   let keys : Map[String, Action] = Map([])
   for (key, action) in bindings {
     keys[key] = action
   }
-  let map : Map[String, Action] = keys
-  Keymap::{ keys: map, }
+  { keys, caret_normal, caret_insert, }
 }
 
 ///|
@@ -251,9 +259,11 @@ pub fn Keymap::action(self : Keymap, key : String) -> Action? {
 }
 
 ///|
-/// Read `[keys]` from a TOML file: `save = "C-w"` rebinds save, and a key with
-/// no action takes the binding away. A name the table does not know is said,
-/// not ignored, because a typo in a keymap is invisible until a key does
+/// Read a keymap file over this keymap. `[keys]` rebinds: `save = "C-w"` moves
+/// save, and a key with no action takes the binding away. `[caret]` sets the
+/// editor's cursor: `normal` and `insert` are `terminal`, `block`, `underline`
+/// or `bar`, and `blink` says whether they blink. A name the file gets wrong is
+/// said, not ignored, because a typo in a keymap is invisible until a key does
 /// nothing.
 pub fn Keymap::over(
   self : Keymap,
@@ -262,46 +272,101 @@ pub fn Keymap::over(
   let root : @json.Json = @moontoml.loads(text) catch {
     _ => raise @config.Refused(text="the keymap file is not TOML")
   }
-  let section = if root is Object(map) {
-    match map.get("keys") {
-      Some(v) => Some(v)
-      None => None
-    }
-  } else {
-    None
+  guard root is Object(file) else { return self }
+  let keys = match file.get("keys") {
+    Some(Object(entries)) => self.rebind(entries)
+    _ => self.keys
   }
-  match section {
-    None => self
-    Some(v) =>
-      if v is Object(entries) {
-        let keys : Map[String, Action] = Map([])
-        for key, value in self.keys {
-          keys[key] = value
+  let (caret_normal, caret_insert) = match file.get("caret") {
+    Some(Object(table)) => self.carets(table)
+    _ => (self.caret_normal, self.caret_insert)
+  }
+  { keys, caret_normal, caret_insert, }
+}
+
+///|
+fn Keymap::rebind(
+  self : Keymap,
+  entries : Map[String, @json.Json],
+) -> Map[String, Action] raise @config.Refused {
+  let keys : Map[String, Action] = Map([])
+  for key, value in self.keys {
+    keys[key] = value
+  }
+  for name, value in entries {
+    let action = match Action::parse(name) {
+      Some(a) => a
+      None => raise @config.Refused(text="no action is called " + name)
+    }
+    if value is String(k) {
+      // One action, one key: the old key goes first.
+      let stale : Array[String] = []
+      for existing, bound in keys {
+        if bound == action {
+          stale.push(existing)
         }
-        for name, value in entries {
-          let action = match Action::parse(name) {
-            Some(a) => a
-            None => raise @config.Refused(text="no action is called " + name)
-          }
-          if value is String(k) {
-            // one action, one key: take the old key away first
-            let stale : Array[String] = []
-            for existing, bound in keys {
-              if bound == action {
-                stale.push(existing)
-              }
-            }
-            for old in stale {
-              keys.remove(old)
-            }
-            keys[k] = action
-          }
-        }
-        let map : Map[String, Action] = keys
-        Keymap::{ keys: map, }
-      } else {
-        self
       }
+      for old in stale {
+        keys.remove(old)
+      }
+      keys[k] = action
+    }
+  }
+  keys
+}
+
+///|
+fn Keymap::carets(
+  self : Keymap,
+  table : Map[String, @json.Json],
+) -> (@widget.Caret, @widget.Caret) raise @config.Refused {
+  let blink = match table.get("blink") {
+    Some(True) => true
+    Some(False) => false
+    None => blinks(self.caret_normal)
+    Some(_) => raise @config.Refused(text="caret.blink is true or false")
+  }
+  let shape = fn(key : String, kept : @widget.Caret) raise @config.Refused {
+    match table.get(key) {
+      Some(String(name)) => caret_of(name, blink)
+      None => caret_of(name_of(kept), blink)
+      Some(_) => raise @config.Refused(text="caret." + key + " is a name")
+    }
+  }
+  (shape("normal", self.caret_normal), shape("insert", self.caret_insert))
+}
+
+///|
+fn caret_of(name : String, blink : Bool) -> @widget.Caret raise @config.Refused {
+  match name {
+    "terminal" => Terminal
+    "block" => Block(blink~)
+    "underline" => Underline(blink~)
+    "bar" => Bar(blink~)
+    _ =>
+      raise @config.Refused(
+        text="no caret is called " +
+          name +
+          "; it is terminal, block, underline or bar",
+      )
+  }
+}
+
+///|
+fn name_of(caret : @widget.Caret) -> String {
+  match caret {
+    Terminal => "terminal"
+    Block(..) => "block"
+    Underline(..) => "underline"
+    Bar(..) => "bar"
+  }
+}
+
+///|
+fn blinks(caret : @widget.Caret) -> Bool {
+  match caret {
+    Terminal => true
+    Block(blink~) | Underline(blink~) | Bar(blink~) => blink
   }
 }
 

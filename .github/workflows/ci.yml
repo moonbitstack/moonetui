@@ -56,9 +56,9 @@ jobs:
         if: ${{ runner.os == 'Linux' }}
         run: |
           out=$(moon run --target native examples/dbmux/src/main -- --demo --headless --frames 3)
-          echo "$out" | grep -q "main / customers"
+          echo "$out" | grep -q "main.customers"
           echo "$out" | grep -q "Ada"
-          echo "$out" | grep -q "tab pane"
+          echo "$out" | grep -q "tab  pane"
 
       # The save's old-value WHERE and the read-only refusal, each broken in turn: the test named
       # for each has to go red.
@@ -126,11 +126,14 @@ jobs:
             grep '^interop' "$RUNNER_TEMP/$example.txt" >> "$RUNNER_TEMP/frames.txt"
           done
 
-          # The jj client is a program of its own, so its frames are announced by
-          # its own tests.
+          # The jj client and the database client are programs of their own, so
+          # their frames are announced by their own tests.
           MOONETUI_INTEROP=1 moon test --target native -p moonbitstack/mbtjj > "$RUNNER_TEMP/mbtjj.txt" 2>&1 || {
             cat "$RUNNER_TEMP/mbtjj.txt"; exit 1; }
           grep '^interop' "$RUNNER_TEMP/mbtjj.txt" >> "$RUNNER_TEMP/frames.txt"
+          MOONETUI_INTEROP=1 moon test --target native -p moonbitstack/dbmux/ui > "$RUNNER_TEMP/dbmux.txt" 2>&1 || {
+            cat "$RUNNER_TEMP/dbmux.txt"; exit 1; }
+          grep '^interop' "$RUNNER_TEMP/dbmux.txt" >> "$RUNNER_TEMP/frames.txt"
           grep -c 'interop' "$RUNNER_TEMP/frames.txt"
 
           python3 scripts/verify_terminals.py --in "$RUNNER_TEMP/frames.txt"

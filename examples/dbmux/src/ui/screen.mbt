@@ -2,14 +2,11 @@
 // SPDX-License-Identifier: Apache-2.0
 
 ///|
-/// The window: a header, the table list, the pane, and the keys along the
+/// The window: the band, the table list, the pane, and the keys along the
 /// bottom. Rebuilt only when the state changes shape, so the widgets keep
 /// their scroll and their cursor.
 pub struct Screen {
   state : @shell.State
-  header : @widget.Header
-  footer : @widget.Footer
-  list : @widget.ListView
   pane : Router
   second : Router
 }
@@ -23,108 +20,123 @@ pub fn pane_id(pane : Int32) -> Int32 {
 
 ///|
 pub fn Screen::new(state : @shell.State) -> Screen {
-  let list = @widget.ListView::new([])
-  let pane = Router::new(0, state, list)
-  let second = Router::new(1, state, list)
-  {
-    state,
-    header: @widget.Header::new(state.connection),
-    footer: @widget.Footer::new([]),
-    list,
-    pane,
-    second,
+  { state, pane: Router::new(0, state), second: Router::new(1, state), }
+}
+
+///|
+/// The keys the bar offers, by what has the keyboard.
+fn Screen::keys(self : Screen) -> Array[(String, String)] {
+  match self.state.focus {
+    @shell.Focus::Tree =>
+      [
+        ("tab", "pane"),
+        ("↑↓", "table"),
+        ("enter", "open"),
+        ("C-p", "palette"),
+        ("?", "keys"),
+        ("q", "quit"),
+      ]
+    @shell.Focus::Grid =>
+      [
+        ("tab", "pane"),
+        ("e", "edit"),
+        ("f", "filter"),
+        ("s", "sort"),
+        ("C-s", "save"),
+        ("C-v", "split"),
+        ("C-p", "palette"),
+        ("?", "keys"),
+      ]
+    @shell.Focus::Editor =>
+      [
+        ("tab", "pane"),
+        ("C-r", "run"),
+        ("C-n", "complete"),
+        ("C-↑↓", "history"),
+        ("esc", "normal"),
+        ("C-p", "palette"),
+      ]
   }
 }
 
 ///|
-/// The tree the application draws. One id per leaf, the pane wide, the list
-/// narrow: the same shape a database client has had since the terminals were
-/// green.
+/// The tree the application draws. One id per leaf: the list narrow, the pane
+/// wide, a hairline between them.
 pub fn Screen::node(self : Screen) -> @app.Node {
-  let head = @app.leaf(
+  let state = self.state
+  let band = @app.leaf(
     1,
-    self.header,
+    line(width => band(state, width~)),
     box=@layout.Box::new(extent=Cells(1)),
-    name="Header",
   )
-  let left = @app.leaf(3, self.list, box=@layout.Box::new(extent=Cells(28)), classes=[
-    "framed",
-  ])
-  let first = @app.leaf(4, self.pane, box=@layout.Box::new(extent=Frac(1)), classes=[
-    "framed",
-  ])
-  let right : @app.Node = match self.state.layout {
+  let tables_head = @app.leaf(
+    7,
+    line(width => {
+      head(
+        "tables",
+        count=state.tables.length().to_string(),
+        width~,
+        active=state.focus is @shell.Focus::Tree,
+      )
+    }),
+    box=@layout.Box::new(extent=Cells(1)),
+  )
+  let tables = @app.leaf(3, tables(state), box=@layout.Box::new(extent=Frac(1)))
+  let left = @app.column(
+    9,
+    [tables_head, tables],
+    box=@layout.Box::new(extent=Cells(28)),
+  )
+  let first = @app.leaf(4, self.pane, box=@layout.Box::new(extent=Frac(1)))
+  let right : @app.Node = match state.layout {
     @shell.Layout::Single => first
     @shell.Layout::SplitVertical => {
       let other = @app.leaf(
         5,
         self.second,
         box=@layout.Box::new(extent=Frac(1)),
-        classes=["framed"],
       )
-      @app.row(10, [first, other], box=@layout.Box::new(extent=Frac(1)), gap=1)
+      let rule = @app.leaf(12, divider(), box=@layout.Box::new(extent=Cells(1)))
+      @app.row(
+        10,
+        [first, rule, other],
+        box=@layout.Box::new(extent=Frac(1)),
+        gap=1,
+      )
     }
     @shell.Layout::SplitHorizontal => {
       let other = @app.leaf(
         5,
         self.second,
         box=@layout.Box::new(extent=Frac(1)),
-        classes=["framed"],
       )
-      @app.column(10, [first, other], box=@layout.Box::new(extent=Frac(1)))
+      @app.column(
+        10,
+        [first, other],
+        box=@layout.Box::new(extent=Frac(1)),
+        gap=1,
+      )
     }
   }
+  let rule = @app.leaf(8, divider(), box=@layout.Box::new(extent=Cells(1)))
   let middle = @app.row(
     2,
-    [left, right],
+    [left, rule, right],
     box=@layout.Box::new(extent=Frac(1)),
     gap=1,
   )
-  let foot = @app.leaf(6, self.footer, box=@layout.Box::new(extent=Cells(1)))
-  @app.column(0, [head, middle, foot])
+  let foot = @app.leaf(
+    6,
+    line(width => keys(self.keys(), width~)),
+    box=@layout.Box::new(extent=Cells(1)),
+  )
+  @app.column(0, [band, middle, foot], gap=1)
 }
 
 ///|
 /// Bring the widgets up to what the state says. Cheap enough for every frame
 /// at the sizes a terminal table has.
 pub fn Screen::refresh(self : Screen) -> Unit {
-  let state = self.state
-  let badge = state.badge()
-  let title = if badge == "" {
-    state.connection
-  } else {
-    state.connection + " · " + badge
-  }
-  self.header.set(title)
-  self.header.set_note(state.status())
-  let items : Array[String] = []
-  for table in state.tables {
-    let schema = match table.schema {
-      Some(s) => s + " / "
-      None => ""
-    }
-    items.push(
-      schema + table.name + (if table.is_view { " · view" } else { "" }),
-    )
-  }
-  if self.list.items().length() != items.length() {
-    self.list.set(items)
-  }
-  if state.tree_at < items.length() {
-    self.list.select(state.tree_at)
-  }
-  self.footer.set([
-    ("tab", "pane"),
-    ("enter", "open"),
-    ("C-p", "palette"),
-    ("?", "keys"),
-    ("C-r", "run"),
-    ("C-n", "complete"),
-    ("C-s", "save"),
-    ("C-v", "split"),
-    ("C-o", "pane"),
-    ("q", "quit"),
-  ])
   self.sync_panes()
 }
 

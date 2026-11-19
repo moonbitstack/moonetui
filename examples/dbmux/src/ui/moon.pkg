@@ -1,7 +1,9 @@
 // The window: a table list, the pane that has the keyboard, and the modal
 // editor inside it.
 import {
+  "moonbitlang/core/cmp",
   "moonbitstack/moonetui/app",
+  "moonbitstack/moonetui/design",
   "moonbitstack/moonetui/geom",
   "moonbitstack/moonetui/layout",
   "moonbitstack/moonetui/strip",
@@ -14,3 +16,9 @@ import {
 }
 
 supported_targets = "native"
+
+import {
+  "moonbitstack/moonetui/driver",
+  "moonbitstack/moonetui/examples/frames",
+  "moonbitstack/dbmux/config",
+} for "test"

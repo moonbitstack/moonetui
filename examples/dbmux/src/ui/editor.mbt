@@ -279,8 +279,8 @@ pub fn Editor::accept_offer(self : Editor) -> Unit {
 /// The offers, as one row under the query: the chosen one reversed, the rest
 /// with the letter that says where each came from.
 pub fn Editor::offer_line(self : Editor, width : Int32) -> @strip.Strip {
-  let plain = @style.Style::new(fg=@style.bright_black)
-  let taken = @style.Style::new(fg=@style.black, bg=@style.cyan)
+  let plain = quiet
+  let taken = cursor
   let parts : Array[@strip.Strip] = [@strip.Strip::of(" ▸ ", plain)]
   for i in 0..<self.offers.length() {
     let offer = self.offers[i]
@@ -477,45 +477,117 @@ fn is_word(c : Char) -> Bool {
 }
 
 ///|
-/// One line of the buffer, the cursor shown by reversing the character it is
-/// on. The gutter is the line number, right-aligned in three columns.
+/// One line of the buffer: the line number in the gutter and the SQL coloured
+/// by what each word is. The cursor is the terminal's own, put there by
+/// `spot`. Past the last line there is nothing to number.
 pub fn Editor::render_line(
   self : Editor,
   index : Int32,
   size : @geom.Size,
   style : @style.Style,
-  cursor_style : @style.Style,
 ) -> @strip.Strip {
-  let width = size.width
-  let gutter = "   "
+  if index >= self.lines.length() {
+    return @strip.Strip::blank(size.width, style)
+  }
+  let here = index == self.row
   let number = (index + 1).to_string()
-  let pad = if number.length() < 3 {
-    "   ".exact_view(start=number.length()).to_owned()
+  let gutter = @strip.Strip::of(
+    " ".repeat(@cmp.maximum(0, 3 - number.length())) + number + "  ",
+    if here {
+      quiet
+    } else {
+      dim
+    },
+  )
+  let chars = self.lines[index].to_array()
+  let styles = colours(chars, style)
+  let segs : Array[@strip.Seg] = []
+  for i in 0..<chars.length() {
+    segs.push(@strip.Seg::new(String::from_array([chars[i]]), styles[i]))
+  }
+  @strip.Strip::join([gutter, @strip.Strip::from_segs(segs)]).pad_to(
+    size.width,
+    style,
+  )
+}
+
+///|
+/// SQL's own words, for colouring; what `C-n` offers is in `sqlkit`.
+let keywords : Array[String] = [
+  "select", "from", "where", "and", "or", "not", "insert", "into", "values", "update",
+  "set", "delete", "join", "left", "right", "inner", "outer", "full", "cross", "on",
+  "group", "by", "order", "having", "limit", "offset", "as", "distinct", "union",
+  "all", "create", "table", "drop", "alter", "index", "view", "null", "is", "in",
+  "like", "between", "case", "when", "then", "else", "end", "asc", "desc", "with",
+  "returning", "exists", "primary", "key", "default", "begin", "commit", "rollback",
+]
+
+///|
+/// A style per character: keywords in the accent, strings green, numbers
+/// amber, a `--` comment faint, the rest in `style`.
+fn colours(chars : Array[Char], style : @style.Style) -> Array[@style.Style] {
+  let word = @style.Style::new(fg=look.primary, bold=true)
+  let string = @style.Style::new(fg=look.success)
+  let number = @style.Style::new(fg=look.warning)
+  let out = Array::make(chars.length(), style)
+  let mut i = 0
+  while i < chars.length() {
+    let c = chars[i]
+    if c == '-' && i + 1 < chars.length() && chars[i + 1] == '-' {
+      for j in i..<chars.length() {
+        out[j] = dim
+      }
+      break
+    } else if c == '\'' {
+      let mut j = i + 1
+      while j < chars.length() && chars[j] != '\'' {
+        j = j + 1
+      }
+      for k in i..<@cmp.minimum(j + 1, chars.length()) {
+        out[k] = string
+      }
+      i = j + 1
+    } else if c.is_ascii_digit() {
+      let mut j = i
+      while j < chars.length() && (chars[j].is_ascii_digit() || chars[j] == '.') {
+        out[j] = number
+        j = j + 1
+      }
+      i = j
+    } else if c.is_ascii_alphabetic() || c == '_' {
+      let mut j = i
+      while j < chars.length() &&
+            (
+              chars[j].is_ascii_alphabetic() ||
+              chars[j].is_ascii_digit() ||
+              chars[j] == '_'
+            ) {
+        j = j + 1
+      }
+      let text = String::from_array(chars[i:j].to_owned()).to_lower()
+      if keywords.contains(text) {
+        for k in i..<j {
+          out[k] = word
+        }
+      }
+      i = j
+    } else {
+      i = i + 1
+    }
+  }
+  out
+}
+
+///|
+/// The cursor's column and row in the editor's area: past the gutter, by the
+/// cells of the characters before it.
+pub fn Editor::spot(self : Editor) -> (Int32, Int32) {
+  let number = (self.row + 1).to_string()
+  let gutter = @cmp.maximum(3, number.length()) + 2
+  let line = if self.row < self.lines.length() {
+    self.lines[self.row]
   } else {
     ""
   }
-  let head = @strip.Strip::of(
-    pad + number + " ",
-    @style.Style::new(fg=@style.bright_black),
-  )
-  ignore(gutter)
-  let body = if index < self.lines.length() { self.lines[index] } else { "" }
-  let chars = body.to_array()
-  let parts : Array[@strip.Strip] = [head]
-  let start = 0
-  ignore(start)
-  if self.mode is Normal && index == self.row && chars.length() > 0 {
-    let at = self.col
-    let before = if at > 0 { slice_text(chars, 0, at) } else { "" }
-    let mid = String::from_array([chars[at]])
-    let after = slice_text(chars, at + 1, chars.length())
-    parts.push(@strip.Strip::of(before, style))
-    parts.push(@strip.Strip::of(mid, cursor_style))
-    parts.push(@strip.Strip::of(after, style))
-  } else if self.mode is Insert && index == self.row && chars.length() == 0 {
-    parts.push(@strip.Strip::of(" ", cursor_style))
-  } else {
-    parts.push(@strip.Strip::of(body, style))
-  }
-  @strip.Strip::join(parts).pad_to(width, style)
+  (gutter + @strip.cells_before(line, self.col), self.row)
 }
