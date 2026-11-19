@@ -60,7 +60,7 @@ pub fn Demo::new() -> Demo {
   let list = @widget.ListView::new([
     "alpha", "beta", "gamma", "delta", "epsilon", "中文也对齐",
   ])
-  let field = @widget.Input::new(placeholder="type here")
+  let field = @widget.Input::new(placeholder="type here", caret=Bar(blink=true))
   let bar = @widget.Progress::new(total=100)
   let foot = @theme.line(width => {
     @theme.keys(

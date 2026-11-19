@@ -50,19 +50,65 @@ fn[D : @driver.Driver] App::emit(
   self : App[D],
   spans : Array[@comp.Span],
 ) -> Unit raise {
-  if spans.length() == 0 {
+  if self.plain {
+    if spans.length() > 0 {
+      self.driver.write(@comp.encode_stream(spans))
+      self.driver.flush()
+    }
     return
   }
-  if self.plain {
-    self.driver.write(@comp.encode_stream(spans))
-  } else {
-    // Synchronized output (DEC mode 2026): a terminal that has it shows the frame whole, one
-    // that lacks it ignores the two marks.
-    self.driver.write(
-      "\u{1b}[?2026h" + @comp.encode(spans, self.base) + "\u{1b}[?2026l",
-    )
+  let caret = self.caret_now()
+  if spans.length() == 0 && caret == self.caret {
+    return
   }
+  // Writing a frame moves the terminal's cursor, so it is hidden while the
+  // spans go out and put back where the focused widget wants it after them.
+  let out = StringBuilder()
+  // Synchronized output (DEC mode 2026): a terminal that has it shows the frame
+  // whole, one that lacks it ignores the two marks.
+  out.write_string("\u{1b}[?2026h")
+  if spans.length() > 0 {
+    if self.caret is Some(_) {
+      out.write_string(@comp.show_cursor(false))
+    }
+    out.write_string(@comp.encode(spans, self.base))
+  }
+  match caret {
+    Some((y, x, look)) => {
+      out.write_string(@comp.cursor_to(y, x))
+      out.write_string(look.sequence())
+      out.write_string(@comp.show_cursor(true))
+      self.caret_shown = true
+    }
+    None =>
+      if self.caret is Some(_) {
+        out.write_string(@comp.show_cursor(false))
+      }
+  }
+  out.write_string("\u{1b}[?2026l")
+  self.driver.write(out.to_string())
+  self.caret = caret
   self.driver.flush()
+}
+
+///|
+/// Where the focused widget wants the terminal's cursor, on the screen: inside
+/// its content, never on its frame or past it.
+fn[D] App::caret_now(self : App[D]) -> (Int32, Int32, @widget.Caret)? {
+  if self.focus < 0 || self.off.contains(self.focus) {
+    return None
+  }
+  guard self.root.find(self.focus) is Some(widget) else { return None }
+  let rect = self.rect_of(self.focus)
+  let content = match self.styled.get(self.focus) {
+    Some(res) => res.content_region(rect)
+    None => rect
+  }
+  guard widget.caret(content.size()) is Some((at, look)) else { return None }
+  if at.x < 0 || at.y < 0 || at.x >= content.width || at.y >= content.height {
+    return None
+  }
+  Some((content.y + at.y, content.x + at.x, look))
 }
 
 ///|

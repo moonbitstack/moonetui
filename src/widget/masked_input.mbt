@@ -71,6 +71,7 @@ pub struct MaskedInput {
   style : @style.Style
   literal_style : @style.Style
   cursor_style : @style.Style
+  caret : Caret?
 }
 
 ///|
@@ -80,6 +81,7 @@ pub fn MaskedInput::new(
   style~ : @style.Style = @style.default,
   literal_style~ : @style.Style = @style.Style::new(dim=true),
   cursor_style~ : @style.Style = @style.Style::new(reverse=true),
+  caret? : Caret,
 ) -> MaskedInput {
   let slots = slots_of(mask)
   let filled : Array[String] = []
@@ -95,6 +97,7 @@ pub fn MaskedInput::new(
     style,
     literal_style,
     cursor_style,
+    caret,
   }
   field.at = if slots.length() > 0 { 0 } else { -1 }
   field
@@ -185,7 +188,6 @@ pub impl Widget for MaskedInput with fn render_line(self, row, size) {
   if row != 0 {
     return @strip.Strip::blank(size.width, self.style)
   }
-  let slots = slots_of(self.mask)
   let segs : Array[@strip.Strip] = []
   let mut used = 0
   for i in 0..<self.mask.length() {
@@ -200,7 +202,7 @@ pub impl Widget for MaskedInput with fn render_line(self, row, size) {
         } else {
           self.placeholder
         }
-        let ink = if self.focused && here == self.at {
+        let ink = if self.focused && here == self.at && self.caret is None {
           self.cursor_style
         } else {
           self.style
@@ -210,7 +212,6 @@ pub impl Widget for MaskedInput with fn render_line(self, row, size) {
       None => segs.push(@strip.Strip::of(glyph, self.literal_style))
     }
   }
-  ignore(slots)
   @strip.Strip::join(segs).pad_to(size.width, self.style)
 }
 
@@ -385,3 +386,43 @@ pub extend Slot with Eq::{not_equal, equal}
 
 ///|
 pub extend MaskedInput with Widget::{focusable, handle, hint, render_line}
+
+///|
+/// The column the slot under the cursor is drawn at: the cells of every
+/// literal and slot before it.
+fn MaskedInput::column(self : MaskedInput) -> Int32 {
+  let mut used = 0
+  let mut column = 0
+  for i in 0..<self.mask.length() {
+    let glyph = self.mask[i:i + 1].to_owned()
+    match Slot::of(glyph) {
+      Some(_) => {
+        if used == self.at {
+          return column
+        }
+        let shown = if used < self.filled.length() &&
+          self.filled[used].length() > 0 {
+          self.filled[used]
+        } else {
+          self.placeholder
+        }
+        column = column + @strip.str_cells(shown)
+        used = used + 1
+      }
+      None => column = column + @strip.str_cells(glyph)
+    }
+  }
+  column
+}
+
+///|
+pub impl Widget for MaskedInput with fn caret(self, size) {
+  guard self.focused && self.at >= 0 && self.caret is Some(caret) else {
+    return None
+  }
+  let x = self.column()
+  if x >= size.width {
+    return None
+  }
+  Some(({ x, y: 0, }, caret))
+}

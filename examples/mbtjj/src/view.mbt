@@ -381,7 +381,7 @@ impl @widget.Widget for Repo with fn render_line(self, row, size) {
   let body_rows = height - 4
   self.resize(body_rows - 1)
   let note = if self.typing {
-    "revset " + self.revset.to_string() + "▏"
+    "revset " + self.revset.to_string() + " "
   } else if self.status != "" {
     self.status
   } else if self.revset.to_string() != "" {
@@ -645,4 +645,20 @@ pub fn Screen::pick(self : Screen) -> Change? {
 ///|
 pub fn Screen::node(self : Screen) -> @app.Node {
   @app.column(0, [@app.leaf(1, self.repo, box=@layout.Box::new(extent=Frac(1)))])
+}
+
+///|
+/// The revset is typed into the note at the right of the band, which ends one
+/// cell short of the edge; the caret follows its last character.
+impl @widget.Widget for Repo with fn caret(self, size) {
+  guard self.typing else { return None }
+  let note = "revset " + self.revset.to_string() + " "
+  let x = size.width -
+    @strip.str_cells(note) -
+    2 +
+    @strip.str_cells("revset " + self.revset.to_string())
+  if x < 0 || x >= size.width {
+    return None
+  }
+  Some(({ x, y: 0, }, @widget.Bar(blink=true)))
 }

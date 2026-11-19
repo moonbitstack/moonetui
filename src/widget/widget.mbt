@@ -68,6 +68,15 @@ pub(open) trait Widget {
   fn hint(Self, @geom.Size) -> @geom.Size
   fn handle(Self, Ctx, Msg) -> Bool
   fn focusable(Self) -> Bool
+  fn caret(Self, @geom.Size) -> (@geom.Offset, Caret)? = _
+}
+
+///|
+/// Where the terminal's cursor goes while this widget has the focus, inside
+/// the widget, at the size it is drawn at. A widget that takes no typing has no
+/// caret, and the terminal's cursor stays hidden.
+impl Widget with fn caret(_self, _size) {
+  None
 }
 
 ///|

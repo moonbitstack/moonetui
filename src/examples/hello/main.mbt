@@ -7,7 +7,7 @@ fn main raise {
   let list = @widget.ListView::new([
     "alpha", "beta", "gamma", "delta", "epsilon",
   ])
-  let field = @widget.Input::new(placeholder="type here")
+  let field = @widget.Input::new(placeholder="type here", caret=Bar(blink=true))
   let foot = @widget.Footer::new([
     ("tab", "next"),
     ("up down", "move"),

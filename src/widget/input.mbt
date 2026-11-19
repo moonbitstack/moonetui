@@ -19,11 +19,14 @@ pub struct Input {
   style : @style.Style
   placeholder_style : @style.Style
   cursor_style : @style.Style
+  caret : Caret?
 }
 
 ///|
 /// An empty field. `password` shows a dot for every character; `max_length`
-/// caps how many characters it takes, and zero means no cap.
+/// caps how many characters it takes, and zero means no cap. With `caret` the
+/// terminal's own cursor marks the place, in that shape; without it the
+/// character there is drawn in `cursor_style`.
 pub fn Input::new(
   placeholder~ : String = "",
   password~ : Bool = false,
@@ -31,6 +34,7 @@ pub fn Input::new(
   style~ : @style.Style = @style.Style::new(),
   placeholder_style~ : @style.Style = @style.Style::new(dim=true),
   cursor_style~ : @style.Style = @style.Style::new(reverse=true),
+  caret? : Caret,
 ) -> Input {
   {
     text: "",
@@ -43,6 +47,7 @@ pub fn Input::new(
     style,
     placeholder_style,
     cursor_style,
+    caret,
   }
 }
 
@@ -93,7 +98,7 @@ pub impl Widget for Input with fn render_line(self, row, size) {
     size.width,
     self.style,
   )
-  if !self.focused {
+  if !self.focused || self.caret is Some(_) {
     return body
   }
   let column = self.cursor_column(size.width)
@@ -293,3 +298,13 @@ fn text_of(code : Int32) -> String {
 
 ///|
 pub extend Input with Widget::{focusable, handle, hint, render_line}
+
+///|
+pub impl Widget for Input with fn caret(self, size) {
+  guard self.focused && self.caret is Some(caret) else { return None }
+  let column = self.cursor_column(size.width)
+  if column < 0 || column >= size.width {
+    return None
+  }
+  Some(({ x: column, y: 0, }, caret))
+}

@@ -76,7 +76,7 @@
 
   <div class="stats">
     <div class="stat"><div class="n">4</div><div class="l">backends · wasm, wasm-gc, js, native</div></div>
-    <div class="stat"><div class="n" data-count="tests">715</div><div class="l">tests per backend, all passing</div></div>
+    <div class="stat"><div class="n" data-count="tests">720</div><div class="l">tests per backend, all passing</div></div>
     <div class="stat"><div class="n" data-count="widgets">55</div><div class="l">widgets, from toggles to trees</div></div>
     <div class="stat"><div class="n">0</div><div class="l">dependencies · a single pure core</div></div>
   </div>
@@ -588,9 +588,18 @@ w.handle(ctx, @widget.Msg::Key(@event.Key::of(Enter)))
     <div class="wlive"><canvas id="live-input" data-demo="Input" tabindex="0" style="height: 54px"></canvas></div>
     <div class="wmsg" data-for="live-input"></div>
     <pre class="block wcode"><span class="kw">pub</span> <span class="kw">fn</span> input() -&gt; Demo {
-  <span class="kw">let</span> name = <span class="fn">@widget.</span>Input::new(placeholder=<span class="st">&quot;your name&quot;</span>)
-  <span class="kw">let</span> secret = <span class="fn">@widget.</span>Input::new(placeholder=<span class="st">&quot;password&quot;</span>, password=<span class="kw">true</span>)
-  <span class="kw">let</span> code = <span class="fn">@widget.</span>Input::new(placeholder=<span class="st">&quot;four digits&quot;</span>, max_length=4)
+  <span class="cm">// One caret shape per field: a bar, a block and an underline, all blinking.</span>
+  <span class="kw">let</span> name = <span class="fn">@widget.</span>Input::new(placeholder=<span class="st">&quot;your name&quot;</span>, caret=Bar(blink=<span class="kw">true</span>))
+  <span class="kw">let</span> secret = <span class="fn">@widget.</span>Input::new(
+    placeholder=<span class="st">&quot;password&quot;</span>,
+    password=<span class="kw">true</span>,
+    caret=Block(blink=<span class="kw">true</span>),
+  )
+  <span class="kw">let</span> code = <span class="fn">@widget.</span>Input::new(
+    placeholder=<span class="st">&quot;four digits&quot;</span>,
+    max_length=4,
+    caret=Underline(blink=<span class="kw">true</span>),
+  )
   Demo::new(
     <span class="st">&quot;Input&quot;</span>,
     <span class="fn">@app.</span>column(0, [
@@ -614,9 +623,16 @@ w.handle(ctx, @widget.Msg::Key(@event.Key::of(Enter)))
     <div class="wlive"><canvas id="live-maskedinput" data-demo="MaskedInput" tabindex="0" style="height: 54px"></canvas></div>
     <div class="wmsg" data-for="live-maskedinput"></div>
     <pre class="block wcode"><span class="kw">pub</span> <span class="kw">fn</span> masked_input() -&gt; Demo {
-  <span class="kw">let</span> phone = <span class="fn">@widget.</span>MaskedInput::new(<span class="st">&quot;(###) ###-####&quot;</span>)
-  <span class="kw">let</span> date = <span class="fn">@widget.</span>MaskedInput::new(<span class="st">&quot;####-##-##&quot;</span>)
-  <span class="kw">let</span> key = <span class="fn">@widget.</span>MaskedInput::new(<span class="st">&quot;????-????&quot;</span>, placeholder=<span class="st">&quot;·&quot;</span>)
+  <span class="kw">let</span> phone = <span class="fn">@widget.</span>MaskedInput::new(
+    <span class="st">&quot;(###) ###-####&quot;</span>,
+    caret=Underline(blink=<span class="kw">true</span>),
+  )
+  <span class="kw">let</span> date = <span class="fn">@widget.</span>MaskedInput::new(<span class="st">&quot;####-##-##&quot;</span>, caret=Underline(blink=<span class="kw">true</span>))
+  <span class="kw">let</span> key = <span class="fn">@widget.</span>MaskedInput::new(
+    <span class="st">&quot;????-????&quot;</span>,
+    placeholder=<span class="st">&quot;·&quot;</span>,
+    caret=Underline(blink=<span class="kw">true</span>),
+  )
   Demo::new(
     <span class="st">&quot;MaskedInput&quot;</span>,
     <span class="fn">@app.</span>column(0, [
@@ -640,7 +656,10 @@ w.handle(ctx, @widget.Msg::Key(@event.Key::of(Enter)))
     <div class="wlive"><canvas id="live-textarea" data-demo="TextArea" tabindex="0" style="height: 90px"></canvas></div>
     <div class="wmsg" data-for="live-textarea"></div>
     <pre class="block wcode"><span class="kw">pub</span> <span class="kw">fn</span> text_area() -&gt; Demo {
-  <span class="kw">let</span> area = <span class="fn">@widget.</span>TextArea::new(text=<span class="st">&quot;fn main {\n  println(\&quot;hello\&quot;)\n}\n&quot;</span>)
+  <span class="kw">let</span> area = <span class="fn">@widget.</span>TextArea::new(
+    text=<span class="st">&quot;fn main {\n  println(\&quot;hello\&quot;)\n}\n&quot;</span>,
+    caret=Bar(blink=<span class="kw">true</span>),
+  )
   Demo::new(
     <span class="st">&quot;TextArea&quot;</span>,
     <span class="fn">@app.</span>column(0, [<span class="fn">@app.</span>leaf(1, area)]),
@@ -2112,10 +2131,10 @@ priv <span class="kw">struct</span> Swatches {}
   <p class="lead">The same suite on four backends — a regression in one world fails loudly everywhere.</p>
 
   <div class="stats">
-    <div class="stat"><div class="n" data-count="tests">715</div><div class="l">wasm</div></div>
-    <div class="stat"><div class="n" data-count="tests">715</div><div class="l">wasm-gc</div></div>
-    <div class="stat"><div class="n" data-count="tests">715</div><div class="l">js</div></div>
-    <div class="stat"><div class="n" data-count="tests">715</div><div class="l">native</div></div>
+    <div class="stat"><div class="n" data-count="tests">720</div><div class="l">wasm</div></div>
+    <div class="stat"><div class="n" data-count="tests">720</div><div class="l">wasm-gc</div></div>
+    <div class="stat"><div class="n" data-count="tests">720</div><div class="l">js</div></div>
+    <div class="stat"><div class="n" data-count="tests">720</div><div class="l">native</div></div>
   </div>
 
   <h3>Run the suite</h3>
@@ -2148,7 +2167,7 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
 <!-- generated:api -->
   <div class="api-tools">
     <input class="api-filter" type="search" placeholder="Filter by name, e.g. Button or render" aria-label="Filter the API">
-    <span class="api-count" data-total="1103">1103 entries</span>
+    <span class="api-count" data-total="1107">1107 entries</span>
   </div>
   <div class="api-index">
     <button type="button" data-pkg="api-geom">geom<span>43</span></button>
@@ -2160,7 +2179,7 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
     <button type="button" data-pkg="api-vt">vt<span>12</span></button>
     <button type="button" data-pkg="api-comp">comp<span>21</span></button>
     <button type="button" data-pkg="api-design">design<span>56</span></button>
-    <button type="button" data-pkg="api-widget">widget<span>741</span></button>
+    <button type="button" data-pkg="api-widget">widget<span>745</span></button>
     <button type="button" data-pkg="api-app">app<span>60</span></button>
     <button type="button" data-pkg="api-driver">driver<span>28</span></button>
     <button type="button" data-pkg="api-driver-native">driver/native<span>11</span></button>
@@ -3101,6 +3120,7 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
   <span class="kw">fn</span> hint(Self, <span class="fn">@geom.</span>Size) -&gt; <span class="fn">@geom.</span>Size
   <span class="kw">fn</span> handle(Self, Ctx, Msg) -&gt; Bool
   <span class="kw">fn</span> focusable(Self) -&gt; Bool
+  <span class="kw">fn</span> caret(Self, <span class="fn">@geom.</span>Size) -&gt; (<span class="fn">@geom.</span>Offset, Caret)? = _
 }</pre>
     </div>
     <div class="api-item" data-q="widget align">
@@ -3288,6 +3308,20 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
         <div class="api-method" data-q="shapes"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Canvas::shapes(Self) -&gt; Array[Shape]</pre></div>
         <div class="api-method" data-q="x_range"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Canvas::x_range(Self) -&gt; (Double, Double)</pre></div>
         <div class="api-method" data-q="y_range"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Canvas::y_range(Self) -&gt; (Double, Double)</pre></div>
+      </div>
+    </div>
+    <div class="api-item" data-q="widget caret">
+      <h4><span class="api-kind type">type</span><code>Caret</code></h4>
+      <pre class="block"><span class="kw">pub</span>(all) <span class="kw">enum</span> Caret {
+  Terminal
+  Block(blink~ : Bool)
+  Underline(blink~ : Bool)
+  Bar(blink~ : Bool)
+}</pre>
+      <p>The terminal's own cursor where a widget takes typing: the user's shape, or one of DECSCUSR's three, blinking or steady. The terminal draws and blinks it, so no frame is redrawn for a blink, and an input method opens its candidates beside it.</p>
+      <div class="api-methods">
+        <div class="api-method" data-q="code"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Caret::code(Self) -&gt; Int32</pre><p>The DECSCUSR parameter: 0 for the terminal's own, then a blinking and a steady code for each shape, in the order the sequence numbers them.</p></div>
+        <div class="api-method" data-q="sequence"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Caret::sequence(Self) -&gt; String</pre><p>The sequence that sets this shape: <code>CSI Ps SP q</code>.</p></div>
       </div>
     </div>
     <div class="api-item" data-q="widget chart">
@@ -3861,6 +3895,7 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
   style : <span class="fn">@style.</span>Style
   placeholder_style : <span class="fn">@style.</span>Style
   cursor_style : <span class="fn">@style.</span>Style
+  caret : Caret?
 }</pre>
       <p>A single-line text field.</p>
       <p>The keys are Textual's: the arrows and Home and End move, Control with an arrow moves by words, Control-A and Control-E go to either end, Backspace and Delete take a character, Control-W and Control-F a word, Control-U and Control-K everything on that side of the cursor, and Enter submits.</p>
@@ -3872,7 +3907,7 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
         <div class="api-method" data-q="handle"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Input::handle(Self, Ctx, Msg) -&gt; Bool</pre></div>
         <div class="api-method" data-q="hint"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Input::hint(Self, <span class="fn">@geom.</span>Size) -&gt; <span class="fn">@geom.</span>Size</pre></div>
         <div class="api-method" data-q="insert"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Input::insert(Self, String) -&gt; Unit</pre><p>Insert <code>text</code> at the cursor, as much of it as <code>max_length</code> leaves room for.</p></div>
-        <div class="api-method" data-q="new"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Input::new(placeholder? : String, password? : Bool, max_length? : Int32, style? : <span class="fn">@style.</span>Style, placeholder_style? : <span class="fn">@style.</span>Style, cursor_style? : <span class="fn">@style.</span>Style) -&gt; Self</pre><p>An empty field. <code>password</code> shows a dot for every character; <code>max_length</code> caps how many characters it takes, and zero means no cap.</p></div>
+        <div class="api-method" data-q="new"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Input::new(placeholder? : String, password? : Bool, max_length? : Int32, style? : <span class="fn">@style.</span>Style, placeholder_style? : <span class="fn">@style.</span>Style, cursor_style? : <span class="fn">@style.</span>Style, caret? : Caret) -&gt; Self</pre><p>An empty field. <code>password</code> shows a dot for every character; <code>max_length</code> caps how many characters it takes, and zero means no cap. With <code>caret</code> the terminal's own cursor marks the place, in that shape; without it the character there is drawn in <code>cursor_style</code>.</p></div>
         <div class="api-method" data-q="render_line"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Input::render_line(Self, Int32, <span class="fn">@geom.</span>Size) -&gt; <span class="fn">@strip.</span>Strip</pre></div>
         <div class="api-method" data-q="set"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Input::set(Self, String) -&gt; Unit</pre><p>Replace the text and put the cursor after it.</p></div>
         <div class="api-method" data-q="text"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Input::text(Self) -&gt; String</pre></div>
@@ -4122,6 +4157,7 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
   style : <span class="fn">@style.</span>Style
   literal_style : <span class="fn">@style.</span>Style
   cursor_style : <span class="fn">@style.</span>Style
+  caret : Caret?
 }</pre>
       <p>A field ruled by a template: a phone number, a date, a licence key.</p>
       <p>Letters and digits go into the places the mask opens for them and the literals between them are written for the user; the arrows move over the places, Backspace empties one and Enter submits.</p>
@@ -4133,7 +4169,7 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
         <div class="api-method" data-q="handle"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> MaskedInput::handle(Self, Ctx, Msg) -&gt; Bool</pre></div>
         <div class="api-method" data-q="hint"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> MaskedInput::hint(Self, <span class="fn">@geom.</span>Size) -&gt; <span class="fn">@geom.</span>Size</pre></div>
         <div class="api-method" data-q="is_complete"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> MaskedInput::is_complete(Self) -&gt; Bool</pre><p>Whether every place has something in it.</p></div>
-        <div class="api-method" data-q="new"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> MaskedInput::new(String, placeholder? : String, style? : <span class="fn">@style.</span>Style, literal_style? : <span class="fn">@style.</span>Style, cursor_style? : <span class="fn">@style.</span>Style) -&gt; Self</pre></div>
+        <div class="api-method" data-q="new"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> MaskedInput::new(String, placeholder? : String, style? : <span class="fn">@style.</span>Style, literal_style? : <span class="fn">@style.</span>Style, cursor_style? : <span class="fn">@style.</span>Style, caret? : Caret) -&gt; Self</pre></div>
         <div class="api-method" data-q="render_line"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> MaskedInput::render_line(Self, Int32, <span class="fn">@geom.</span>Size) -&gt; <span class="fn">@strip.</span>Strip</pre></div>
         <div class="api-method" data-q="set"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> MaskedInput::set(Self, String) -&gt; Unit</pre><p>Fill the places from a whole value, reading past the literals.</p></div>
         <div class="api-method" data-q="text"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> MaskedInput::text(Self) -&gt; String</pre><p>The value as it reads: what was typed, with the literals in place.</p></div>
@@ -4921,6 +4957,7 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
   history : Int32
   style : <span class="fn">@style.</span>Style
   cursor_style : <span class="fn">@style.</span>Style
+  caret : Caret?
   selection_style : <span class="fn">@style.</span>Style
   gutter_style : <span class="fn">@style.</span>Style
   gutter_focus_style : <span class="fn">@style.</span>Style
@@ -4936,7 +4973,7 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
         <div class="api-method" data-q="insert"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> TextArea::insert(Self, String) -&gt; Unit</pre></div>
         <div class="api-method" data-q="line_count"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> TextArea::line_count(Self) -&gt; Int32</pre></div>
         <div class="api-method" data-q="load_text"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> TextArea::load_text(Self, String) -&gt; Unit</pre></div>
-        <div class="api-method" data-q="new"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> TextArea::new(text? : String, indent_width? : Int32, tab_indents? : Bool, show_line_numbers? : Bool, style? : <span class="fn">@style.</span>Style, cursor_style? : <span class="fn">@style.</span>Style, selection_style? : <span class="fn">@style.</span>Style, gutter_style? : <span class="fn">@style.</span>Style, gutter_focus_style? : <span class="fn">@style.</span>Style, history? : Int32) -&gt; Self</pre></div>
+        <div class="api-method" data-q="new"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> TextArea::new(text? : String, indent_width? : Int32, tab_indents? : Bool, show_line_numbers? : Bool, style? : <span class="fn">@style.</span>Style, cursor_style? : <span class="fn">@style.</span>Style, caret? : Caret, selection_style? : <span class="fn">@style.</span>Style, gutter_style? : <span class="fn">@style.</span>Style, gutter_focus_style? : <span class="fn">@style.</span>Style, history? : Int32) -&gt; Self</pre></div>
         <div class="api-method" data-q="offset"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> TextArea::offset(Self) -&gt; (Int32, Int32)</pre></div>
         <div class="api-method" data-q="redo"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> TextArea::redo(Self) -&gt; Bool</pre></div>
         <div class="api-method" data-q="render_line"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> TextArea::render_line(Self, Int32, <span class="fn">@geom.</span>Size) -&gt; <span class="fn">@strip.</span>Strip</pre></div>
@@ -5100,6 +5137,11 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
       <pre class="block"><span class="kw">pub</span> <span class="kw">let</span> calendar_width : Int32</pre>
       <p>Days are drawn in three cells, so a month is twenty-one cells wide.</p>
     </div>
+    <div class="api-item" data-q="widget caret">
+      <h4><span class="api-kind let">let</span><code>caret</code></h4>
+      <pre class="block"><span class="kw">pub</span> <span class="kw">let</span> caret : Caret</pre>
+      <p>The user's own shape and blink, which is what crossterm's <code>DefaultUserShape</code> and a plain shell leave on the screen.</p>
+    </div>
     <div class="api-item" data-q="widget double">
       <h4><span class="api-kind let">let</span><code>double</code></h4>
       <pre class="block"><span class="kw">pub</span> <span class="kw">let</span> double : Border</pre>
@@ -5204,6 +5246,8 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
   <span class="kw">mut</span> resize_at : Int32
   <span class="kw">mut</span> measured : <span class="fn">@geom.</span>Size
   <span class="kw">mut</span> ticked : Int32
+  <span class="kw">mut</span> caret : (Int32, Int32, <span class="fn">@widget.</span>Caret)?
+  <span class="kw">mut</span> caret_shown : Bool
 }</pre>
       <div class="api-methods">
         <div class="api-method" data-q="after"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span>[D : <span class="fn">@driver.</span>Driver] App::after(Self[D], Int32, () -&gt; Unit) -&gt; Unit</pre></div>

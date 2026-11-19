@@ -84,9 +84,16 @@ pub fn pretty() -> Demo {
 
 ///|
 pub fn masked_input() -> Demo {
-  let phone = @widget.MaskedInput::new("(###) ###-####")
-  let date = @widget.MaskedInput::new("####-##-##")
-  let key = @widget.MaskedInput::new("????-????", placeholder="·")
+  let phone = @widget.MaskedInput::new(
+    "(###) ###-####",
+    caret=Underline(blink=true),
+  )
+  let date = @widget.MaskedInput::new("####-##-##", caret=Underline(blink=true))
+  let key = @widget.MaskedInput::new(
+    "????-????",
+    placeholder="·",
+    caret=Underline(blink=true),
+  )
   Demo::new(
     "MaskedInput",
     @app.column(0, [

@@ -234,7 +234,7 @@ fn Tail::filter_bar(self : Tail, width : Int32) -> @strip.Strip {
     parts.push(@strip.Strip::of(" ", bar_style))
   }
   let middle = if self.typing {
-    "  /" + self.query + "▌  "
+    "  /" + self.query + "   "
   } else if self.query.length() > 0 {
     "  /" + self.query + "  "
   } else {
@@ -365,4 +365,30 @@ pub fn Screen::new() -> Screen {
     @app.leaf(1, tail, box=@layout.Box::new(extent=Frac(1))),
   ])
   { root, tail, }
+}
+
+///|
+/// The cells of the filter bar before the query: the margin and the three
+/// level buttons with their gaps, then `  /`.
+fn Tail::query_column(self : Tail) -> Int32 {
+  let labels : Array[String] = ["1 info", "2 warn", "3 error"]
+  let mut x = 1
+  for slot in 0..<3 {
+    x = x +
+      @strip.str_cells(
+        " " + labels[slot] + " " + self.count_slot(slot).to_string() + " ",
+      ) +
+      1
+  }
+  x + 3 + @strip.str_cells(self.query)
+}
+
+///|
+impl @widget.Widget for Tail with fn caret(self, size) {
+  guard self.typing else { return None }
+  let x = self.query_column()
+  if x >= size.width || size.height < 2 {
+    return None
+  }
+  Some(({ x, y: size.height - 2, }, Bar(blink=true)))
 }

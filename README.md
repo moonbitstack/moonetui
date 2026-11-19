@@ -111,7 +111,7 @@ fn main raise {
     @design.Styles::new(border=Heavy),
   )
   let list = @widget.ListView::new(["alpha", "beta", "gamma"])
-  let field = @widget.Input::new(placeholder="pick one")
+  let field = @widget.Input::new(placeholder="pick one", caret=Bar(blink=true))
   let line = @layout.Box::new(extent=Cells(1))
   let tree = @app.column(0, [
     @app.leaf(1, @widget.Header::new("moonetui"), box=line, name="Header"),
@@ -152,6 +152,8 @@ Its `moon.pkg` imports `app`, `design`, `driver/native`, `layout`, `style` and `
 | Decoration | `Block` — a frame, title and padding that wraps any widget |
 
 Each one has its keyboard contract, message shape and tests, and a live demo on the [documentation site](https://moonbitstack.github.io/moonetui/#/widgets) beside its source.
+
+`Input`, `TextArea` and `MaskedInput` take `caret`: the terminal's own cursor then marks where the typing goes, in the shape and blink it names — `Terminal` keeps the one the user set, and `Block`, `Underline` and `Bar` each come blinking or steady (DECSCUSR). The terminal does the blinking, so no frame is redrawn for it, and an input method opens its candidates beside it. Without `caret` the field draws its own cursor in `cursor_style`, as before. A widget of your own says where its cursor goes by implementing `Widget::caret`.
 
 ## Package map
 
@@ -207,7 +209,7 @@ moon test  --target all
 moon fmt && moon info --target all     # the diff must stay clean
 ```
 
-715 tests per backend, the same suite on wasm, wasm-gc, js and native, run on Ubuntu, macOS and Windows in CI. Every widget asserts the rows it draws, and every demo draws in a headless application.
+720 tests per backend, the same suite on wasm, wasm-gc, js and native, run on Ubuntu, macOS and Windows in CI. Every widget asserts the rows it draws, and every demo draws in a headless application.
 
 ## Conformance
 

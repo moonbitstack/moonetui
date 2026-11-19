@@ -34,6 +34,7 @@ pub struct TextArea {
   history : Int32
   style : @style.Style
   cursor_style : @style.Style
+  caret : Caret?
   selection_style : @style.Style
   gutter_style : @style.Style
   gutter_focus_style : @style.Style
@@ -47,6 +48,7 @@ pub fn TextArea::new(
   show_line_numbers~ : Bool = true,
   style~ : @style.Style = @style.Style::new(),
   cursor_style~ : @style.Style = @style.Style::new(reverse=true),
+  caret? : Caret,
   selection_style~ : @style.Style = @style.Style::new(reverse=true),
   gutter_style~ : @style.Style = @style.Style::new(dim=true),
   gutter_focus_style~ : @style.Style = @style.Style::new(),
@@ -76,6 +78,7 @@ pub fn TextArea::new(
     history,
     style,
     cursor_style,
+    caret,
     selection_style,
     gutter_style,
     gutter_focus_style,
@@ -250,7 +253,7 @@ pub impl Widget for TextArea with fn render_line(self, row, size) {
       }
     }
   }
-  if self.focused && y == self.row {
+  if self.focused && y == self.row && self.caret is None {
     let at = @strip.cells_before(line, self.col) - self.offset_x
     if at >= 0 && at < text_w {
       body = @strip.Strip::join([
@@ -1002,3 +1005,18 @@ fn line_pieces(text : String) -> Array[String] {
 
 ///|
 pub extend TextArea with Widget::{focusable, handle, hint, render_line}
+
+///|
+pub impl Widget for TextArea with fn caret(self, size) {
+  guard self.focused && self.caret is Some(caret) else { return None }
+  self.scroll_to_fit(size)
+  let gutter = self.gutter_width()
+  let y = self.row - self.offset_y
+  let x = gutter +
+    @strip.cells_before(self.lines[self.row], self.col) -
+    self.offset_x
+  if y < 0 || y >= size.height || x < gutter || x >= size.width {
+    return None
+  }
+  Some(({ x, y, }, caret))
+}

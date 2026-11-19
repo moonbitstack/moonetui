@@ -30,11 +30,14 @@ line imports `@style` and `@strip` and nothing else.
 
 A widget is a value with four operations: `render_line(row, size)` draws one row
 as a `Strip`, `hint(size)` says the size it wants, `handle(ctx, msg)` answers a
-message, and `focusable()` says whether Tab reaches it. Nothing is global and
-nothing calls back, so a widget draws in a test with no terminal at all.
+message, and `focusable()` says whether Tab reaches it. A fifth, `caret(size)`,
+is optional: a widget that takes typing returns where the terminal's own cursor
+goes and its shape (`Terminal`, or `Block`, `Underline`, `Bar`, each blinking or
+steady). Nothing is global and nothing calls back, so a widget draws in a test
+with no terminal at all.
 
 ```moonbit
-let field = @widget.Input::new(placeholder="name")
+let field = @widget.Input::new(placeholder="name", caret=Bar(blink=true))
 let at = @geom.Size::new(12, 1)
 let line = field.render_line(0, at)
 assert_eq(@strip.str_cells(line.text()), 12)

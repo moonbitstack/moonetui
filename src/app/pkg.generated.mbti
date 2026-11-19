@@ -83,6 +83,8 @@ pub struct App[D] {
   mut resize_at : Int32
   mut measured : @geom.Size
   mut ticked : Int32
+  mut caret : (Int32, Int32, @widget.Caret)?
+  mut caret_shown : Bool
 }
 pub fn[D : @driver.Driver] App::after(Self[D], Int32, () -> Unit) -> Unit
 pub fn[D] App::disable(Self[D], Int32) -> Unit

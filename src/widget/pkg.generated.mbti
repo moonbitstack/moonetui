@@ -17,6 +17,8 @@ pub let ascii : Border
 
 pub let calendar_width : Int32
 
+pub let caret : Caret
+
 pub fn clip_to(String, Int32) -> String
 
 pub let double : Border
@@ -206,6 +208,16 @@ pub fn Canvas::shapes(Self) -> Array[Shape]
 pub fn Canvas::x_range(Self) -> (Double, Double)
 pub fn Canvas::y_range(Self) -> (Double, Double)
 pub impl Widget for Canvas
+
+#derive(Eq, @debug.Debug)
+pub(all) enum Caret {
+  Terminal
+  Block(blink~ : Bool)
+  Underline(blink~ : Bool)
+  Bar(blink~ : Bool)
+}
+pub fn Caret::code(Self) -> Int32
+pub fn Caret::sequence(Self) -> String
 
 pub struct Chart {
   mut datasets : Array[Dataset]
@@ -716,6 +728,7 @@ pub struct Input {
   style : @style.Style
   placeholder_style : @style.Style
   cursor_style : @style.Style
+  caret : Caret?
 }
 pub fn Input::cursor(Self) -> Int32
 pub fn Input::cursor_column(Self, Int32) -> Int32
@@ -723,7 +736,7 @@ pub fn Input::focusable(Self) -> Bool
 pub fn Input::handle(Self, Ctx, Msg) -> Bool
 pub fn Input::hint(Self, @geom.Size) -> @geom.Size
 pub fn Input::insert(Self, String) -> Unit
-pub fn Input::new(placeholder? : String, password? : Bool, max_length? : Int32, style? : @style.Style, placeholder_style? : @style.Style, cursor_style? : @style.Style) -> Self
+pub fn Input::new(placeholder? : String, password? : Bool, max_length? : Int32, style? : @style.Style, placeholder_style? : @style.Style, cursor_style? : @style.Style, caret? : Caret) -> Self
 pub fn Input::render_line(Self, Int32, @geom.Size) -> @strip.Strip
 pub fn Input::set(Self, String) -> Unit
 pub fn Input::text(Self) -> String
@@ -953,6 +966,7 @@ pub struct MaskedInput {
   style : @style.Style
   literal_style : @style.Style
   cursor_style : @style.Style
+  caret : Caret?
 }
 pub fn MaskedInput::clear(Self) -> Unit
 pub fn MaskedInput::cursor(Self) -> Int32
@@ -960,7 +974,7 @@ pub fn MaskedInput::focusable(Self) -> Bool
 pub fn MaskedInput::handle(Self, Ctx, Msg) -> Bool
 pub fn MaskedInput::hint(Self, @geom.Size) -> @geom.Size
 pub fn MaskedInput::is_complete(Self) -> Bool
-pub fn MaskedInput::new(String, placeholder? : String, style? : @style.Style, literal_style? : @style.Style, cursor_style? : @style.Style) -> Self
+pub fn MaskedInput::new(String, placeholder? : String, style? : @style.Style, literal_style? : @style.Style, cursor_style? : @style.Style, caret? : Caret) -> Self
 pub fn MaskedInput::render_line(Self, Int32, @geom.Size) -> @strip.Strip
 pub fn MaskedInput::set(Self, String) -> Unit
 pub fn MaskedInput::text(Self) -> String
@@ -1700,6 +1714,7 @@ pub struct TextArea {
   history : Int32
   style : @style.Style
   cursor_style : @style.Style
+  caret : Caret?
   selection_style : @style.Style
   gutter_style : @style.Style
   gutter_focus_style : @style.Style
@@ -1713,7 +1728,7 @@ pub fn TextArea::hint(Self, @geom.Size) -> @geom.Size
 pub fn TextArea::insert(Self, String) -> Unit
 pub fn TextArea::line_count(Self) -> Int32
 pub fn TextArea::load_text(Self, String) -> Unit
-pub fn TextArea::new(text? : String, indent_width? : Int32, tab_indents? : Bool, show_line_numbers? : Bool, style? : @style.Style, cursor_style? : @style.Style, selection_style? : @style.Style, gutter_style? : @style.Style, gutter_focus_style? : @style.Style, history? : Int32) -> Self
+pub fn TextArea::new(text? : String, indent_width? : Int32, tab_indents? : Bool, show_line_numbers? : Bool, style? : @style.Style, cursor_style? : @style.Style, caret? : Caret, selection_style? : @style.Style, gutter_style? : @style.Style, gutter_focus_style? : @style.Style, history? : Int32) -> Self
 pub fn TextArea::offset(Self) -> (Int32, Int32)
 pub fn TextArea::redo(Self) -> Bool
 pub fn TextArea::render_line(Self, Int32, @geom.Size) -> @strip.Strip
@@ -1877,4 +1892,5 @@ pub(open) trait Widget {
   fn hint(Self, @geom.Size) -> @geom.Size
   fn handle(Self, Ctx, Msg) -> Bool
   fn focusable(Self) -> Bool
+  fn caret(Self, @geom.Size) -> (@geom.Offset, Caret)? = _
 }

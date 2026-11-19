@@ -3,9 +3,18 @@
 
 ///|
 pub fn input() -> Demo {
-  let name = @widget.Input::new(placeholder="your name")
-  let secret = @widget.Input::new(placeholder="password", password=true)
-  let code = @widget.Input::new(placeholder="four digits", max_length=4)
+  // One caret shape per field: a bar, a block and an underline, all blinking.
+  let name = @widget.Input::new(placeholder="your name", caret=Bar(blink=true))
+  let secret = @widget.Input::new(
+    placeholder="password",
+    password=true,
+    caret=Block(blink=true),
+  )
+  let code = @widget.Input::new(
+    placeholder="four digits",
+    max_length=4,
+    caret=Underline(blink=true),
+  )
   Demo::new(
     "Input",
     @app.column(0, [
@@ -21,7 +30,10 @@ pub fn input() -> Demo {
 
 ///|
 pub fn text_area() -> Demo {
-  let area = @widget.TextArea::new(text="fn main {\n  println(\"hello\")\n}\n")
+  let area = @widget.TextArea::new(
+    text="fn main {\n  println(\"hello\")\n}\n",
+    caret=Bar(blink=true),
+  )
   Demo::new(
     "TextArea",
     @app.column(0, [@app.leaf(1, area)]),

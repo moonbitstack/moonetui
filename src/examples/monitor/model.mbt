@@ -92,7 +92,10 @@ pub fn Monitor::new() -> Monitor {
     bar_style=@style.Style::new(fg=@theme.accent),
   )
   let clock = @widget.Digits::new(value="00:00", style=@theme.body)
-  let cmd = @widget.Input::new(placeholder="sort, alert or quit, then enter")
+  let cmd = @widget.Input::new(
+    placeholder="sort, alert or quit, then enter",
+    caret=Underline(blink=true),
+  )
   let head = @theme.line(width => {
     @theme.band(
       "moonetui",

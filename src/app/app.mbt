@@ -44,6 +44,10 @@ pub struct App[D] {
   mut resize_at : Int32
   mut measured : @geom.Size
   mut ticked : Int32
+  /// Where the terminal's cursor was left, row and column, and how it looked.
+  mut caret : (Int32, Int32, @widget.Caret)?
+  /// A caret was shown, so the user's own shape is put back on the way out.
+  mut caret_shown : Bool
 }
 
 ///|
@@ -99,6 +103,8 @@ pub fn[D] App::new(
     resize_at: 0,
     measured: @geom.Size::new(80, 24),
     ticked: 0,
+    caret: None,
+    caret_shown: false,
   }
 }
 
@@ -124,6 +130,9 @@ pub fn[D : @driver.Driver] App::start(self : App[D]) -> Unit raise {
 pub fn[D : @driver.Driver] App::stop(self : App[D]) -> Unit raise {
   self.running = false
   if !self.plain {
+    if self.caret_shown {
+      self.driver.write(@widget.caret.sequence())
+    }
     self.driver.write(@driver.leave())
   }
   self.driver.flush()
