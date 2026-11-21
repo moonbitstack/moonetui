@@ -29,7 +29,7 @@ Cell buffer · differential ANSI renderer · incremental key parser · layout ·
 |:--|:--|
 | **Synchronous core** | No async and no hidden event loop. The host calls one `step()`: poll, parse, dispatch, lay out, compose, diff, write. |
 | **Differential renderer** | Two frames become the runs of cells that changed, and only the escape sequences needed to draw them. A widget that moved its cursor redraws its own rows and leaves the rest of the screen standing. |
-| **A CSS-like design system** | Selectors over name, id, class and `:focus`, `:hover`, `:disabled`, stacked by specificity and cascade, with inheritance, borders, padding, margins, docks, grid spans and transitions. |
+| **A CSS-like design system** | Selectors over name, id, class and `:focus`, `:hover`, `:disabled`, stacked by specificity and cascade, with inheritance, borders, padding, margins, docks, grid spans and transitions. A `Theme` holds the look as one colour per role and one faint step below them, and the band, the key bar and a panel's head are drawn from it, so a look changes in one place. |
 | **Unicode-aware** | Every line is measured in terminal columns over a generated width table: wide CJK, double-width emoji, combining marks. |
 | **Four backends** | The same code and the same test suite on wasm, wasm-gc, js and native. |
 | **Any wire** | A modern terminal with true colour, a serial-era terminal with eight colours, a browser canvas, or a bare UART with no cursor addressing at all. |
@@ -168,11 +168,11 @@ Each one has its keyboard contract, message shape and tests, and a live demo on 
 | `@driver` | The seam to a terminal, and a headless terminal for tests |
 | `@vt` | A virtual terminal: the screen an escape stream draws, for the browser driver, tests and screenshots |
 | `@layout` | Sizes along an axis, the grid with spans and gutters, and anchored, pivoted placement |
-| `@design` | Rules over name, id, class and state; borders, padding, margins, alignment, docks, offsets, transitions, and the semantic `Theme` |
+| `@design` | Rules over name, id, class and state; borders, padding, margins, alignment, docks, offsets, transitions; the semantic `Theme`, the house look, and the three rows a screen is framed with |
 | `@widget` | The widget contract and the inventory |
 | `@app` | The widget tree, focus ring, scroll containers, docks, grids, screens, timers and the frame loop |
 | `@driver/native` · `@driver/node` · `@driver/web` | A real terminal through the C library; Node; a canvas in the browser |
-| `examples/theme` | The look the examples share: one palette, one sheet, the header and key bar every screen wears |
+| `examples/theme` | The names the examples call the house look by, and the sheet, the band and the key bar they share |
 | `examples/snake` · `examples/life` · `examples/game2048` | Three games, each with the frame test that plays it |
 | `examples/pulse` | A dashboard: a rolling window drawn as a spectrum, a rate, and a hold |
 | `examples/donut` | A torus sampled, turned and shaded into characters, with a z-buffer |

@@ -86,6 +86,18 @@ assert_eq(node.id(), 1)
 `set_theme` on a running application swaps the sheet in place, so a light and a
 dark look are the same tree.
 
+`@design.studio` is the house look: a near-black ground, words a step off white,
+one blue that names a thing. A theme also draws the three rows a screen is
+framed with — the band along the top, the key bar at the foot, the head of a
+panel — so carry no palette of your own:
+
+```moonbit
+let look = @design.studio
+let band = look.band("moonetui", note="ctrl-c to quit", width=30)
+assert_eq(band.cell_length(), 30)
+assert_eq(look.panel_head("tables", count="5", width=20).cell_length(), 20)
+```
+
 ## Keep the choice outside the widget
 
 `StatefulList` and `StatefulTable` draw from a state the caller owns, and move

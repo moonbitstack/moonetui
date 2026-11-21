@@ -1716,6 +1716,14 @@ sheet.add(
     <li><strong>Transitions</strong> — an offset moves a node without telling the layout; a transition glides it to wherever the next layout puts it.</li>
   </ul>
 
+  <h3>One look, once</h3>
+  <p>A <code class="inline">Theme</code> holds a colour for each semantic role, and one more step below them: <code class="inline">faint</code> is what is there but not meant to be read. <code class="inline">@design.studio</code> is the look this site and every example wear — a near-black ground, words a step off white, one blue that names a thing and a second that answers it. A theme also knows how its own roles read: <code class="inline">mark()</code> is a wordmark, <code class="inline">quiet()</code> a note, <code class="inline">cursor()</code> the row under the keyboard.</p>
+  <pre class="block"><span class="kw">let</span> look = <span class="fn">@design.</span>studio
+<span class="kw">let</span> band = look.band(<span class="st">&quot;dbmux&quot;</span>, subject=<span class="st">&quot;shop · postgres&quot;</span>, note=<span class="st">&quot;5 tables&quot;</span>, width=<span class="kw">80</span>)
+<span class="kw">let</span> keys = look.keys([(<span class="st">&quot;q&quot;</span>, <span class="st">&quot;quit&quot;</span>), (<span class="st">&quot;tab&quot;</span>, <span class="st">&quot;next&quot;</span>)], width=<span class="kw">80</span>)
+<span class="kw">let</span> head = look.panel_head(<span class="st">&quot;tables&quot;</span>, count=<span class="st">&quot;5&quot;</span>, width=<span class="kw">30</span>, active=<span class="kw">true</span>)</pre>
+  <p>The three rows a screen is framed with come from the theme, so a programme that changes its look changes them with it: the band along the top, the key bar at the foot, and the head of a panel with its hairline running to the edge. <code class="inline">@widget.StripRow</code> mounts one as a node of its own, and draws it again at whatever width the frame gives it. Nothing in an application carries a palette of its own.</p>
+
   <h3>Scroll containers and docks</h3>
   <p>A pane sizes its child to the child's own content, shows a window of it, draws bars that track the window, and moves by wheel, by the arrow, page, home and end keys, and to whatever just took focus. A docked child sits against an edge of its container, over the flow that gives up the space.</p>
 
