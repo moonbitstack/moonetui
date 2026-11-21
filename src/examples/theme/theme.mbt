@@ -1,118 +1,116 @@
 // Copyright 2026 Leo Cheng
 // SPDX-License-Identifier: Apache-2.0
 //
-// The look every example wears: one palette, one sheet, and the four strips a
-// screen is framed with — a title band, a rule under it, a panel head and the
-// key bar at the foot. The palette is the one on the project's pages, so a
-// screenshot and the page beside it are the same picture.
+// The look every example wears, under the names the examples call it by. The
+// colours, the styles and the four strips a screen is framed with are the
+// library's house look; this module only says what each role is called here.
+
+///|
+/// The house look, as a theme.
+pub let look : @design.Theme = @design.studio
 
 ///|
 /// The examples' blue: the wordmark, a panel that has the keyboard, the bar
 /// that marks the row under the cursor.
-pub let accent : @style.Colour = @style.Rgb(0x7a, 0xa2, 0xf7)
+pub let accent : @style.Colour = look.colour(@design.Primary)
 
 ///|
 /// The second emphasis, for the thing the reader is about to do.
-pub let accent_alt : @style.Colour = @style.Rgb(0xbb, 0x9a, 0xf7)
+pub let accent_alt : @style.Colour = look.colour(@design.Secondary)
 
 ///|
 /// Cooler than the accent, for a value that is live: a rate, a clock, a bar
 /// that is still filling.
-pub let cool : @style.Colour = @style.Rgb(0x7d, 0xdf, 0xff)
+pub let cool : @style.Colour = look.colour(@design.Accent)
 
 ///|
 /// Body text: near-white, never pure white, which glares on a dark terminal.
-pub let ink : @style.Colour = @style.Rgb(0xdc, 0xe3, 0xf1)
+pub let ink : @style.Colour = look.colour(@design.Text)
 
 ///|
 /// Notes, keys, and anything the eye should reach last.
-pub let muted : @style.Colour = @style.Rgb(0x8b, 0x96, 0xab)
+pub let muted : @style.Colour = look.colour(@design.Muted)
 
 ///|
 /// What is there but not meant to be read: separators, folded text, a pane
 /// that has no keyboard.
-pub let faint : @style.Colour = @style.Rgb(0x5c, 0x67, 0x78)
+pub let faint : @style.Colour = look.faint
 
 ///|
 /// The ground of a title band or a bar: one step up from the terminal's black,
 /// so the band reads as a surface rather than as a row of text.
-pub let surface : @style.Colour = @style.Rgb(0x16, 0x1b, 0x27)
+pub let surface : @style.Colour = look.colour(@design.Surface)
 
 ///|
 /// A row of a table or a list under the cursor.
-pub let picked : @style.Colour = @style.Rgb(0x1e, 0x27, 0x3b)
+pub let picked : @style.Colour = look.colour(@design.Panel)
 
 ///|
 /// A thing going well: the snake's body, a finished bar.
-pub let good : @style.Colour = @style.Rgb(0x9e, 0xce, 0x6a)
+pub let good : @style.Colour = look.colour(@design.Success)
 
 ///|
 /// A thing to notice: a warning, a paused clock.
-pub let warn : @style.Colour = @style.Rgb(0xe0, 0xaf, 0x68)
+pub let warn : @style.Colour = look.colour(@design.Warning)
 
 ///|
 /// A thing gone wrong, or the apple.
-pub let bad : @style.Colour = @style.Rgb(0xf7, 0x76, 0x8e)
+pub let bad : @style.Colour = look.colour(@design.Error)
 
 ///|
 /// The hairline between two panes, drawn in the terminal's own cells.
-pub let edge : @style.Style = @style.Style::new(fg=@style.Rgb(0x2c, 0x35, 0x48))
+pub let edge : @style.Style = look.edge()
 
 ///|
 /// A wordmark: bold in the accent.
-pub let mark : @style.Style = @style.Style::new(fg=accent, bold=true)
+pub let mark : @style.Style = look.mark()
 
 ///|
 /// Body text in its own style, for a screen that builds a strip by hand.
-pub let body : @style.Style = @style.Style::new(fg=ink)
+pub let body : @style.Style = look.fg(@design.Text)
 
 ///|
 /// An identifier: an accent that names a thing without shouting it.
-pub let identifier : @style.Style = @style.Style::new(fg=accent)
+pub let identifier : @style.Style = look.fg(@design.Primary)
 
 ///|
 /// A title in the body colour.
-pub let title : @style.Style = @style.Style::new(fg=ink, bold=true)
+pub let title : @style.Style = look.title()
 
 ///|
 /// A panel that has the keyboard writes its name in the accent.
-pub let live : @style.Style = @style.Style::new(fg=accent, bold=true)
+pub let live : @style.Style = look.live()
 
 ///|
 /// A panel that does not, in the quieter note colour.
-pub let quiet : @style.Style = @style.Style::new(fg=muted)
+pub let quiet : @style.Style = look.quiet()
 
 ///|
 /// A mark that is there but carries nothing yet: an unfilled dot, an empty
 /// checkbox.
-pub let faint_style : @style.Style = @style.Style::new(fg=faint)
+pub let faint_style : @style.Style = look.dim()
 
 ///|
 /// The row under the cursor: a lifted ground, not a block of colour, so the
 /// text in it stays as readable as the text around it.
-pub let cursor : @style.Style = @style.Style::new(fg=ink, bg=picked, bold=true)
+pub let cursor : @style.Style = look.cursor()
 
 ///|
 /// The bar in front of the row under the cursor.
-pub let marker : @style.Style = @style.Style::new(
-  fg=accent,
-  bg=picked,
-  bold=true,
-)
+pub let marker : @style.Style = look.marker()
 
 ///|
 /// A key on the key bar: dark on the note colour, the way a keycap reads.
-pub let cap : @style.Style = @style.Style::new(fg=surface, bg=muted)
+pub let cap : @style.Style = look.cap()
 
 ///|
-/// The sheet every example shares. The renderer quantises a true colour to
-/// what the terminal can draw, so these stay right on an 8-colour console.
+/// The sheet every example shares, plus the three classes its screens hang on
+/// their nodes: a framed box, a bar docked to the foot, and the header strip.
+/// The renderer quantises a true colour to what the terminal can draw, so these
+/// stay right on an 8-colour console.
 pub fn sheet() -> @design.Stylesheet {
-  let sheet = @design.Stylesheet::new()
-  sheet.add(
-    @design.Sel::new(),
-    @design.Styles::new(text=@style.Style::new(fg=ink)),
-  )
+  let sheet = look.sheet()
+  sheet.add(@design.Sel::new(), @design.Styles::new(text=body))
   sheet.add(@design.Sel::new(name="Header"), @design.Styles::new(text=mark))
   sheet.add(
     @design.Sel::new(classes=["framed"]),
@@ -125,25 +123,13 @@ pub fn sheet() -> @design.Stylesheet {
     @design.Sel::new(classes=["bar"]),
     @design.Styles::new(dock=@design.Bottom),
   )
-  sheet.add(
-    @design.Sel::new(classes=["muted"]),
-    @design.Styles::new(text=@style.Style::new(fg=muted)),
-  )
-  sheet.add(
-    @design.Sel::new(classes=["accent"]),
-    @design.Styles::new(text=@style.Style::new(bold=true, fg=accent_alt)),
-  )
   sheet
 }
 
 ///|
 /// `text` repeated `count` times.
 pub fn repeat(text : String, count : Int32) -> String {
-  let out = StringBuilder()
-  for _ in 0..<count {
-    out.write_string(text)
-  }
-  out.to_string()
+  text.repeat(count)
 }
 
 ///|
@@ -159,94 +145,50 @@ pub fn fit(text : String, width : Int32) -> String {
 
 ///|
 /// The band along the top: the program's name, what it is showing, and a note
-/// on the right, on a surface one step above the terminal's own.
-///
-/// The band is drawn as a background, so a screen with a band and a key bar at
-/// the foot reads as a framed panel rather than as loose text.
+/// on the right.
 pub fn band(
   name : String,
   subject~ : String = "",
   note~ : String = "",
   width~ : Int32,
 ) -> @strip.Strip {
-  let ground : @style.Style = @style.Style::new(fg=ink, bg=surface)
-  let head : @style.Style = @style.Style::new(fg=accent, bg=surface, bold=true)
-  let body : @style.Style = @style.Style::new(fg=muted, bg=surface)
-  let tail : @style.Style = @style.Style::new(fg=ink, bg=surface)
-  let left : Array[@strip.Seg] = []
-  left.push(@strip.Seg::new(" " + name + " ", head))
-  if subject != "" {
-    left.push(@strip.Seg::new(" " + subject, body))
-  }
-  let lead = @strip.Strip::from_segs(left)
-  let room = if width - @strip.str_cells(note) - 2 > 0 {
-    width - @strip.str_cells(note) - 2
-  } else {
-    0
-  }
-  let first = lead.pad_to(room, ground)
-  let right = @strip.Strip::of(note + " ", tail)
-  @strip.Strip::join([first, right]).crop(0, width).pad_to(width, ground)
+  look.band(name, subject~, note~, width~)
 }
 
 ///|
-/// The key bar at the foot: each key in its cap, its meaning beside it, and the
-/// whole row on the surface the band is on.
+/// The key bar at the foot: each key in its cap, its meaning beside it.
 pub fn keys(pairs : Array[(String, String)], width~ : Int32) -> @strip.Strip {
-  let ground : @style.Style = @style.Style::new(fg=muted, bg=surface)
-  let segs : Array[@strip.Seg] = []
-  segs.push(@strip.Seg::new(" ", ground))
-  for pair in pairs {
-    let (key, meaning) = pair
-    segs.push(@strip.Seg::new(" " + key + " ", cap))
-    segs.push(@strip.Seg::new(" " + meaning + "  ", ground))
-  }
-  @strip.Strip::from_segs(segs).crop(0, width).pad_to(width, ground)
+  look.keys(pairs, width~)
 }
 
 ///|
 /// The head of a panel: its name, what it holds, and a hairline rule that runs
-/// to the panel's edge. A panel with the keyboard says so in the accent.
+/// to the panel's edge.
 pub fn head(
   name : String,
   count~ : String = "",
   width~ : Int32,
   active~ : Bool = false,
+  tone~ : @style.Colour? = None,
 ) -> @strip.Strip {
-  let style = if active { live } else { quiet }
-  let label = @strip.Strip::of(" " + name.to_upper(), style)
-  let tally = @strip.Strip::of(
-    " " + count + " ",
-    if active {
-      live
-    } else {
-      faint_style
-    },
-  )
-  let room = @strip.str_cells(label.text()) + @strip.str_cells(tally.text())
-  let rule = repeat("─", if width - room > 0 { width - room } else { 0 })
-  @strip.Strip::join([label, @strip.Strip::of(rule, edge), tally])
-  .crop(0, width)
-  .pad_to(width, @style.Style::new())
+  look.panel_head(name, count~, width~, active~, tone~)
 }
 
 ///|
 /// A full-width rule, for a screen that has more than one band of content.
 pub fn rule(width~ : Int32) -> @strip.Strip {
-  @strip.Strip::of(repeat("─", width), edge)
+  look.rule(width~)
 }
 
 ///|
-/// One column of a row of panes: a hairline down the height, so two panes read
-/// as two panes and not as one wide table.
+/// One column of a row of panes: a hairline down the height.
 pub fn divider(height~ : Int32) -> @strip.Strip {
-  @strip.Strip::of(repeat("│", height), edge)
+  look.divider(height~)
 }
 
 ///|
 /// The strip at the top: a title on the left, a note on the right, in the
-/// sheet's header role. A screen that wants the example palette's band draws
-/// `band` itself; this is the library widget in the sheet's colours.
+/// sheet's header role.
 pub fn header(title : String, note~ : String = "") -> @widget.Header {
   @widget.Header::new(title, note~)
 }
@@ -259,33 +201,8 @@ pub fn footer(keys : Array[(String, String)]) -> @widget.Footer {
 }
 
 ///|
-priv struct Line {
-  draw : (Int32) -> @strip.Strip
-}
-
-///|
-impl @widget.Widget for Line with fn render_line(self, _row, size) {
-  (self.draw)(size.width)
-}
-
-///|
-impl @widget.Widget for Line with fn hint(_self, size) {
-  @geom.Size::new(size.width, 1)
-}
-
-///|
-impl @widget.Widget for Line with fn handle(_self, _ctx, _msg) {
-  false
-}
-
-///|
-impl @widget.Widget for Line with fn focusable(_self) {
-  false
-}
-
-///|
 /// One row drawn by a function of its width: how a screen mounts the band or
 /// the key bar as a node of its own.
 pub fn line(draw : (Int32) -> @strip.Strip) -> &@widget.Widget {
-  Line::{ draw, }
+  @widget.StripRow::new(draw)
 }

@@ -77,6 +77,11 @@ pub fn Role::note(self : Role) -> String {
 ///|
 /// A set of semantic colours as one value: everything a look is made of,
 /// switched as a whole.
+///
+/// `faint` carries no role: it is the step below `muted`, for what is there but
+/// not meant to be read — a separator, folded text, a panel that has no
+/// keyboard. A role says what a colour means, and a step says only how loud it
+/// is, so the two are kept apart.
 #derive(Eq, Debug)
 pub(all) struct Theme {
   name : String
@@ -87,6 +92,7 @@ pub(all) struct Theme {
   panel : @style.Colour
   text : @style.Colour
   muted : @style.Colour
+  faint : @style.Colour
   success : @style.Colour
   warning : @style.Colour
   error : @style.Colour
@@ -104,6 +110,7 @@ pub fn Theme::new(
   panel~ : @style.Colour = @style.Colour::rgb(24, 30, 42),
   text~ : @style.Colour = @style.Colour::rgb(201, 212, 232),
   muted~ : @style.Colour = @style.Colour::rgb(110, 122, 144),
+  faint~ : @style.Colour = @style.Colour::rgb(78, 88, 106),
   success~ : @style.Colour = @style.green,
   warning~ : @style.Colour = @style.yellow,
   error~ : @style.Colour = @style.red,
@@ -118,6 +125,7 @@ pub fn Theme::new(
     panel,
     text,
     muted,
+    faint,
     success,
     warning,
     error,
@@ -140,6 +148,7 @@ pub let light : Theme = Theme::new(
   panel=@style.Colour::rgb(232, 235, 242),
   text=@style.Colour::rgb(28, 32, 40),
   muted=@style.Colour::rgb(110, 118, 134),
+  faint=@style.Colour::rgb(150, 158, 172),
   success=@style.Colour::rgb(0, 112, 60),
   warning=@style.Colour::rgb(166, 102, 0),
   error=@style.Colour::rgb(178, 24, 24),
@@ -158,6 +167,7 @@ pub let nord : Theme = Theme::new(
   panel=@style.Colour::rgb(59, 66, 82),
   text=@style.Colour::rgb(236, 239, 244),
   muted=@style.Colour::rgb(76, 86, 106),
+  faint=@style.Colour::rgb(64, 74, 92),
   success=@style.Colour::rgb(163, 190, 140),
   warning=@style.Colour::rgb(235, 203, 139),
   error=@style.Colour::rgb(191, 97, 106),
@@ -165,14 +175,39 @@ pub let nord : Theme = Theme::new(
 )
 
 ///|
-/// Every theme this library carries.
+/// The look this project's own pages and screens wear: a near-black ground,
+/// words a step off white, one blue that names a thing and a second that
+/// answers it. Every programme built on this library is framed with it unless
+/// it brings a look of its own.
+pub let studio : Theme = Theme::new(
+  name="studio",
+  primary=@style.Colour::rgb(0x7A, 0xA2, 0xF7),
+  secondary=@style.Colour::rgb(0xBB, 0x9A, 0xF7),
+  accent=@style.Colour::rgb(0x7D, 0xDF, 0xFF),
+  surface=@style.Colour::rgb(0x16, 0x1B, 0x27),
+  panel=@style.Colour::rgb(0x1E, 0x27, 0x3B),
+  text=@style.Colour::rgb(0xDC, 0xE3, 0xF1),
+  muted=@style.Colour::rgb(0x8B, 0x96, 0xAB),
+  faint=@style.Colour::rgb(0x5C, 0x67, 0x78),
+  success=@style.Colour::rgb(0x9E, 0xCE, 0x6A),
+  warning=@style.Colour::rgb(0xE0, 0xAF, 0x68),
+  error=@style.Colour::rgb(0xF7, 0x76, 0x8E),
+  border=@style.Colour::rgb(0x2C, 0x35, 0x48),
+)
+
+///|
+/// Every theme a screen offers to switch between.
 pub fn themes() -> Array[Theme] {
   [dark, light, nord]
 }
 
 ///|
-/// The theme of that name, if there is one.
+/// The theme of that name, if this library carries one: one of the three a
+/// screen switches between, or the house look.
 pub fn Theme::of(name : String) -> Theme? {
+  if name == studio.name {
+    return Some(studio)
+  }
   themes().iter().find_first(theme => theme.name == name)
 }
 
@@ -228,6 +263,62 @@ pub fn Theme::fill(self : Theme, role : Role) -> @style.Style {
 /// What the tree inherits: the text colour on the surface.
 pub fn Theme::base(self : Theme) -> @style.Style {
   @style.Style::new(fg=self.text, bg=self.surface)
+}
+
+///|
+/// A wordmark: bold in the primary colour.
+pub fn Theme::mark(self : Theme) -> @style.Style {
+  @style.Style::new(fg=self.primary, bold=true)
+}
+
+///|
+/// The name of a panel that has the keyboard. It reads as a wordmark, and says
+/// the same thing: this is the one being typed into.
+pub fn Theme::live(self : Theme) -> @style.Style {
+  self.mark()
+}
+
+///|
+/// A title: bold in the colour of words.
+pub fn Theme::title(self : Theme) -> @style.Style {
+  @style.Style::new(fg=self.text, bold=true)
+}
+
+///|
+/// Notes and keys: words that matter less than the ones beside them.
+pub fn Theme::quiet(self : Theme) -> @style.Style {
+  @style.Style::new(fg=self.muted)
+}
+
+///|
+/// What is there but not meant to be read.
+pub fn Theme::dim(self : Theme) -> @style.Style {
+  @style.Style::new(fg=self.faint)
+}
+
+///|
+/// The hairline between two panes, drawn in the terminal's own cells.
+pub fn Theme::edge(self : Theme) -> @style.Style {
+  @style.Style::new(fg=self.border)
+}
+
+///|
+/// The row under the cursor: a lifted ground, not a block of colour, so the
+/// words in it stay as readable as the words around it.
+pub fn Theme::cursor(self : Theme) -> @style.Style {
+  @style.Style::new(fg=self.text, bg=self.panel, bold=true)
+}
+
+///|
+/// The bar in front of the row under the cursor.
+pub fn Theme::marker(self : Theme) -> @style.Style {
+  @style.Style::new(fg=self.primary, bg=self.panel, bold=true)
+}
+
+///|
+/// A key of a key bar: dark on the note colour, the way a keycap reads.
+pub fn Theme::cap(self : Theme) -> @style.Style {
+  @style.Style::new(fg=self.surface, bg=self.muted)
 }
 
 ///|

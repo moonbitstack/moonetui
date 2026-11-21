@@ -1592,6 +1592,16 @@ pub fn Static::set_style(Self, @style.Style) -> Unit
 pub fn Static::text(Self) -> String
 pub impl Widget for Static
 
+pub struct StripRow {
+  draw : (Int32) -> @strip.Strip
+}
+pub fn StripRow::focusable(Self) -> Bool
+pub fn StripRow::handle(Self, Ctx, Msg) -> Bool
+pub fn StripRow::hint(Self, @geom.Size) -> @geom.Size
+pub fn StripRow::new((Int32) -> @strip.Strip) -> Self
+pub fn StripRow::render_line(Self, Int32, @geom.Size) -> @strip.Strip
+pub impl Widget for StripRow
+
 #derive(Eq, @debug.Debug)
 pub(all) enum Summary {
   Maximum

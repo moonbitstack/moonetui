@@ -76,7 +76,7 @@
 
   <div class="stats">
     <div class="stat"><div class="n">4</div><div class="l">backends · wasm, wasm-gc, js, native</div></div>
-    <div class="stat"><div class="n" data-count="tests">720</div><div class="l">tests per backend, all passing</div></div>
+    <div class="stat"><div class="n" data-count="tests">730</div><div class="l">tests per backend, all passing</div></div>
     <div class="stat"><div class="n" data-count="widgets">55</div><div class="l">widgets, from toggles to trees</div></div>
     <div class="stat"><div class="n">0</div><div class="l">dependencies · a single pure core</div></div>
   </div>
@@ -2131,10 +2131,10 @@ priv <span class="kw">struct</span> Swatches {}
   <p class="lead">The same suite on four backends — a regression in one world fails loudly everywhere.</p>
 
   <div class="stats">
-    <div class="stat"><div class="n" data-count="tests">720</div><div class="l">wasm</div></div>
-    <div class="stat"><div class="n" data-count="tests">720</div><div class="l">wasm-gc</div></div>
-    <div class="stat"><div class="n" data-count="tests">720</div><div class="l">js</div></div>
-    <div class="stat"><div class="n" data-count="tests">720</div><div class="l">native</div></div>
+    <div class="stat"><div class="n" data-count="tests">730</div><div class="l">wasm</div></div>
+    <div class="stat"><div class="n" data-count="tests">730</div><div class="l">wasm-gc</div></div>
+    <div class="stat"><div class="n" data-count="tests">730</div><div class="l">js</div></div>
+    <div class="stat"><div class="n" data-count="tests">730</div><div class="l">native</div></div>
   </div>
 
   <h3>Run the suite</h3>
@@ -2167,7 +2167,7 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
 <!-- generated:api -->
   <div class="api-tools">
     <input class="api-filter" type="search" placeholder="Filter by name, e.g. Button or render" aria-label="Filter the API">
-    <span class="api-count" data-total="1107">1107 entries</span>
+    <span class="api-count" data-total="1128">1128 entries</span>
   </div>
   <div class="api-index">
     <button type="button" data-pkg="api-geom">geom<span>43</span></button>
@@ -2178,8 +2178,8 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
     <button type="button" data-pkg="api-input">input<span>6</span></button>
     <button type="button" data-pkg="api-vt">vt<span>12</span></button>
     <button type="button" data-pkg="api-comp">comp<span>21</span></button>
-    <button type="button" data-pkg="api-design">design<span>56</span></button>
-    <button type="button" data-pkg="api-widget">widget<span>745</span></button>
+    <button type="button" data-pkg="api-design">design<span>71</span></button>
+    <button type="button" data-pkg="api-widget">widget<span>751</span></button>
     <button type="button" data-pkg="api-app">app<span>60</span></button>
     <button type="button" data-pkg="api-driver">driver<span>28</span></button>
     <button type="button" data-pkg="api-driver-native">driver/native<span>11</span></button>
@@ -3052,21 +3052,37 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
   panel : <span class="fn">@style.</span>Colour
   text : <span class="fn">@style.</span>Colour
   muted : <span class="fn">@style.</span>Colour
+  faint : <span class="fn">@style.</span>Colour
   success : <span class="fn">@style.</span>Colour
   warning : <span class="fn">@style.</span>Colour
   error : <span class="fn">@style.</span>Colour
   border : <span class="fn">@style.</span>Colour
 }</pre>
       <p>A set of semantic colours as one value: everything a look is made of, switched as a whole.</p>
+      <p><code>faint</code> carries no role: it is the step below <code>muted</code>, for what is there but not meant to be read — a separator, folded text, a panel that has no keyboard. A role says what a colour means, and a step says only how loud it is, so the two are kept apart.</p>
       <div class="api-methods">
+        <div class="api-method" data-q="band"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Theme::band(Self, String, subject? : String, note? : String, width~ : Int32) -&gt; <span class="fn">@strip.</span>Strip</pre><p>The band along the top: the programme's name, what it is showing, and a note on the right, on a ground one step above the terminal's own.</p><p>The band is drawn as a background, so a screen with a band and a key bar at the foot reads as a framed panel rather than as loose words.</p></div>
         <div class="api-method" data-q="base"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Theme::base(Self) -&gt; <span class="fn">@style.</span>Style</pre><p>What the tree inherits: the text colour on the surface.</p></div>
+        <div class="api-method" data-q="cap"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Theme::cap(Self) -&gt; <span class="fn">@style.</span>Style</pre><p>A key of a key bar: dark on the note colour, the way a keycap reads.</p></div>
         <div class="api-method" data-q="colour"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Theme::colour(Self, Role) -&gt; <span class="fn">@style.</span>Colour</pre><p>The colour this role holds.</p></div>
+        <div class="api-method" data-q="cursor"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Theme::cursor(Self) -&gt; <span class="fn">@style.</span>Style</pre><p>The row under the cursor: a lifted ground, not a block of colour, so the words in it stay as readable as the words around it.</p></div>
+        <div class="api-method" data-q="dim"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Theme::dim(Self) -&gt; <span class="fn">@style.</span>Style</pre><p>What is there but not meant to be read.</p></div>
+        <div class="api-method" data-q="divider"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Theme::divider(Self, height~ : Int32) -&gt; <span class="fn">@strip.</span>Strip</pre><p>One column of a row of panes: a hairline down the height, so two panes read as two panes and not as one wide table.</p></div>
+        <div class="api-method" data-q="edge"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Theme::edge(Self) -&gt; <span class="fn">@style.</span>Style</pre><p>The hairline between two panes, drawn in the terminal's own cells.</p></div>
         <div class="api-method" data-q="fg"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Theme::fg(Self, Role) -&gt; <span class="fn">@style.</span>Style</pre><p>Words in this role's colour.</p></div>
         <div class="api-method" data-q="fill"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Theme::fill(Self, Role) -&gt; <span class="fn">@style.</span>Style</pre><p>A ground in this role's colour.</p></div>
-        <div class="api-method" data-q="new"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Theme::new(name? : String, primary? : <span class="fn">@style.</span>Colour, secondary? : <span class="fn">@style.</span>Colour, accent? : <span class="fn">@style.</span>Colour, surface? : <span class="fn">@style.</span>Colour, panel? : <span class="fn">@style.</span>Colour, text? : <span class="fn">@style.</span>Colour, muted? : <span class="fn">@style.</span>Colour, success? : <span class="fn">@style.</span>Colour, warning? : <span class="fn">@style.</span>Colour, error? : <span class="fn">@style.</span>Colour, border? : <span class="fn">@style.</span>Colour) -&gt; Self</pre><p>A theme of the default look, with any role left out taken from <code>dark</code>.</p></div>
-        <div class="api-method" data-q="of"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Theme::of(String) -&gt; Self?</pre><p>The theme of that name, if there is one.</p></div>
+        <div class="api-method" data-q="keys"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Theme::keys(Self, Array[(String, String)], width~ : Int32) -&gt; <span class="fn">@strip.</span>Strip</pre><p>The key bar at the foot: each key in its cap, what it does beside it, and the whole row on the ground the band is on.</p></div>
+        <div class="api-method" data-q="live"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Theme::live(Self) -&gt; <span class="fn">@style.</span>Style</pre><p>The name of a panel that has the keyboard. It reads as a wordmark, and says the same thing: this is the one being typed into.</p></div>
+        <div class="api-method" data-q="mark"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Theme::mark(Self) -&gt; <span class="fn">@style.</span>Style</pre><p>A wordmark: bold in the primary colour.</p></div>
+        <div class="api-method" data-q="marker"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Theme::marker(Self) -&gt; <span class="fn">@style.</span>Style</pre><p>The bar in front of the row under the cursor.</p></div>
+        <div class="api-method" data-q="new"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Theme::new(name? : String, primary? : <span class="fn">@style.</span>Colour, secondary? : <span class="fn">@style.</span>Colour, accent? : <span class="fn">@style.</span>Colour, surface? : <span class="fn">@style.</span>Colour, panel? : <span class="fn">@style.</span>Colour, text? : <span class="fn">@style.</span>Colour, muted? : <span class="fn">@style.</span>Colour, faint? : <span class="fn">@style.</span>Colour, success? : <span class="fn">@style.</span>Colour, warning? : <span class="fn">@style.</span>Colour, error? : <span class="fn">@style.</span>Colour, border? : <span class="fn">@style.</span>Colour) -&gt; Self</pre><p>A theme of the default look, with any role left out taken from <code>dark</code>.</p></div>
+        <div class="api-method" data-q="of"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Theme::of(String) -&gt; Self?</pre><p>The theme of that name, if this library carries one: one of the three a screen switches between, or the house look.</p></div>
+        <div class="api-method" data-q="panel_head"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Theme::panel_head(Self, String, count? : String, width~ : Int32, active? : Bool, tone? : <span class="fn">@style.</span>Colour?) -&gt; <span class="fn">@strip.</span>Strip</pre><p>The head of a panel: its name, what it holds, and a hairline that runs to the panel's edge. A panel that has the keyboard says so in the primary colour, or in <code>tone</code> when the caller has something more urgent to say — a confirmation, a failure.</p></div>
+        <div class="api-method" data-q="quiet"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Theme::quiet(Self) -&gt; <span class="fn">@style.</span>Style</pre><p>Notes and keys: words that matter less than the ones beside them.</p></div>
+        <div class="api-method" data-q="rule"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Theme::rule(Self, width~ : Int32) -&gt; <span class="fn">@strip.</span>Strip</pre><p>A rule across the width, for a screen with more than one band of content.</p></div>
         <div class="api-method" data-q="set"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Theme::set(Self, Role, <span class="fn">@style.</span>Colour) -&gt; Self</pre><p>This theme with one role's colour changed; every other role is kept.</p></div>
         <div class="api-method" data-q="sheet"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Theme::sheet(Self) -&gt; Stylesheet</pre><p>The theme as rules: one class per role for words in its colour, and one class per role for a ground in it, so <code>set_sheet</code> with this switches everything styled by role at once.</p></div>
+        <div class="api-method" data-q="title"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Theme::title(Self) -&gt; <span class="fn">@style.</span>Style</pre><p>A title: bold in the colour of words.</p></div>
       </div>
     </div>
     <div class="api-item" data-q="design valign">
@@ -3100,6 +3116,11 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
       <pre class="block"><span class="kw">pub</span> <span class="kw">let</span> nord : Theme</pre>
       <p>The Nord look: the Polar Night ground, Snow Storm words and the Frost and Aurora colours.</p>
     </div>
+    <div class="api-item" data-q="design studio">
+      <h4><span class="api-kind let">let</span><code>studio</code></h4>
+      <pre class="block"><span class="kw">pub</span> <span class="kw">let</span> studio : Theme</pre>
+      <p>The look this project's own pages and screens wear: a near-black ground, words a step off white, one blue that names a thing and a second that answers it. Every programme built on this library is framed with it unless it brings a look of its own.</p>
+    </div>
     <div class="api-item" data-q="design roles">
       <h4><span class="api-kind fn">fn</span><code>roles</code></h4>
       <pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> roles() -&gt; Array[Role]</pre>
@@ -3107,7 +3128,7 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
     <div class="api-item" data-q="design themes">
       <h4><span class="api-kind fn">fn</span><code>themes</code></h4>
       <pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> themes() -&gt; Array[Theme]</pre>
-      <p>Every theme this library carries.</p>
+      <p>Every theme a screen offers to switch between.</p>
     </div>
   </div>
   <div class="api-pkg" id="api-widget">
@@ -4827,6 +4848,21 @@ moon fmt &amp;&amp; moon info --target all   <span class="cm"># the diff must st
         <div class="api-method" data-q="set"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Static::set(Self, String) -&gt; Unit</pre></div>
         <div class="api-method" data-q="set_style"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Static::set_style(Self, <span class="fn">@style.</span>Style) -&gt; Unit</pre></div>
         <div class="api-method" data-q="text"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> Static::text(Self) -&gt; String</pre></div>
+      </div>
+    </div>
+    <div class="api-item" data-q="widget striprow">
+      <h4><span class="api-kind type">type</span><code>StripRow</code></h4>
+      <pre class="block"><span class="kw">pub</span> <span class="kw">struct</span> StripRow {
+  draw : (Int32) -&gt; <span class="fn">@strip.</span>Strip
+}</pre>
+      <p>A row drawn by a function of its width and read again on every frame: how a screen mounts a band, a key bar or a rule as a node of its own, so the row follows the size it is given instead of the size it was built at.</p>
+      <div class="api-impls">implements <code>Widget</code></div>
+      <div class="api-methods">
+        <div class="api-method" data-q="focusable"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> StripRow::focusable(Self) -&gt; Bool</pre></div>
+        <div class="api-method" data-q="handle"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> StripRow::handle(Self, Ctx, Msg) -&gt; Bool</pre></div>
+        <div class="api-method" data-q="hint"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> StripRow::hint(Self, <span class="fn">@geom.</span>Size) -&gt; <span class="fn">@geom.</span>Size</pre></div>
+        <div class="api-method" data-q="new"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> StripRow::new((Int32) -&gt; <span class="fn">@strip.</span>Strip) -&gt; Self</pre></div>
+        <div class="api-method" data-q="render_line"><pre class="block"><span class="kw">pub</span> <span class="kw">fn</span> StripRow::render_line(Self, Int32, <span class="fn">@geom.</span>Size) -&gt; <span class="fn">@strip.</span>Strip</pre></div>
       </div>
     </div>
     <div class="api-item" data-q="widget summary">

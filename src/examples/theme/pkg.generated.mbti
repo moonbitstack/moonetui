@@ -39,7 +39,7 @@ pub fn footer(Array[(String, String)]) -> @widget.Footer
 
 pub let good : @style.Colour
 
-pub fn head(String, count? : String, width~ : Int32, active? : Bool) -> @strip.Strip
+pub fn head(String, count? : String, width~ : Int32, active? : Bool, tone? : @style.Colour?) -> @strip.Strip
 
 pub fn header(String, note? : String) -> @widget.Header
 
@@ -52,6 +52,8 @@ pub fn keys(Array[(String, String)], width~ : Int32) -> @strip.Strip
 pub fn line((Int32) -> @strip.Strip) -> &@widget.Widget
 
 pub let live : @style.Style
+
+pub let look : @design.Theme
 
 pub let mark : @style.Style
 

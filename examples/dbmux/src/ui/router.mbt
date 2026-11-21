@@ -340,7 +340,7 @@ fn Router::overlay_line(
           count=statements.length().to_string() + " statements",
           width~,
           active=true,
-          tone=look.warning,
+          tone=Some(look.warning),
         ),
       )
       lines.push(@strip.Strip::empty())
@@ -351,7 +351,7 @@ fn Router::overlay_line(
       lines.push(hint([("y", "run them"), ("any other key", "cancel")]))
     }
     @shell.Mode::Confirm => {
-      lines.push(head("confirm", width~, active=true, tone=look.error))
+      lines.push(head("confirm", width~, active=true, tone=Some(look.error)))
       lines.push(@strip.Strip::empty())
       lines.push(
         @strip.Strip::of(

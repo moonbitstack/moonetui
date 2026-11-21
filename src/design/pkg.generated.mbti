@@ -23,6 +23,8 @@ pub let nord : Theme
 
 pub fn roles() -> Array[Role]
 
+pub let studio : Theme
+
 pub fn themes() -> Array[Theme]
 
 // Errors
@@ -239,21 +241,36 @@ pub(all) struct Theme {
   panel : @style.Colour
   text : @style.Colour
   muted : @style.Colour
+  faint : @style.Colour
   success : @style.Colour
   warning : @style.Colour
   error : @style.Colour
   border : @style.Colour
 }
+pub fn Theme::band(Self, String, subject? : String, note? : String, width~ : Int32) -> @strip.Strip
 pub fn Theme::base(Self) -> @style.Style
+pub fn Theme::cap(Self) -> @style.Style
 pub fn Theme::colour(Self, Role) -> @style.Colour
+pub fn Theme::cursor(Self) -> @style.Style
+pub fn Theme::dim(Self) -> @style.Style
+pub fn Theme::divider(Self, height~ : Int32) -> @strip.Strip
+pub fn Theme::edge(Self) -> @style.Style
 pub fn Theme::equal(Self, Self) -> Bool
 pub fn Theme::fg(Self, Role) -> @style.Style
 pub fn Theme::fill(Self, Role) -> @style.Style
-pub fn Theme::new(name? : String, primary? : @style.Colour, secondary? : @style.Colour, accent? : @style.Colour, surface? : @style.Colour, panel? : @style.Colour, text? : @style.Colour, muted? : @style.Colour, success? : @style.Colour, warning? : @style.Colour, error? : @style.Colour, border? : @style.Colour) -> Self
+pub fn Theme::keys(Self, Array[(String, String)], width~ : Int32) -> @strip.Strip
+pub fn Theme::live(Self) -> @style.Style
+pub fn Theme::mark(Self) -> @style.Style
+pub fn Theme::marker(Self) -> @style.Style
+pub fn Theme::new(name? : String, primary? : @style.Colour, secondary? : @style.Colour, accent? : @style.Colour, surface? : @style.Colour, panel? : @style.Colour, text? : @style.Colour, muted? : @style.Colour, faint? : @style.Colour, success? : @style.Colour, warning? : @style.Colour, error? : @style.Colour, border? : @style.Colour) -> Self
 pub fn Theme::not_equal(Self, Self) -> Bool
 pub fn Theme::of(String) -> Self?
+pub fn Theme::panel_head(Self, String, count? : String, width~ : Int32, active? : Bool, tone? : @style.Colour?) -> @strip.Strip
+pub fn Theme::quiet(Self) -> @style.Style
+pub fn Theme::rule(Self, width~ : Int32) -> @strip.Strip
 pub fn Theme::set(Self, Role, @style.Colour) -> Self
 pub fn Theme::sheet(Self) -> Stylesheet
+pub fn Theme::title(Self) -> @style.Style
 pub fn Theme::to_repr(Self) -> @debug.Repr
 
 #derive(Eq, @debug.Debug)
