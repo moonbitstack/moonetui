@@ -235,8 +235,9 @@ fn State::press_browse(self : State, key : String) -> Array[Command] {
                       self.message = "no cell changed"
                     } else {
                       self.editor = commands.join("\n")
+                      self.console_draft = self.editor
                       self.focus = Editor
-                      self.message = "the change is on the console: enter sends it"
+                      self.message = "the change is on the console: C-r sends it"
                     }
                   Err(text) => self.message = text
                 }

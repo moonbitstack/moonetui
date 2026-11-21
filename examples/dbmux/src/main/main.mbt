@@ -733,6 +733,12 @@ async fn[D : @driver.Driver] drive(
           }
       }
     }
+    // A save that wrote a command instead of running it leaves it here, where
+    // the reader sends it from.
+    if state.console_draft != "" {
+      screen.editor().set_text(state.console_draft)
+      state.console_draft = ""
+    }
     drawn = drawn + 1
     if frames > 0 && drawn >= frames {
       alive = false

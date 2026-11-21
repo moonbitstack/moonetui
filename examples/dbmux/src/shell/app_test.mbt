@@ -439,10 +439,11 @@ test "a list's cell is written by a command on the console" {
   )
   let grid = state.grid().unwrap()
   grid.set_cell(0, "value", @table.Cell::of("b"))
-  ignore(state.press("C-s"))
-  // The command is the one the reader would have typed, and it waits on the
-  // console for the enter that sends it.
-  assert_eq(state.editor, "LSET queue 0 b")
+  let commands = state.press("C-s")
+  // Nothing is sent: the command is the one the reader would have typed, and it
+  // waits on the console, where C-r sends it.
+  assert_eq(commands.length(), 0)
+  assert_eq(state.console_draft, "LSET queue 0 b")
   assert_eq(state.focus, @shell.Focus::Editor)
   assert_eq(state.message.contains("console"), true)
 }
@@ -471,7 +472,7 @@ test "a member marked in a set leaves it by SREM, and an added one enters by SAD
   grid.set_cell(2, "member", @table.Cell::of("gamma"))
   grid.toggle_delete(0)
   ignore(state.press("C-s"))
-  assert_eq(state.editor, "SREM tags alpha\nSADD tags gamma")
+  assert_eq(state.console_draft, "SREM tags alpha\nSADD tags gamma")
 }
 
 ///|
@@ -496,7 +497,7 @@ test "a sorted set's score is written by ZADD" {
   let grid = state.grid().unwrap()
   grid.set_cell(0, "score", @table.Cell::of("7"))
   ignore(state.press("C-s"))
-  assert_eq(state.editor, "ZADD board 7 ada")
+  assert_eq(state.console_draft, "ZADD board 7 ada")
 }
 
 ///|

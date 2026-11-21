@@ -118,6 +118,10 @@ pub(all) struct State {
   mut mode : Mode
   mut message : String
   mut editor : String
+  /// A command waiting to be put on the console, where the reader sends it:
+  /// what a save writes when a change is a command and not a cell. The window
+  /// takes it on the next frame and clears it.
+  mut console_draft : String
   mut result : @db.Result?
   mut confirm : String
   mut preview : String
@@ -158,6 +162,7 @@ pub fn State::new(
     mode: Browse,
     message: "",
     editor: "",
+    console_draft: "",
     result: None,
     confirm: "",
     preview: "",
