@@ -67,7 +67,15 @@ fn positional(args : Array[String]) -> String {
 }
 
 ///|
-async fn main {
+/// The entry point, so the runtime this package names is the one that runs it:
+/// the compiler would wrap `async fn main` the same way, and then no name here
+/// would reach `moonbitlang/async` at all.
+fn main {
+  @async.run_async_main(entry)
+}
+
+///|
+async fn entry() -> Unit {
   // The first word is the program itself.
   let all = @env.args()
   let args : Array[String] = []

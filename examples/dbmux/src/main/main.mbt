@@ -330,7 +330,15 @@ fn has_flag(args : Array[String], name : String) -> Bool {
 }
 
 ///|
-async fn main {
+/// The entry point, so the runtime this package names is the one that runs it:
+/// the compiler would wrap `async fn main` the same way, and then no name here
+/// would reach `moonbitlang/async` at all.
+fn main {
+  @async.run_async_main(entry)
+}
+
+///|
+async fn entry() -> Unit {
   let args = @env.args()
   let demo = has_flag(args, "--demo")
   let target = positional(args)
