@@ -1,13 +1,13 @@
-// A header, a list, a field and a footer under Node:
-// `moon run --target js src/examples/hello`.
+// The rows of the first programme: `moon run --target js src/examples/hello/main`.
 import {
   "moonbitstack/moonetui/app",
-  "moonbitstack/moonetui/driver/node",
   "moonbitstack/moonetui/layout",
-  "moonbitstack/moonetui/style",
   "moonbitstack/moonetui/widget",
 }
 
-supported_targets = "js"
-
-pkgtype(kind: "executable")
+import {
+  "moonbitstack/moonetui/driver",
+  "moonbitstack/moonetui/examples/frames",
+  "moonbitstack/moonetui/geom",
+  "moonbitstack/moonetui/style",
+} for "test"

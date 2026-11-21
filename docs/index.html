@@ -76,7 +76,7 @@
 
   <div class="stats">
     <div class="stat"><div class="n">4</div><div class="l">backends · wasm, wasm-gc, js, native</div></div>
-    <div class="stat"><div class="n" data-count="tests">730</div><div class="l">tests per backend, all passing</div></div>
+    <div class="stat"><div class="n" data-count="tests">732</div><div class="l">tests per backend, all passing</div></div>
     <div class="stat"><div class="n" data-count="widgets">55</div><div class="l">widgets, from toggles to trees</div></div>
     <div class="stat"><div class="n">0</div><div class="l">dependencies · a single pure core</div></div>
   </div>
@@ -135,7 +135,7 @@ moon run --target native examples/dbmux/src/main -- --demo
 moon run --target native examples/mbtjj/src/main
 
 <span class="cm"># under Node</span>
-moon run --target js src/examples/hello
+moon run --target js src/examples/hello/main
 
 <span class="cm"># the gallery in a browser: build, serve the repository, open the page</span>
 moon build --target js
@@ -143,7 +143,7 @@ python -m http.server
 <span class="cm"># then http://localhost:8000/src/examples/browser/index.html</span>
 
 <span class="cm"># whole frames of plain text, as a bare serial line receives them</span>
-moon run --target native src/examples/uart</pre>
+moon run --target native src/examples/uart/main</pre>
 
   <h3>A first application</h3>
   <p>Widgets are values. They render a line at a time, report what they want through typed messages, and never call back into your code:</p>
@@ -2131,10 +2131,10 @@ priv <span class="kw">struct</span> Swatches {}
   <p class="lead">The same suite on four backends — a regression in one world fails loudly everywhere.</p>
 
   <div class="stats">
-    <div class="stat"><div class="n" data-count="tests">730</div><div class="l">wasm</div></div>
-    <div class="stat"><div class="n" data-count="tests">730</div><div class="l">wasm-gc</div></div>
-    <div class="stat"><div class="n" data-count="tests">730</div><div class="l">js</div></div>
-    <div class="stat"><div class="n" data-count="tests">730</div><div class="l">native</div></div>
+    <div class="stat"><div class="n" data-count="tests">732</div><div class="l">wasm</div></div>
+    <div class="stat"><div class="n" data-count="tests">732</div><div class="l">wasm-gc</div></div>
+    <div class="stat"><div class="n" data-count="tests">732</div><div class="l">js</div></div>
+    <div class="stat"><div class="n" data-count="tests">732</div><div class="l">native</div></div>
   </div>
 
   <h3>Run the suite</h3>

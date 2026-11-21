@@ -66,8 +66,8 @@ moon run --target native src/examples/drift/main    # a trader on six ports, wit
 moon run --target native src/examples/mon/main      # a route, a party, a wild thing in the grass
 moon run --target native src/examples/logs/main     # a tail, a level filter, a typed query
 moon run --target native src/examples/json/main     # a document as a tree: a path, folds, a query
-moon run --target js src/examples/hello         # under Node
-moon run --target native src/examples/uart      # whole frames of plain text, as a serial line gets them
+moon run --target js src/examples/hello/main       # under Node
+moon run --target native src/examples/uart/main    # whole frames of plain text, as a serial line gets them
 moon run --target native examples/dbmux/src/main -- --demo   # a database client, with a SQLite demo database
 moon run --target native examples/mbtjj/src/main             # a Jujutsu client, read from the repository you run it in
 ```
@@ -209,7 +209,7 @@ moon test  --target all
 moon fmt && moon info --target all     # the diff must stay clean
 ```
 
-730 tests per backend, the same suite on wasm, wasm-gc, js and native, run on Ubuntu, macOS and Windows in CI. Every widget asserts the rows it draws, and every demo draws in a headless application.
+732 tests per backend, the same suite on wasm, wasm-gc, js and native, run on Ubuntu, macOS and Windows in CI. Every widget asserts the rows it draws, and every demo draws in a headless application.
 
 ## Conformance
 

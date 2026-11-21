@@ -1,0 +1,25 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "moonbitstack/moonetui/examples/uart"
+
+import {
+  "moonbitstack/moonetui/app",
+  "moonbitstack/moonetui/widget",
+}
+
+// Values
+
+// Errors
+
+// Types and methods
+pub struct Screen {
+  head : @widget.Header
+  temps : @widget.Sparkline
+  status : @widget.Log
+  bar : @widget.Progress
+  root : @app.Node
+}
+pub fn Screen::new() -> Self
+
+// Type aliases
+
+// Traits

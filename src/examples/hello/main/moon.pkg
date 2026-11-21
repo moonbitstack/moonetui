@@ -1,0 +1,11 @@
+// `moon run --target js src/examples/hello/main`, under Node.
+import {
+  "moonbitstack/moonetui/app",
+  "moonbitstack/moonetui/driver/node",
+  "moonbitstack/moonetui/style",
+  "moonbitstack/moonetui/examples/hello",
+}
+
+supported_targets = "js"
+
+pkgtype(kind: "executable")

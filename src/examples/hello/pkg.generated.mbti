@@ -1,0 +1,27 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "moonbitstack/moonetui/examples/hello"
+
+import {
+  "moonbitstack/moonetui/app",
+  "moonbitstack/moonetui/widget",
+}
+
+// Values
+
+// Errors
+
+// Types and methods
+pub struct Screen {
+  head : @widget.Header
+  list : @widget.ListView
+  field : @widget.Input
+  foot : @widget.Footer
+  root : @app.Node
+}
+pub fn Screen::choose(Self, Int32) -> Unit
+pub fn Screen::chosen(Self) -> Int32
+pub fn Screen::new() -> Self
+
+// Type aliases
+
+// Traits
