@@ -173,9 +173,7 @@ pub fn redis_plan(grid : Grid) -> SavePlan raise Refused {
         updates = updates + 1
       }
     }
-  } else if columns.contains("index") ||
-    columns.contains("member") ||
-    columns.contains("score") {
+  } else if is_collection(grid) {
     raise Refused(
       text="a " +
         grid.page.table +
@@ -196,4 +194,86 @@ pub fn redis_plan(grid : Grid) -> SavePlan raise Refused {
     }
   }
   { statements, updates, inserts: 0, deletes, }
+}
+
+///|
+/// Whether the page is a list, a set or a sorted set: a key whose rows are
+/// positions or members, which no cell overwrite can write.
+pub fn is_collection(grid : Grid) -> Bool {
+  let columns = grid.page.columns
+  columns.contains("index") ||
+  columns.contains("score") ||
+  (columns.contains("member") && !columns.contains("value"))
+}
+
+///|
+/// The words a change to a collection would be typed as, on a console line:
+/// `LSET` for a list's value at an index, `LREM` for one it no longer holds,
+/// `RPUSH` for one it gains, `SADD` and `SREM` for a set's members, `ZADD` and
+/// `ZREM` for a sorted set's. Nothing comes back when no cell changed.
+///
+/// A collection is written by commands, never by a cell, so these are put where
+/// commands are typed and the reader sends them from there — the save has
+/// nothing to preview, and nothing reaches the server unseen.
+pub fn console_writes(
+  grid : Grid,
+  name : String,
+) -> Array[String] raise Refused {
+  let out : Array[String] = []
+  let columns = grid.page.columns
+  let mut at = 0
+  while at < grid.row_count() {
+    let added = at >= grid.page.rows.length()
+    if columns.contains("index") {
+      let value = quoted(grid.cell(at, "value").text)
+      if grid.is_marked(at) && !added {
+        out.push(
+          "LREM " + name + " 0 " + quoted(grid.original(at, "value").text),
+        )
+      } else if added {
+        out.push("RPUSH " + name + " " + value)
+      } else {
+        let was = grid.original(at, "value").text
+        if value != quoted(was) {
+          out.push(
+            "LSET " +
+            name +
+            " " +
+            quoted(grid.cell(at, "index").text) +
+            " " +
+            value,
+          )
+        }
+      }
+    } else if columns.contains("score") {
+      let item = quoted(grid.cell(at, "member").text)
+      if grid.is_marked(at) && !added {
+        out.push("ZREM " + name + " " + item)
+      } else if added {
+        out.push(
+          "ZADD " +
+          name +
+          " " +
+          quoted(grid.cell(at, "score").text) +
+          " " +
+          item,
+        )
+      } else {
+        let now = grid.cell(at, "score").text
+        let was = grid.original(at, "score").text
+        if now != was {
+          out.push("ZADD " + name + " " + quoted(now) + " " + item)
+        }
+      }
+    } else {
+      let item = quoted(grid.cell(at, "member").text)
+      if grid.is_marked(at) && !added {
+        out.push("SREM " + name + " " + item)
+      } else if added {
+        out.push("SADD " + name + " " + item)
+      }
+    }
+    at = at + 1
+  }
+  out
 }

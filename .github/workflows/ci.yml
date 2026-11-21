@@ -60,11 +60,11 @@ jobs:
           echo "$out" | grep -q "Ada"
           echo "$out" | grep -q "tab  pane"
 
-      # The save's old-value WHERE and the read-only refusal, each broken in turn: the test named
-      # for each has to go red.
-      - name: the database client's two safety checks are pinned by their tests
+      # A role of the house look, the key list's pattern, the save's old-value WHERE and the
+      # read-only refusal, each broken in turn: the test named for each has to go red.
+      - name: the checks are pinned by the tests named for them
         if: ${{ runner.os == 'Linux' }}
-        run: python3 scripts/check_dbmux_mutations.py
+        run: python3 scripts/check_mutations.py
 
       - name: lint (fmt and interface are clean)
         run: |
@@ -249,6 +249,28 @@ jobs:
           echo "$out"
           echo "$out" | grep -q "Ada"
           echo "$out" | grep -q "London"
+
+      # The keys are narrowed by a pattern Redis matches, not by reading every key and
+      # keeping some: the seeded `greeting` is outside `user:*` and must not be listed.
+      - name: the key list is narrowed by a pattern
+        run: |
+          out=$(moon run --target native examples/dbmux/src/main -- "redis://127.0.0.1:6379/0" --headless --frames 6 --keys 'f|user:*\x0d')
+          echo "$out"
+          echo "$out" | grep -q "user:1"
+          if echo "$out" | grep -q "greeting"; then
+            echo "a key outside the pattern was listed"; exit 1
+          fi
+
+      # A list has no cell to set, so the save writes the command a change means and leaves
+      # it on the console; the enter that follows sends it and the server holds the new value.
+      - name: a list is written by the command the save leaves on the console
+        run: |
+          out=$(moon run --target native examples/dbmux/src/main -- "redis://127.0.0.1:6379/0" --headless --frames 12 --keys 'f|queue\x0d|\x0d|l|e|z|\x0d|\x13')
+          echo "$out"
+          echo "$out" | grep -q "LSET queue 0 z"
+          out=$(moon run --target native examples/dbmux/src/main -- "redis://127.0.0.1:6379/0" --headless --frames 14 --keys 'f|queue\x0d|\x0d|l|e|y|\x0d|\x13|\x0d')
+          echo "$out"
+          docker exec ${{ job.services.redis.id }} redis-cli lindex queue 0 | grep -q "^y$"
 
       # One table in each SQL server, so the tree has something of its own to list.
       - name: seed the SQL servers

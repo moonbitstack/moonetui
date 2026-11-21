@@ -12,7 +12,7 @@ enum Link {
 
 ///|
 /// The name of the virtual table that lists Redis keys.
-let keys_table : String = "keys"
+let keys_table : String = @shell.keys_table
 
 ///|
 /// A table page from what the grid is showing: its filter, its ordering, its
@@ -53,17 +53,19 @@ async fn load(
 ///|
 /// The rows of a Redis table: the keys themselves, or one key's value. A key
 /// opens as a table named `key:<name>`, which is what the tab strip shows and
-/// what a reload asks for again.
+/// what a reload asks for again. The key list is narrowed by `pattern`, which
+/// Redis matches on its own side.
 async fn redis_page(
   redis : @db.Redis,
   table : String,
+  pattern~ : String = "*",
 ) -> @table.Page raise @db.Failed {
   if table.has_prefix("key:") {
     let key = table.exact_view(start=4).to_owned()
     let view = redis.view(key)
     @table.Page::new(None, table, view.columns, view.rows, [])
   } else {
-    let pairs = redis.keys("*", 500)
+    let pairs = redis.keys(pattern, 500)
     let rows : Array[Array[@table.Cell]] = []
     for (key, kind) in pairs {
       rows.push([@table.Cell::of(key), @table.Cell::of(kind)])
@@ -124,7 +126,11 @@ async fn reload(link : Link, state : @shell.State) -> Unit {
             @db.Failed(text~) => state.message = text
           }
         Redis(redis) => {
-          let page = redis_page(redis, grid.page.table) catch {
+          let page = redis_page(
+            redis,
+            grid.page.table,
+            pattern=@db.scan_pattern(grid.filter),
+          ) catch {
             @db.Failed(text~) => {
               state.message = text
               return

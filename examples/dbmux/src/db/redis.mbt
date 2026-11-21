@@ -35,6 +35,20 @@ pub async fn Redis::open(dsn : String, password : String) -> Redis raise Failed 
 }
 
 ///|
+/// The pattern the keys are listed by: what the reader typed on the filter
+/// line, or `*` when they cleared it. Redis matches these itself, so `user:*`
+/// asks the server for one family of keys instead of reading them all and
+/// keeping some.
+pub fn scan_pattern(filter : String) -> String {
+  let pattern = filter.trim().to_owned()
+  if pattern == "" {
+    "*"
+  } else {
+    pattern
+  }
+}
+
+///|
 /// The keys a pattern matches, up to a limit, each with its type. `SCAN` walks
 /// the keyspace in cursor steps, so a server with a million keys is not asked
 /// for all of them at once.

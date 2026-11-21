@@ -82,3 +82,14 @@ test "every column of the columns query is named, so the key subquery cannot sha
   assert_eq(sql.contains("c.table_name = 'customers'"), true)
   assert_eq(sql.contains("c.table_schema = 'public'"), true)
 }
+
+///|
+test "the keys are asked for by the pattern the reader typed" {
+  // Nothing typed, or only spaces, is every key.
+  assert_eq(@db.scan_pattern(""), "*")
+  assert_eq(@db.scan_pattern("   "), "*")
+  // Anything else is the pattern itself, trimmed, and Redis matches it.
+  assert_eq(@db.scan_pattern("user:*"), "user:*")
+  assert_eq(@db.scan_pattern("  queue:[0-9]*  "), "queue:[0-9]*")
+  assert_eq(@db.scan_pattern("*"), "*")
+}

@@ -273,3 +273,59 @@ test "a list has no cell to set, and says so" {
   }
   assert_eq(refused is Err(_), true)
 }
+
+///|
+test "a list, a set and a sorted set are collections; a hash and a string are not" {
+  let collection = fn(table, columns) {
+    @table.is_collection(
+      plan_grid(
+        @table.Page::new(None, table, columns, [[@table.Cell::of("a")]], []),
+      ),
+    )
+  }
+  assert_eq(collection("queue", ["index", "value"]), true)
+  assert_eq(collection("tags", ["member"]), true)
+  assert_eq(collection("board", ["member", "score"]), true)
+  assert_eq(collection("user:1", ["field", "value"]), false)
+  assert_eq(collection("greeting", ["value"]), false)
+}
+
+///|
+test "a list's changed value is the LSET the reader would type" {
+  let page = @table.Page::new(
+    None,
+    "queue",
+    ["index", "value"],
+    [
+      [@table.Cell::of("0"), @table.Cell::of("a")],
+      [@table.Cell::of("1"), @table.Cell::of("b")],
+    ],
+    [],
+  )
+  let grid = plan_grid(page)
+  grid.set_cell(1, "value", @table.Cell::of("two words"))
+  assert_eq(@table.console_writes(grid, "queue"), ["LSET queue 1 \"two words\""])
+  // Nothing typed means nothing to send.
+  grid.revert()
+  assert_eq(@table.console_writes(grid, "queue"), [])
+}
+
+///|
+test "a value holding both kinds of quote is refused rather than sent in half" {
+  let page = @table.Page::new(
+    None,
+    "queue",
+    ["index", "value"],
+    [[@table.Cell::of("0"), @table.Cell::of("a")]],
+    [],
+  )
+  let grid = plan_grid(page)
+  grid.set_cell(0, "value", @table.Cell::of("it's \"quoted\""))
+  let refused = Ok(@table.console_writes(grid, "queue")) catch {
+    @table.Refused(text~) => Err(text)
+  }
+  match refused {
+    Ok(_) => abort("a value with both quotes was written")
+    Err(text) => assert_eq(text.contains("quote"), true)
+  }
+}

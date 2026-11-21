@@ -2,6 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 ///|
+/// The name of the table that lists a Redis server's keys.
+pub let keys_table : String = "keys"
+
+///|
 /// What has the keyboard.
 #derive(Eq, Debug)
 pub(all) enum Focus {
@@ -211,6 +215,19 @@ pub fn State::grid_of(self : State, index : Int32) -> @table.Grid? {
 /// The grid on screen.
 pub fn State::grid(self : State) -> @table.Grid? {
   self.grid_of(self.pane)
+}
+
+///|
+/// Whether the pane shows a Redis server's keys, which are narrowed by a
+/// pattern Redis matches rather than by a WHERE.
+pub fn State::keys_page(self : State) -> Bool {
+  if !(self.engine is @config.Engine::Redis) {
+    return false
+  }
+  match self.grid() {
+    Some(grid) => grid.page.table == keys_table
+    None => false
+  }
 }
 
 ///|

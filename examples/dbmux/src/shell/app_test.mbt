@@ -417,3 +417,118 @@ test "a redis list has nothing to set, and the save says so" {
   assert_eq(state.mode, @shell.Mode::Browse)
   assert_eq(state.message.contains("console"), true)
 }
+
+///|
+test "a list's cell is written by a command on the console" {
+  let state = @shell.State::new(
+    "cache",
+    @config.Engine::Redis,
+    @sqlkit.Dialect::Postgres,
+    false,
+    false,
+    @keymap.Keymap::default(),
+  )
+  state.show_page(
+    @table.Page::new(
+      None,
+      "queue",
+      ["index", "value"],
+      [[@table.Cell::of("0"), @table.Cell::of("a")]],
+      [],
+    ),
+  )
+  let grid = state.grid().unwrap()
+  grid.set_cell(0, "value", @table.Cell::of("b"))
+  ignore(state.press("C-s"))
+  // The command is the one the reader would have typed, and it waits on the
+  // console for the enter that sends it.
+  assert_eq(state.editor, "LSET queue 0 b")
+  assert_eq(state.focus, @shell.Focus::Editor)
+  assert_eq(state.message.contains("console"), true)
+}
+
+///|
+test "a member marked in a set leaves it by SREM, and an added one enters by SADD" {
+  let state = @shell.State::new(
+    "cache",
+    @config.Engine::Redis,
+    @sqlkit.Dialect::Postgres,
+    false,
+    false,
+    @keymap.Keymap::default(),
+  )
+  state.show_page(
+    @table.Page::new(
+      None,
+      "tags",
+      ["member"],
+      [[@table.Cell::of("alpha")], [@table.Cell::of("beta")]],
+      [],
+    ),
+  )
+  let grid = state.grid().unwrap()
+  ignore(grid.add_row())
+  grid.set_cell(2, "member", @table.Cell::of("gamma"))
+  grid.toggle_delete(0)
+  ignore(state.press("C-s"))
+  assert_eq(state.editor, "SREM tags alpha\nSADD tags gamma")
+}
+
+///|
+test "a sorted set's score is written by ZADD" {
+  let state = @shell.State::new(
+    "cache",
+    @config.Engine::Redis,
+    @sqlkit.Dialect::Postgres,
+    false,
+    false,
+    @keymap.Keymap::default(),
+  )
+  state.show_page(
+    @table.Page::new(
+      None,
+      "board",
+      ["member", "score"],
+      [[@table.Cell::of("ada"), @table.Cell::of("1")]],
+      [],
+    ),
+  )
+  let grid = state.grid().unwrap()
+  grid.set_cell(0, "score", @table.Cell::of("7"))
+  ignore(state.press("C-s"))
+  assert_eq(state.editor, "ZADD board 7 ada")
+}
+
+///|
+test "a redis key list is narrowed by a pattern, not by a WHERE" {
+  let state = @shell.State::new(
+    "cache",
+    @config.Engine::Redis,
+    @sqlkit.Dialect::Postgres,
+    false,
+    false,
+    @keymap.Keymap::default(),
+  )
+  state.show_page(
+    @table.Page::new(
+      None,
+      @shell.keys_table,
+      ["key", "type"],
+      [[@table.Cell::of("greeting"), @table.Cell::of("string")]],
+      [],
+    ),
+  )
+  ignore(state.press("f"))
+  assert_eq(state.mode, @shell.Mode::Typing)
+  assert_eq(state.prompt, "PATTERN ")
+  for key in ["u", "s", "e", "r", ":", "*"] {
+    ignore(state.press(key))
+  }
+  let commands = state.press("enter")
+  assert_eq(state.grid().unwrap().filter, "user:*")
+  assert_eq(commands.length(), 1)
+  match commands[0] {
+    @shell.Command::Reload => ()
+    _ => abort("a reload was expected")
+  }
+}

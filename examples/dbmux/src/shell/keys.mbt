@@ -159,7 +159,7 @@ fn State::press_browse(self : State, key : String) -> Array[Command] {
             Some(grid) => grid.filter
             None => ""
           }
-          self.prompt = "WHERE "
+          self.prompt = if self.keys_page() { "PATTERN " } else { "WHERE " }
         }
         @keymap.Action::FilterCell =>
           match self.grid() {
@@ -224,6 +224,22 @@ fn State::press_browse(self : State, key : String) -> Array[Command] {
                 self.message = "this connection is read-only"
               } else if !grid.is_dirty() {
                 self.message = "nothing to save"
+              } else if self.engine is @config.Engine::Redis &&
+                @table.is_collection(grid) {
+                let words = Ok(@table.console_writes(grid, grid.page.table)) catch {
+                  @table.Refused(text~) => Err(text)
+                }
+                match words {
+                  Ok(commands) =>
+                    if commands.length() == 0 {
+                      self.message = "no cell changed"
+                    } else {
+                      self.editor = commands.join("\n")
+                      self.focus = Editor
+                      self.message = "the change is on the console: enter sends it"
+                    }
+                  Err(text) => self.message = text
+                }
               } else {
                 // A Redis key is not a table: what a change means depends on
                 // the type it holds, and `redis_plan` writes the command.
@@ -367,7 +383,7 @@ fn State::apply_prompt(self : State, text : String) -> Array[Command] {
   match self.grid() {
     None => ()
     Some(grid) =>
-      if self.prompt == "WHERE " {
+      if self.prompt == "WHERE " || self.prompt == "PATTERN " {
         grid.filter = text
         grid.offset = 0L
         out.push(Command::Reload)
