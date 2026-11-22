@@ -329,3 +329,25 @@ test "a value holding both kinds of quote is refused rather than sent in half" {
     Err(text) => assert_eq(text.contains("quote"), true)
   }
 }
+
+///|
+test "a key's page is named for the strip, and the commands name the key" {
+  assert_eq(@table.key_of("key:queue"), "queue")
+  assert_eq(@table.key_of("queue"), "queue")
+  assert_eq(@table.key_of("key:user:1"), "user:1")
+  assert_eq(@table.key_prefix, "key:")
+  // A save on an opened list writes the key, not the name of its page.
+  let grid = plan_grid(
+    @table.Page::new(
+      None,
+      "key:queue",
+      ["index", "value"],
+      [[@table.Cell::of("0"), @table.Cell::of("a")]],
+      [],
+    ),
+  )
+  grid.set_cell(0, "value", @table.Cell::of("b"))
+  assert_eq(@table.console_writes(grid, @table.key_of("key:queue")), [
+    "LSET queue 0 b",
+  ])
+}

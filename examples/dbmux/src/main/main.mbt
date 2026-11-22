@@ -60,8 +60,8 @@ async fn redis_page(
   table : String,
   pattern~ : String = "*",
 ) -> @table.Page raise @db.Failed {
-  if table.has_prefix("key:") {
-    let key = table.exact_view(start=4).to_owned()
+  if table.has_prefix(@table.key_prefix) {
+    let key = @table.key_of(table)
     let view = redis.view(key)
     @table.Page::new(None, table, view.columns, view.rows, [])
   } else {

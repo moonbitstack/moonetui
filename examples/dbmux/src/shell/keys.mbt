@@ -226,7 +226,9 @@ fn State::press_browse(self : State, key : String) -> Array[Command] {
                 self.message = "nothing to save"
               } else if self.engine is @config.Engine::Redis &&
                 @table.is_collection(grid) {
-                let words = Ok(@table.console_writes(grid, grid.page.table)) catch {
+                let words = Ok(
+                  @table.console_writes(grid, @table.key_of(grid.page.table)),
+                ) catch {
                   @table.Refused(text~) => Err(text)
                 }
                 match words {

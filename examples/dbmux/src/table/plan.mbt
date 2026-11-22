@@ -152,7 +152,7 @@ fn quoted(text : String) -> String raise Refused {
 /// is `HSET` and `HDEL` of the field the row names. A list, a set and a sorted
 /// set have no cell to set, and say so instead of writing something else.
 pub fn redis_plan(grid : Grid) -> SavePlan raise Refused {
-  let key = grid.page.table
+  let key = key_of(grid.page.table)
   let columns = grid.page.columns
   let statements : Array[String] = []
   let mut updates = 0
@@ -194,6 +194,22 @@ pub fn redis_plan(grid : Grid) -> SavePlan raise Refused {
     }
   }
   { statements, updates, inserts: 0, deletes, }
+}
+
+///|
+/// The prefix a key's page is named with, so a key reads as a table of its own
+/// in the tab strip.
+pub let key_prefix : String = "key:"
+
+///|
+/// The key a page stands for: the name the commands have to use. A page of a
+/// key is named `key:<name>`; a table's page is its own name.
+pub fn key_of(table : String) -> String {
+  if table.has_prefix(key_prefix) {
+    table.exact_view(start=key_prefix.length()).to_owned()
+  } else {
+    table
+  }
 }
 
 ///|

@@ -265,11 +265,11 @@ jobs:
       # it on the console; the enter that follows sends it and the server holds the new value.
       - name: a list is written by the command the save leaves on the console
         run: |
-          out=$(moon run --target native examples/dbmux/src/main -- "redis://127.0.0.1:6379/0" --headless --frames 20 --keys 'f|queue\x0d|\x0d|l|e|z|\x0d|\x13')
+          out=$(moon run --target native examples/dbmux/src/main -- "redis://127.0.0.1:6379/0" --headless --frames 20 --keys 'f|queue\x0d|\x0d|l|e|\x7fz|\x0d|\x13')
           echo "$out"
           echo "$out" | grep -q "LSET queue 0 z" || {
             echo "the save left no command on the console"; exit 1; }
-          out=$(moon run --target native examples/dbmux/src/main -- "redis://127.0.0.1:6379/0" --headless --frames 24 --keys 'f|queue\x0d|\x0d|l|e|y|\x0d|\x13|\x12')
+          out=$(moon run --target native examples/dbmux/src/main -- "redis://127.0.0.1:6379/0" --headless --frames 24 --keys 'f|queue\x0d|\x0d|l|e|\x7fy|\x0d|\x13|\x12')
           echo "$out"
           docker exec ${{ job.services.redis.id }} redis-cli lindex queue 0 | grep -q "^y$"
 
